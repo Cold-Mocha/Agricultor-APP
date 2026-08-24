@@ -7,8 +7,8 @@ AgroCampo es una app estatica de alta fidelidad en `index.html`. No usa framewor
 ## Pantallas principales
 
 - `Inicio`: clima, acceso a cuadrantes y labores principales.
-- `Sectores`: listado de cuadrantes, mapa de cuadrantes y resumen historial.
-- `Mapa de parcela`: mapa con imagen de fondo, parcelas transparentes por color de cultivo y vertices arrastrables.
+- `Sectores`: listado de 8 cuadrantes, mapa de cuadrantes y resumen historial.
+- `Mapa de parcela`: mapa con imagen de fondo, parcelas transparentes por color de cultivo y vertices arrastrables. Incluye preparacion opcional para Google Maps JavaScript API con poligonos fijos si se configura una API key en `state.googleMaps`.
 - `Registrar`: flujo de 3 pasos: seleccionar cultivo, seleccionar accion y completar campos segun la accion.
 - `Suelo`: formulario de medicion manual.
 - `Riego`: calculo deterministico con tipo de riego.
@@ -22,6 +22,14 @@ AgroCampo es una app estatica de alta fidelidad en `index.html`. No usa framewor
 - `Cambiar cultivo` abre una pantalla para elegir la fruta nueva y guarda el cambio en historial.
 - `Ver historial` permanece disponible en el menu de acciones del cuadrante.
 - Las parcelas del mapa no muestran numeros; muestran el icono/cultivo correspondiente.
+- El cuadrante 8 corresponde a `Apicultura`; su ficha muestra colmenas, estado de la reina, estado sanitario, alimentacion y ultima revision en vez de metricas agricolas.
+- `Registrar` incluye campos agronomicos de suelo y campos especificos de apicultura.
+
+## Integracion futura
+
+La app sigue sin backend. Google Maps queda preparado de la forma mas directa posible para un despliegue estatico: `state.googleMaps.apiKey` y `state.googleMaps.enabled` activan la carga de Google Maps JavaScript API y dibujan poligonos desde las coordenadas fijas de `state.mapSections[].gps`.
+
+Para pasar a mapa real editable falta definir coordenadas reales de la parcela, configurar una API key restringida al dominio de GitHub Pages y agregar backend o almacenamiento externo si se quiere guardar vertices editados por usuarios. Sin esa persistencia, los cambios de coordenadas solo pueden vivir como datos fijos en `index.html`.
 
 ## Deploy
 
