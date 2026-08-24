@@ -71,7 +71,7 @@ const mustContain = [
   'function renderIcons',
   'function cropIcon',
   'function defaultActivityForSector',
-  "return s?.crop==='Apicultura'?'Apicultura':state.selectedActivityType",
+  "return s?.crop==='Apicultura'?'Apicultura':(state.selectedActivityType==='Apicultura'?'Suelo':state.selectedActivityType)",
   'state.selectedActivityType=defaultActivityForSector(s)',
   'state.selectedActivityType=defaultActivityForSector(sector(picker.dataset.pickSector))',
   'const ICONS =',

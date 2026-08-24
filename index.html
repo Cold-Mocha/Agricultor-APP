@@ -152,7 +152,7 @@ const CROP_OPTIONS = [
   { crop:'Apicultura', cropKey:'AP', icon:'apicultura', color:'#b45309' }
 ];
 function sector(id = state.selectedSectorId){return state.sectors.find(item => item.id === Number(id)) || state.sectors[0]}
-function defaultActivityForSector(s){return s?.crop==='Apicultura'?'Apicultura':state.selectedActivityType}
+function defaultActivityForSector(s){return s?.crop==='Apicultura'?'Apicultura':(state.selectedActivityType==='Apicultura'?'Suelo':state.selectedActivityType)}
 function setRoute(route){location.hash = route}
 function showToast(message){const el=document.getElementById('toast');el.textContent=message;el.classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>el.classList.remove('show'),2300)}
 function escapeHtml(value){return String(value ?? '').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]))}
