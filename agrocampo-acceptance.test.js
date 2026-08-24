@@ -6,7 +6,7 @@ const indexHtml = fs.readFileSync('index.html', 'utf8');
 assert.ok(indexHtml.includes('<title>AgroCampo</title>'), 'Expected index.html to serve AgroCampo app');
 assert.ok(indexHtml.includes('<div class="device-frame">'), 'Expected index.html to contain the app shell');
 
-const html = fs.readFileSync('agrocampo-highfi.html', 'utf8');
+const html = indexHtml;
 
 const mustContain = [
   'AGROCAMPO',
@@ -15,6 +15,16 @@ const mustContain = [
   'window.addEventListener(\'hashchange\'',
   '#sector/',
   'data-route="#registrar"',
+  '<div class="section"><h2>Labores</h2></div>',
+  'data-labor="Riego"',
+  'data-labor="Suelo"',
+  'data-labor="Fertilizacion"',
+  'data-labor="Control de Enfermedades y Plagas"',
+  'Control de Enfermedades y Plagas',
+  'selectedActivityType',
+  'data-selected-type',
+  "const laborButton=event.target.closest('[data-labor]')",
+  '${type===state.selectedActivityType?\'selected\':\'\'}',
   'Cuadrante 3',
   'Conductividad',
   'Fertilidad',
@@ -109,6 +119,8 @@ const mustContain = [
 
 const mustNotContain = [
   '#acciones',
+  '<div class="section"><h2>Acciones rápidas</h2></div>',
+  '<div class="section"><h2>Acciones rapidas</h2></div>',
   'function actionsScreen',
   'route===\'#acciones\'',
   'Recomendacion orientativa',
