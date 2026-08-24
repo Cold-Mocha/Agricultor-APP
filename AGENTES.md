@@ -2,6 +2,8 @@
 
 Este archivo define un flujo simple para tomar una solicitud del usuario, entender exactamente qué pestaña/elemento/requerimiento afecta, aplicar el cambio y revisar si corresponde con lo pedido.
 
+wowo
+
 ## 1. Agente Analista de Tarea
 
 Objetivo: leer la solicitud y convertirla en una instrucción clara antes de editar.
