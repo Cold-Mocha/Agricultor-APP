@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32">
+  <g fill="none">
+    <path fill="#2f7d46" d="M16 8c-1.2-2.8-3.8-4.5-7-4.6c.7 3.4 3.3 5.6 7 5.6c3.7 0 6.3-2.2 7-5.6c-3.2.1-5.8 1.8-7 4.6Z"/>
+    <path fill="#36a35b" d="M16 10c-1.3-2.1-3.3-3.2-5.8-3.2c.7 2.3 2.7 3.9 5.8 4.1c3.1-.2 5.1-1.8 5.8-4.1c-2.5 0-4.5 1.1-5.8 3.2Z"/>
+    <circle cx="16" cy="12" r="4" fill="#f43f5e"/>
+    <circle cx="11.8" cy="15" r="4" fill="#e11d48"/>
+    <circle cx="20.2" cy="15" r="4" fill="#e11d48"/>
+    <circle cx="16" cy="18" r="4.2" fill="#be123c"/>
+    <circle cx="12.6" cy="21.3" r="3.5" fill="#f43f5e"/>
+    <circle cx="19.4" cy="21.3" r="3.5" fill="#f43f5e"/>
+    <circle cx="16" cy="24" r="3.6" fill="#e11d48"/>
+    <circle cx="14.7" cy="12" r="1.1" fill="#fb7185"/>
+    <circle cx="10.6" cy="14.7" r="1" fill="#fb7185"/>
+    <circle cx="18.9" cy="14.6" r="1" fill="#fb7185"/>
+    <circle cx="15" cy="17.8" r="1" fill="#fb7185"/>
+    <circle cx="11.6" cy="20.9" r=".9" fill="#fb7185"/>
+    <circle cx="18.2" cy="20.8" r=".9" fill="#fb7185"/>
+  </g>
+</svg>
