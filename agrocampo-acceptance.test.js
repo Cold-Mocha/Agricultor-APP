@@ -1,6 +1,11 @@
 const fs = require('node:fs');
 const assert = require('node:assert/strict');
 
+assert.ok(fs.existsSync('index.html'), 'Expected root index.html for GitHub Pages');
+const indexHtml = fs.readFileSync('index.html', 'utf8');
+assert.ok(indexHtml.includes('<title>AgroCampo</title>'), 'Expected index.html to serve AgroCampo app');
+assert.ok(indexHtml.includes('<div class="device-frame">'), 'Expected index.html to contain the app shell');
+
 const html = fs.readFileSync('agrocampo-highfi.html', 'utf8');
 
 const mustContain = [

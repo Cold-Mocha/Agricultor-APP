@@ -34,7 +34,7 @@ jobs:
       - name: Prepare static site
         run: |
           mkdir -p _site
-          cp agrocampo-highfi.html _site/index.html
+          cp index.html _site/index.html
           cp ImagenSuperior.png _site/
           cp -R assets _site/assets
           touch _site/.nojekyll
