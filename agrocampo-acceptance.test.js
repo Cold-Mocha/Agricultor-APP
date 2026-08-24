@@ -70,6 +70,10 @@ const mustContain = [
   'function updateIrrigationEstimate',
   'function renderIcons',
   'function cropIcon',
+  'function defaultActivityForSector',
+  "return s?.crop==='Apicultura'?'Apicultura':state.selectedActivityType",
+  'state.selectedActivityType=defaultActivityForSector(s)',
+  'state.selectedActivityType=defaultActivityForSector(sector(picker.dataset.pickSector))',
   'const ICONS =',
   'const FRUIT_ICONS =',
   'raspberry.svg',
@@ -144,6 +148,7 @@ const mustContain = [
   'event-card',
   '<div class="mark"><i data-lucide="${iconFor(item.type)}"></i></div>',
   '${cropIcon(s)}<span>${s.crop}</span>',
+  '.crop svg,.mini-crop svg,.quad svg{width:72%;height:72%',
   'aria-label="Volver"',
   '.back{border:0;background:var(--brand);color:#fff',
 ];
