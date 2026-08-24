@@ -26,8 +26,39 @@ const mustContain = [
   "const laborButton=event.target.closest('[data-labor]')",
   '${type===state.selectedActivityType?\'selected\':\'\'}',
   'Cuadrante 3',
+  'Cuadrante 4',
+  'Cuadrante 5',
+  'Cuadrante 6',
+  'Cuadrante 7',
+  'Cuadrante 8',
+  'Papas',
+  'Sandia y melones',
+  'Maiz',
+  'Physalis',
+  'Apicultura',
+  "icon: 'root'",
+  "icon: 'watermelon'",
+  "icon: 'corn'",
+  "icon: 'physalis'",
+  "icon: 'apicultura'",
   'Conductividad',
   'Fertilidad',
+  'Temperatura del Suelo',
+  'EC / Electro Conductividad',
+  'N / Nitrogeno',
+  'P / Fosforo',
+  'K / Potasio',
+  'Revision de colmenas',
+  'Nombre del apicultor',
+  'Numero de colmenas',
+  'Tipo de tareas',
+  'Estado de postura',
+  'Enfermedad y plaga',
+  'Alimentacion',
+  'Estado de la reina',
+  'Colocacion de alza',
+  'Estado sanitario',
+  'Ultima revision',
   'Riego por goteo',
   'Riego por aspersion',
   'Riego por surco',
@@ -184,7 +215,7 @@ for (const text of mustNotContain) {
 }
 
 const sectorMatches = html.match(/Cuadrante \d/g) || [];
-assert.equal(new Set(sectorMatches).size, 3, 'Expected exactly 3 quadrants in the prototype');
+assert.equal(new Set(sectorMatches).size, 8, 'Expected exactly 8 quadrants in the prototype');
 
 assert.ok(!/\.q3\{left:\d+px/.test(html), 'Expected map quadrants not to rely on fixed 320px-breaking coordinates');
 assert.ok(!/\.q6\{left:\d+px/.test(html), 'Expected map quadrants not to rely on fixed 320px-breaking coordinates');
@@ -194,6 +225,7 @@ assert.ok(/escapeHtml\(item\.notes\)/.test(html), 'Expected history notes to be 
 assert.ok(!/lucide\.createIcons\(\)/.test(html), 'Expected icon rendering to go through resilient renderIcons fallback');
 assert.ok(!/simulad|prototipo|demo|demostrativ|Validacion/.test(html), 'Expected visible/product copy not to describe the UI as mockup or simulation');
 assert.ok(/state\.mapSections\.map/.test(html), 'Expected map to render from mapSections instead of all sectors');
-assert.ok(/mapSections:\s*\[[\s\S]*sectorId:\s*1[\s\S]*sectorId:\s*2[\s\S]*sectorId:\s*3/.test(html), 'Expected map to start with 3 editable sections');
+assert.ok(/mapSections:\s*\[[\s\S]*sectorId:\s*1[\s\S]*sectorId:\s*2[\s\S]*sectorId:\s*3[\s\S]*sectorId:\s*4[\s\S]*sectorId:\s*5[\s\S]*sectorId:\s*6[\s\S]*sectorId:\s*7[\s\S]*sectorId:\s*8/.test(html), 'Expected map to start with 8 editable sections');
+assert.ok(/types=\['Suelo','Riego','Fertilizacion','Control de Enfermedades y Plagas','Cultivo','Cosecha','Apicultura','Otra'\]/.test(html), 'Expected agronomic activity types in registration');
 
 console.log('AgroCampo acceptance checks passed');
