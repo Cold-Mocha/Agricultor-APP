@@ -1,8 +1,11 @@
-# Flujo de agentes para cambios en AgroCampo
+# Flujo de agentes para cambios en el prototipo AgroCampo
 
-Este archivo define un flujo simple para tomar una solicitud del usuario, entender exactamente qué pestaña/elemento/requerimiento afecta, aplicar el cambio y revisar si corresponde con lo pedido.
+Este archivo gobierna exclusivamente cambios en `index.html`, `agrocampo-highfi.html` y sus pruebas.
+No es una fuente funcional del producto Android. Para requisitos, arquitectura, datos y backlog
+prevalece `specs/001-agrocampo-android-mvp/`; para UI/UX prevalece `master.md`.
 
-wowo
+Una edición del prototipo no autoriza a trasladar datos mock, cantidades de cuadrantes o APIs web a
+la aplicación de producción.
 
 ## 1. Agente Analista de Tarea
 
@@ -44,7 +47,7 @@ Debe:
 - Reutilizar componentes existentes cuando corresponda.
 - Mantener la navegación por hash.
 - Mantener el estado mock coherente.
-- No agregar backend, APIs reales ni frameworks.
+- No agregar backend, APIs reales ni frameworks al prototipo estático.
 
 Checklist antes de editar:
 

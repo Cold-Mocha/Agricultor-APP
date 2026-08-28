@@ -1,10 +1,10 @@
 # Feature Specification: AgroCampo Android MVP - Módulo 001
 
-**Feature Branch**: `not-created`
+**Feature Branch**: `codex/001-agrocampo-android-mvp` *(a crear al iniciar implementación)*
 
 **Created**: 2026-08-28
 
-**Status**: Ready for Planning
+**Status**: Ready for Implementation Backlog
 
 **Input**: User description: "Crear la especificación oficial del MVP AgroCampo para Android,
 separando requisitos funcionales, requisitos visuales, reglas UX, restricciones y criterios de
@@ -29,6 +29,10 @@ Las cantidades de tres cuadrantes observadas en `agrocampo-highfi.html` y de och
 descritas en `CONTEXTO.md` son datos de demostración. El MVP no impone ninguna de esas cantidades
 como límite funcional.
 
+Este directorio, `specs/001-agrocampo-android-mvp/`, es la **única fuente funcional oficial** de
+AgroCampo. Los prototipos, reportes históricos y documentos de contexto sólo aportan evidencia;
+no pueden añadir requisitos, arquitectura ni alcance por sí mismos.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Organizar parcelas y sectores (Priority: P1)
@@ -49,8 +53,12 @@ resultado es una estructura agrícola consultable, aun sin labores registradas.
    válidos, **Then** la parcela queda guardada y seleccionada como contexto activo.
 2. **Given** una parcela activa, **When** crea un sector completamente contenido y le asigna un
    cultivo, **Then** el sector queda disponible en mapa, ficha y formularios.
-3. **Given** dos parcelas activas, **When** selecciona una distinta, **Then** todas las vistas
+3. **Given** dos parcelas existentes, **When** selecciona una distinta como activa, **Then** todas las vistas
    contextuales muestran la nueva parcela sin mezclar información de la anterior.
+4. **Given** que el cultivo requerido no existe en el catálogo inicial, **When** crea una ficha
+   personalizada válida, **Then** puede asignarla y consultar su información sin alterar el catálogo base.
+5. **Given** un sector con cultivo vigente, **When** programa una rotación para una fecha futura,
+   **Then** la planificación queda visible sin reemplazar anticipadamente el cultivo activo.
 
 ---
 
@@ -75,6 +83,8 @@ disponibles con su estado de respaldo correcto.
    los campos que debe corregir y se conservan los demás valores ingresados.
 3. **Given** registros locales pendientes, **When** cierra y vuelve a abrir la aplicación,
    **Then** los registros y sus estados siguen disponibles.
+4. **Given** una labor que no corresponde a los tipos especializados, **When** elige “Otra labor”,
+   la describe y guarda, **Then** queda registrada con el mismo contexto y trazabilidad.
 
 ---
 
@@ -109,7 +119,7 @@ registrar lo realizado para aplicar un criterio consistente y trazable.
 **Why this priority**: El riego es frecuente y crítico, pero requiere que ya existan parcela,
 sector, cultivo y datos básicos.
 
-**Independent Test**: Se puede probar ingresando plantas, caudal, cultivo, humedad y temperatura
+**Independent Test**: Se puede probar ingresando plantas, caudal, cultivo, humedad, tipo de suelo y temperatura
 sin conexión. El sistema debe entregar una estimación local explicable y permitir guardarla como
 riego realizado.
 
@@ -127,7 +137,7 @@ riego realizado.
 ### User Story 5 - Consultar historial y producción (Priority: P2)
 
 Como agricultor, quiero consultar labores, suelo, riegos, cambios de cultivo y cosechas por parcela,
-sector, cultivo y temporada para comprender lo ocurrido y comparar periodos.
+sector, cultivo y temporada para comprender lo ocurrido y conservar datos aptos para comparativas futuras.
 
 **Why this priority**: El registro agrícola adquiere valor cuando puede recuperarse con su contexto
 y conservarse entre cambios de cultivo.
@@ -172,7 +182,7 @@ recordatorio y verificando que ambos siguen disponibles tras reiniciar el dispos
 ### User Story 7 - Gestionar apicultura (Priority: P3)
 
 Como agricultor con colmenas, quiero registrar revisiones apícolas dentro de un sector para mantener
-trazabilidad básica de colmenas, reina, postura, alimentación, sanidad, plagas y alzas.
+trazabilidad básica del tipo de tarea, colmenas, reina, postura, alimentación, sanidad, plagas y alzas.
 
 **Why this priority**: La apicultura pertenece al MVP, pero utiliza la estructura común de sectores,
 labores, fotografías e historial ya establecida.
@@ -222,6 +232,9 @@ pregunta contextual y generando una exportación completa con registros sincroni
   disponibles.
 - Los números de sector deben ser únicos dentro de una parcela, aunque pueden repetirse en otra.
 - Cambiar el cultivo no reescribe labores, riegos, suelo o cosechas de temporadas anteriores.
+- Dos rotaciones planificadas para el mismo sector no pueden solaparse y una planificación futura
+  no cambia el cultivo vigente antes de su fecha efectiva.
+- Un cultivo personalizado pertenece al agricultor que lo creó; otro propietario no puede verlo ni usarlo.
 - Humedad fuera de 0–100 %, pH fuera de 0–14 y valores negativos de conductividad o nutrientes se
   rechazan con mensajes específicos.
 - Una calculadora sin clima actual utiliza datos locales válidos, identifica la limitación y nunca
@@ -303,8 +316,9 @@ climática válida, conteo de pendientes y accesos disponibles.
   polígono y descripción.
 - **FR-010**: El agricultor MUST poder consultar y editar los datos y límites de una parcela.
 - **FR-011**: El sistema MUST recalcular la superficie aproximada al confirmar cambios de geometría.
-- **FR-012**: Una parcela con historial que deja de utilizarse MUST archivarse sin perder sus
-  relaciones; cualquier eliminación irreversible MUST estar impedida mientras existan dependencias.
+- **FR-012**: El agricultor MUST poder eliminar una parcela sin dependencias después de una
+  confirmación explícita; si existe historial o cualquier dependencia, la operación MUST convertirse
+  en archivo reversible y MUST conservar todas sus relaciones.
 - **FR-013**: Crear o editar una parcela sin conexión MUST producir un cambio local pendiente.
 
 **Estados**: vacío, borrador, geometría inválida, válida, guardando local, pendiente, sincronizada,
@@ -372,13 +386,22 @@ relación parcela-sector y última referencia de mapa disponible.
 - **FR-025**: El agricultor MUST poder asignar o cambiar el cultivo con fecha efectiva y MUST
   conservar la asignación anterior como parte de la temporada histórica.
 - **FR-026**: Apicultura MUST estar disponible como tipo de sector y activar sus datos especializados.
+- **FR-086**: El agricultor MUST poder crear y editar cultivos personalizados cuando el cultivo
+  requerido no exista en el catálogo inicial, sin modificar ni eliminar las entradas oficiales.
+- **FR-087**: Todo cultivo personalizado MUST conservar nombre e información propia sobre época de
+  siembra, suelo, agua, información agrícola y enfermedades; cada campo informativo MAY quedar
+  explícitamente sin información.
+- **FR-088**: El agricultor MUST poder planificar una rotación futura por sector y fecha efectiva;
+  una asignación planificada MUST NOT sustituir el cultivo vigente antes de activarse y MUST
+  conservarse en el historial si se cancela o reemplaza.
 
 **Estados**: sin cultivo, cultivo vigente, cambio de cultivo en borrador, temporada cerrada, sector
 agrícola, sector apícola, pendiente y sincronizado.
 **Presentación visual:** Implementar según master.md.
 
 **Datos necesarios**: identificador y número de sector, parcela, nombre, geometría, superficie,
-catálogo, asignaciones de cultivo con fechas, temporada y estado de sincronización.
+catálogo oficial y cultivos propios, información del cultivo, asignaciones vigentes/planificadas con
+fechas, temporada y estado de sincronización.
 
 **Criterios de aceptación**:
 
@@ -387,6 +410,10 @@ catálogo, asignaciones de cultivo con fechas, temporada y estado de sincronizac
 - **AC-CAP005-02**: Cambiar cultivo crea una nueva asignación y no reescribe registros previos.
 - **AC-CAP005-03**: El catálogo completo puede consultarse con la última información local sin
   conexión.
+- **AC-CAP005-04**: Un cultivo personalizado sólo es visible para su propietario y puede usarse en
+  una asignación con la misma trazabilidad que una entrada inicial.
+- **AC-CAP005-05**: La rotación futura no altera formularios ni historial del cultivo vigente hasta
+  su fecha efectiva y cualquier solapamiento se rechaza.
 
 #### CAP-006 - LABORES
 
@@ -398,6 +425,8 @@ catálogo, asignaciones de cultivo con fechas, temporada y estado de sincronizac
   el verbo “Registrar” cuando así lo determine `master.md`, sin reemplazar el nombre del módulo.
 - **FR-028**: `LABORES` MUST permitir registrar riego, suelo, fertilización, control de enfermedades
   y plagas, siembra, poda, cosecha y apicultura.
+- **FR-089**: `LABORES` MUST ofrecer “Otra labor” para trabajo no cubierto por los tipos anteriores;
+  exige un nombre descriptivo y observaciones, sin crear un nuevo módulo ni una taxonomía global.
 - **FR-029**: Toda labor MUST vincularse con agricultor, parcela, sector, fecha, tipo, cultivo o
   contexto aplicable, observaciones y estado de sincronización.
 - **FR-030**: El formulario MUST mostrar únicamente los datos aplicables al tipo seleccionado y
@@ -408,7 +437,8 @@ catálogo, asignaciones de cultivo con fechas, temporada y estado de sincronizac
 **Estados**: borrador, incompleto, válido, guardando local, guardado local, pendiente, sincronizando,
 sincronizado, error y conflicto. **Presentación visual:** Implementar según master.md.
 
-**Datos necesarios**: identificador, parcela, sector, cultivo/asignación, tipo, fecha, campos
+**Datos necesarios**: identificador, parcela, sector, cultivo/asignación, tipo, nombre descriptivo
+para “Otra labor”, fecha, campos
 especializados, observaciones, fotografías asociadas, temporada y estado de sincronización.
 
 **Criterios de aceptación**:
@@ -418,6 +448,8 @@ especializados, observaciones, fotografías asociadas, temporada y estado de sin
 - **AC-CAP006-02**: Cambiar el tipo antes de guardar adapta los datos requeridos sin generar campos
   ajenos al tipo final.
 - **AC-CAP006-03**: Toda labor puede rastrearse hasta su parcela, sector y temporada aplicables.
+- **AC-CAP006-04**: “Otra labor” requiere descripción y se consulta/sincroniza como cualquier labor,
+  sin habilitar campos de una especialización distinta.
 
 #### CAP-007 - Medición manual de suelo
 
@@ -457,6 +489,8 @@ N, P, K, observaciones y estado de sincronización.
 - **FR-037**: Los tipos iniciales MUST ser goteo, aspersión, surco y gravedad.
 - **FR-038**: El cálculo MUST utilizar cantidad de plantas, caudal, tiempo, cultivo, humedad del
   suelo, temperatura y clima disponible.
+- **FR-090**: El cálculo MUST aceptar el tipo de suelo como entrada explícita y conservar el código
+  de la clasificación agronómica versionada que se utilizó.
 - **FR-039**: El cálculo MUST producir litros estimados y tiempo recomendado mediante reglas
   deterministas, documentadas y reproducibles.
 - **FR-040**: Si faltan datos climáticos, el cálculo MAY utilizar entradas locales suficientes, pero
@@ -470,8 +504,9 @@ N, P, K, observaciones y estado de sincronización.
 completa, guardando, pendiente, sincronizado y error.
 **Presentación visual:** Implementar según master.md.
 
-**Datos necesarios**: parcela, sector, cultivo, fecha, tipo, plantas, caudal, duración, humedad,
-temperatura, clima disponible, litros, tiempo recomendado, variables usadas y estado de sincronización.
+**Datos necesarios**: parcela, sector, cultivo, fecha, tipo de riego, tipo de suelo, plantas, caudal,
+duración, humedad, temperatura, clima disponible, litros, tiempo recomendado, regla/versión,
+variables usadas y estado de sincronización.
 
 **Criterios de aceptación**:
 
@@ -565,6 +600,7 @@ fecha, descripción, sector o labor, estado de sincronización y marca de elimin
 
 - **FR-057**: Una revisión apícola MUST registrar número de colmenas, fecha, responsable informado,
   estado de la reina, postura, alimentación, enfermedades, plagas y colocación de alza.
+- **FR-091**: Toda revisión apícola MUST registrar el tipo de tarea realizada en la revisión.
 - **FR-058**: La revisión MAY incorporar fotografías y observaciones.
 - **FR-059**: El responsable es un dato descriptivo y MUST NOT crear un usuario, trabajador o rol.
 - **FR-060**: Las revisiones MUST poder registrarse y consultarse offline dentro del historial del
@@ -573,7 +609,7 @@ fecha, descripción, sector o labor, estado de sincronización y marca de elimin
 **Estados**: sector no apícola, sin revisiones, borrador, inválido, guardado local, pendiente,
 sincronizado y error. **Presentación visual:** Implementar según master.md.
 
-**Datos necesarios**: sector apícola, fecha, cantidad de colmenas, responsable, reina, postura,
+**Datos necesarios**: sector apícola, fecha, tipo de tarea, cantidad de colmenas, responsable, reina, postura,
 alimentación, sanidad, plagas, alza, observaciones, fotografías y estado de sincronización.
 
 **Criterios de aceptación**:
@@ -581,6 +617,7 @@ alimentación, sanidad, plagas, alza, observaciones, fotografías y estado de si
 - **AC-CAP012-01**: Un sector agrícola no muestra ni exige campos apícolas.
 - **AC-CAP012-02**: Una revisión válida aparece cronológicamente en el sector apícola.
 - **AC-CAP012-03**: El responsable informado no obtiene acceso ni identidad de usuario.
+- **AC-CAP012-04**: El tipo de tarea queda visible y filtrable en el historial de la revisión.
 
 #### CAP-013 - Recordatorios y avisos
 
@@ -739,7 +776,11 @@ estado de sincronización, fecha de generación y versión del formato.
 - **VR-005**: Si una necesidad visual o accesible no está resuelta en `master.md`, MUST actualizarse
   y aprobarse el Design System antes de implementarla; no se permite crear una variante local.
 - **VR-006**: Las pantallas Inicio, Sectores, Mapa, Detalle de sector, `LABORES`/Registrar, Suelo,
-  Riego, Historial, AgroIA, Más, Perfil y Configuración MUST **Implementar según master.md**.
+  Riego, Historial, AgroIA, Más, Perfil, Configuración, Acceso, Parcelas, Catálogo/ficha de cultivo,
+  Rotación futura, Producción, Revisión apícola, Fotografías, Recordatorios,
+  Sincronización/conflictos y Exportar MUST **Implementar según master.md**.
+- **VR-007**: Toda tarea de UI, UX, componentes, colores, layouts o navegación visual MUST citar la
+  sección aplicable de `master.md`; una tarea sin referencia visual exacta no puede iniciar.
 
 ### UX Rules
 
@@ -773,8 +814,9 @@ estado de sincronización, fecha de generación y versión del formato.
 - **MR-006**: AgroIA es consultiva; no se incluye IA avanzada, acciones autónomas ni análisis fotográfico.
 - **MR-007**: No se incluye panel web ni calendario lunar en el MVP.
 - **MR-008**: El cálculo de riego no incorpora modelos avanzados de evapotranspiración.
-- **MR-009**: No se añaden cultivos, tipos de labor o módulos fuera de los enumerados sin una
-  especificación y aprobación posteriores.
+- **MR-009**: El catálogo inicial, los cultivos personalizados del propietario y “Otra labor” son
+  los únicos mecanismos de extensión del MVP; no se añaden módulos, tipos especializados ni
+  catálogos globales fuera de los enumerados sin una especificación y aprobación posteriores.
 - **MR-010**: No se crean diseños alternativos ni se modifica la identidad visual definida en
   `master.md`.
 - **MR-011**: El prototipo HTML no se convierte en una segunda aplicación de producción ni define
@@ -809,8 +851,10 @@ estado de sincronización, fecha de generación y versión del formato.
   selección activa.
 - **Sector**: Subdivisión identificada dentro de una parcela; tiene número único por parcela,
   geometría, superficie, tipo y cultivo vigente opcional.
-- **Cultivo**: Elemento del catálogo con información de siembra, suelo, agua y enfermedades.
-- **Asignación de cultivo**: Relación temporal entre sector y cultivo con inicio, fin y temporada.
+- **Cultivo**: Entrada oficial o ficha personalizada del propietario con información de siembra,
+  suelo, agua, información agrícola y enfermedades.
+- **Asignación de cultivo**: Relación temporal vigente, planificada, finalizada o cancelada entre
+  sector y cultivo con inicio, fin y temporada.
 - **Temporada**: Periodo agrícola que agrupa asignaciones, labores y producción sin reescribir etapas
   anteriores.
 - **Labor**: Evento común con tipo, fecha, parcela, sector, cultivo aplicable, observaciones y estado.
@@ -862,6 +906,8 @@ estado de sincronización, fecha de generación y versión del formato.
   revisión contra `master.md` y no introduce una identidad visual alternativa.
 - **SC-014**: El 100 % de los flujos locales críticos permanece disponible cuando clima, mapa base
   remoto y AgroIA están indisponibles.
+- **SC-015**: El 100 % de los escenarios aprobados para cultivo personalizado, rotación futura,
+  “Otra labor”, tipo de suelo y tipo de tarea apícola conserva contexto, historial y estado offline.
 
 ## Assumptions
 
@@ -875,8 +921,9 @@ estado de sincronización, fecha de generación y versión del formato.
   esta especificación.
 - La aplicación utiliza español latinoamericano y las unidades métricas definidas por la constitución.
 - La información de cultivo es general e informativa; no sustituye diagnóstico profesional.
-- Los valores y umbrales agronómicos exactos de la calculadora se validarán antes de aceptar su
-  implementación, manteniendo los inputs, outputs y límites definidos aquí.
+- Los valores, clasificaciones de tipo de suelo y umbrales agronómicos exactos de la calculadora se
+  aprobarán en `contracts/irrigation-calculation.md` antes de implementar el motor; no se inventarán
+  coeficientes durante la codificación.
 - Mapa base, búsqueda, clima y AgroIA pueden requerir conectividad; geometrías, registros, historial,
   recordatorios y cálculos locales permanecen disponibles sin esos servicios.
 - Las fotografías se comprimen o administran sin alterar su función probatoria y sin perder su

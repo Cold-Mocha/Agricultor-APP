@@ -2,9 +2,18 @@
 
 **Estado:** fuente visual oficial para AgroCampo MVP Módulo 001  
 **Plataforma objetivo:** Android con Flutter y Material 3  
-**Fuente auditada:** `agrocampo-highfi.html`  
+**Evidencia visual auditada:** `agrocampo-highfi.html` y, para Physalis/Apicultura, `index.html`
 **Tema oficial del MVP:** claro  
 **Ámbito:** identidad, tokens, componentes, navegación, estados, pantallas y criterios de implementación visual. No define lógica de negocio ni amplía el alcance funcional.
+
+**Límite de autoridad:** `master.md` no es un módulo funcional. La única fuente de requisitos es
+`specs/001-agrocampo-android-mvp/spec.md`; este documento define exclusivamente cómo se presentan
+los flujos que esa especificación ya autoriza.
+
+**Regla obligatoria para el backlog:** toda tarea que cree o modifique UI, UX, componentes,
+colores, layouts, navegación visual, estados o accesibilidad debe citar la sección concreta de
+`master.md` que consumirá. Si la regla visual necesaria no existe, la tarea queda bloqueada hasta
+actualizar y aprobar este Design System; no se permite inventar una variante en código.
 
 Este documento formaliza el lenguaje visual ya presente en el prototipo de alta fidelidad. No reemplaza su identidad por una propuesta nueva. Cuando el HTML presenta un valor correcto y consistente, ese valor se conserva. Cuando presenta una brecha de accesibilidad, legibilidad o adaptación nativa, el documento registra el valor observado y establece una corrección canónica para Flutter.
 
@@ -144,7 +153,10 @@ Los colores de cultivo identifican categorías, no estados operativos. Siempre s
 | Sandía | `#16A34A` | color al 16 % | color al 34 % |
 | Melón | `#F59E0B` | color al 16 % | color al 34 % |
 | Maíz | `#CA8A04` | color al 16 % | color al 34 % |
-| Raíz | `#92400E` | color al 16 % | color al 34 % |
+| Papas / raíz | `#92400E` | color al 16 % | color al 34 % |
+| Physalis | `#D97706` | color al 16 % | color al 34 % |
+| Apicultura | `#B45309` | color al 16 % | color al 34 % |
+| Cultivo personalizado | `brand` `#2A6E54` | `green-soft` | `brand` al 24 % |
 
 No se permite reutilizar estos colores para “bien”, “error”, “pendiente” o “conectado”. En mapas, la etiqueta debe conservar blanco legible mediante relleno suficiente, contorno o scrim; el color translúcido por sí solo no garantiza contraste sobre toda fotografía aérea.
 
@@ -601,6 +613,17 @@ La barra inferior contiene exactamente cinco destinos:
 | Más | Nivel superior | Barra inferior | Abre opciones secundarias |
 | Perfil | Secundaria | Acción de Inicio | Vuelve a Inicio |
 | Configuración | Secundaria de Más | Más | Vuelve a Más |
+| Acceso | Fuera del shell | Inicio de aplicación sin sesión | Entra a la rama válida tras autenticar |
+| Parcelas | Secundaria de Inicio | Selector de parcela | Vuelve a Inicio con contexto confirmado |
+| Catálogo/ficha de cultivo | Secundaria contextual | Sector o cambio de cultivo | Vuelve al origen conservando selección |
+| Rotación futura | Secundaria del sector | Cambiar cultivo | Vuelve al sector sin cambiar el cultivo vigente |
+| Producción | Secundaria de Registrar | Cosecha | Tras guardar abre el sector |
+| Revisión apícola | Secundaria de Registrar | Sector apícola | Tras guardar abre el sector apícola |
+| Fotografías | Secundaria/contextual | Sector o labor | Vuelve al origen con adjunto persistido |
+| Recordatorios | Secundaria de Más | Más | Vuelve a Más |
+| Sincronización | Secundaria de Más | Más o indicador global | Vuelve al origen lógico |
+| Resolver conflicto | Secundaria de Sincronización | Conflicto abierto | Vuelve al estado de sincronización |
+| Exportar | Secundaria de Más | Más | Vuelve a Más tras completar, cancelar o fallar |
 
 ### Comportamiento Android
 
@@ -619,7 +642,7 @@ La barra inferior contiene exactamente cinco destinos:
 - **Objetivo:** responder “¿cómo está mi parcela y qué puedo hacer ahora?”.
 - **Jerarquía:** marca/perfil, título “Inicio”, hero climático, acceso a cuadrantes y acciones rápidas.
 - **Componentes:** app bar, hero, card navegable y grid de cuatro tiles.
-- **Información:** ubicación, temperatura, condición, hora de actualización, humedad ambiental y riesgo de helada.
+- **Información:** ubicación, temperatura, humedad ambiental, lluvia, pronóstico y hora de actualización.
 - **Acciones:** Ver cuadrantes, Registrar, Suelo, Riego y AgroIA.
 - **Estados:** clima cargando, sin datos, desactualizado y error; conexión/offline visible cuando corresponda.
 - **Regla:** el clima no desplaza las acciones esenciales si no carga; se muestra última actualización conocida.
@@ -641,7 +664,7 @@ La barra inferior contiene exactamente cinco destinos:
 - **Componentes:** mapa de 315 dp de referencia, contorno de parcela, polígonos, pictogramas, etiquetas y vértices.
 - **Información:** nombre y cultivo por cuadrante; selección actual.
 - **Acciones:** abrir cuadrante, seleccionar vértice y ajustar límites dentro del flujo previsto.
-- **Estados:** cargando, mapa sin conexión, imagen en caché, error y alternativa de lista.
+- **Estados:** cargando, mapa base disponible, base remota no disponible, geometría local, error y alternativa de lista.
 - **Regla:** la edición nunca depende exclusivamente de arrastre fino ni de color.
 
 ### Detalle sector
@@ -659,7 +682,8 @@ La barra inferior contiene exactamente cinco destinos:
 - **Objetivo:** registrar una labor agrícola manual asociada a cuadrante, cultivo y fecha.
 - **Jerarquía:** Paso 1 selección de cultivo, Paso 2 tipo/fecha, Paso 3 detalle condicional y acción Guardar.
 - **Componentes:** cards por paso, selector de sector, select, fecha, campos específicos, observaciones y botón primario.
-- **Información:** actividad de suelo, riego, fertilización, pesticidas, cultivo, cosecha, apicultura u otra, sin añadir nuevas categorías.
+- **Información:** suelo, riego, fertilización, control de enfermedades y plagas, siembra, poda,
+  cosecha, apicultura y Otra labor; el Design System no añade categorías distintas a la spec.
 - **Acción primaria:** Guardar actividad.
 - **Estados:** borrador, validación, guardando localmente, guardado pendiente, sincronizado y error recuperable.
 - **Regla:** sólo se muestran preguntas del tipo seleccionado; no se pierde información al cambiar accidentalmente de pantalla.
@@ -669,7 +693,7 @@ La barra inferior contiene exactamente cinco destinos:
 - **Objetivo:** ingresar manualmente valores del suelo para un cuadrante.
 - **Jerarquía:** cuadrante, grid de mediciones y Guardar medición.
 - **Componentes:** selector o contexto bloqueado, campos numéricos y botón primario.
-- **Información:** pH, humedad, temperatura, conductividad, N, P, K y fertilidad.
+- **Información:** pH, humedad, temperatura, conductividad, N, P y K.
 - **Estados:** valores iniciales, error de formato/rango, guardado local, pendiente y sincronizado.
 - **Regla:** cada valor mantiene unidad, teclado correcto y ayuda; no se presenta interpretación agronómica no validada.
 
@@ -678,8 +702,9 @@ La barra inferior contiene exactamente cinco destinos:
 - **Objetivo:** registrar parámetros de riego y mostrar un cálculo determinístico separado de cualquier interpretación IA.
 - **Jerarquía:** cuadrante, tipo, parámetros, resumen de cálculo y Guardar riego.
 - **Componentes:** selector, campos numéricos, card de cálculo y botón primario.
-- **Información:** tipo de riego, plantas, caudal, duración, presión, agua estimada y tiempo.
-- **Estados:** cálculo actualizado, dato inválido, fórmula pendiente de validación, guardado local, pendiente y sincronizado.
+- **Información:** tipo de riego, tipo de suelo, plantas, caudal, duración, humedad, temperatura,
+  disponibilidad climática, agua estimada y tiempo recomendado.
+- **Estados:** cálculo actualizado, dato inválido, regla agronómica no disponible, guardado local, pendiente y sincronizado.
 - **Regla:** el cálculo se etiqueta como determinístico; AgroIA nunca modifica silenciosamente sus valores.
 
 ### Historial
@@ -707,7 +732,7 @@ La barra inferior contiene exactamente cinco destinos:
 - **Objetivo:** reunir destinos secundarios sin sobrecargar la navegación primaria.
 - **Componentes:** cards para Historial agrícola, Respaldo Excel, Conexión y Opciones.
 - **Información:** descripción corta de cada destino y flujo de sincronización local → pendiente → sincronizado.
-- **Acciones:** abrir historial, exportar, revisar/alternar conexión en el prototipo y abrir configuración.
+- **Acciones:** abrir historial, exportar, revisar estado de sincronización/reintentar y abrir configuración.
 - **Regla:** conexión se presenta como estado y diagnóstico, no como interruptor ambiguo en producción.
 
 ### Perfil
@@ -715,15 +740,17 @@ La barra inferior contiene exactamente cinco destinos:
 - **Objetivo:** identificar a la persona propietaria y acceder a preferencias personales.
 - **Jerarquía:** resumen de perfil y tres grupos de ajustes.
 - **Componentes:** avatar, acción editar, filas de configuración, valores y chevrons.
-- **Información:** nombre, relación con parcela, ubicación, notificaciones, idioma, seguridad, tema, ayuda, contacto y privacidad.
-- **Acción primaria:** editar información cuando esté implementado dentro del alcance.
+- **Información:** nombre visible, dato de acceso para presentación, ubicación/preferencias personales
+  autorizadas y resumen de sincronización.
+- **Acción primaria:** editar perfil o cerrar sesión dentro del alcance aprobado.
 - **Regla:** no introducir empresas, trabajadores, roles ni ERP.
 
 ### Configuración
 
 - **Objetivo:** exponer ajustes generales y límites funcionales del producto.
-- **Componentes:** banner informativo, card de pendientes de definición y control de conexión del prototipo.
-- **Información:** uso personal y elementos agronómicos todavía no validados.
+- **Componentes:** banner informativo y filas para permisos/estado de plataforma que tengan un
+  resultado real en el MVP.
+- **Información:** uso personal, permisos de notificación y acceso al diagnóstico de sincronización.
 - **Estados:** normal, offline, pendientes de sincronización y error.
 - **Regla:** un ajuste no simula una capacidad inexistente; toda opción debe tener resultado real dentro del MVP.
 
@@ -735,6 +762,78 @@ La barra inferior contiene exactamente cinco destinos:
 - **Acción:** seleccionar el cultivo y confirmar el cambio de temporada según el flujo funcional.
 - **Estados:** actual, seleccionado, guardado local, pendiente, sincronizado y error.
 - **Regla:** se comunica explícitamente que el historial anterior se conserva.
+
+### Acceso
+
+- **Objetivo:** autenticar al agricultor sin mostrar datos privados antes de validar la sesión.
+- **Componentes:** marca, campos de acceso, botón primario, progreso, error recuperable y explicación offline.
+- **Estados:** inicial, validando, credenciales inválidas, sin red en primer acceso y sesión recuperada.
+- **Regla:** la pantalla no simula acceso offline si el dispositivo nunca validó una sesión.
+
+### Parcelas
+
+- **Objetivo:** seleccionar, crear, editar, archivar o eliminar de forma segura el contexto territorial.
+- **Componentes:** selector activo, cards de parcela, formulario, resumen geométrico y diálogo destructivo.
+- **Estados:** vacío, activa, archivada, borrador, error, pendiente y eliminación impedida por historial.
+- **Regla:** archivo y eliminación se diferencian por copy, consecuencia y confirmación; no dependen sólo del color.
+
+### Catálogo y ficha de cultivo
+
+- **Objetivo:** consultar el catálogo inicial y crear/editar una ficha personalizada cuando corresponda.
+- **Componentes:** buscador, cards con pictograma/nombre, ficha informativa, formulario y activo genérico.
+- **Información:** siembra, suelo, agua, información agrícola y enfermedades, incluidos estados “sin información”.
+- **Estados:** catálogo local, vacío de búsqueda, ficha oficial sólo lectura, ficha personalizada editable y error.
+- **Regla:** un cultivo personalizado usa el tratamiento visual canónico genérico; no inventa color ni SVG propio.
+
+### Rotación futura
+
+- **Objetivo:** planificar el próximo cultivo sin confundirlo con el cultivo vigente.
+- **Componentes:** card del cultivo actual, selector de próximo cultivo, fecha efectiva y resumen de planificación.
+- **Estados:** sin planificación, planificada, cancelada, conflicto de fechas, pendiente y sincronizada.
+- **Regla:** “Vigente” y “Planificado para [fecha]” siempre aparecen como etiquetas textuales separadas.
+
+### Producción
+
+- **Objetivo:** registrar una cosecha con cantidad, unidad, calidad, temporada y observaciones.
+- **Componentes:** contexto bloqueado, campos métricos, selector de calidad textual y confirmación local.
+- **Estados:** borrador, inválido, guardando local, pendiente, sincronizado y error.
+- **Regla:** no muestra comparativas calculadas no exigidas; conserva el contexto para comparativas futuras.
+
+### Revisión apícola
+
+- **Objetivo:** registrar el tipo de tarea y la revisión de un sector apícola.
+- **Componentes:** contexto apícola, tipo de tarea, fecha, apicultor descriptivo, colmenas y campos de reina,
+  postura, enfermedades/plagas, alimentación, alza, observaciones y fotos.
+- **Estados:** sector incompatible, borrador, inválido, guardado local, pendiente, sincronizado y error.
+- **Regla:** “apicultor” es un dato del registro, nunca una cuenta, trabajador o rol visual.
+
+### Fotografías
+
+- **Objetivo:** adjuntar evidencia desde cámara o galería sin perderla offline.
+- **Componentes:** selector de origen, preview, descripción, progreso de guardado/carga y acción cancelar/eliminar.
+- **Estados:** permiso, cancelada, preview, local pendiente, subiendo, sincronizada y error recuperable.
+- **Regla:** confirmar “adjunta localmente” antes de “respaldada”; una miniatura rota nunca representa éxito.
+
+### Recordatorios
+
+- **Objetivo:** crear y gestionar avisos locales vinculados opcionalmente a un sector.
+- **Componentes:** lista, formulario de fecha/hora/tipo, estado, permiso y acciones completar/cancelar.
+- **Estados:** programado, vencido, completado, cancelado, permiso denegado, pendiente y sincronizado.
+- **Regla:** permiso denegado no convierte el recordatorio en error ni oculta el registro.
+
+### Sincronización y conflictos
+
+- **Objetivo:** explicar respaldo, pendientes, errores y decisiones de conflicto sin lenguaje técnico innecesario.
+- **Componentes:** resumen global, lista por estado, última confirmación, reintento y comparación local/remota.
+- **Estados:** offline, pendiente, sincronizando, sincronizado, error, conflicto y resolución pendiente.
+- **Regla:** la comparación identifica origen/fecha/diferencias con texto; ninguna versión parece descartada antes de confirmar.
+
+### Exportar
+
+- **Objetivo:** generar y guardar el `.xlsx` local con estado honesto del snapshot.
+- **Componentes:** alcance resumido, progreso, selector Android, éxito, cancelación y error de espacio/escritura.
+- **Estados:** sin datos, preparando, validando, seleccionando destino, completada, cancelada y error.
+- **Regla:** cancelar no se presenta como fallo y un archivo parcial nunca recibe confirmación de éxito.
 
 ## Offline UX
 
@@ -823,9 +922,11 @@ Los mensajes indican resultado, ubicación del dato y siguiente paso. No se util
 | SVG de cultivos | Assets vectoriales locales | Mantener colores y proporciones; semántica según contexto |
 | `.map`, `.quad`, `.vertex` | Mapa/overlay/polígono con controles accesibles | Geometría real, blanco táctil y alternativa textual |
 
-### Gestión de estado recomendada
+### Contrato visual de estado
 
-**Riverpod** es la recomendación principal para el MVP porque permite separar tema, navegación, selección de cuadrante, borradores, conectividad, outbox, sincronización y estados asíncronos sin acoplarlos a los widgets. Provider es válido sólo si ya existe una decisión de arquitectura explícita; BLoC es una alternativa para equipos que adopten eventos/estados formalmente. No se mezclan varios patrones en una misma feature.
+Este Design System no selecciona librería ni arquitectura de estado. La capa visual recibe estados
+semánticos explícitos y renderiza sus variantes canónicas; la decisión técnica correspondiente vive
+únicamente en `specs/001-agrocampo-android-mvp/plan.md` y `research.md`.
 
 La capa visual consume estados semánticos, no banderas ambiguas. Un registro distingue guardado local, pendiente, sincronizando, sincronizado y error. La vista no debe inferir “sincronizado” sólo porque existe conexión.
 
@@ -990,4 +1091,3 @@ Estas mejoras corrigen presentación, accesibilidad, feedback y adaptación resp
 28. Cada cambio visual debe probarse al menos en teléfono estrecho, teléfono grande y landscape, además de contraste y semántica.
 29. Las comparaciones visuales usan `agrocampo-highfi.html` como referencia de identidad y este documento como autoridad normativa.
 30. Si aparece una necesidad no cubierta, se documenta y aprueba aquí antes de implementarla.
-

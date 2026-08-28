@@ -7,6 +7,10 @@
 
 Every visual decision MUST **Implementar según master.md**. This contract defines how code consumes that authority; it does not repeat or reinterpret its values.
 
+Every backlog item that affects UI, UX, components, colors, layout, visual navigation, states or
+accessibility MUST name the exact `master.md` section in its checklist description. Missing visual
+traceability is a blocking defect, not an implementation detail to resolve locally.
+
 If a required visual role, component variant, legal attribution or accessible behavior is absent from `master.md`, implementation of that visual element stops until `master.md` is updated and approved. A feature MUST NOT invent a local fallback style.
 
 ## 2. Token ownership
@@ -108,7 +112,9 @@ Each affected screen is verified through:
 - keyboard, safe area and Android back behavior;
 - offline, pending, reconnection, error and retry states.
 
-The mandatory comparison set is Inicio, Sectores, Detalle, Registrar, AgroIA and Perfil, plus any later screen explicitly required by `master.md`.
+The mandatory comparison set is every screen under `master.md` → **Screens**, including Acceso,
+Parcelas, Catálogo/ficha, Rotación futura, Producción, Revisión apícola, Fotografías,
+Recordatorios, Sincronización/conflictos and Exportar.
 
 ## 10. Acceptance
 

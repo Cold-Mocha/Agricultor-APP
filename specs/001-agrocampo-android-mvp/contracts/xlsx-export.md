@@ -38,12 +38,12 @@ No password, token, provider key, signed URL or exact local file path is exporte
 |---|---|
 | `Parcelas` | `parcel_id`, nombre, descripción, ubicación, superficie, estado, fechas, `sync_status` |
 | `Sectores` | `sector_id`, `parcel_id`, número, nombre, tipo, forma, superficie, estado, `sync_status` |
-| `Cultivos` | `crop_id`, código, nombre, categoría, versión de contenido |
+| `Cultivos` | `crop_id`, propietario cuando aplique, origen oficial/personalizado, código, nombre, categoría, información propia y versión de contenido |
 | `Temporadas` | `season_id`, `parcel_id`, nombre, inicio, fin, estado, `sync_status` |
-| `Asignaciones` | `assignment_id`, `sector_id`, `crop_id`, `season_id`, desde, hasta, `sync_status` |
+| `Asignaciones` | `assignment_id`, `sector_id`, `crop_id`, `season_id`, estado vigente/planificado/finalizado/cancelado, desde, hasta, `sync_status` |
 | `LABORES` | `labor_id`, `parcel_id`, `sector_id`, `season_id`, `assignment_id`, tipo, fecha, estado, revisión, observaciones, `sync_status` |
 | `Suelo` | `labor_id`, indicadores, columnas de unidad y `sync_status` |
-| `Riegos` | `labor_id`, tipo, plantas, caudal/unidad, duración, litros, clima usado, versión de algoritmo, limitaciones, `sync_status` |
+| `Riegos` | `labor_id`, tipo de riego, tipo de suelo, plantas, caudal/unidad, duración, litros, clima usado, regla/versión de algoritmo, limitaciones, `sync_status` |
 | `Producción` | `labor_id`, cantidad, unidad, calidad y `sync_status` |
 
 Apicultura, fotografías y recordatorios may be included in separate sheets only if required by the approved export capability when tasks are generated; they cannot replace any minimum sheet above. Photographs export metadata/relationship only, never image bytes or signed URLs.

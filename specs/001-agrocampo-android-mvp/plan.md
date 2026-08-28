@@ -1,6 +1,6 @@
 # Implementation Plan: AgroCampo Android MVP - Módulo 001
 
-**Branch**: `feature/v1.0` | **Feature**: `002-agrocampo-android-mvp` | **Date**: 2026-08-28 | **Spec**: [spec.md](./spec.md)
+**Branch prevista**: `codex/001-agrocampo-android-mvp` | **Feature canónica**: `001-agrocampo-android-mvp` | **Date**: 2026-08-28 | **Spec**: [spec.md](./spec.md)
 
 **Input**: `spec.md`, `master.md`, `CONTEXTO.md`, `AGENTS.md` y la constitución vigente.
 
@@ -28,7 +28,27 @@ La arquitectura será modular por feature, con capas de presentación, dominio y
 
 **Constraints**: Offline First no negociable; persistencia local anterior a todo intento remoto; español latinoamericano y unidades métricas; tema claro único; Design System exclusivo de `master.md`; cálculo crítico determinista; claves privadas sólo server-side; degradación aislada de mapa base, clima, FCM y AgroIA; sin valores visuales hardcodeados.
 
-**Scale/Scope**: Un agricultor propietario autenticado por cuenta, múltiples parcelas, las 17 capacidades de la especificación y la carga de referencia definida por SC-012. No incluye trabajadores, roles, organizaciones, inventario, ERP, iOS, IoT, automatización física, IA avanzada ni análisis fotográfico.
+**Scale/Scope**: Un agricultor propietario autenticado por cuenta, múltiples parcelas, las 17
+capacidades y 91 requisitos funcionales de la especificación, incluida la extensión controlada de
+cultivos personalizados y “Otra labor”, más la carga de referencia definida por SC-012. No incluye
+trabajadores, roles, organizaciones, inventario, ERP, iOS, IoT, automatización física, IA avanzada
+ni análisis fotográfico.
+
+### Decisiones técnicas finales
+
+| Tema | Decisión única vinculante |
+|---|---|
+| Cliente | Una aplicación Android Flutter 3.47.0 estable / Dart 3.13.0 en la raíz del repositorio. |
+| Estado e inyección | Riverpod exclusivamente; no Provider, ChangeNotifier ni BLoC paralelos. |
+| Navegación | `go_router` con `StatefulShellRoute.indexedStack` y cinco ramas gobernadas por `master.md`. |
+| Estructura | Feature-first en `lib/features/**` con `presentation -> domain <- data`; infraestructura compartida en `lib/core/**`. |
+| Fuente operativa | Drift/SQLite local; la UI nunca lee Supabase directamente. |
+| Backend | Supabase Auth/PostgreSQL/Storage/Edge Functions con RLS por `owner_id`. |
+| Sincronización | Outbox transaccional, RPC idempotente, pull por cursor monotónico y conflictos explícitos. |
+| Entidades | Nombres de [data-model.md](./data-model.md); `Sector` es dominio y “Cuadrante” sólo copy visual autorizado. |
+| Cultivos | Seed oficial inmutable más fichas `custom` aisladas por propietario; asignaciones `planned|active|ended|cancelled`. |
+| Riego | Motor local versionado según [contracts/irrigation-calculation.md](./contracts/irrigation-calculation.md), sin IA ni ET avanzada. |
+| UI/UX | `master.md` es la única autoridad visual; ninguna tarea visual inicia sin referencia exacta. |
 
 ## Constitution Check
 
@@ -56,7 +76,7 @@ La arquitectura será modular por feature, con capas de presentación, dominio y
 ### Documentation (this feature)
 
 ```text
-specs/002-agrocampo-android-mvp/
+specs/001-agrocampo-android-mvp/
 ├── plan.md
 ├── research.md
 ├── data-model.md
@@ -65,9 +85,10 @@ specs/002-agrocampo-android-mvp/
 │   ├── design-system-consumption.md
 │   ├── external-services.md
 │   ├── navigation.md
+│   ├── irrigation-calculation.md
 │   ├── sync-protocol.md
 │   └── xlsx-export.md
-└── tasks.md                         # Generado posteriormente por speckit-tasks
+└── tasks.md                         # Backlog canónico y matriz de trazabilidad
 ```
 
 ### Source Code (repository root)
@@ -293,7 +314,8 @@ El protocolo completo está en [contracts/sync-protocol.md](./contracts/sync-pro
 - Las FKs incluyen propietario cuando corresponda para impedir referencias cruzadas.
 - RPC de push y pull aplican protocolo, versionado e idempotencia dentro de transacciones.
 - Storage usa bucket privado y rutas inmutables por propietario/fotografía/hash; metadata se sincroniza después de confirmar el archivo.
-- El catálogo de cultivos es de sólo lectura, sembrado por migración y empaquetado localmente para uso offline.
+- El seed oficial de cultivos es de sólo lectura y se empaqueta localmente; las fichas
+  personalizadas son owner-scoped, local-first y protegidas por RLS.
 - Edge Functions actúan como proxy seguro para clima y Gemini y como emisor autorizado de FCM. Ninguna clave privada se distribuye en el APK.
 - La clave publicable Supabase puede vivir en configuración de build; la seguridad depende de RLS y validación server-side, no de ocultarla.
 
@@ -373,39 +395,42 @@ Los límites y fallbacks están en [contracts/external-services.md](./contracts/
 
 ### Phase 1 - Foundation and visual architecture
 
-1. Fijar toolchain Android, identificador de aplicación, configuración por entorno y política de secretos.
-2. Crear estructura modular, composición raíz, manejo de errores y convenciones de pruebas.
-3. Implementar tokens, ThemeData Material 3 y biblioteca base consumiendo únicamente `master.md`.
-4. Crear shell `go_router`, cinco ramas, restauración y guard de sesión.
-5. Integrar Supabase Auth, espacio local por propietario y perfil mínimo.
+1. Aprobar antes de código la clasificación, coeficientes, límites, redondeo y veinte vectores del
+   contrato agronómico de riego; cerrar también el gate contractual de Weather antes de integrar el proveedor.
+2. Fijar toolchain Android, identificador de aplicación, configuración por entorno y política de secretos.
+3. Crear estructura modular, composición raíz, manejo de errores y convenciones de pruebas.
+4. Implementar tokens, ThemeData Material 3 y biblioteca base consumiendo únicamente `master.md`.
+5. Crear shell `go_router`, cinco ramas, restauración y guard de sesión.
+6. Integrar Supabase Auth, espacio local por propietario y perfil mínimo.
 
 **Validación de fase**: build Android limpio; theme audit sin literales visuales fuera de `app/theme`; navegación/back/restauración probados; acceso online inicial y reapertura offline aislada por propietario; revisión visual base contra `master.md`.
 
 ### Phase 2 - Persistence and synchronization kernel
 
-1. Crear esquema Drift, DAOs, migraciones y fixtures.
-2. Implementar repositorios local-first y transacción entidad+outbox.
-3. Crear esquema Supabase, constraints, índices, RLS y Storage privado.
-4. Implementar RPC idempotente, pull por cursor, backoff, scheduler y estado observable.
-5. Implementar conservación/resolución de conflictos y pruebas de interrupción.
+1. Crear tablas técnicas Drift, migraciones y primitivas de repositorio local-first.
+2. Implementar un corte vertical mínimo de `Parcel`: Drift + outbox + Supabase/RLS + RPC push/pull.
+3. Probar pérdida de ACK, reinicio, reintento y aislamiento antes de ampliar el modelo territorial.
+4. Generalizar cursor, backoff, scheduler, estado observable y resolución de conflictos sobre ese corte.
+5. Integrar Storage privado sólo cuando la infraestructura de fotografías lo requiera en Phase 5.
 
 **Validación de fase**: escritura visible tras reinicio offline; 100 operaciones sin pérdida/duplicado; aislamiento RLS; ACK perdido idempotente; conflicto conserva ambas versiones; UI diferencia guardado local y respaldo según `master.md`.
 
 ### Phase 3 - Parcelas, mapa, sectores y cultivos
 
-1. Implementar parcela activa, CRUD/archivo y catálogo local de cultivos.
+1. Implementar parcela activa, creación/edición/eliminación segura/archivo y completar el modelo territorial.
 2. Integrar GPS y permisos.
 3. Implementar búsqueda conectada, dibujo/edición de polígonos y cálculo local.
-4. Implementar sectores dentro de parcela, asignación temporal y temporadas.
-5. Añadir lista textual equivalente al mapa y sincronización de geometrías.
+4. Implementar sectores, seed oficial, cultivos personalizados, ficha propia y asignaciones
+   vigentes/planificadas para rotación futura.
+5. Añadir lista textual equivalente al mapa y sincronización de geometrías/rotaciones.
 
 **Validación de fase**: user story 1 completa; geometrías sobreviven offline/reinicio; sector no puede cruzar propietario/parcela; catálogo disponible offline; mapa falla sin bloquear lista/edición local; pantallas conformes a `master.md`.
 
 ### Phase 4 - LABORES, suelo, riego e historial
 
-1. Implementar agregado común `Labor` y formularios por tipo.
+1. Implementar agregado común `Labor`, los tipos especializados y “Otra labor” descriptiva.
 2. Añadir mediciones de suelo con rangos/unidades.
-3. Implementar riego, fórmula híbrida versionada y snapshot climático opcional.
+3. Implementar riego con tipo de suelo, fórmula híbrida versionada aprobada y snapshot climático opcional.
 4. Construir historial filtrable por parcela, sector, cultivo y temporada.
 5. Verificar atomicidad y sincronización de especializaciones.
 
@@ -413,7 +438,7 @@ Los límites y fallbacks están en [contracts/external-services.md](./contracts/
 
 ### Phase 5 - Producción, apicultura, fotografías y recordatorios
 
-1. Implementar producción/cosecha y revisión apícola como especializaciones.
+1. Implementar producción/cosecha y revisión apícola con tipo de tarea como especializaciones.
 2. Integrar cámara/galería, almacenamiento privado, hash y pipeline de upload.
 3. Implementar recordatorios Drift y programación local.
 4. Incorporar recepción FCM, tokens de dispositivo y rutas seguras.
@@ -437,7 +462,7 @@ Los límites y fallbacks están en [contracts/external-services.md](./contracts/
 4. Probar upgrade/migraciones, backup operativo, recuperación y firma Android.
 5. Ejecutar build reproducible y checklist de distribución Android.
 
-**Validación de fase**: todos los gates constitucionales en PASS; SC-003/004/006/007/010/012/013/014 medidos; cero funcionalidad excluida; análisis y pruebas sin fallos; AAB/APK release instalable en dispositivos de referencia.
+**Validación de fase**: todos los gates constitucionales en PASS; SC-003/004/006/007/010/012/013/014/015 medidos; cero funcionalidad excluida; análisis y pruebas sin fallos; AAB/APK release instalable en dispositivos de referencia.
 
 ## Technical Risks
 
@@ -447,6 +472,7 @@ Los límites y fallbacks están en [contracts/external-services.md](./contracts/
 | Restricciones Android/OEM en background | Sync o avisos tardíos | Guardado local inmediato, triggers de foreground, WorkManager oportunista y comunicación honesta. |
 | Sesión revocada durante offline | Datos locales válidos pero sin autorización remota | Aislar por propietario, refrescar antes de push y conservar pendientes al pedir reautenticación. |
 | Divergencia de cálculos numéricos | Resultados de riego o superficie inconsistentes | Escala fija, fórmula versionada, fixtures aprobados y revalidación server-side. |
+| Regla agronómica sin aprobación | Coeficientes o clasificación de suelo inventados durante implementación | `irrigation-calculation.md` y veinte vectores aprobados son gate T001; el motor no inicia antes. |
 | Mapa/proveedor sin conexión o cuota | No hay teselas/búsqueda | Geometría independiente, lista textual y edición local; restricciones/cuotas monitorizadas. |
 | Crecimiento de fotografías y outbox | Almacenamiento, batería y datos móviles | Compresión controlada, hash, lotes, backoff y visibilidad de uso; sin purga destructiva en MVP. |
 | RLS o RPC incompletos | Exposición entre propietarios | Deny-by-default, owner_id, pruebas A/B/anon y revisión de cada nueva tabla/función. |
@@ -456,9 +482,10 @@ Los límites y fallbacks están en [contracts/external-services.md](./contracts/
 
 ## Definition of Architectural Done
 
-El plan puede pasar a `$speckit-tasks` cuando:
+El plan puede pasar a ejecución del backlog cuando:
 
-- no exista ningún marcador de decisión pendiente en los artefactos;
+- no exista ninguna decisión técnica pendiente y los dos gates pre-implementación estén asignados
+  como las primeras tareas bloqueantes;
 - cada capability tenga ubicación de módulo, entidad y estrategia de prueba;
 - toda ruta visual dependa del contrato de `master.md` y ningún plan proponga valores alternativos;
 - el modelo local/remoto, outbox, cursor, conflictos y Storage estén definidos;
@@ -467,4 +494,6 @@ El plan puede pasar a `$speckit-tasks` cuando:
 
 ## Complexity Tracking
 
-No hay violaciones constitucionales ni excepciones de arquitectura que registrar.
+No hay violaciones constitucionales ni excepciones de arquitectura. Permanecen dos gates explícitos
+que no son decisiones técnicas abiertas: aprobación agronómica del contrato de riego y verificación
+vigente de licencia/atribución del proveedor climático; ambos bloquean su implementación respectiva.

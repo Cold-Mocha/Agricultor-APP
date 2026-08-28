@@ -29,11 +29,17 @@ Labels, order, icons and visual behavior MUST **Implementar según master.md**. 
 | `parcelMap` | `/sectores/parcela/:parcelId/mapa` | Sectores | valid parcel | Returns to Sectores without reset. |
 | `sectorDetail` | `/sectores/:sectorId` | Sectores/list/map | valid sector and its parcel | Returns to logical origin. |
 | `cropChange` | `/sectores/:sectorId/cultivo` | Sector detail | valid sector | Confirm returns to updated sector. |
+| `cropCatalog` | `/sectores/cultivos` | Sector/crop flow | owner | Returns with selection/search preserved. |
+| `customCropForm` | `/sectores/cultivos/nuevo` or `/:cropId/editar` | Crop catalog | owner and custom crop when editing | Returns to catalog/detail after local save. |
+| `cropRotation` | `/sectores/:sectorId/rotacion` | Sector detail | valid sector | Returns without changing active crop before effective date. |
 | `sectorHistory` | `/sectores/:sectorId/historial` | Sector detail | valid sector | Returns to sector with filters/scroll. |
 | `register` | `/registrar` | Shell branch 2 | optional parcel/sector query | Context is visible and editable only through allowed selection. |
 | `soilForm` | `/registrar/suelo` | Inicio, sector or Registrar | parcel and sector | Successful local save opens sector. |
 | `irrigationForm` | `/registrar/riego` | Inicio, sector or Registrar | parcel and sector | Successful local save opens sector. |
 | `laborForm` | `/registrar/labor/:laborType` | Registrar/context | valid MVP labor type | Successful local save opens sector. |
+| `productionForm` | `/registrar/produccion` | Registrar/context | agricultural sector and crop | Successful local save opens sector. |
+| `apiaryForm` | `/registrar/apicultura` | Registrar/context | apiary sector | Successful local save opens apiary sector. |
+| `photoAttach` | `/registrar/foto` | Sector or labor | valid local target | Successful local attach returns to target. |
 | `agroAi` | `/agroia` | Shell branch 3 or sector | optional authorized context | Preserves context/thread. |
 | `more` | `/mas` | Shell branch 4 | owner | Opens approved secondary options. |
 | `history` | `/mas/historial` | Más | optional filters | Returns to Más; contextual route retains logical origin. |
@@ -43,7 +49,7 @@ Labels, order, icons and visual behavior MUST **Implementar según master.md**. 
 | `export` | `/mas/exportar` | Más | owner | Returns to Más after success/cancel/error. |
 | `settings` | `/mas/configuracion` | Más | owner | Returns to Más. |
 
-Production, apiary and photo entry use the compatible `laborForm`/sector routes; they do not add top-level destinations.
+Production, apiary and photo entry remain contextual secondary routes; they do not add top-level destinations.
 
 ## 3. Guards and resolution
 
@@ -54,6 +60,8 @@ Production, apiary and photo entry use the compatible `laborForm`/sector routes;
 5. Route entity belongs to another owner: reject and return to a safe branch root without revealing existence.
 6. Archived parcel: history/detail may open; new record routes reject it.
 7. Wrong sector type: apiary form rejects agricultural sectors and redirects to sector detail with explanation.
+8. Official crop: editable route is rejected; custom crop from another owner is not disclosed.
+9. Planned rotation overlaps another plan or precedes allowed effective date: preserve draft and reject confirmation.
 
 ## 4. Context rules
 
@@ -99,6 +107,8 @@ No notification creates a sixth destination or bypasses guards.
 - independent branch stacks and scroll/filter preservation;
 - contextual register success returns to sector;
 - crop change and history return contracts;
+- official/custom crop guards, custom edit and planned-rotation return contracts;
+- production, apiary and photo contextual return contracts;
 - owner/parcel switch invalidation;
 - process restoration plus Draft recovery;
 - Android predictive back and cancelable abandonment;

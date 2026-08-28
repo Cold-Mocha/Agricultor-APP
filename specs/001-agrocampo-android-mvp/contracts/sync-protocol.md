@@ -53,7 +53,10 @@ Each domain record publishes `pending`, `syncing`, `synced`, `error` or `conflic
 | `lastErrorCode` | local | Stable classification. |
 | `createdAt` | yes | Local ordering only, not conflict authority. |
 
-Aggregate payload includes root and specialization together. Examples: soil = labor + soil measurement; irrigation = labor + irrigation record + estimate; harvest = labor + production; apiary = labor + inspection.
+Aggregate payload includes root and specialization together. Examples: custom crop = owner-scoped
+catalog entry; rotation = planned/active assignment transition; soil = labor + soil measurement;
+irrigation = labor + irrigation record + estimate; harvest = labor + production; apiary = labor +
+inspection. Official seed crops never accept client mutation.
 
 ## 4. Scheduling and triggers
 

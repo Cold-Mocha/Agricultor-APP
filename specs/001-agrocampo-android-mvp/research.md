@@ -1,8 +1,11 @@
 # Phase 0 Research: AgroCampo Android MVP - Módulo 001
 
 **Fecha de consolidación**: 2026-08-28  
-**Estado**: decisiones técnicas cerradas para planificación; no quedan marcadores abiertos.  
-**Autoridades funcionales y visuales**: [spec.md](./spec.md), [master.md](../../master.md), [CONTEXTO.md](../../CONTEXTO.md), [AGENTS.md](../../AGENTS.md) y constitución 1.0.0.
+**Estado**: decisiones técnicas cerradas; quedan únicamente gates de aprobación agronómica y
+verificación contractual externa, ambos ubicados antes de su implementación.  
+**Autoridad funcional**: [spec.md](./spec.md) y constitución 1.0.0.  
+**Autoridad visual**: [master.md](../../master.md). `CONTEXTO.md`, `AGENTS.md`, prototipos y reportes
+son evidencia o gobernanza de repositorio, nunca fuentes funcionales adicionales.
 
 ## Baseline verificado
 
@@ -26,7 +29,21 @@ El SDK disponible en el entorno fija Flutter 3.47.0 estable, Dart 3.13.0, Androi
 | Sesión segura | `flutter_secure_storage` 11.0.0 | Backend Android Keystore; contraseña nunca persistida. |
 | XLSX | `excel_community` 2.3.0 | Aislar detrás de contrato y fijar versión exacta. |
 
-Fuentes de baseline: [Riverpod](https://pub.dev/packages/flutter_riverpod), [go_router](https://pub.dev/packages/go_router), [Drift](https://pub.dev/packages/drift), [drift_dev](https://pub.dev/packages/drift_dev), [Supabase Flutter](https://pub.dev/packages/supabase_flutter), [Google Maps Flutter](https://pub.dev/packages/google_maps_flutter), [geolocator](https://pub.dev/packages/geolocator), [Firebase Core](https://pub.dev/packages/firebase_core), [Firebase Messaging](https://pub.dev/packages/firebase_messaging), [notificaciones locales](https://pub.dev/packages/flutter_local_notifications), [Workmanager](https://pub.dev/packages/workmanager), [connectivity_plus](https://pub.dev/packages/connectivity_plus), [image_picker](https://pub.dev/packages/image_picker), [flutter_svg](https://pub.dev/packages/flutter_svg), [Lucide](https://pub.dev/packages/lucide_icons_flutter), [almacenamiento seguro](https://pub.dev/packages/flutter_secure_storage) y [excel_community](https://pub.dev/packages/excel_community).
+Fuentes de baseline: [Flutter 3.47.0](https://docs.flutter.dev/release/release-notes/release-notes-3.47.0), [Dart 3.13](https://dart.dev/changelog), [Riverpod](https://pub.dev/packages/flutter_riverpod), [go_router](https://pub.dev/packages/go_router), [Drift](https://pub.dev/packages/drift), [drift_dev](https://pub.dev/packages/drift_dev), [Supabase Flutter](https://pub.dev/packages/supabase_flutter), [Google Maps Flutter](https://pub.dev/packages/google_maps_flutter), [geolocator](https://pub.dev/packages/geolocator), [Firebase Core](https://pub.dev/packages/firebase_core), [Firebase Messaging](https://pub.dev/packages/firebase_messaging), [notificaciones locales](https://pub.dev/packages/flutter_local_notifications), [Workmanager](https://pub.dev/packages/workmanager), [connectivity_plus](https://pub.dev/packages/connectivity_plus), [image_picker](https://pub.dev/packages/image_picker), [flutter_svg](https://pub.dev/packages/flutter_svg), [Lucide](https://pub.dev/packages/lucide_icons_flutter), [almacenamiento seguro](https://pub.dev/packages/flutter_secure_storage) y [excel_community](https://pub.dev/packages/excel_community).
+
+## Matriz comparativa y decisión de consolidación
+
+| Elemento | `001-agrocampo-mvp` retirado | `002-agrocampo-android-mvp` adoptado | Decisión consolidada |
+|---|---|---|---|
+| Spec | Casos de uso detallados y fórmula conceptual de riego; menor separación UI/función | 17 capacidades, 85 FR, estados y AC por capacidad | Mantener estructura de capacidades; integrar eliminación segura, reglas de riego y requisitos agrícolas omitidos, total 91 FR. |
+| Plan | Flutter 3.44.7, Provider, aplicación en `mobile/`, corte vertical de sync temprano | Flutter 3.47.0, Riverpod, raíz `lib/`, arquitectura y seguridad más maduras | Conservar stack/estructura adoptados y migrar el corte vertical de sync antes del desarrollo territorial completo. |
+| Tasks | Backlog por sprints, sync temprano y pruebas agronómicas exigentes | 80 tareas por historias, pero territorio/LABORES precedían el kernel sync y la trazabilidad llegaba al final | Regenerar por dependencias: gates → base → Parcel+sync vertical → territorio → LABORES → capacidades P2/P3; trazabilidad definida desde el inicio. |
+| Data Model | `crop_irrigation_rules`, enteros escalados y recomendación auditable | Modelo local/remoto, conflictos, fotos, recordatorios y seguridad más completo | Mantener modelo adoptado e integrar reglas versionadas, cultivos propios, rotaciones planificadas, Otra labor, tipo de suelo y tarea apícola. |
+| Research | Buen detalle de Drift, sync vertical y cálculo; Provider/estructura obsoletos | Decisiones por adapters, RLS, Riverpod, navegación y secretos más sólidas | Mantener D-001..D-018; incorporar el valor agrícola/táctico sin copiar versiones ni Provider. |
+| Contracts | Navegación simple, sync, XLSX y adapters | Contratos más completos de diseño, navegación, sync, proveedores y XLSX | Mantener contratos adoptados, añadir cálculo de riego y ampliar rutas/entidades sin duplicar reglas visuales. |
+
+Resultado: `specs/001-agrocampo-android-mvp/` es el único módulo funcional. El módulo anterior fue
+retirado después de migrar únicamente su valor compatible; no se conserva una segunda variante.
 
 ## D-001 — Arquitectura feature-first con capas pragmáticas
 
@@ -50,15 +67,15 @@ Fuentes de baseline: [Riverpod](https://pub.dev/packages/flutter_riverpod), [go_
 
 Se admite `riverpod_annotation`/generador porque Drift ya requiere `build_runner`; ambos generadores comparten pipeline. No se usan `StateNotifier`, `ChangeNotifier`, Provider, BLoC ni APIs experimentales de persistencia/mutation.
 
-**Rationale**: `master.md` lo recomienda y el producto combina streams locales, comandos asíncronos, permisos, outbox y servicios degradables. Los overrides permiten probar cada feature sin singletons.
+**Rationale**: El producto combina streams locales, comandos asíncronos, permisos, outbox y servicios degradables; Riverpod cubre esas necesidades con un único modelo de estado e inyección. Los overrides permiten probar cada feature sin singletons. `master.md` permanece limitado a decisiones visuales y de interacción.
 
 **Alternatives considered**:
 
-- Provider: válido en Flutter, pero exige más wiring y contradice la decisión principal ya contenida en `master.md`.
+- Provider: válido en Flutter, pero rechazado para mantener una única decisión de estado e inyección.
 - BLoC: aporta formalidad de eventos, pero añade ceremonia y un segundo modelo de estados.
 - Service locator/singletons: rechazado por dependencias ocultas y pruebas más frágiles.
 
-**Evidence**: [NotifierProvider](https://riverpod.dev/docs/providers/notifier_provider), [Provider overrides](https://riverpod.dev/docs/concepts2/overrides) y [code generation](https://riverpod.dev/docs/concepts/about_code_generation).
+**Evidence**: [Providers](https://riverpod.dev/docs/concepts2/providers), [Provider overrides](https://riverpod.dev/docs/concepts2/overrides) y [code generation](https://riverpod.dev/docs/concepts/about_code_generation).
 
 ## D-003 — go_router con cinco ramas persistentes
 
@@ -125,13 +142,19 @@ Toda escritura de un agregado y su operación outbox comparte transacción; sól
 
 **Decision**: UUID generado en Android y reutilizado en Drift, PostgreSQL, Storage y XLSX. Toda tabla privada remota contiene `owner_id` referenciado a `auth.users`; no se introducen granjas organizacionales, membresías, roles o trabajadores. Cada fila sincronizable lleva versión, timestamps UTC y tombstone.
 
-Drift conserva además versión remota y estado de sync. Catálogo de cultivos se empaqueta localmente y se siembra remoto como sólo lectura. Geometría local es una secuencia WGS84/GeoJSON; remoto usa PostGIS `geometry(Polygon,4326)`.
+Drift conserva además versión remota y estado de sync. El catálogo combina un seed oficial
+inmutable, empaquetado localmente, con fichas `custom` aisladas por `owner_id`. Las asignaciones de
+cultivo tienen estado `planned|active|ended|cancelled` para que una rotación futura no sustituya el
+contexto vigente antes de la fecha efectiva. Geometría local es una secuencia WGS84/GeoJSON;
+remoto usa PostGIS `geometry(Polygon,4326)`.
 
 **Rationale**: La propiedad directa habilita múltiples cuentas independientes sin implementar colaboración fuera del MVP. La geometría independiente del proveedor mantiene operación offline.
 
 **Alternatives considered**:
 
 - `farm_id` y memberships: rechazados por MR-002; pueden incorporarse en migración futura.
+- Convertir cultivos personalizados en catálogo global: rechazado; mezclaría datos de propietarios.
+- Guardar sólo el próximo cultivo sobre `sectors`: rechazado; perdería cancelaciones y planificación histórica.
 - IDs creados por servidor: rechazados porque bloquean creación offline.
 - Extensión espacial SQLite: rechazada; no se necesita para las consultas del MVP.
 
@@ -155,7 +178,7 @@ Pull usa cursor monotónico `change_seq`, no `updated_at`. Página y cursor se a
 
 ## D-009 — Conflictos explícitos y tombstones
 
-**Decision**: Comparar `baseVersion` con versión canónica. En divergencia se conservan snapshots local/remoto, se bloquea reemplazo automático y el agricultor elige qué versión conservar. Resolver crea una nueva operación. Los borrados usan `deleted_at`; parcelas con historial usan además `archived_at`. No hay purga física en MVP.
+**Decision**: Comparar `baseVersion` con versión canónica. En divergencia se conservan snapshots local/remoto, se bloquea reemplazo automático y el agricultor elige qué versión conservar. Resolver crea una nueva operación. Los borrados usan `deleted_at`; parcelas con historial usan además `archived_at`. Una parcela sin dependencias puede tombstonearse tras confirmación; no hay purga física inmediata en el MVP.
 
 **Rationale**: Cumple FR-078, SC-006 y trazabilidad sin depender de tiempo local. Tombstones alcanzan dispositivos atrasados.
 
@@ -306,16 +329,35 @@ Los controles obligatorios incluyen:
 - goldens y semántica para las pantallas exigidas por `master.md`;
 - fallbacks individuales de mapas, clima, FCM, Storage y Gemini;
 - XLSX reabierto, conteos/FKs y formula injection.
+- cultivo personalizado aislado por propietario y rotación planificada sin cambio prematuro;
+- “Otra labor”, tipo de suelo y tipo de tarea apícola en persistencia, sync, UI e historial.
 
 **Rationale**: Los fallos más costosos cruzan almacenamiento local, proceso Android y red; mocks unitarios no bastan. La conformidad visual también debe ser automatizable.
 
 **Evidence**: [Flutter testing overview](https://docs.flutter.dev/testing/overview), [integration tests](https://docs.flutter.dev/testing/integration-tests), [golden matcher](https://api.flutter.dev/flutter/flutter_test/matchesGoldenFile.html), [accessibility guidelines](https://api.flutter.dev/flutter/flutter_test/meetsGuideline.html) y [Supabase database testing](https://supabase.com/docs/guides/database/testing).
 
+## D-019 — Contrato agronómico versionado antes del motor de riego
+
+**Decision**: Migrar del módulo retirado la estructura `crop_irrigation_rules`: volumen base por
+planta y cultivo, ajustes simples/acotados de tipo de suelo, humedad, temperatura y clima, y tiempo
+derivado de volumen/caudal. Almacenar enteros escalados, ID/versión/fuente de regla, inputs,
+resultados y advertencias. `contracts/irrigation-calculation.md` define fórmula, unidades, redondeo,
+límites y evidencia; ninguna regla se activa sin revisión agronómica y veinte vectores aprobados.
+
+**Rationale**: La estructura vuelve el cálculo local, reproducible e histórico sin inventar
+coeficientes en código. El tipo de suelo se incorpora como entrada explícita solicitada.
+
+**Alternatives considered**:
+
+- Coeficientes hardcodeados durante implementación: rechazados por falta de fuente/aprobación.
+- Fórmula delegada a Weather o AgroIA: rechazada por constitución y funcionamiento offline.
+- Evapotranspiración avanzada: fuera del MVP.
+
 ## Resolved tensions
 
 | Tensión | Resolución vinculante |
 |---|---|
-| Flutter suele mostrar Provider, `master.md` recomienda Riverpod | Riverpod queda seleccionado y no se mezcla con otro patrón. |
+| Artefactos previos proponían Provider y el módulo adoptado Riverpod | Riverpod queda seleccionado y no se mezcla con otro patrón; `master.md` no decide arquitectura. |
 | Riverpod ofrece persistencia experimental, constitución exige Drift | Drift es la única persistencia operativa; no usar persistencia Riverpod. |
 | Material 3 genera defaults no normados | Construir roles/temas explícitos desde `master.md`; no seed/dynamic color. |
 | Guías adaptativas sugieren NavigationRail | Mantener barra inferior de cinco destinos; adaptar contenido solamente. |
@@ -326,4 +368,7 @@ Los controles obligatorios incluyen:
 
 ## Phase 0 outcome
 
-La arquitectura puede avanzar a diseño y tareas sin decisiones abiertas. Los gates de licencia/atribución y secretos son criterios de entrada de implementación/release con una salida predeterminada mediante adapters; no autorizan una variante visual ni amplían el MVP.
+La arquitectura puede avanzar al backlog sin decisiones técnicas abiertas. La aprobación agronómica
+del contrato de riego y la verificación vigente de licencia/atribución climática son tareas
+bloqueantes previas a esos componentes; no autorizan inventar valores, variantes visuales ni ampliar
+el MVP.

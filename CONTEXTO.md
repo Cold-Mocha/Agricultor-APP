@@ -1,8 +1,23 @@
 # Contexto Actual
 
-## Estado del proyecto
+## Autoridades del proyecto
 
-AgroCampo es una app estatica de alta fidelidad en `index.html`. No usa framework, build ni backend. Todo el HTML, CSS y JavaScript vive en un solo archivo para facilitar el despliegue directo en GitHub Pages.
+| Área | Fuente oficial |
+|---|---|
+| Requisitos y alcance Android | `specs/001-agrocampo-android-mvp/spec.md` |
+| Arquitectura, datos, contratos y backlog | `specs/001-agrocampo-android-mvp/` |
+| UI/UX y Design System | `master.md` |
+| Prototipo desplegado | `index.html` (evidencia no normativa) |
+| Prototipo visual auditado | `agrocampo-highfi.html` (evidencia no normativa) |
+
+No existe otro módulo funcional. Este contexto describe el prototipo y el estado del repositorio;
+no puede añadir requisitos a la especificación canónica.
+
+## Estado del prototipo
+
+La versión publicada es una app estática de alta fidelidad en `index.html`. No usa framework, build
+ni backend. El repositorio también contiene un scaffold Flutter inicial; todavía no representa las
+capacidades descritas por el backlog canónico.
 
 ## Pantallas principales
 
@@ -25,9 +40,11 @@ AgroCampo es una app estatica de alta fidelidad en `index.html`. No usa framewor
 - El cuadrante 8 corresponde a `Apicultura`; su ficha muestra colmenas, estado de la reina, estado sanitario, alimentacion y ultima revision en vez de metricas agricolas.
 - `Registrar` incluye campos agronomicos de suelo y campos especificos de apicultura.
 
-## Integracion futura
+## Relación con la implementación Android
 
-La app sigue sin backend. Google Maps queda preparado de la forma mas directa posible para un despliegue estatico: `state.googleMaps.apiKey` y `state.googleMaps.enabled` activan la carga de Google Maps JavaScript API y dibujan poligonos desde las coordenadas fijas de `state.mapSections[].gps`.
+El prototipo sigue sin backend. Google Maps web queda preparado sólo como demostración mediante
+`state.googleMaps`; la implementación Android, sus proveedores y persistencia se rigen por el plan
+y contratos canónicos, no por esta integración estática.
 
 Para pasar a mapa real editable falta definir coordenadas reales de la parcela, configurar una API key restringida al dominio de GitHub Pages y agregar backend o almacenamiento externo si se quiere guardar vertices editados por usuarios. Sin esa persistencia, los cambios de coordenadas solo pueden vivir como datos fijos en `index.html`.
 
@@ -41,4 +58,6 @@ La URL publicada es `https://cold-mocha.github.io/Agricultor-APP/`. GitHub Pages
 - `agrocampo-acceptance.test.js`: validaciones de comportamiento, textos y estructura.
 - `assets/icons/`: iconos SVG de cultivos.
 - `ImagenSuperior.png`: imagen base del mapa.
-- `AGENTS.md`: guia de contribucion para futuros cambios.
+- `specs/001-agrocampo-android-mvp/`: única fuente funcional Android.
+- `master.md`: Design System oficial independiente.
+- `AGENTS.md`: guía de contribución y separación entre prototipo/producto.

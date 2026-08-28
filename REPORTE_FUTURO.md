@@ -1,5 +1,9 @@
 # Reporte Futuro: Labores, Cuadrantes y Mapa Real
 
+> **Documento histórico/no normativo.** Registra decisiones y estado del prototipo `index.html`.
+> No es un módulo funcional ni añade alcance al MVP Android. La única fuente funcional oficial es
+> `specs/001-agrocampo-android-mvp/`; toda decisión visual vigente pertenece a `master.md`.
+
 ## Objetivo
 
 Este reporte consolida mejoras solicitadas para AgroCampo. La app actual ya esta publicada como sitio estatico en GitHub Pages; los hitos de labores, 8 cuadrantes, registro y apicultura quedaron implementados en `index.html` con pruebas de aceptacion actualizadas.

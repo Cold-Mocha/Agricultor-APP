@@ -32,8 +32,12 @@
 ## Notes
 
 - Validation completed on 2026-08-28.
-- 85 functional requirements are grouped into 17 independently reviewable capabilities; every
+- 91 functional requirements are grouped into 17 independently reviewable capabilities; every
   capability defines objective, behavior, states, required data and acceptance criteria.
+- The consolidation integrates custom crops, own crop information, planned rotation, Other labor,
+  soil type and apiary task type without adding a new functional module.
+- Agronomic coefficients and soil classification are deliberately governed by the blocking
+  approval contract/task, not left for implementation-time invention.
 - Visual requirements and UX presentation reference `master.md` without duplicating its tokens or
   component rules.
 - No `[NEEDS CLARIFICATION]` markers remain.

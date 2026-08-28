@@ -2,11 +2,20 @@
 
 ## Project Structure & Module Organization
 
-This repository contains a static AgroCampo prototype. The main application lives in `agrocampo-highfi.html`, with embedded HTML, CSS, and JavaScript. Acceptance checks are in `agrocampo-acceptance.test.js`. Visual assets are stored in `assets/icons/`, and `ImagenSuperior.png` is used by the map background. `README.md` is minimal; `AGENTES.md` contains an existing Spanish workflow for agent-driven edits.
+This repository contains the canonical AgroCampo Android MVP documentation, an initial Flutter
+scaffold at repository root and two static prototypes used only as evidence. The only functional
+source of truth is `specs/001-agrocampo-android-mvp/`; the only visual source is `master.md`.
+`index.html` is the GitHub Pages prototype, `agrocampo-highfi.html` is an audited visual/flow
+reference, and `agrocampo-acceptance.test.js` validates the deployed prototype. Neither HTML file
+defines production architecture or adds product scope.
 
 ## Build, Test, and Development Commands
 
-There is no package manifest or build step. Open `agrocampo-highfi.html` directly in a browser to run the prototype.
+For documentation-only changes, use the validation procedures in the canonical `quickstart.md` and
+run the Spec Kit consistency checks. The Flutter scaffold has `pubspec.yaml`; implementation commands
+and version gates are defined in `specs/001-agrocampo-android-mvp/quickstart.md`.
+
+Open `index.html` or `agrocampo-highfi.html` directly to inspect the static prototypes.
 
 Use these commands before finishing changes:
 
@@ -19,7 +28,10 @@ The first command validates required product behavior and copy. The second catch
 
 ## Coding Style & Naming Conventions
 
-Keep the prototype dependency-light and framework-free. Follow the existing single-file style: compact CSS, plain JavaScript functions, hash-based routing, and `data-*` attributes for event handling. Use two-space indentation when adding readable multi-line blocks, and keep Spanish UI copy consistent with the existing app. Prefer existing helpers such as `setRoute`, `renderIcons`, `escapeHtml`, `sectorPicker`, and `labelIrrigation` before adding new patterns.
+For prototype-only changes, keep HTML dependency-light and framework-free: compact CSS, plain
+JavaScript, hash routes and existing helpers. For the Android product, follow the canonical plan:
+Flutter/Dart, feature-first `presentation -> domain <- data`, Riverpod, go_router, Drift and
+Supabase. Do not infer Flutter behavior from prototype mock state.
 
 ## Testing Guidelines
 
@@ -31,4 +43,7 @@ The current Git history has only one short commit (`Innit`), so no detailed conv
 
 ## Agent-Specific Instructions
 
-Follow `AGENTES.md` for task analysis, scoped editing, and review. Do not add a backend, real APIs, frameworks, or unrelated features unless explicitly requested.
+Follow `AGENTES.md` for prototype edits and the canonical `tasks.md` for Android implementation.
+Every UI task must cite `master.md`. Do not introduce any excluded functionality or a second
+functional module. Backend/APIs/frameworks remain forbidden in the static prototype, while the
+Android implementation uses only the stack explicitly approved by the canonical plan.
