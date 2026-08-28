@@ -1,0 +1,12 @@
+{
+  "format": "agrocampo-drift-schema-manifest-v1",
+  "version": 9,
+  "tables": [
+    "local_profiles", "app_preferences", "sync_outbox", "sync_cursors", "sync_conflicts",
+    "form_drafts", "parcels", "sectors", "official_crops", "custom_crops", "crop_seasons",
+    "labors", "soil_measurements", "irrigation_records", "crop_irrigation_rules",
+    "irrigation_estimates", "production_records", "photo_attachments", "reminders",
+    "device_installations", "apiary_inspections", "weather_cache", "ai_messages", "export_snapshots"
+  ],
+  "upgrade_chain": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+}

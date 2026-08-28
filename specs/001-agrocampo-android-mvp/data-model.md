@@ -212,7 +212,8 @@ PK/FK 1:1 con `labors` de tipo `irrigation`.
 
 ### 2.10 `crop_irrigation_rules`
 
-Configuración versionada del cálculo determinista, liberable sólo después de aprobar
+Configuración versionada del cálculo determinista. La infraestructura admite cero reglas activas;
+cada regla sólo es liberable después de completar su aprobación en
 `contracts/irrigation-calculation.md`.
 
 | Campo | Regla |

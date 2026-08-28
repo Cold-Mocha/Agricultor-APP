@@ -1,14 +1,18 @@
 # Contract: Deterministic Irrigation Calculation v1
 
-**Status**: Estructura contractual completa; parámetros agronómicos y vectores pendientes de
-aprobación en la tarea bloqueante T001.  
+**Status**: Arquitectura configurable aprobada en T001; las reglas agronómicas activas y sus
+vectores de recomendación permanecen bloqueados hasta su validación explícita.
 **Authority**: FR-038, FR-039, FR-040, FR-041, FR-042 y FR-090 de [spec.md](../spec.md).  
 **Boundary**: cálculo local y explicable; no evapotranspiración avanzada, AgroIA ni control físico.
 
 ## 1. Release gate
 
-No puede implementarse ni activarse el motor v1 hasta que el propietario del producto y la persona
-revisora agronómica aprueben en este contrato:
+El propietario del producto aprobó el 2026-08-28 implementar el motor como infraestructura
+configurable, sin coeficientes agrícolas inventados ni reglas activas por defecto. Esta aprobación
+permite construir persistencia, validación estructural y el estado `crop_rule_unavailable`.
+
+No puede activarse una recomendación de riego para ningún cultivo hasta que el propietario del
+producto y una persona revisora agronómica documenten en este contrato:
 
 - clasificación y códigos de tipo de suelo;
 - volumen base por planta para cada cultivo con recomendación disponible;
@@ -18,8 +22,10 @@ revisora agronómica aprueben en este contrato:
 - fuente, persona revisora, fecha y versión;
 - al menos veinte vectores con resultado esperado.
 
-La consolidación documental no inventa esos valores. Un cultivo sin regla aprobada puede usarse en
-sectores y registros, pero la calculadora comunica “sin regla aprobada” y no entrega recomendación.
+La consolidación e implementación no inventan esos valores. Un cultivo sin regla aprobada puede
+usarse en sectores y registros, pero la calculadora comunica “sin regla aprobada” y no entrega
+recomendación. Cambiar o incorporar una regla es un cambio de datos versionado; no requiere alterar
+la arquitectura ni el algoritmo contractual.
 
 ## 2. Canonical inputs and units
 
@@ -108,7 +114,8 @@ equipment or claim professional certainty.
 
 ## 8. Approval record and test vectors
 
-T001 completes this section with:
+La aprobación arquitectónica T001 quedó registrada el 2026-08-28. La activación agronómica de una
+regla completa esta sección con:
 
 | Evidence | Required completion |
 |---|---|
@@ -124,6 +131,7 @@ seconds and warning codes. Running the same vector twice must produce byte-equiv
 
 ## 9. Acceptance
 
-This contract is accepted when T001 has completed the approval record, all vectors reproduce
-exactly, FR-038/039/040/041/042/090 and SC-007 pass, and tests prove no dependency on network,
-Weather availability or AgroIA.
+La arquitectura del contrato queda aceptada con T001: motor configurable, sin coeficientes ni
+recomendaciones activas por defecto. Una regla agronómica sólo queda aceptada cuando complete el
+registro de la sección 8, sus vectores reproduzcan exactamente los resultados esperados y las
+pruebas demuestren FR-038/039/040/041/042/090 y SC-007 sin dependencia de red, Weather o AgroIA.

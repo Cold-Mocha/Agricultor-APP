@@ -74,16 +74,17 @@ Raw provider JSON is not returned or stored. Cache is parcel/location scoped and
 
 The calculator receives a `WeatherInputSnapshot` explicitly. It persists only the normalized variables actually used, provenance and limitation code. If current weather is absent, deterministic local calculation may proceed only when its required local inputs exist and must record `weather_unavailable`.
 
-### Contractual release gate
+### Contractual policy (T002 approved 2026-08-28)
 
-Before production:
+- WeatherAPI is the initial provider and is accessed only from the authenticated Edge Function.
+- The provider key is an Edge Function secret. It is absent from Dart, Android resources, client configuration, fixtures and logs.
+- Current-conditions cache expires after 60 minutes; forecast cache expires after 24 hours. Expired responses and normalized weather fields are deleted rather than shown as current.
+- An irrigation estimate stores only its numeric weather adjustment, provider code, observation time and contract version; it never retains the WeatherAPI response or normalized condition/forecast fields beyond their cache expiry.
+- The UI credits WeatherAPI.com by name or brand treatment and presents the approved informational/probabilistic disclaimer in `master.md`.
+- Weather is auxiliary: provider failure, quota, timeout or stale cache never blocks local records or a valid local-only calculation.
 
-1. confirm the current plan permits intended commercial/non-commercial use;
-2. confirm retention of the minimal irrigation audit snapshot;
-3. confirm cache TTL and attribution/disclaimer;
-4. encode any required visual/content treatment in `master.md` before UI implementation.
-
-Failure of the gate requires swapping `WeatherGateway` provider before release; it does not allow omitting FR-065 or inventing a style.
+Before production, verify the active WeatherAPI plan and terms again. Failure requires swapping
+`WeatherGateway`; it does not allow omitting FR-065 or inventing a visual treatment.
 
 ### Failures
 

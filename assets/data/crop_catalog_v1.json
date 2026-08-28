@@ -1,0 +1,11 @@
+[
+  {"id":"avellano-europeo","commonName":"Avellano europeo","scientificName":"Corylus avellana","category":"frutal","colorToken":"cropOrchard","iconAsset":"assets/icons/crops/custom-crop.svg"},
+  {"id":"cerezo","commonName":"Cerezo","scientificName":"Prunus avium","category":"frutal","colorToken":"cropFruit","iconAsset":"assets/icons/crops/custom-crop.svg"},
+  {"id":"frambuesa","commonName":"Frambuesa","scientificName":"Rubus idaeus","category":"berry","colorToken":"cropBerry","iconAsset":"assets/icons/crops/custom-crop.svg"},
+  {"id":"maiz","commonName":"Maíz","scientificName":"Zea mays","category":"cereal","colorToken":"cropCereal","iconAsset":"assets/icons/crops/custom-crop.svg"},
+  {"id":"papa","commonName":"Papa","scientificName":"Solanum tuberosum","category":"tuberculo","colorToken":"cropRoot","iconAsset":"assets/icons/crops/custom-crop.svg"},
+  {"id":"physalis","commonName":"Physalis","scientificName":"Physalis peruviana","category":"frutal","colorToken":"cropFruit","iconAsset":"assets/icons/crops/physalis.svg"},
+  {"id":"trigo","commonName":"Trigo","scientificName":"Triticum aestivum","category":"cereal","colorToken":"cropCereal","iconAsset":"assets/icons/crops/custom-crop.svg"},
+  {"id":"vid","commonName":"Vid","scientificName":"Vitis vinifera","category":"frutal","colorToken":"cropVine","iconAsset":"assets/icons/crops/custom-crop.svg"},
+  {"id":"apicultura","commonName":"Apicultura","scientificName":null,"category":"apicultura","colorToken":"cropApiary","iconAsset":"assets/icons/crops/apiary.svg"}
+]

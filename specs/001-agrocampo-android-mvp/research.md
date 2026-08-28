@@ -219,11 +219,13 @@ Persistir vértices WGS84 ordenados, superficie y versión de algoritmo. Rechaza
 
 ## D-012 — WeatherAPI detrás de Edge Function, con gate contractual
 
-**Decision**: Seleccionar WeatherAPI para el MVP por disponibilidad de temperatura, humedad, precipitación y pronóstico en un plan gratuito. La app llama un Edge Function autenticado por `parcelId`; el servidor obtiene el centroide autorizado, consulta al proveedor y devuelve un DTO normalizado. Drift guarda caché con expiración y el cálculo de riego conserva las variables/proveniencia realmente usadas.
+**Decision**: El propietario aprobó WeatherAPI como proveedor climático inicial el 2026-08-28. La app llamará un Edge Function autenticado por `parcelId`; el servidor obtendrá el centroide autorizado, consultará al proveedor y devolverá un DTO normalizado. La clave no se incorpora en código ni configuración cliente: queda exclusivamente como secreto del entorno de la Edge Function. Drift guardará caché con expiración; el clima es auxiliar y nunca bloquea los flujos offline.
 
-La implementación queda detrás de `WeatherGateway`. Antes de release de producción se ejecuta un gate contractual: confirmar por escrito que retener el snapshot mínimo del cálculo satisface los términos vigentes y agregar en `master.md` cualquier atribución/disclaimer obligatorio que no esté ya normado. Si cualquiera falla, se sustituye el proveedor mediante el adapter antes del release, sin cambiar dominio, almacenamiento, cálculo o componentes.
+La implementación queda detrás de `WeatherGateway`. Según los términos consultados el 2026-08-28, el uso comercial está permitido dentro del plan contratado; el plan gratuito exige crédito visible a WeatherAPI.com. La caché se limita a 60 minutos para condiciones actuales y 24 horas para pronóstico. No se retienen respuestas ni campos normalizados derivados de condiciones/pronóstico después de su expiración; una estimación de riego sólo conserva el ajuste numérico aplicado, código de proveedor, marca temporal y versión contractual, nunca el payload meteorológico. La UI debe mostrar atribución y el aviso de que el clima es informativo/probabilístico, no base única de decisiones críticas.
 
-**Rationale**: Resuelve el alcance funcional sin exponer clave ni hacer del clima una dependencia crítica. El gate reconoce que términos y retención son requisitos externos mutables, no una regla visual que el plan pueda inventar.
+Antes de habilitar tráfico de producción se verifica otra vez el plan vigente y sus términos. Si ya no permiten el uso previsto, se sustituye el proveedor mediante el adapter sin cambiar dominio, almacenamiento, cálculo o componentes.
+
+**Rationale**: Resuelve el alcance funcional sin exponer clave ni hacer del clima una dependencia crítica. Los límites de caché, atribución y aviso documentan los términos vigentes, que se vuelven a verificar antes de producción por ser externos y mutables.
 
 **Alternatives considered**:
 

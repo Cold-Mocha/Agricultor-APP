@@ -395,8 +395,9 @@ Los límites y fallbacks están en [contracts/external-services.md](./contracts/
 
 ### Phase 1 - Foundation and visual architecture
 
-1. Aprobar antes de código la clasificación, coeficientes, límites, redondeo y veinte vectores del
-   contrato agronómico de riego; cerrar también el gate contractual de Weather antes de integrar el proveedor.
+1. Registrar antes de código la aprobación de la arquitectura configurable del riego y cerrar el
+   gate contractual de Weather. La infraestructura puede construirse sin reglas activas; ninguna
+   recomendación se habilita hasta validar clasificación, coeficientes, límites y veinte vectores.
 2. Fijar toolchain Android, identificador de aplicación, configuración por entorno y política de secretos.
 3. Crear estructura modular, composición raíz, manejo de errores y convenciones de pruebas.
 4. Implementar tokens, ThemeData Material 3 y biblioteca base consumiendo únicamente `master.md`.
@@ -472,7 +473,7 @@ Los límites y fallbacks están en [contracts/external-services.md](./contracts/
 | Restricciones Android/OEM en background | Sync o avisos tardíos | Guardado local inmediato, triggers de foreground, WorkManager oportunista y comunicación honesta. |
 | Sesión revocada durante offline | Datos locales válidos pero sin autorización remota | Aislar por propietario, refrescar antes de push y conservar pendientes al pedir reautenticación. |
 | Divergencia de cálculos numéricos | Resultados de riego o superficie inconsistentes | Escala fija, fórmula versionada, fixtures aprobados y revalidación server-side. |
-| Regla agronómica sin aprobación | Coeficientes o clasificación de suelo inventados durante implementación | `irrigation-calculation.md` y veinte vectores aprobados son gate T001; el motor no inicia antes. |
+| Regla agronómica sin aprobación | Coeficientes o clasificación de suelo inventados durante implementación | T001 autoriza sólo infraestructura configurable; `irrigation-calculation.md` bloquea cada recomendación hasta aprobar su regla y veinte vectores. |
 | Mapa/proveedor sin conexión o cuota | No hay teselas/búsqueda | Geometría independiente, lista textual y edición local; restricciones/cuotas monitorizadas. |
 | Crecimiento de fotografías y outbox | Almacenamiento, batería y datos móviles | Compresión controlada, hash, lotes, backoff y visibilidad de uso; sin purga destructiva en MVP. |
 | RLS o RPC incompletos | Exposición entre propietarios | Deny-by-default, owner_id, pruebas A/B/anon y revisión de cada nueva tabla/función. |
@@ -494,6 +495,7 @@ El plan puede pasar a ejecución del backlog cuando:
 
 ## Complexity Tracking
 
-No hay violaciones constitucionales ni excepciones de arquitectura. Permanecen dos gates explícitos
-que no son decisiones técnicas abiertas: aprobación agronómica del contrato de riego y verificación
-vigente de licencia/atribución del proveedor climático; ambos bloquean su implementación respectiva.
+No hay violaciones constitucionales ni excepciones de arquitectura. T001 y T002 están cerrados para
+arquitectura: el riego se implementa configurable sin recomendaciones activas por defecto y WeatherAPI
+queda detrás del adapter aprobado. Cada regla agronómica y los términos externos se revalidan antes
+de su activación o release, respectivamente.

@@ -1,6 +1,13 @@
 # Miscellaneous
 *.class
 *.log
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+key.properties
+google-services.json
 *.pyc
 *.swp
 .DS_Store
@@ -32,6 +39,7 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
+/drift_schemas/*.sqlite
 
 # Symbolication related
 app.*.symbols
