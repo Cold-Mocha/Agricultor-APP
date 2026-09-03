@@ -749,6 +749,29 @@ class $SyncOutboxTable extends SyncOutbox
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _protocolVersionMeta = const VerificationMeta(
+    'protocolVersion',
+  );
+  @override
+  late final GeneratedColumn<int> protocolVersion = GeneratedColumn<int>(
+    'protocol_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(2),
+  );
   static const VerificationMeta _baseVersionMeta = const VerificationMeta(
     'baseVersion',
   );
@@ -770,6 +793,28 @@ class $SyncOutboxTable extends SyncOutbox
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _payloadSchemaVersionMeta =
+      const VerificationMeta('payloadSchemaVersion');
+  @override
+  late final GeneratedColumn<int> payloadSchemaVersion = GeneratedColumn<int>(
+    'payload_schema_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _requestHashMeta = const VerificationMeta(
+    'requestHash',
+  );
+  @override
+  late final GeneratedColumn<String> requestHash = GeneratedColumn<String>(
+    'request_hash',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _dependencyOperationIdMeta =
       const VerificationMeta('dependencyOperationId');
@@ -838,6 +883,29 @@ class $SyncOutboxTable extends SyncOutbox
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _lastAttemptedAtMeta = const VerificationMeta(
+    'lastAttemptedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastAttemptedAt =
+      GeneratedColumn<DateTime>(
+        'last_attempted_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _completedAtMeta = const VerificationMeta(
+    'completedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> completedAt = GeneratedColumn<DateTime>(
+    'completed_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     operationId,
@@ -845,14 +913,20 @@ class $SyncOutboxTable extends SyncOutbox
     aggregateType,
     aggregateId,
     mutationKind,
+    deviceId,
+    protocolVersion,
     baseVersion,
     payloadJson,
+    payloadSchemaVersion,
+    requestHash,
     dependencyOperationId,
     state,
     attemptCount,
     nextAttemptAt,
     lastErrorCode,
     createdAt,
+    lastAttemptedAt,
+    completedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -918,6 +992,21 @@ class $SyncOutboxTable extends SyncOutbox
     } else if (isInserting) {
       context.missing(_mutationKindMeta);
     }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    }
+    if (data.containsKey('protocol_version')) {
+      context.handle(
+        _protocolVersionMeta,
+        protocolVersion.isAcceptableOrUnknown(
+          data['protocol_version']!,
+          _protocolVersionMeta,
+        ),
+      );
+    }
     if (data.containsKey('base_version')) {
       context.handle(
         _baseVersionMeta,
@@ -937,6 +1026,24 @@ class $SyncOutboxTable extends SyncOutbox
       );
     } else if (isInserting) {
       context.missing(_payloadJsonMeta);
+    }
+    if (data.containsKey('payload_schema_version')) {
+      context.handle(
+        _payloadSchemaVersionMeta,
+        payloadSchemaVersion.isAcceptableOrUnknown(
+          data['payload_schema_version']!,
+          _payloadSchemaVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('request_hash')) {
+      context.handle(
+        _requestHashMeta,
+        requestHash.isAcceptableOrUnknown(
+          data['request_hash']!,
+          _requestHashMeta,
+        ),
+      );
     }
     if (data.containsKey('dependency_operation_id')) {
       context.handle(
@@ -988,6 +1095,24 @@ class $SyncOutboxTable extends SyncOutbox
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('last_attempted_at')) {
+      context.handle(
+        _lastAttemptedAtMeta,
+        lastAttemptedAt.isAcceptableOrUnknown(
+          data['last_attempted_at']!,
+          _lastAttemptedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('completed_at')) {
+      context.handle(
+        _completedAtMeta,
+        completedAt.isAcceptableOrUnknown(
+          data['completed_at']!,
+          _completedAtMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1017,6 +1142,14 @@ class $SyncOutboxTable extends SyncOutbox
         DriftSqlType.string,
         data['${effectivePrefix}mutation_kind'],
       )!,
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      ),
+      protocolVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}protocol_version'],
+      )!,
       baseVersion: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}base_version'],
@@ -1025,6 +1158,14 @@ class $SyncOutboxTable extends SyncOutbox
         DriftSqlType.string,
         data['${effectivePrefix}payload_json'],
       )!,
+      payloadSchemaVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}payload_schema_version'],
+      )!,
+      requestHash: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}request_hash'],
+      ),
       dependencyOperationId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}dependency_operation_id'],
@@ -1049,6 +1190,14 @@ class $SyncOutboxTable extends SyncOutbox
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      lastAttemptedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_attempted_at'],
+      ),
+      completedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}completed_at'],
+      ),
     );
   }
 
@@ -1064,28 +1213,40 @@ class SyncOutboxData extends DataClass implements Insertable<SyncOutboxData> {
   final String aggregateType;
   final String aggregateId;
   final String mutationKind;
+  final String? deviceId;
+  final int protocolVersion;
   final int? baseVersion;
   final String payloadJson;
+  final int payloadSchemaVersion;
+  final String? requestHash;
   final String? dependencyOperationId;
   final String state;
   final int attemptCount;
   final DateTime? nextAttemptAt;
   final String? lastErrorCode;
   final DateTime createdAt;
+  final DateTime? lastAttemptedAt;
+  final DateTime? completedAt;
   const SyncOutboxData({
     required this.operationId,
     required this.ownerId,
     required this.aggregateType,
     required this.aggregateId,
     required this.mutationKind,
+    this.deviceId,
+    required this.protocolVersion,
     this.baseVersion,
     required this.payloadJson,
+    required this.payloadSchemaVersion,
+    this.requestHash,
     this.dependencyOperationId,
     required this.state,
     required this.attemptCount,
     this.nextAttemptAt,
     this.lastErrorCode,
     required this.createdAt,
+    this.lastAttemptedAt,
+    this.completedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1095,10 +1256,18 @@ class SyncOutboxData extends DataClass implements Insertable<SyncOutboxData> {
     map['aggregate_type'] = Variable<String>(aggregateType);
     map['aggregate_id'] = Variable<String>(aggregateId);
     map['mutation_kind'] = Variable<String>(mutationKind);
+    if (!nullToAbsent || deviceId != null) {
+      map['device_id'] = Variable<String>(deviceId);
+    }
+    map['protocol_version'] = Variable<int>(protocolVersion);
     if (!nullToAbsent || baseVersion != null) {
       map['base_version'] = Variable<int>(baseVersion);
     }
     map['payload_json'] = Variable<String>(payloadJson);
+    map['payload_schema_version'] = Variable<int>(payloadSchemaVersion);
+    if (!nullToAbsent || requestHash != null) {
+      map['request_hash'] = Variable<String>(requestHash);
+    }
     if (!nullToAbsent || dependencyOperationId != null) {
       map['dependency_operation_id'] = Variable<String>(dependencyOperationId);
     }
@@ -1111,6 +1280,12 @@ class SyncOutboxData extends DataClass implements Insertable<SyncOutboxData> {
       map['last_error_code'] = Variable<String>(lastErrorCode);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || lastAttemptedAt != null) {
+      map['last_attempted_at'] = Variable<DateTime>(lastAttemptedAt);
+    }
+    if (!nullToAbsent || completedAt != null) {
+      map['completed_at'] = Variable<DateTime>(completedAt);
+    }
     return map;
   }
 
@@ -1121,10 +1296,18 @@ class SyncOutboxData extends DataClass implements Insertable<SyncOutboxData> {
       aggregateType: Value(aggregateType),
       aggregateId: Value(aggregateId),
       mutationKind: Value(mutationKind),
+      deviceId: deviceId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deviceId),
+      protocolVersion: Value(protocolVersion),
       baseVersion: baseVersion == null && nullToAbsent
           ? const Value.absent()
           : Value(baseVersion),
       payloadJson: Value(payloadJson),
+      payloadSchemaVersion: Value(payloadSchemaVersion),
+      requestHash: requestHash == null && nullToAbsent
+          ? const Value.absent()
+          : Value(requestHash),
       dependencyOperationId: dependencyOperationId == null && nullToAbsent
           ? const Value.absent()
           : Value(dependencyOperationId),
@@ -1137,6 +1320,12 @@ class SyncOutboxData extends DataClass implements Insertable<SyncOutboxData> {
           ? const Value.absent()
           : Value(lastErrorCode),
       createdAt: Value(createdAt),
+      lastAttemptedAt: lastAttemptedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastAttemptedAt),
+      completedAt: completedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(completedAt),
     );
   }
 
@@ -1151,8 +1340,14 @@ class SyncOutboxData extends DataClass implements Insertable<SyncOutboxData> {
       aggregateType: serializer.fromJson<String>(json['aggregateType']),
       aggregateId: serializer.fromJson<String>(json['aggregateId']),
       mutationKind: serializer.fromJson<String>(json['mutationKind']),
+      deviceId: serializer.fromJson<String?>(json['deviceId']),
+      protocolVersion: serializer.fromJson<int>(json['protocolVersion']),
       baseVersion: serializer.fromJson<int?>(json['baseVersion']),
       payloadJson: serializer.fromJson<String>(json['payloadJson']),
+      payloadSchemaVersion: serializer.fromJson<int>(
+        json['payloadSchemaVersion'],
+      ),
+      requestHash: serializer.fromJson<String?>(json['requestHash']),
       dependencyOperationId: serializer.fromJson<String?>(
         json['dependencyOperationId'],
       ),
@@ -1161,6 +1356,8 @@ class SyncOutboxData extends DataClass implements Insertable<SyncOutboxData> {
       nextAttemptAt: serializer.fromJson<DateTime?>(json['nextAttemptAt']),
       lastErrorCode: serializer.fromJson<String?>(json['lastErrorCode']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      lastAttemptedAt: serializer.fromJson<DateTime?>(json['lastAttemptedAt']),
+      completedAt: serializer.fromJson<DateTime?>(json['completedAt']),
     );
   }
   @override
@@ -1172,8 +1369,12 @@ class SyncOutboxData extends DataClass implements Insertable<SyncOutboxData> {
       'aggregateType': serializer.toJson<String>(aggregateType),
       'aggregateId': serializer.toJson<String>(aggregateId),
       'mutationKind': serializer.toJson<String>(mutationKind),
+      'deviceId': serializer.toJson<String?>(deviceId),
+      'protocolVersion': serializer.toJson<int>(protocolVersion),
       'baseVersion': serializer.toJson<int?>(baseVersion),
       'payloadJson': serializer.toJson<String>(payloadJson),
+      'payloadSchemaVersion': serializer.toJson<int>(payloadSchemaVersion),
+      'requestHash': serializer.toJson<String?>(requestHash),
       'dependencyOperationId': serializer.toJson<String?>(
         dependencyOperationId,
       ),
@@ -1182,6 +1383,8 @@ class SyncOutboxData extends DataClass implements Insertable<SyncOutboxData> {
       'nextAttemptAt': serializer.toJson<DateTime?>(nextAttemptAt),
       'lastErrorCode': serializer.toJson<String?>(lastErrorCode),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'lastAttemptedAt': serializer.toJson<DateTime?>(lastAttemptedAt),
+      'completedAt': serializer.toJson<DateTime?>(completedAt),
     };
   }
 
@@ -1191,22 +1394,32 @@ class SyncOutboxData extends DataClass implements Insertable<SyncOutboxData> {
     String? aggregateType,
     String? aggregateId,
     String? mutationKind,
+    Value<String?> deviceId = const Value.absent(),
+    int? protocolVersion,
     Value<int?> baseVersion = const Value.absent(),
     String? payloadJson,
+    int? payloadSchemaVersion,
+    Value<String?> requestHash = const Value.absent(),
     Value<String?> dependencyOperationId = const Value.absent(),
     String? state,
     int? attemptCount,
     Value<DateTime?> nextAttemptAt = const Value.absent(),
     Value<String?> lastErrorCode = const Value.absent(),
     DateTime? createdAt,
+    Value<DateTime?> lastAttemptedAt = const Value.absent(),
+    Value<DateTime?> completedAt = const Value.absent(),
   }) => SyncOutboxData(
     operationId: operationId ?? this.operationId,
     ownerId: ownerId ?? this.ownerId,
     aggregateType: aggregateType ?? this.aggregateType,
     aggregateId: aggregateId ?? this.aggregateId,
     mutationKind: mutationKind ?? this.mutationKind,
+    deviceId: deviceId.present ? deviceId.value : this.deviceId,
+    protocolVersion: protocolVersion ?? this.protocolVersion,
     baseVersion: baseVersion.present ? baseVersion.value : this.baseVersion,
     payloadJson: payloadJson ?? this.payloadJson,
+    payloadSchemaVersion: payloadSchemaVersion ?? this.payloadSchemaVersion,
+    requestHash: requestHash.present ? requestHash.value : this.requestHash,
     dependencyOperationId: dependencyOperationId.present
         ? dependencyOperationId.value
         : this.dependencyOperationId,
@@ -1219,6 +1432,10 @@ class SyncOutboxData extends DataClass implements Insertable<SyncOutboxData> {
         ? lastErrorCode.value
         : this.lastErrorCode,
     createdAt: createdAt ?? this.createdAt,
+    lastAttemptedAt: lastAttemptedAt.present
+        ? lastAttemptedAt.value
+        : this.lastAttemptedAt,
+    completedAt: completedAt.present ? completedAt.value : this.completedAt,
   );
   SyncOutboxData copyWithCompanion(SyncOutboxCompanion data) {
     return SyncOutboxData(
@@ -1235,12 +1452,22 @@ class SyncOutboxData extends DataClass implements Insertable<SyncOutboxData> {
       mutationKind: data.mutationKind.present
           ? data.mutationKind.value
           : this.mutationKind,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      protocolVersion: data.protocolVersion.present
+          ? data.protocolVersion.value
+          : this.protocolVersion,
       baseVersion: data.baseVersion.present
           ? data.baseVersion.value
           : this.baseVersion,
       payloadJson: data.payloadJson.present
           ? data.payloadJson.value
           : this.payloadJson,
+      payloadSchemaVersion: data.payloadSchemaVersion.present
+          ? data.payloadSchemaVersion.value
+          : this.payloadSchemaVersion,
+      requestHash: data.requestHash.present
+          ? data.requestHash.value
+          : this.requestHash,
       dependencyOperationId: data.dependencyOperationId.present
           ? data.dependencyOperationId.value
           : this.dependencyOperationId,
@@ -1255,6 +1482,12 @@ class SyncOutboxData extends DataClass implements Insertable<SyncOutboxData> {
           ? data.lastErrorCode.value
           : this.lastErrorCode,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      lastAttemptedAt: data.lastAttemptedAt.present
+          ? data.lastAttemptedAt.value
+          : this.lastAttemptedAt,
+      completedAt: data.completedAt.present
+          ? data.completedAt.value
+          : this.completedAt,
     );
   }
 
@@ -1266,14 +1499,20 @@ class SyncOutboxData extends DataClass implements Insertable<SyncOutboxData> {
           ..write('aggregateType: $aggregateType, ')
           ..write('aggregateId: $aggregateId, ')
           ..write('mutationKind: $mutationKind, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('protocolVersion: $protocolVersion, ')
           ..write('baseVersion: $baseVersion, ')
           ..write('payloadJson: $payloadJson, ')
+          ..write('payloadSchemaVersion: $payloadSchemaVersion, ')
+          ..write('requestHash: $requestHash, ')
           ..write('dependencyOperationId: $dependencyOperationId, ')
           ..write('state: $state, ')
           ..write('attemptCount: $attemptCount, ')
           ..write('nextAttemptAt: $nextAttemptAt, ')
           ..write('lastErrorCode: $lastErrorCode, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastAttemptedAt: $lastAttemptedAt, ')
+          ..write('completedAt: $completedAt')
           ..write(')'))
         .toString();
   }
@@ -1285,14 +1524,20 @@ class SyncOutboxData extends DataClass implements Insertable<SyncOutboxData> {
     aggregateType,
     aggregateId,
     mutationKind,
+    deviceId,
+    protocolVersion,
     baseVersion,
     payloadJson,
+    payloadSchemaVersion,
+    requestHash,
     dependencyOperationId,
     state,
     attemptCount,
     nextAttemptAt,
     lastErrorCode,
     createdAt,
+    lastAttemptedAt,
+    completedAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -1303,14 +1548,20 @@ class SyncOutboxData extends DataClass implements Insertable<SyncOutboxData> {
           other.aggregateType == this.aggregateType &&
           other.aggregateId == this.aggregateId &&
           other.mutationKind == this.mutationKind &&
+          other.deviceId == this.deviceId &&
+          other.protocolVersion == this.protocolVersion &&
           other.baseVersion == this.baseVersion &&
           other.payloadJson == this.payloadJson &&
+          other.payloadSchemaVersion == this.payloadSchemaVersion &&
+          other.requestHash == this.requestHash &&
           other.dependencyOperationId == this.dependencyOperationId &&
           other.state == this.state &&
           other.attemptCount == this.attemptCount &&
           other.nextAttemptAt == this.nextAttemptAt &&
           other.lastErrorCode == this.lastErrorCode &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.lastAttemptedAt == this.lastAttemptedAt &&
+          other.completedAt == this.completedAt);
 }
 
 class SyncOutboxCompanion extends UpdateCompanion<SyncOutboxData> {
@@ -1319,14 +1570,20 @@ class SyncOutboxCompanion extends UpdateCompanion<SyncOutboxData> {
   final Value<String> aggregateType;
   final Value<String> aggregateId;
   final Value<String> mutationKind;
+  final Value<String?> deviceId;
+  final Value<int> protocolVersion;
   final Value<int?> baseVersion;
   final Value<String> payloadJson;
+  final Value<int> payloadSchemaVersion;
+  final Value<String?> requestHash;
   final Value<String?> dependencyOperationId;
   final Value<String> state;
   final Value<int> attemptCount;
   final Value<DateTime?> nextAttemptAt;
   final Value<String?> lastErrorCode;
   final Value<DateTime> createdAt;
+  final Value<DateTime?> lastAttemptedAt;
+  final Value<DateTime?> completedAt;
   final Value<int> rowid;
   const SyncOutboxCompanion({
     this.operationId = const Value.absent(),
@@ -1334,14 +1591,20 @@ class SyncOutboxCompanion extends UpdateCompanion<SyncOutboxData> {
     this.aggregateType = const Value.absent(),
     this.aggregateId = const Value.absent(),
     this.mutationKind = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.protocolVersion = const Value.absent(),
     this.baseVersion = const Value.absent(),
     this.payloadJson = const Value.absent(),
+    this.payloadSchemaVersion = const Value.absent(),
+    this.requestHash = const Value.absent(),
     this.dependencyOperationId = const Value.absent(),
     this.state = const Value.absent(),
     this.attemptCount = const Value.absent(),
     this.nextAttemptAt = const Value.absent(),
     this.lastErrorCode = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.lastAttemptedAt = const Value.absent(),
+    this.completedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SyncOutboxCompanion.insert({
@@ -1350,14 +1613,20 @@ class SyncOutboxCompanion extends UpdateCompanion<SyncOutboxData> {
     required String aggregateType,
     required String aggregateId,
     required String mutationKind,
+    this.deviceId = const Value.absent(),
+    this.protocolVersion = const Value.absent(),
     this.baseVersion = const Value.absent(),
     required String payloadJson,
+    this.payloadSchemaVersion = const Value.absent(),
+    this.requestHash = const Value.absent(),
     this.dependencyOperationId = const Value.absent(),
     this.state = const Value.absent(),
     this.attemptCount = const Value.absent(),
     this.nextAttemptAt = const Value.absent(),
     this.lastErrorCode = const Value.absent(),
     required DateTime createdAt,
+    this.lastAttemptedAt = const Value.absent(),
+    this.completedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : operationId = Value(operationId),
        ownerId = Value(ownerId),
@@ -1372,14 +1641,20 @@ class SyncOutboxCompanion extends UpdateCompanion<SyncOutboxData> {
     Expression<String>? aggregateType,
     Expression<String>? aggregateId,
     Expression<String>? mutationKind,
+    Expression<String>? deviceId,
+    Expression<int>? protocolVersion,
     Expression<int>? baseVersion,
     Expression<String>? payloadJson,
+    Expression<int>? payloadSchemaVersion,
+    Expression<String>? requestHash,
     Expression<String>? dependencyOperationId,
     Expression<String>? state,
     Expression<int>? attemptCount,
     Expression<DateTime>? nextAttemptAt,
     Expression<String>? lastErrorCode,
     Expression<DateTime>? createdAt,
+    Expression<DateTime>? lastAttemptedAt,
+    Expression<DateTime>? completedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1388,8 +1663,13 @@ class SyncOutboxCompanion extends UpdateCompanion<SyncOutboxData> {
       if (aggregateType != null) 'aggregate_type': aggregateType,
       if (aggregateId != null) 'aggregate_id': aggregateId,
       if (mutationKind != null) 'mutation_kind': mutationKind,
+      if (deviceId != null) 'device_id': deviceId,
+      if (protocolVersion != null) 'protocol_version': protocolVersion,
       if (baseVersion != null) 'base_version': baseVersion,
       if (payloadJson != null) 'payload_json': payloadJson,
+      if (payloadSchemaVersion != null)
+        'payload_schema_version': payloadSchemaVersion,
+      if (requestHash != null) 'request_hash': requestHash,
       if (dependencyOperationId != null)
         'dependency_operation_id': dependencyOperationId,
       if (state != null) 'state': state,
@@ -1397,6 +1677,8 @@ class SyncOutboxCompanion extends UpdateCompanion<SyncOutboxData> {
       if (nextAttemptAt != null) 'next_attempt_at': nextAttemptAt,
       if (lastErrorCode != null) 'last_error_code': lastErrorCode,
       if (createdAt != null) 'created_at': createdAt,
+      if (lastAttemptedAt != null) 'last_attempted_at': lastAttemptedAt,
+      if (completedAt != null) 'completed_at': completedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1407,14 +1689,20 @@ class SyncOutboxCompanion extends UpdateCompanion<SyncOutboxData> {
     Value<String>? aggregateType,
     Value<String>? aggregateId,
     Value<String>? mutationKind,
+    Value<String?>? deviceId,
+    Value<int>? protocolVersion,
     Value<int?>? baseVersion,
     Value<String>? payloadJson,
+    Value<int>? payloadSchemaVersion,
+    Value<String?>? requestHash,
     Value<String?>? dependencyOperationId,
     Value<String>? state,
     Value<int>? attemptCount,
     Value<DateTime?>? nextAttemptAt,
     Value<String?>? lastErrorCode,
     Value<DateTime>? createdAt,
+    Value<DateTime?>? lastAttemptedAt,
+    Value<DateTime?>? completedAt,
     Value<int>? rowid,
   }) {
     return SyncOutboxCompanion(
@@ -1423,8 +1711,12 @@ class SyncOutboxCompanion extends UpdateCompanion<SyncOutboxData> {
       aggregateType: aggregateType ?? this.aggregateType,
       aggregateId: aggregateId ?? this.aggregateId,
       mutationKind: mutationKind ?? this.mutationKind,
+      deviceId: deviceId ?? this.deviceId,
+      protocolVersion: protocolVersion ?? this.protocolVersion,
       baseVersion: baseVersion ?? this.baseVersion,
       payloadJson: payloadJson ?? this.payloadJson,
+      payloadSchemaVersion: payloadSchemaVersion ?? this.payloadSchemaVersion,
+      requestHash: requestHash ?? this.requestHash,
       dependencyOperationId:
           dependencyOperationId ?? this.dependencyOperationId,
       state: state ?? this.state,
@@ -1432,6 +1724,8 @@ class SyncOutboxCompanion extends UpdateCompanion<SyncOutboxData> {
       nextAttemptAt: nextAttemptAt ?? this.nextAttemptAt,
       lastErrorCode: lastErrorCode ?? this.lastErrorCode,
       createdAt: createdAt ?? this.createdAt,
+      lastAttemptedAt: lastAttemptedAt ?? this.lastAttemptedAt,
+      completedAt: completedAt ?? this.completedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1454,11 +1748,23 @@ class SyncOutboxCompanion extends UpdateCompanion<SyncOutboxData> {
     if (mutationKind.present) {
       map['mutation_kind'] = Variable<String>(mutationKind.value);
     }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (protocolVersion.present) {
+      map['protocol_version'] = Variable<int>(protocolVersion.value);
+    }
     if (baseVersion.present) {
       map['base_version'] = Variable<int>(baseVersion.value);
     }
     if (payloadJson.present) {
       map['payload_json'] = Variable<String>(payloadJson.value);
+    }
+    if (payloadSchemaVersion.present) {
+      map['payload_schema_version'] = Variable<int>(payloadSchemaVersion.value);
+    }
+    if (requestHash.present) {
+      map['request_hash'] = Variable<String>(requestHash.value);
     }
     if (dependencyOperationId.present) {
       map['dependency_operation_id'] = Variable<String>(
@@ -1480,6 +1786,12 @@ class SyncOutboxCompanion extends UpdateCompanion<SyncOutboxData> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (lastAttemptedAt.present) {
+      map['last_attempted_at'] = Variable<DateTime>(lastAttemptedAt.value);
+    }
+    if (completedAt.present) {
+      map['completed_at'] = Variable<DateTime>(completedAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1494,14 +1806,20 @@ class SyncOutboxCompanion extends UpdateCompanion<SyncOutboxData> {
           ..write('aggregateType: $aggregateType, ')
           ..write('aggregateId: $aggregateId, ')
           ..write('mutationKind: $mutationKind, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('protocolVersion: $protocolVersion, ')
           ..write('baseVersion: $baseVersion, ')
           ..write('payloadJson: $payloadJson, ')
+          ..write('payloadSchemaVersion: $payloadSchemaVersion, ')
+          ..write('requestHash: $requestHash, ')
           ..write('dependencyOperationId: $dependencyOperationId, ')
           ..write('state: $state, ')
           ..write('attemptCount: $attemptCount, ')
           ..write('nextAttemptAt: $nextAttemptAt, ')
           ..write('lastErrorCode: $lastErrorCode, ')
           ..write('createdAt: $createdAt, ')
+          ..write('lastAttemptedAt: $lastAttemptedAt, ')
+          ..write('completedAt: $completedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1890,6 +2208,17 @@ class $SyncConflictsTable extends SyncConflicts
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _baseJsonMeta = const VerificationMeta(
+    'baseJson',
+  );
+  @override
+  late final GeneratedColumn<String> baseJson = GeneratedColumn<String>(
+    'base_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _remoteJsonMeta = const VerificationMeta(
     'remoteJson',
   );
@@ -1900,6 +2229,72 @@ class $SyncConflictsTable extends SyncConflicts
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _remoteVersionMeta = const VerificationMeta(
+    'remoteVersion',
+  );
+  @override
+  late final GeneratedColumn<int> remoteVersion = GeneratedColumn<int>(
+    'remote_version',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sourceOperationIdMeta = const VerificationMeta(
+    'sourceOperationId',
+  );
+  @override
+  late final GeneratedColumn<String> sourceOperationId =
+      GeneratedColumn<String>(
+        'source_operation_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
+  @override
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
+    'state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('open'),
+  );
+  static const VerificationMeta _resolutionChoiceMeta = const VerificationMeta(
+    'resolutionChoice',
+  );
+  @override
+  late final GeneratedColumn<String> resolutionChoice = GeneratedColumn<String>(
+    'resolution_choice',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _resolutionOperationIdMeta =
+      const VerificationMeta('resolutionOperationId');
+  @override
+  late final GeneratedColumn<String> resolutionOperationId =
+      GeneratedColumn<String>(
+        'resolution_operation_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _errorCodeMeta = const VerificationMeta(
+    'errorCode',
+  );
+  @override
+  late final GeneratedColumn<String> errorCode = GeneratedColumn<String>(
+    'error_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _detectedAtMeta = const VerificationMeta(
     'detectedAt',
@@ -1930,7 +2325,14 @@ class $SyncConflictsTable extends SyncConflicts
     aggregateType,
     aggregateId,
     localJson,
+    baseJson,
     remoteJson,
+    remoteVersion,
+    sourceOperationId,
+    state,
+    resolutionChoice,
+    resolutionOperationId,
+    errorCode,
     detectedAt,
     resolvedAt,
   ];
@@ -1992,6 +2394,12 @@ class $SyncConflictsTable extends SyncConflicts
     } else if (isInserting) {
       context.missing(_localJsonMeta);
     }
+    if (data.containsKey('base_json')) {
+      context.handle(
+        _baseJsonMeta,
+        baseJson.isAcceptableOrUnknown(data['base_json']!, _baseJsonMeta),
+      );
+    }
     if (data.containsKey('remote_json')) {
       context.handle(
         _remoteJsonMeta,
@@ -1999,6 +2407,54 @@ class $SyncConflictsTable extends SyncConflicts
       );
     } else if (isInserting) {
       context.missing(_remoteJsonMeta);
+    }
+    if (data.containsKey('remote_version')) {
+      context.handle(
+        _remoteVersionMeta,
+        remoteVersion.isAcceptableOrUnknown(
+          data['remote_version']!,
+          _remoteVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('source_operation_id')) {
+      context.handle(
+        _sourceOperationIdMeta,
+        sourceOperationId.isAcceptableOrUnknown(
+          data['source_operation_id']!,
+          _sourceOperationIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('state')) {
+      context.handle(
+        _stateMeta,
+        state.isAcceptableOrUnknown(data['state']!, _stateMeta),
+      );
+    }
+    if (data.containsKey('resolution_choice')) {
+      context.handle(
+        _resolutionChoiceMeta,
+        resolutionChoice.isAcceptableOrUnknown(
+          data['resolution_choice']!,
+          _resolutionChoiceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('resolution_operation_id')) {
+      context.handle(
+        _resolutionOperationIdMeta,
+        resolutionOperationId.isAcceptableOrUnknown(
+          data['resolution_operation_id']!,
+          _resolutionOperationIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('error_code')) {
+      context.handle(
+        _errorCodeMeta,
+        errorCode.isAcceptableOrUnknown(data['error_code']!, _errorCodeMeta),
+      );
     }
     if (data.containsKey('detected_at')) {
       context.handle(
@@ -2043,10 +2499,38 @@ class $SyncConflictsTable extends SyncConflicts
         DriftSqlType.string,
         data['${effectivePrefix}local_json'],
       )!,
+      baseJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}base_json'],
+      ),
       remoteJson: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}remote_json'],
       )!,
+      remoteVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}remote_version'],
+      ),
+      sourceOperationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_operation_id'],
+      ),
+      state: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}state'],
+      )!,
+      resolutionChoice: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}resolution_choice'],
+      ),
+      resolutionOperationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}resolution_operation_id'],
+      ),
+      errorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}error_code'],
+      ),
       detectedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}detected_at'],
@@ -2070,7 +2554,14 @@ class SyncConflict extends DataClass implements Insertable<SyncConflict> {
   final String aggregateType;
   final String aggregateId;
   final String localJson;
+  final String? baseJson;
   final String remoteJson;
+  final int? remoteVersion;
+  final String? sourceOperationId;
+  final String state;
+  final String? resolutionChoice;
+  final String? resolutionOperationId;
+  final String? errorCode;
   final DateTime detectedAt;
   final DateTime? resolvedAt;
   const SyncConflict({
@@ -2079,7 +2570,14 @@ class SyncConflict extends DataClass implements Insertable<SyncConflict> {
     required this.aggregateType,
     required this.aggregateId,
     required this.localJson,
+    this.baseJson,
     required this.remoteJson,
+    this.remoteVersion,
+    this.sourceOperationId,
+    required this.state,
+    this.resolutionChoice,
+    this.resolutionOperationId,
+    this.errorCode,
     required this.detectedAt,
     this.resolvedAt,
   });
@@ -2091,7 +2589,26 @@ class SyncConflict extends DataClass implements Insertable<SyncConflict> {
     map['aggregate_type'] = Variable<String>(aggregateType);
     map['aggregate_id'] = Variable<String>(aggregateId);
     map['local_json'] = Variable<String>(localJson);
+    if (!nullToAbsent || baseJson != null) {
+      map['base_json'] = Variable<String>(baseJson);
+    }
     map['remote_json'] = Variable<String>(remoteJson);
+    if (!nullToAbsent || remoteVersion != null) {
+      map['remote_version'] = Variable<int>(remoteVersion);
+    }
+    if (!nullToAbsent || sourceOperationId != null) {
+      map['source_operation_id'] = Variable<String>(sourceOperationId);
+    }
+    map['state'] = Variable<String>(state);
+    if (!nullToAbsent || resolutionChoice != null) {
+      map['resolution_choice'] = Variable<String>(resolutionChoice);
+    }
+    if (!nullToAbsent || resolutionOperationId != null) {
+      map['resolution_operation_id'] = Variable<String>(resolutionOperationId);
+    }
+    if (!nullToAbsent || errorCode != null) {
+      map['error_code'] = Variable<String>(errorCode);
+    }
     map['detected_at'] = Variable<DateTime>(detectedAt);
     if (!nullToAbsent || resolvedAt != null) {
       map['resolved_at'] = Variable<DateTime>(resolvedAt);
@@ -2106,7 +2623,26 @@ class SyncConflict extends DataClass implements Insertable<SyncConflict> {
       aggregateType: Value(aggregateType),
       aggregateId: Value(aggregateId),
       localJson: Value(localJson),
+      baseJson: baseJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(baseJson),
       remoteJson: Value(remoteJson),
+      remoteVersion: remoteVersion == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remoteVersion),
+      sourceOperationId: sourceOperationId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceOperationId),
+      state: Value(state),
+      resolutionChoice: resolutionChoice == null && nullToAbsent
+          ? const Value.absent()
+          : Value(resolutionChoice),
+      resolutionOperationId: resolutionOperationId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(resolutionOperationId),
+      errorCode: errorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(errorCode),
       detectedAt: Value(detectedAt),
       resolvedAt: resolvedAt == null && nullToAbsent
           ? const Value.absent()
@@ -2125,7 +2661,18 @@ class SyncConflict extends DataClass implements Insertable<SyncConflict> {
       aggregateType: serializer.fromJson<String>(json['aggregateType']),
       aggregateId: serializer.fromJson<String>(json['aggregateId']),
       localJson: serializer.fromJson<String>(json['localJson']),
+      baseJson: serializer.fromJson<String?>(json['baseJson']),
       remoteJson: serializer.fromJson<String>(json['remoteJson']),
+      remoteVersion: serializer.fromJson<int?>(json['remoteVersion']),
+      sourceOperationId: serializer.fromJson<String?>(
+        json['sourceOperationId'],
+      ),
+      state: serializer.fromJson<String>(json['state']),
+      resolutionChoice: serializer.fromJson<String?>(json['resolutionChoice']),
+      resolutionOperationId: serializer.fromJson<String?>(
+        json['resolutionOperationId'],
+      ),
+      errorCode: serializer.fromJson<String?>(json['errorCode']),
       detectedAt: serializer.fromJson<DateTime>(json['detectedAt']),
       resolvedAt: serializer.fromJson<DateTime?>(json['resolvedAt']),
     );
@@ -2139,7 +2686,16 @@ class SyncConflict extends DataClass implements Insertable<SyncConflict> {
       'aggregateType': serializer.toJson<String>(aggregateType),
       'aggregateId': serializer.toJson<String>(aggregateId),
       'localJson': serializer.toJson<String>(localJson),
+      'baseJson': serializer.toJson<String?>(baseJson),
       'remoteJson': serializer.toJson<String>(remoteJson),
+      'remoteVersion': serializer.toJson<int?>(remoteVersion),
+      'sourceOperationId': serializer.toJson<String?>(sourceOperationId),
+      'state': serializer.toJson<String>(state),
+      'resolutionChoice': serializer.toJson<String?>(resolutionChoice),
+      'resolutionOperationId': serializer.toJson<String?>(
+        resolutionOperationId,
+      ),
+      'errorCode': serializer.toJson<String?>(errorCode),
       'detectedAt': serializer.toJson<DateTime>(detectedAt),
       'resolvedAt': serializer.toJson<DateTime?>(resolvedAt),
     };
@@ -2151,7 +2707,14 @@ class SyncConflict extends DataClass implements Insertable<SyncConflict> {
     String? aggregateType,
     String? aggregateId,
     String? localJson,
+    Value<String?> baseJson = const Value.absent(),
     String? remoteJson,
+    Value<int?> remoteVersion = const Value.absent(),
+    Value<String?> sourceOperationId = const Value.absent(),
+    String? state,
+    Value<String?> resolutionChoice = const Value.absent(),
+    Value<String?> resolutionOperationId = const Value.absent(),
+    Value<String?> errorCode = const Value.absent(),
     DateTime? detectedAt,
     Value<DateTime?> resolvedAt = const Value.absent(),
   }) => SyncConflict(
@@ -2160,7 +2723,22 @@ class SyncConflict extends DataClass implements Insertable<SyncConflict> {
     aggregateType: aggregateType ?? this.aggregateType,
     aggregateId: aggregateId ?? this.aggregateId,
     localJson: localJson ?? this.localJson,
+    baseJson: baseJson.present ? baseJson.value : this.baseJson,
     remoteJson: remoteJson ?? this.remoteJson,
+    remoteVersion: remoteVersion.present
+        ? remoteVersion.value
+        : this.remoteVersion,
+    sourceOperationId: sourceOperationId.present
+        ? sourceOperationId.value
+        : this.sourceOperationId,
+    state: state ?? this.state,
+    resolutionChoice: resolutionChoice.present
+        ? resolutionChoice.value
+        : this.resolutionChoice,
+    resolutionOperationId: resolutionOperationId.present
+        ? resolutionOperationId.value
+        : this.resolutionOperationId,
+    errorCode: errorCode.present ? errorCode.value : this.errorCode,
     detectedAt: detectedAt ?? this.detectedAt,
     resolvedAt: resolvedAt.present ? resolvedAt.value : this.resolvedAt,
   );
@@ -2177,9 +2755,24 @@ class SyncConflict extends DataClass implements Insertable<SyncConflict> {
           ? data.aggregateId.value
           : this.aggregateId,
       localJson: data.localJson.present ? data.localJson.value : this.localJson,
+      baseJson: data.baseJson.present ? data.baseJson.value : this.baseJson,
       remoteJson: data.remoteJson.present
           ? data.remoteJson.value
           : this.remoteJson,
+      remoteVersion: data.remoteVersion.present
+          ? data.remoteVersion.value
+          : this.remoteVersion,
+      sourceOperationId: data.sourceOperationId.present
+          ? data.sourceOperationId.value
+          : this.sourceOperationId,
+      state: data.state.present ? data.state.value : this.state,
+      resolutionChoice: data.resolutionChoice.present
+          ? data.resolutionChoice.value
+          : this.resolutionChoice,
+      resolutionOperationId: data.resolutionOperationId.present
+          ? data.resolutionOperationId.value
+          : this.resolutionOperationId,
+      errorCode: data.errorCode.present ? data.errorCode.value : this.errorCode,
       detectedAt: data.detectedAt.present
           ? data.detectedAt.value
           : this.detectedAt,
@@ -2197,7 +2790,14 @@ class SyncConflict extends DataClass implements Insertable<SyncConflict> {
           ..write('aggregateType: $aggregateType, ')
           ..write('aggregateId: $aggregateId, ')
           ..write('localJson: $localJson, ')
+          ..write('baseJson: $baseJson, ')
           ..write('remoteJson: $remoteJson, ')
+          ..write('remoteVersion: $remoteVersion, ')
+          ..write('sourceOperationId: $sourceOperationId, ')
+          ..write('state: $state, ')
+          ..write('resolutionChoice: $resolutionChoice, ')
+          ..write('resolutionOperationId: $resolutionOperationId, ')
+          ..write('errorCode: $errorCode, ')
           ..write('detectedAt: $detectedAt, ')
           ..write('resolvedAt: $resolvedAt')
           ..write(')'))
@@ -2211,7 +2811,14 @@ class SyncConflict extends DataClass implements Insertable<SyncConflict> {
     aggregateType,
     aggregateId,
     localJson,
+    baseJson,
     remoteJson,
+    remoteVersion,
+    sourceOperationId,
+    state,
+    resolutionChoice,
+    resolutionOperationId,
+    errorCode,
     detectedAt,
     resolvedAt,
   );
@@ -2224,7 +2831,14 @@ class SyncConflict extends DataClass implements Insertable<SyncConflict> {
           other.aggregateType == this.aggregateType &&
           other.aggregateId == this.aggregateId &&
           other.localJson == this.localJson &&
+          other.baseJson == this.baseJson &&
           other.remoteJson == this.remoteJson &&
+          other.remoteVersion == this.remoteVersion &&
+          other.sourceOperationId == this.sourceOperationId &&
+          other.state == this.state &&
+          other.resolutionChoice == this.resolutionChoice &&
+          other.resolutionOperationId == this.resolutionOperationId &&
+          other.errorCode == this.errorCode &&
           other.detectedAt == this.detectedAt &&
           other.resolvedAt == this.resolvedAt);
 }
@@ -2235,7 +2849,14 @@ class SyncConflictsCompanion extends UpdateCompanion<SyncConflict> {
   final Value<String> aggregateType;
   final Value<String> aggregateId;
   final Value<String> localJson;
+  final Value<String?> baseJson;
   final Value<String> remoteJson;
+  final Value<int?> remoteVersion;
+  final Value<String?> sourceOperationId;
+  final Value<String> state;
+  final Value<String?> resolutionChoice;
+  final Value<String?> resolutionOperationId;
+  final Value<String?> errorCode;
   final Value<DateTime> detectedAt;
   final Value<DateTime?> resolvedAt;
   final Value<int> rowid;
@@ -2245,7 +2866,14 @@ class SyncConflictsCompanion extends UpdateCompanion<SyncConflict> {
     this.aggregateType = const Value.absent(),
     this.aggregateId = const Value.absent(),
     this.localJson = const Value.absent(),
+    this.baseJson = const Value.absent(),
     this.remoteJson = const Value.absent(),
+    this.remoteVersion = const Value.absent(),
+    this.sourceOperationId = const Value.absent(),
+    this.state = const Value.absent(),
+    this.resolutionChoice = const Value.absent(),
+    this.resolutionOperationId = const Value.absent(),
+    this.errorCode = const Value.absent(),
     this.detectedAt = const Value.absent(),
     this.resolvedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2256,7 +2884,14 @@ class SyncConflictsCompanion extends UpdateCompanion<SyncConflict> {
     required String aggregateType,
     required String aggregateId,
     required String localJson,
+    this.baseJson = const Value.absent(),
     required String remoteJson,
+    this.remoteVersion = const Value.absent(),
+    this.sourceOperationId = const Value.absent(),
+    this.state = const Value.absent(),
+    this.resolutionChoice = const Value.absent(),
+    this.resolutionOperationId = const Value.absent(),
+    this.errorCode = const Value.absent(),
     required DateTime detectedAt,
     this.resolvedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2273,7 +2908,14 @@ class SyncConflictsCompanion extends UpdateCompanion<SyncConflict> {
     Expression<String>? aggregateType,
     Expression<String>? aggregateId,
     Expression<String>? localJson,
+    Expression<String>? baseJson,
     Expression<String>? remoteJson,
+    Expression<int>? remoteVersion,
+    Expression<String>? sourceOperationId,
+    Expression<String>? state,
+    Expression<String>? resolutionChoice,
+    Expression<String>? resolutionOperationId,
+    Expression<String>? errorCode,
     Expression<DateTime>? detectedAt,
     Expression<DateTime>? resolvedAt,
     Expression<int>? rowid,
@@ -2284,7 +2926,15 @@ class SyncConflictsCompanion extends UpdateCompanion<SyncConflict> {
       if (aggregateType != null) 'aggregate_type': aggregateType,
       if (aggregateId != null) 'aggregate_id': aggregateId,
       if (localJson != null) 'local_json': localJson,
+      if (baseJson != null) 'base_json': baseJson,
       if (remoteJson != null) 'remote_json': remoteJson,
+      if (remoteVersion != null) 'remote_version': remoteVersion,
+      if (sourceOperationId != null) 'source_operation_id': sourceOperationId,
+      if (state != null) 'state': state,
+      if (resolutionChoice != null) 'resolution_choice': resolutionChoice,
+      if (resolutionOperationId != null)
+        'resolution_operation_id': resolutionOperationId,
+      if (errorCode != null) 'error_code': errorCode,
       if (detectedAt != null) 'detected_at': detectedAt,
       if (resolvedAt != null) 'resolved_at': resolvedAt,
       if (rowid != null) 'rowid': rowid,
@@ -2297,7 +2947,14 @@ class SyncConflictsCompanion extends UpdateCompanion<SyncConflict> {
     Value<String>? aggregateType,
     Value<String>? aggregateId,
     Value<String>? localJson,
+    Value<String?>? baseJson,
     Value<String>? remoteJson,
+    Value<int?>? remoteVersion,
+    Value<String?>? sourceOperationId,
+    Value<String>? state,
+    Value<String?>? resolutionChoice,
+    Value<String?>? resolutionOperationId,
+    Value<String?>? errorCode,
     Value<DateTime>? detectedAt,
     Value<DateTime?>? resolvedAt,
     Value<int>? rowid,
@@ -2308,7 +2965,15 @@ class SyncConflictsCompanion extends UpdateCompanion<SyncConflict> {
       aggregateType: aggregateType ?? this.aggregateType,
       aggregateId: aggregateId ?? this.aggregateId,
       localJson: localJson ?? this.localJson,
+      baseJson: baseJson ?? this.baseJson,
       remoteJson: remoteJson ?? this.remoteJson,
+      remoteVersion: remoteVersion ?? this.remoteVersion,
+      sourceOperationId: sourceOperationId ?? this.sourceOperationId,
+      state: state ?? this.state,
+      resolutionChoice: resolutionChoice ?? this.resolutionChoice,
+      resolutionOperationId:
+          resolutionOperationId ?? this.resolutionOperationId,
+      errorCode: errorCode ?? this.errorCode,
       detectedAt: detectedAt ?? this.detectedAt,
       resolvedAt: resolvedAt ?? this.resolvedAt,
       rowid: rowid ?? this.rowid,
@@ -2333,8 +2998,31 @@ class SyncConflictsCompanion extends UpdateCompanion<SyncConflict> {
     if (localJson.present) {
       map['local_json'] = Variable<String>(localJson.value);
     }
+    if (baseJson.present) {
+      map['base_json'] = Variable<String>(baseJson.value);
+    }
     if (remoteJson.present) {
       map['remote_json'] = Variable<String>(remoteJson.value);
+    }
+    if (remoteVersion.present) {
+      map['remote_version'] = Variable<int>(remoteVersion.value);
+    }
+    if (sourceOperationId.present) {
+      map['source_operation_id'] = Variable<String>(sourceOperationId.value);
+    }
+    if (state.present) {
+      map['state'] = Variable<String>(state.value);
+    }
+    if (resolutionChoice.present) {
+      map['resolution_choice'] = Variable<String>(resolutionChoice.value);
+    }
+    if (resolutionOperationId.present) {
+      map['resolution_operation_id'] = Variable<String>(
+        resolutionOperationId.value,
+      );
+    }
+    if (errorCode.present) {
+      map['error_code'] = Variable<String>(errorCode.value);
     }
     if (detectedAt.present) {
       map['detected_at'] = Variable<DateTime>(detectedAt.value);
@@ -2356,7 +3044,14 @@ class SyncConflictsCompanion extends UpdateCompanion<SyncConflict> {
           ..write('aggregateType: $aggregateType, ')
           ..write('aggregateId: $aggregateId, ')
           ..write('localJson: $localJson, ')
+          ..write('baseJson: $baseJson, ')
           ..write('remoteJson: $remoteJson, ')
+          ..write('remoteVersion: $remoteVersion, ')
+          ..write('sourceOperationId: $sourceOperationId, ')
+          ..write('state: $state, ')
+          ..write('resolutionChoice: $resolutionChoice, ')
+          ..write('resolutionOperationId: $resolutionOperationId, ')
+          ..write('errorCode: $errorCode, ')
           ..write('detectedAt: $detectedAt, ')
           ..write('resolvedAt: $resolvedAt, ')
           ..write('rowid: $rowid')
@@ -2854,6 +3549,42 @@ class $ParcelsTable extends Parcels with TableInfo<$ParcelsTable, Parcel> {
     requiredDuringInsert: false,
     defaultValue: const Constant(1),
   );
+  static const VerificationMeta _syncStateMeta = const VerificationMeta(
+    'syncState',
+  );
+  @override
+  late final GeneratedColumn<String> syncState = GeneratedColumn<String>(
+    'sync_state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  static const VerificationMeta _serverUpdatedAtMeta = const VerificationMeta(
+    'serverUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> serverUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'server_updated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastSyncErrorCodeMeta = const VerificationMeta(
+    'lastSyncErrorCode',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncErrorCode =
+      GeneratedColumn<String>(
+        'last_sync_error_code',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -2887,6 +3618,9 @@ class $ParcelsTable extends Parcels with TableInfo<$ParcelsTable, Parcel> {
     isActive,
     isArchived,
     version,
+    syncState,
+    serverUpdatedAt,
+    lastSyncErrorCode,
     updatedAt,
     deletedAt,
   ];
@@ -2965,6 +3699,30 @@ class $ParcelsTable extends Parcels with TableInfo<$ParcelsTable, Parcel> {
         version.isAcceptableOrUnknown(data['version']!, _versionMeta),
       );
     }
+    if (data.containsKey('sync_state')) {
+      context.handle(
+        _syncStateMeta,
+        syncState.isAcceptableOrUnknown(data['sync_state']!, _syncStateMeta),
+      );
+    }
+    if (data.containsKey('server_updated_at')) {
+      context.handle(
+        _serverUpdatedAtMeta,
+        serverUpdatedAt.isAcceptableOrUnknown(
+          data['server_updated_at']!,
+          _serverUpdatedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_sync_error_code')) {
+      context.handle(
+        _lastSyncErrorCodeMeta,
+        lastSyncErrorCode.isAcceptableOrUnknown(
+          data['last_sync_error_code']!,
+          _lastSyncErrorCodeMeta,
+        ),
+      );
+    }
     if (data.containsKey('updated_at')) {
       context.handle(
         _updatedAtMeta,
@@ -3024,6 +3782,18 @@ class $ParcelsTable extends Parcels with TableInfo<$ParcelsTable, Parcel> {
         DriftSqlType.int,
         data['${effectivePrefix}version'],
       )!,
+      syncState: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_state'],
+      )!,
+      serverUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}server_updated_at'],
+      ),
+      lastSyncErrorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error_code'],
+      ),
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -3051,6 +3821,9 @@ class Parcel extends DataClass implements Insertable<Parcel> {
   final bool isActive;
   final bool isArchived;
   final int version;
+  final String syncState;
+  final DateTime? serverUpdatedAt;
+  final String? lastSyncErrorCode;
   final DateTime updatedAt;
   final DateTime? deletedAt;
   const Parcel({
@@ -3063,6 +3836,9 @@ class Parcel extends DataClass implements Insertable<Parcel> {
     required this.isActive,
     required this.isArchived,
     required this.version,
+    required this.syncState,
+    this.serverUpdatedAt,
+    this.lastSyncErrorCode,
     required this.updatedAt,
     this.deletedAt,
   });
@@ -3084,6 +3860,13 @@ class Parcel extends DataClass implements Insertable<Parcel> {
     map['is_active'] = Variable<bool>(isActive);
     map['is_archived'] = Variable<bool>(isArchived);
     map['version'] = Variable<int>(version);
+    map['sync_state'] = Variable<String>(syncState);
+    if (!nullToAbsent || serverUpdatedAt != null) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
+    }
+    if (!nullToAbsent || lastSyncErrorCode != null) {
+      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode);
+    }
     map['updated_at'] = Variable<DateTime>(updatedAt);
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
@@ -3108,6 +3891,13 @@ class Parcel extends DataClass implements Insertable<Parcel> {
       isActive: Value(isActive),
       isArchived: Value(isArchived),
       version: Value(version),
+      syncState: Value(syncState),
+      serverUpdatedAt: serverUpdatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverUpdatedAt),
+      lastSyncErrorCode: lastSyncErrorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncErrorCode),
       updatedAt: Value(updatedAt),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
@@ -3130,6 +3920,11 @@ class Parcel extends DataClass implements Insertable<Parcel> {
       isActive: serializer.fromJson<bool>(json['isActive']),
       isArchived: serializer.fromJson<bool>(json['isArchived']),
       version: serializer.fromJson<int>(json['version']),
+      syncState: serializer.fromJson<String>(json['syncState']),
+      serverUpdatedAt: serializer.fromJson<DateTime?>(json['serverUpdatedAt']),
+      lastSyncErrorCode: serializer.fromJson<String?>(
+        json['lastSyncErrorCode'],
+      ),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
     );
@@ -3147,6 +3942,9 @@ class Parcel extends DataClass implements Insertable<Parcel> {
       'isActive': serializer.toJson<bool>(isActive),
       'isArchived': serializer.toJson<bool>(isArchived),
       'version': serializer.toJson<int>(version),
+      'syncState': serializer.toJson<String>(syncState),
+      'serverUpdatedAt': serializer.toJson<DateTime?>(serverUpdatedAt),
+      'lastSyncErrorCode': serializer.toJson<String?>(lastSyncErrorCode),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
     };
@@ -3162,6 +3960,9 @@ class Parcel extends DataClass implements Insertable<Parcel> {
     bool? isActive,
     bool? isArchived,
     int? version,
+    String? syncState,
+    Value<DateTime?> serverUpdatedAt = const Value.absent(),
+    Value<String?> lastSyncErrorCode = const Value.absent(),
     DateTime? updatedAt,
     Value<DateTime?> deletedAt = const Value.absent(),
   }) => Parcel(
@@ -3176,6 +3977,13 @@ class Parcel extends DataClass implements Insertable<Parcel> {
     isActive: isActive ?? this.isActive,
     isArchived: isArchived ?? this.isArchived,
     version: version ?? this.version,
+    syncState: syncState ?? this.syncState,
+    serverUpdatedAt: serverUpdatedAt.present
+        ? serverUpdatedAt.value
+        : this.serverUpdatedAt,
+    lastSyncErrorCode: lastSyncErrorCode.present
+        ? lastSyncErrorCode.value
+        : this.lastSyncErrorCode,
     updatedAt: updatedAt ?? this.updatedAt,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
@@ -3196,6 +4004,13 @@ class Parcel extends DataClass implements Insertable<Parcel> {
           ? data.isArchived.value
           : this.isArchived,
       version: data.version.present ? data.version.value : this.version,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      serverUpdatedAt: data.serverUpdatedAt.present
+          ? data.serverUpdatedAt.value
+          : this.serverUpdatedAt,
+      lastSyncErrorCode: data.lastSyncErrorCode.present
+          ? data.lastSyncErrorCode.value
+          : this.lastSyncErrorCode,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
     );
@@ -3213,6 +4028,9 @@ class Parcel extends DataClass implements Insertable<Parcel> {
           ..write('isActive: $isActive, ')
           ..write('isArchived: $isArchived, ')
           ..write('version: $version, ')
+          ..write('syncState: $syncState, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt')
           ..write(')'))
@@ -3230,6 +4048,9 @@ class Parcel extends DataClass implements Insertable<Parcel> {
     isActive,
     isArchived,
     version,
+    syncState,
+    serverUpdatedAt,
+    lastSyncErrorCode,
     updatedAt,
     deletedAt,
   );
@@ -3246,6 +4067,9 @@ class Parcel extends DataClass implements Insertable<Parcel> {
           other.isActive == this.isActive &&
           other.isArchived == this.isArchived &&
           other.version == this.version &&
+          other.syncState == this.syncState &&
+          other.serverUpdatedAt == this.serverUpdatedAt &&
+          other.lastSyncErrorCode == this.lastSyncErrorCode &&
           other.updatedAt == this.updatedAt &&
           other.deletedAt == this.deletedAt);
 }
@@ -3260,6 +4084,9 @@ class ParcelsCompanion extends UpdateCompanion<Parcel> {
   final Value<bool> isActive;
   final Value<bool> isArchived;
   final Value<int> version;
+  final Value<String> syncState;
+  final Value<DateTime?> serverUpdatedAt;
+  final Value<String?> lastSyncErrorCode;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> deletedAt;
   final Value<int> rowid;
@@ -3273,6 +4100,9 @@ class ParcelsCompanion extends UpdateCompanion<Parcel> {
     this.isActive = const Value.absent(),
     this.isArchived = const Value.absent(),
     this.version = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.lastSyncErrorCode = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -3287,6 +4117,9 @@ class ParcelsCompanion extends UpdateCompanion<Parcel> {
     this.isActive = const Value.absent(),
     this.isArchived = const Value.absent(),
     this.version = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.lastSyncErrorCode = const Value.absent(),
     required DateTime updatedAt,
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -3304,6 +4137,9 @@ class ParcelsCompanion extends UpdateCompanion<Parcel> {
     Expression<bool>? isActive,
     Expression<bool>? isArchived,
     Expression<int>? version,
+    Expression<String>? syncState,
+    Expression<DateTime>? serverUpdatedAt,
+    Expression<String>? lastSyncErrorCode,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? deletedAt,
     Expression<int>? rowid,
@@ -3318,6 +4154,9 @@ class ParcelsCompanion extends UpdateCompanion<Parcel> {
       if (isActive != null) 'is_active': isActive,
       if (isArchived != null) 'is_archived': isArchived,
       if (version != null) 'version': version,
+      if (syncState != null) 'sync_state': syncState,
+      if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
+      if (lastSyncErrorCode != null) 'last_sync_error_code': lastSyncErrorCode,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (rowid != null) 'rowid': rowid,
@@ -3334,6 +4173,9 @@ class ParcelsCompanion extends UpdateCompanion<Parcel> {
     Value<bool>? isActive,
     Value<bool>? isArchived,
     Value<int>? version,
+    Value<String>? syncState,
+    Value<DateTime?>? serverUpdatedAt,
+    Value<String?>? lastSyncErrorCode,
     Value<DateTime>? updatedAt,
     Value<DateTime?>? deletedAt,
     Value<int>? rowid,
@@ -3348,6 +4190,9 @@ class ParcelsCompanion extends UpdateCompanion<Parcel> {
       isActive: isActive ?? this.isActive,
       isArchived: isArchived ?? this.isArchived,
       version: version ?? this.version,
+      syncState: syncState ?? this.syncState,
+      serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+      lastSyncErrorCode: lastSyncErrorCode ?? this.lastSyncErrorCode,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
       rowid: rowid ?? this.rowid,
@@ -3384,6 +4229,15 @@ class ParcelsCompanion extends UpdateCompanion<Parcel> {
     if (version.present) {
       map['version'] = Variable<int>(version.value);
     }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(syncState.value);
+    }
+    if (serverUpdatedAt.present) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt.value);
+    }
+    if (lastSyncErrorCode.present) {
+      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode.value);
+    }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
@@ -3408,6 +4262,9 @@ class ParcelsCompanion extends UpdateCompanion<Parcel> {
           ..write('isActive: $isActive, ')
           ..write('isArchived: $isArchived, ')
           ..write('version: $version, ')
+          ..write('syncState: $syncState, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt, ')
           ..write('rowid: $rowid')
@@ -3523,6 +4380,42 @@ class $SectorsTable extends Sectors with TableInfo<$SectorsTable, Sector> {
     requiredDuringInsert: false,
     defaultValue: const Constant(1),
   );
+  static const VerificationMeta _syncStateMeta = const VerificationMeta(
+    'syncState',
+  );
+  @override
+  late final GeneratedColumn<String> syncState = GeneratedColumn<String>(
+    'sync_state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  static const VerificationMeta _serverUpdatedAtMeta = const VerificationMeta(
+    'serverUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> serverUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'server_updated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastSyncErrorCodeMeta = const VerificationMeta(
+    'lastSyncErrorCode',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncErrorCode =
+      GeneratedColumn<String>(
+        'last_sync_error_code',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -3556,6 +4449,9 @@ class $SectorsTable extends Sectors with TableInfo<$SectorsTable, Sector> {
     polygonJson,
     areaSquareMeters,
     version,
+    syncState,
+    serverUpdatedAt,
+    lastSyncErrorCode,
     updatedAt,
     deletedAt,
   ];
@@ -3642,6 +4538,30 @@ class $SectorsTable extends Sectors with TableInfo<$SectorsTable, Sector> {
         version.isAcceptableOrUnknown(data['version']!, _versionMeta),
       );
     }
+    if (data.containsKey('sync_state')) {
+      context.handle(
+        _syncStateMeta,
+        syncState.isAcceptableOrUnknown(data['sync_state']!, _syncStateMeta),
+      );
+    }
+    if (data.containsKey('server_updated_at')) {
+      context.handle(
+        _serverUpdatedAtMeta,
+        serverUpdatedAt.isAcceptableOrUnknown(
+          data['server_updated_at']!,
+          _serverUpdatedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_sync_error_code')) {
+      context.handle(
+        _lastSyncErrorCodeMeta,
+        lastSyncErrorCode.isAcceptableOrUnknown(
+          data['last_sync_error_code']!,
+          _lastSyncErrorCodeMeta,
+        ),
+      );
+    }
     if (data.containsKey('updated_at')) {
       context.handle(
         _updatedAtMeta,
@@ -3705,6 +4625,18 @@ class $SectorsTable extends Sectors with TableInfo<$SectorsTable, Sector> {
         DriftSqlType.int,
         data['${effectivePrefix}version'],
       )!,
+      syncState: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_state'],
+      )!,
+      serverUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}server_updated_at'],
+      ),
+      lastSyncErrorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error_code'],
+      ),
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -3732,6 +4664,9 @@ class Sector extends DataClass implements Insertable<Sector> {
   final String polygonJson;
   final double areaSquareMeters;
   final int version;
+  final String syncState;
+  final DateTime? serverUpdatedAt;
+  final String? lastSyncErrorCode;
   final DateTime updatedAt;
   final DateTime? deletedAt;
   const Sector({
@@ -3744,6 +4679,9 @@ class Sector extends DataClass implements Insertable<Sector> {
     required this.polygonJson,
     required this.areaSquareMeters,
     required this.version,
+    required this.syncState,
+    this.serverUpdatedAt,
+    this.lastSyncErrorCode,
     required this.updatedAt,
     this.deletedAt,
   });
@@ -3759,6 +4697,13 @@ class Sector extends DataClass implements Insertable<Sector> {
     map['polygon_json'] = Variable<String>(polygonJson);
     map['area_square_meters'] = Variable<double>(areaSquareMeters);
     map['version'] = Variable<int>(version);
+    map['sync_state'] = Variable<String>(syncState);
+    if (!nullToAbsent || serverUpdatedAt != null) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
+    }
+    if (!nullToAbsent || lastSyncErrorCode != null) {
+      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode);
+    }
     map['updated_at'] = Variable<DateTime>(updatedAt);
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
@@ -3777,6 +4722,13 @@ class Sector extends DataClass implements Insertable<Sector> {
       polygonJson: Value(polygonJson),
       areaSquareMeters: Value(areaSquareMeters),
       version: Value(version),
+      syncState: Value(syncState),
+      serverUpdatedAt: serverUpdatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverUpdatedAt),
+      lastSyncErrorCode: lastSyncErrorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncErrorCode),
       updatedAt: Value(updatedAt),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
@@ -3799,6 +4751,11 @@ class Sector extends DataClass implements Insertable<Sector> {
       polygonJson: serializer.fromJson<String>(json['polygonJson']),
       areaSquareMeters: serializer.fromJson<double>(json['areaSquareMeters']),
       version: serializer.fromJson<int>(json['version']),
+      syncState: serializer.fromJson<String>(json['syncState']),
+      serverUpdatedAt: serializer.fromJson<DateTime?>(json['serverUpdatedAt']),
+      lastSyncErrorCode: serializer.fromJson<String?>(
+        json['lastSyncErrorCode'],
+      ),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
     );
@@ -3816,6 +4773,9 @@ class Sector extends DataClass implements Insertable<Sector> {
       'polygonJson': serializer.toJson<String>(polygonJson),
       'areaSquareMeters': serializer.toJson<double>(areaSquareMeters),
       'version': serializer.toJson<int>(version),
+      'syncState': serializer.toJson<String>(syncState),
+      'serverUpdatedAt': serializer.toJson<DateTime?>(serverUpdatedAt),
+      'lastSyncErrorCode': serializer.toJson<String?>(lastSyncErrorCode),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
     };
@@ -3831,6 +4791,9 @@ class Sector extends DataClass implements Insertable<Sector> {
     String? polygonJson,
     double? areaSquareMeters,
     int? version,
+    String? syncState,
+    Value<DateTime?> serverUpdatedAt = const Value.absent(),
+    Value<String?> lastSyncErrorCode = const Value.absent(),
     DateTime? updatedAt,
     Value<DateTime?> deletedAt = const Value.absent(),
   }) => Sector(
@@ -3843,6 +4806,13 @@ class Sector extends DataClass implements Insertable<Sector> {
     polygonJson: polygonJson ?? this.polygonJson,
     areaSquareMeters: areaSquareMeters ?? this.areaSquareMeters,
     version: version ?? this.version,
+    syncState: syncState ?? this.syncState,
+    serverUpdatedAt: serverUpdatedAt.present
+        ? serverUpdatedAt.value
+        : this.serverUpdatedAt,
+    lastSyncErrorCode: lastSyncErrorCode.present
+        ? lastSyncErrorCode.value
+        : this.lastSyncErrorCode,
     updatedAt: updatedAt ?? this.updatedAt,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
@@ -3861,6 +4831,13 @@ class Sector extends DataClass implements Insertable<Sector> {
           ? data.areaSquareMeters.value
           : this.areaSquareMeters,
       version: data.version.present ? data.version.value : this.version,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      serverUpdatedAt: data.serverUpdatedAt.present
+          ? data.serverUpdatedAt.value
+          : this.serverUpdatedAt,
+      lastSyncErrorCode: data.lastSyncErrorCode.present
+          ? data.lastSyncErrorCode.value
+          : this.lastSyncErrorCode,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
     );
@@ -3878,6 +4855,9 @@ class Sector extends DataClass implements Insertable<Sector> {
           ..write('polygonJson: $polygonJson, ')
           ..write('areaSquareMeters: $areaSquareMeters, ')
           ..write('version: $version, ')
+          ..write('syncState: $syncState, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt')
           ..write(')'))
@@ -3895,6 +4875,9 @@ class Sector extends DataClass implements Insertable<Sector> {
     polygonJson,
     areaSquareMeters,
     version,
+    syncState,
+    serverUpdatedAt,
+    lastSyncErrorCode,
     updatedAt,
     deletedAt,
   );
@@ -3911,6 +4894,9 @@ class Sector extends DataClass implements Insertable<Sector> {
           other.polygonJson == this.polygonJson &&
           other.areaSquareMeters == this.areaSquareMeters &&
           other.version == this.version &&
+          other.syncState == this.syncState &&
+          other.serverUpdatedAt == this.serverUpdatedAt &&
+          other.lastSyncErrorCode == this.lastSyncErrorCode &&
           other.updatedAt == this.updatedAt &&
           other.deletedAt == this.deletedAt);
 }
@@ -3925,6 +4911,9 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
   final Value<String> polygonJson;
   final Value<double> areaSquareMeters;
   final Value<int> version;
+  final Value<String> syncState;
+  final Value<DateTime?> serverUpdatedAt;
+  final Value<String?> lastSyncErrorCode;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> deletedAt;
   final Value<int> rowid;
@@ -3938,6 +4927,9 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
     this.polygonJson = const Value.absent(),
     this.areaSquareMeters = const Value.absent(),
     this.version = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.lastSyncErrorCode = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -3952,6 +4944,9 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
     required String polygonJson,
     required double areaSquareMeters,
     this.version = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.lastSyncErrorCode = const Value.absent(),
     required DateTime updatedAt,
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -3973,6 +4968,9 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
     Expression<String>? polygonJson,
     Expression<double>? areaSquareMeters,
     Expression<int>? version,
+    Expression<String>? syncState,
+    Expression<DateTime>? serverUpdatedAt,
+    Expression<String>? lastSyncErrorCode,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? deletedAt,
     Expression<int>? rowid,
@@ -3987,6 +4985,9 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
       if (polygonJson != null) 'polygon_json': polygonJson,
       if (areaSquareMeters != null) 'area_square_meters': areaSquareMeters,
       if (version != null) 'version': version,
+      if (syncState != null) 'sync_state': syncState,
+      if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
+      if (lastSyncErrorCode != null) 'last_sync_error_code': lastSyncErrorCode,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (rowid != null) 'rowid': rowid,
@@ -4003,6 +5004,9 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
     Value<String>? polygonJson,
     Value<double>? areaSquareMeters,
     Value<int>? version,
+    Value<String>? syncState,
+    Value<DateTime?>? serverUpdatedAt,
+    Value<String?>? lastSyncErrorCode,
     Value<DateTime>? updatedAt,
     Value<DateTime?>? deletedAt,
     Value<int>? rowid,
@@ -4017,6 +5021,9 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
       polygonJson: polygonJson ?? this.polygonJson,
       areaSquareMeters: areaSquareMeters ?? this.areaSquareMeters,
       version: version ?? this.version,
+      syncState: syncState ?? this.syncState,
+      serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+      lastSyncErrorCode: lastSyncErrorCode ?? this.lastSyncErrorCode,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
       rowid: rowid ?? this.rowid,
@@ -4053,6 +5060,15 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
     if (version.present) {
       map['version'] = Variable<int>(version.value);
     }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(syncState.value);
+    }
+    if (serverUpdatedAt.present) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt.value);
+    }
+    if (lastSyncErrorCode.present) {
+      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode.value);
+    }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
@@ -4077,6 +5093,9 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
           ..write('polygonJson: $polygonJson, ')
           ..write('areaSquareMeters: $areaSquareMeters, ')
           ..write('version: $version, ')
+          ..write('syncState: $syncState, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt, ')
           ..write('rowid: $rowid')
@@ -4603,6 +5622,29 @@ class $CustomCropsTable extends CustomCrops
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _normalizedNameMeta = const VerificationMeta(
+    'normalizedName',
+  );
+  @override
+  late final GeneratedColumn<String> normalizedName = GeneratedColumn<String>(
+    'normalized_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
@@ -4610,6 +5652,76 @@ class $CustomCropsTable extends CustomCrops
     aliasedName,
     true,
     type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _archivedAtMeta = const VerificationMeta(
+    'archivedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> archivedAt = GeneratedColumn<DateTime>(
+    'archived_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _syncStateMeta = const VerificationMeta(
+    'syncState',
+  );
+  @override
+  late final GeneratedColumn<String> syncState = GeneratedColumn<String>(
+    'sync_state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  static const VerificationMeta _serverUpdatedAtMeta = const VerificationMeta(
+    'serverUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> serverUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'server_updated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastSyncErrorCodeMeta = const VerificationMeta(
+    'lastSyncErrorCode',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncErrorCode =
+      GeneratedColumn<String>(
+        'last_sync_error_code',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
@@ -4624,7 +5736,21 @@ class $CustomCropsTable extends CustomCrops
     requiredDuringInsert: true,
   );
   @override
-  List<GeneratedColumn> get $columns => [id, ownerId, name, notes, updatedAt];
+  List<GeneratedColumn> get $columns => [
+    id,
+    ownerId,
+    name,
+    normalizedName,
+    description,
+    notes,
+    archivedAt,
+    version,
+    syncState,
+    serverUpdatedAt,
+    lastSyncErrorCode,
+    deletedAt,
+    updatedAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -4658,10 +5784,70 @@ class $CustomCropsTable extends CustomCrops
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
+    if (data.containsKey('normalized_name')) {
+      context.handle(
+        _normalizedNameMeta,
+        normalizedName.isAcceptableOrUnknown(
+          data['normalized_name']!,
+          _normalizedNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
     if (data.containsKey('notes')) {
       context.handle(
         _notesMeta,
         notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('archived_at')) {
+      context.handle(
+        _archivedAtMeta,
+        archivedAt.isAcceptableOrUnknown(data['archived_at']!, _archivedAtMeta),
+      );
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    }
+    if (data.containsKey('sync_state')) {
+      context.handle(
+        _syncStateMeta,
+        syncState.isAcceptableOrUnknown(data['sync_state']!, _syncStateMeta),
+      );
+    }
+    if (data.containsKey('server_updated_at')) {
+      context.handle(
+        _serverUpdatedAtMeta,
+        serverUpdatedAt.isAcceptableOrUnknown(
+          data['server_updated_at']!,
+          _serverUpdatedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_sync_error_code')) {
+      context.handle(
+        _lastSyncErrorCodeMeta,
+        lastSyncErrorCode.isAcceptableOrUnknown(
+          data['last_sync_error_code']!,
+          _lastSyncErrorCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
       );
     }
     if (data.containsKey('updated_at')) {
@@ -4693,9 +5879,41 @@ class $CustomCropsTable extends CustomCrops
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
+      normalizedName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}normalized_name'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
       notes: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}notes'],
+      ),
+      archivedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}archived_at'],
+      ),
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      syncState: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_state'],
+      )!,
+      serverUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}server_updated_at'],
+      ),
+      lastSyncErrorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error_code'],
+      ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
       ),
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -4714,13 +5932,29 @@ class CustomCrop extends DataClass implements Insertable<CustomCrop> {
   final String id;
   final String ownerId;
   final String name;
+  final String normalizedName;
+  final String? description;
   final String? notes;
+  final DateTime? archivedAt;
+  final int version;
+  final String syncState;
+  final DateTime? serverUpdatedAt;
+  final String? lastSyncErrorCode;
+  final DateTime? deletedAt;
   final DateTime updatedAt;
   const CustomCrop({
     required this.id,
     required this.ownerId,
     required this.name,
+    required this.normalizedName,
+    this.description,
     this.notes,
+    this.archivedAt,
+    required this.version,
+    required this.syncState,
+    this.serverUpdatedAt,
+    this.lastSyncErrorCode,
+    this.deletedAt,
     required this.updatedAt,
   });
   @override
@@ -4729,8 +5963,26 @@ class CustomCrop extends DataClass implements Insertable<CustomCrop> {
     map['id'] = Variable<String>(id);
     map['owner_id'] = Variable<String>(ownerId);
     map['name'] = Variable<String>(name);
+    map['normalized_name'] = Variable<String>(normalizedName);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
+    }
+    if (!nullToAbsent || archivedAt != null) {
+      map['archived_at'] = Variable<DateTime>(archivedAt);
+    }
+    map['version'] = Variable<int>(version);
+    map['sync_state'] = Variable<String>(syncState);
+    if (!nullToAbsent || serverUpdatedAt != null) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
+    }
+    if (!nullToAbsent || lastSyncErrorCode != null) {
+      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode);
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -4741,9 +5993,27 @@ class CustomCrop extends DataClass implements Insertable<CustomCrop> {
       id: Value(id),
       ownerId: Value(ownerId),
       name: Value(name),
+      normalizedName: Value(normalizedName),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
       notes: notes == null && nullToAbsent
           ? const Value.absent()
           : Value(notes),
+      archivedAt: archivedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(archivedAt),
+      version: Value(version),
+      syncState: Value(syncState),
+      serverUpdatedAt: serverUpdatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverUpdatedAt),
+      lastSyncErrorCode: lastSyncErrorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncErrorCode),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
       updatedAt: Value(updatedAt),
     );
   }
@@ -4757,7 +6027,17 @@ class CustomCrop extends DataClass implements Insertable<CustomCrop> {
       id: serializer.fromJson<String>(json['id']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
       name: serializer.fromJson<String>(json['name']),
+      normalizedName: serializer.fromJson<String>(json['normalizedName']),
+      description: serializer.fromJson<String?>(json['description']),
       notes: serializer.fromJson<String?>(json['notes']),
+      archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
+      version: serializer.fromJson<int>(json['version']),
+      syncState: serializer.fromJson<String>(json['syncState']),
+      serverUpdatedAt: serializer.fromJson<DateTime?>(json['serverUpdatedAt']),
+      lastSyncErrorCode: serializer.fromJson<String?>(
+        json['lastSyncErrorCode'],
+      ),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
@@ -4768,7 +6048,15 @@ class CustomCrop extends DataClass implements Insertable<CustomCrop> {
       'id': serializer.toJson<String>(id),
       'ownerId': serializer.toJson<String>(ownerId),
       'name': serializer.toJson<String>(name),
+      'normalizedName': serializer.toJson<String>(normalizedName),
+      'description': serializer.toJson<String?>(description),
       'notes': serializer.toJson<String?>(notes),
+      'archivedAt': serializer.toJson<DateTime?>(archivedAt),
+      'version': serializer.toJson<int>(version),
+      'syncState': serializer.toJson<String>(syncState),
+      'serverUpdatedAt': serializer.toJson<DateTime?>(serverUpdatedAt),
+      'lastSyncErrorCode': serializer.toJson<String?>(lastSyncErrorCode),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
@@ -4777,13 +6065,33 @@ class CustomCrop extends DataClass implements Insertable<CustomCrop> {
     String? id,
     String? ownerId,
     String? name,
+    String? normalizedName,
+    Value<String?> description = const Value.absent(),
     Value<String?> notes = const Value.absent(),
+    Value<DateTime?> archivedAt = const Value.absent(),
+    int? version,
+    String? syncState,
+    Value<DateTime?> serverUpdatedAt = const Value.absent(),
+    Value<String?> lastSyncErrorCode = const Value.absent(),
+    Value<DateTime?> deletedAt = const Value.absent(),
     DateTime? updatedAt,
   }) => CustomCrop(
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
     name: name ?? this.name,
+    normalizedName: normalizedName ?? this.normalizedName,
+    description: description.present ? description.value : this.description,
     notes: notes.present ? notes.value : this.notes,
+    archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
+    version: version ?? this.version,
+    syncState: syncState ?? this.syncState,
+    serverUpdatedAt: serverUpdatedAt.present
+        ? serverUpdatedAt.value
+        : this.serverUpdatedAt,
+    lastSyncErrorCode: lastSyncErrorCode.present
+        ? lastSyncErrorCode.value
+        : this.lastSyncErrorCode,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
   CustomCrop copyWithCompanion(CustomCropsCompanion data) {
@@ -4791,7 +6099,25 @@ class CustomCrop extends DataClass implements Insertable<CustomCrop> {
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
       name: data.name.present ? data.name.value : this.name,
+      normalizedName: data.normalizedName.present
+          ? data.normalizedName.value
+          : this.normalizedName,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
       notes: data.notes.present ? data.notes.value : this.notes,
+      archivedAt: data.archivedAt.present
+          ? data.archivedAt.value
+          : this.archivedAt,
+      version: data.version.present ? data.version.value : this.version,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      serverUpdatedAt: data.serverUpdatedAt.present
+          ? data.serverUpdatedAt.value
+          : this.serverUpdatedAt,
+      lastSyncErrorCode: data.lastSyncErrorCode.present
+          ? data.lastSyncErrorCode.value
+          : this.lastSyncErrorCode,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -4802,14 +6128,36 @@ class CustomCrop extends DataClass implements Insertable<CustomCrop> {
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('name: $name, ')
+          ..write('normalizedName: $normalizedName, ')
+          ..write('description: $description, ')
           ..write('notes: $notes, ')
+          ..write('archivedAt: $archivedAt, ')
+          ..write('version: $version, ')
+          ..write('syncState: $syncState, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
+          ..write('deletedAt: $deletedAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, ownerId, name, notes, updatedAt);
+  int get hashCode => Object.hash(
+    id,
+    ownerId,
+    name,
+    normalizedName,
+    description,
+    notes,
+    archivedAt,
+    version,
+    syncState,
+    serverUpdatedAt,
+    lastSyncErrorCode,
+    deletedAt,
+    updatedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -4817,7 +6165,15 @@ class CustomCrop extends DataClass implements Insertable<CustomCrop> {
           other.id == this.id &&
           other.ownerId == this.ownerId &&
           other.name == this.name &&
+          other.normalizedName == this.normalizedName &&
+          other.description == this.description &&
           other.notes == this.notes &&
+          other.archivedAt == this.archivedAt &&
+          other.version == this.version &&
+          other.syncState == this.syncState &&
+          other.serverUpdatedAt == this.serverUpdatedAt &&
+          other.lastSyncErrorCode == this.lastSyncErrorCode &&
+          other.deletedAt == this.deletedAt &&
           other.updatedAt == this.updatedAt);
 }
 
@@ -4825,14 +6181,30 @@ class CustomCropsCompanion extends UpdateCompanion<CustomCrop> {
   final Value<String> id;
   final Value<String> ownerId;
   final Value<String> name;
+  final Value<String> normalizedName;
+  final Value<String?> description;
   final Value<String?> notes;
+  final Value<DateTime?> archivedAt;
+  final Value<int> version;
+  final Value<String> syncState;
+  final Value<DateTime?> serverUpdatedAt;
+  final Value<String?> lastSyncErrorCode;
+  final Value<DateTime?> deletedAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const CustomCropsCompanion({
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
     this.name = const Value.absent(),
+    this.normalizedName = const Value.absent(),
+    this.description = const Value.absent(),
     this.notes = const Value.absent(),
+    this.archivedAt = const Value.absent(),
+    this.version = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.lastSyncErrorCode = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -4840,7 +6212,15 @@ class CustomCropsCompanion extends UpdateCompanion<CustomCrop> {
     required String id,
     required String ownerId,
     required String name,
+    this.normalizedName = const Value.absent(),
+    this.description = const Value.absent(),
     this.notes = const Value.absent(),
+    this.archivedAt = const Value.absent(),
+    this.version = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.lastSyncErrorCode = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -4851,7 +6231,15 @@ class CustomCropsCompanion extends UpdateCompanion<CustomCrop> {
     Expression<String>? id,
     Expression<String>? ownerId,
     Expression<String>? name,
+    Expression<String>? normalizedName,
+    Expression<String>? description,
     Expression<String>? notes,
+    Expression<DateTime>? archivedAt,
+    Expression<int>? version,
+    Expression<String>? syncState,
+    Expression<DateTime>? serverUpdatedAt,
+    Expression<String>? lastSyncErrorCode,
+    Expression<DateTime>? deletedAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
@@ -4859,7 +6247,15 @@ class CustomCropsCompanion extends UpdateCompanion<CustomCrop> {
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
       if (name != null) 'name': name,
+      if (normalizedName != null) 'normalized_name': normalizedName,
+      if (description != null) 'description': description,
       if (notes != null) 'notes': notes,
+      if (archivedAt != null) 'archived_at': archivedAt,
+      if (version != null) 'version': version,
+      if (syncState != null) 'sync_state': syncState,
+      if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
+      if (lastSyncErrorCode != null) 'last_sync_error_code': lastSyncErrorCode,
+      if (deletedAt != null) 'deleted_at': deletedAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -4869,7 +6265,15 @@ class CustomCropsCompanion extends UpdateCompanion<CustomCrop> {
     Value<String>? id,
     Value<String>? ownerId,
     Value<String>? name,
+    Value<String>? normalizedName,
+    Value<String?>? description,
     Value<String?>? notes,
+    Value<DateTime?>? archivedAt,
+    Value<int>? version,
+    Value<String>? syncState,
+    Value<DateTime?>? serverUpdatedAt,
+    Value<String?>? lastSyncErrorCode,
+    Value<DateTime?>? deletedAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
@@ -4877,7 +6281,15 @@ class CustomCropsCompanion extends UpdateCompanion<CustomCrop> {
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
       name: name ?? this.name,
+      normalizedName: normalizedName ?? this.normalizedName,
+      description: description ?? this.description,
       notes: notes ?? this.notes,
+      archivedAt: archivedAt ?? this.archivedAt,
+      version: version ?? this.version,
+      syncState: syncState ?? this.syncState,
+      serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+      lastSyncErrorCode: lastSyncErrorCode ?? this.lastSyncErrorCode,
+      deletedAt: deletedAt ?? this.deletedAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -4895,8 +6307,32 @@ class CustomCropsCompanion extends UpdateCompanion<CustomCrop> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (normalizedName.present) {
+      map['normalized_name'] = Variable<String>(normalizedName.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
+    }
+    if (archivedAt.present) {
+      map['archived_at'] = Variable<DateTime>(archivedAt.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(syncState.value);
+    }
+    if (serverUpdatedAt.present) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt.value);
+    }
+    if (lastSyncErrorCode.present) {
+      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
     }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
@@ -4913,7 +6349,15 @@ class CustomCropsCompanion extends UpdateCompanion<CustomCrop> {
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('name: $name, ')
+          ..write('normalizedName: $normalizedName, ')
+          ..write('description: $description, ')
           ..write('notes: $notes, ')
+          ..write('archivedAt: $archivedAt, ')
+          ..write('version: $version, ')
+          ..write('syncState: $syncState, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
+          ..write('deletedAt: $deletedAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -4961,6 +6405,17 @@ class $CropSeasonsTable extends CropSeasons
       'REFERENCES sectors (id)',
     ),
   );
+  static const VerificationMeta _agriculturalSeasonIdMeta =
+      const VerificationMeta('agriculturalSeasonId');
+  @override
+  late final GeneratedColumn<String> agriculturalSeasonId =
+      GeneratedColumn<String>(
+        'agricultural_season_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _cropIdMeta = const VerificationMeta('cropId');
   @override
   late final GeneratedColumn<String> cropId = GeneratedColumn<String>(
@@ -5015,6 +6470,74 @@ class $CropSeasonsTable extends CropSeasons
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _syncStateMeta = const VerificationMeta(
+    'syncState',
+  );
+  @override
+  late final GeneratedColumn<String> syncState = GeneratedColumn<String>(
+    'sync_state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  static const VerificationMeta _serverUpdatedAtMeta = const VerificationMeta(
+    'serverUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> serverUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'server_updated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastSyncErrorCodeMeta = const VerificationMeta(
+    'lastSyncErrorCode',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncErrorCode =
+      GeneratedColumn<String>(
+        'last_sync_error_code',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -5031,11 +6554,18 @@ class $CropSeasonsTable extends CropSeasons
     id,
     ownerId,
     sectorId,
+    agriculturalSeasonId,
     cropId,
     isCustomCrop,
     status,
     startsOn,
     endsOn,
+    notes,
+    version,
+    syncState,
+    serverUpdatedAt,
+    lastSyncErrorCode,
+    deletedAt,
     updatedAt,
   ];
   @override
@@ -5070,6 +6600,15 @@ class $CropSeasonsTable extends CropSeasons
       );
     } else if (isInserting) {
       context.missing(_sectorIdMeta);
+    }
+    if (data.containsKey('agricultural_season_id')) {
+      context.handle(
+        _agriculturalSeasonIdMeta,
+        agriculturalSeasonId.isAcceptableOrUnknown(
+          data['agricultural_season_id']!,
+          _agriculturalSeasonIdMeta,
+        ),
+      );
     }
     if (data.containsKey('crop_id')) {
       context.handle(
@@ -5108,6 +6647,48 @@ class $CropSeasonsTable extends CropSeasons
         endsOn.isAcceptableOrUnknown(data['ends_on']!, _endsOnMeta),
       );
     }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    }
+    if (data.containsKey('sync_state')) {
+      context.handle(
+        _syncStateMeta,
+        syncState.isAcceptableOrUnknown(data['sync_state']!, _syncStateMeta),
+      );
+    }
+    if (data.containsKey('server_updated_at')) {
+      context.handle(
+        _serverUpdatedAtMeta,
+        serverUpdatedAt.isAcceptableOrUnknown(
+          data['server_updated_at']!,
+          _serverUpdatedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_sync_error_code')) {
+      context.handle(
+        _lastSyncErrorCodeMeta,
+        lastSyncErrorCode.isAcceptableOrUnknown(
+          data['last_sync_error_code']!,
+          _lastSyncErrorCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
     if (data.containsKey('updated_at')) {
       context.handle(
         _updatedAtMeta,
@@ -5137,6 +6718,10 @@ class $CropSeasonsTable extends CropSeasons
         DriftSqlType.string,
         data['${effectivePrefix}sector_id'],
       )!,
+      agriculturalSeasonId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}agricultural_season_id'],
+      ),
       cropId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}crop_id'],
@@ -5157,6 +6742,30 @@ class $CropSeasonsTable extends CropSeasons
         DriftSqlType.dateTime,
         data['${effectivePrefix}ends_on'],
       ),
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      syncState: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_state'],
+      )!,
+      serverUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}server_updated_at'],
+      ),
+      lastSyncErrorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error_code'],
+      ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -5174,21 +6783,35 @@ class CropSeason extends DataClass implements Insertable<CropSeason> {
   final String id;
   final String ownerId;
   final String sectorId;
+  final String? agriculturalSeasonId;
   final String cropId;
   final bool isCustomCrop;
   final String status;
   final DateTime startsOn;
   final DateTime? endsOn;
+  final String? notes;
+  final int version;
+  final String syncState;
+  final DateTime? serverUpdatedAt;
+  final String? lastSyncErrorCode;
+  final DateTime? deletedAt;
   final DateTime updatedAt;
   const CropSeason({
     required this.id,
     required this.ownerId,
     required this.sectorId,
+    this.agriculturalSeasonId,
     required this.cropId,
     required this.isCustomCrop,
     required this.status,
     required this.startsOn,
     this.endsOn,
+    this.notes,
+    required this.version,
+    required this.syncState,
+    this.serverUpdatedAt,
+    this.lastSyncErrorCode,
+    this.deletedAt,
     required this.updatedAt,
   });
   @override
@@ -5197,12 +6820,29 @@ class CropSeason extends DataClass implements Insertable<CropSeason> {
     map['id'] = Variable<String>(id);
     map['owner_id'] = Variable<String>(ownerId);
     map['sector_id'] = Variable<String>(sectorId);
+    if (!nullToAbsent || agriculturalSeasonId != null) {
+      map['agricultural_season_id'] = Variable<String>(agriculturalSeasonId);
+    }
     map['crop_id'] = Variable<String>(cropId);
     map['is_custom_crop'] = Variable<bool>(isCustomCrop);
     map['status'] = Variable<String>(status);
     map['starts_on'] = Variable<DateTime>(startsOn);
     if (!nullToAbsent || endsOn != null) {
       map['ends_on'] = Variable<DateTime>(endsOn);
+    }
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['version'] = Variable<int>(version);
+    map['sync_state'] = Variable<String>(syncState);
+    if (!nullToAbsent || serverUpdatedAt != null) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
+    }
+    if (!nullToAbsent || lastSyncErrorCode != null) {
+      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode);
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -5213,6 +6853,9 @@ class CropSeason extends DataClass implements Insertable<CropSeason> {
       id: Value(id),
       ownerId: Value(ownerId),
       sectorId: Value(sectorId),
+      agriculturalSeasonId: agriculturalSeasonId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(agriculturalSeasonId),
       cropId: Value(cropId),
       isCustomCrop: Value(isCustomCrop),
       status: Value(status),
@@ -5220,6 +6863,20 @@ class CropSeason extends DataClass implements Insertable<CropSeason> {
       endsOn: endsOn == null && nullToAbsent
           ? const Value.absent()
           : Value(endsOn),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      version: Value(version),
+      syncState: Value(syncState),
+      serverUpdatedAt: serverUpdatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverUpdatedAt),
+      lastSyncErrorCode: lastSyncErrorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncErrorCode),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
       updatedAt: Value(updatedAt),
     );
   }
@@ -5233,11 +6890,22 @@ class CropSeason extends DataClass implements Insertable<CropSeason> {
       id: serializer.fromJson<String>(json['id']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
       sectorId: serializer.fromJson<String>(json['sectorId']),
+      agriculturalSeasonId: serializer.fromJson<String?>(
+        json['agriculturalSeasonId'],
+      ),
       cropId: serializer.fromJson<String>(json['cropId']),
       isCustomCrop: serializer.fromJson<bool>(json['isCustomCrop']),
       status: serializer.fromJson<String>(json['status']),
       startsOn: serializer.fromJson<DateTime>(json['startsOn']),
       endsOn: serializer.fromJson<DateTime?>(json['endsOn']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      version: serializer.fromJson<int>(json['version']),
+      syncState: serializer.fromJson<String>(json['syncState']),
+      serverUpdatedAt: serializer.fromJson<DateTime?>(json['serverUpdatedAt']),
+      lastSyncErrorCode: serializer.fromJson<String?>(
+        json['lastSyncErrorCode'],
+      ),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
@@ -5248,11 +6916,18 @@ class CropSeason extends DataClass implements Insertable<CropSeason> {
       'id': serializer.toJson<String>(id),
       'ownerId': serializer.toJson<String>(ownerId),
       'sectorId': serializer.toJson<String>(sectorId),
+      'agriculturalSeasonId': serializer.toJson<String?>(agriculturalSeasonId),
       'cropId': serializer.toJson<String>(cropId),
       'isCustomCrop': serializer.toJson<bool>(isCustomCrop),
       'status': serializer.toJson<String>(status),
       'startsOn': serializer.toJson<DateTime>(startsOn),
       'endsOn': serializer.toJson<DateTime?>(endsOn),
+      'notes': serializer.toJson<String?>(notes),
+      'version': serializer.toJson<int>(version),
+      'syncState': serializer.toJson<String>(syncState),
+      'serverUpdatedAt': serializer.toJson<DateTime?>(serverUpdatedAt),
+      'lastSyncErrorCode': serializer.toJson<String?>(lastSyncErrorCode),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
@@ -5261,21 +6936,41 @@ class CropSeason extends DataClass implements Insertable<CropSeason> {
     String? id,
     String? ownerId,
     String? sectorId,
+    Value<String?> agriculturalSeasonId = const Value.absent(),
     String? cropId,
     bool? isCustomCrop,
     String? status,
     DateTime? startsOn,
     Value<DateTime?> endsOn = const Value.absent(),
+    Value<String?> notes = const Value.absent(),
+    int? version,
+    String? syncState,
+    Value<DateTime?> serverUpdatedAt = const Value.absent(),
+    Value<String?> lastSyncErrorCode = const Value.absent(),
+    Value<DateTime?> deletedAt = const Value.absent(),
     DateTime? updatedAt,
   }) => CropSeason(
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
     sectorId: sectorId ?? this.sectorId,
+    agriculturalSeasonId: agriculturalSeasonId.present
+        ? agriculturalSeasonId.value
+        : this.agriculturalSeasonId,
     cropId: cropId ?? this.cropId,
     isCustomCrop: isCustomCrop ?? this.isCustomCrop,
     status: status ?? this.status,
     startsOn: startsOn ?? this.startsOn,
     endsOn: endsOn.present ? endsOn.value : this.endsOn,
+    notes: notes.present ? notes.value : this.notes,
+    version: version ?? this.version,
+    syncState: syncState ?? this.syncState,
+    serverUpdatedAt: serverUpdatedAt.present
+        ? serverUpdatedAt.value
+        : this.serverUpdatedAt,
+    lastSyncErrorCode: lastSyncErrorCode.present
+        ? lastSyncErrorCode.value
+        : this.lastSyncErrorCode,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
   CropSeason copyWithCompanion(CropSeasonsCompanion data) {
@@ -5283,6 +6978,9 @@ class CropSeason extends DataClass implements Insertable<CropSeason> {
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
       sectorId: data.sectorId.present ? data.sectorId.value : this.sectorId,
+      agriculturalSeasonId: data.agriculturalSeasonId.present
+          ? data.agriculturalSeasonId.value
+          : this.agriculturalSeasonId,
       cropId: data.cropId.present ? data.cropId.value : this.cropId,
       isCustomCrop: data.isCustomCrop.present
           ? data.isCustomCrop.value
@@ -5290,6 +6988,16 @@ class CropSeason extends DataClass implements Insertable<CropSeason> {
       status: data.status.present ? data.status.value : this.status,
       startsOn: data.startsOn.present ? data.startsOn.value : this.startsOn,
       endsOn: data.endsOn.present ? data.endsOn.value : this.endsOn,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      version: data.version.present ? data.version.value : this.version,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      serverUpdatedAt: data.serverUpdatedAt.present
+          ? data.serverUpdatedAt.value
+          : this.serverUpdatedAt,
+      lastSyncErrorCode: data.lastSyncErrorCode.present
+          ? data.lastSyncErrorCode.value
+          : this.lastSyncErrorCode,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -5300,11 +7008,18 @@ class CropSeason extends DataClass implements Insertable<CropSeason> {
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('sectorId: $sectorId, ')
+          ..write('agriculturalSeasonId: $agriculturalSeasonId, ')
           ..write('cropId: $cropId, ')
           ..write('isCustomCrop: $isCustomCrop, ')
           ..write('status: $status, ')
           ..write('startsOn: $startsOn, ')
           ..write('endsOn: $endsOn, ')
+          ..write('notes: $notes, ')
+          ..write('version: $version, ')
+          ..write('syncState: $syncState, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
+          ..write('deletedAt: $deletedAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
@@ -5315,11 +7030,18 @@ class CropSeason extends DataClass implements Insertable<CropSeason> {
     id,
     ownerId,
     sectorId,
+    agriculturalSeasonId,
     cropId,
     isCustomCrop,
     status,
     startsOn,
     endsOn,
+    notes,
+    version,
+    syncState,
+    serverUpdatedAt,
+    lastSyncErrorCode,
+    deletedAt,
     updatedAt,
   );
   @override
@@ -5329,11 +7051,18 @@ class CropSeason extends DataClass implements Insertable<CropSeason> {
           other.id == this.id &&
           other.ownerId == this.ownerId &&
           other.sectorId == this.sectorId &&
+          other.agriculturalSeasonId == this.agriculturalSeasonId &&
           other.cropId == this.cropId &&
           other.isCustomCrop == this.isCustomCrop &&
           other.status == this.status &&
           other.startsOn == this.startsOn &&
           other.endsOn == this.endsOn &&
+          other.notes == this.notes &&
+          other.version == this.version &&
+          other.syncState == this.syncState &&
+          other.serverUpdatedAt == this.serverUpdatedAt &&
+          other.lastSyncErrorCode == this.lastSyncErrorCode &&
+          other.deletedAt == this.deletedAt &&
           other.updatedAt == this.updatedAt);
 }
 
@@ -5341,22 +7070,36 @@ class CropSeasonsCompanion extends UpdateCompanion<CropSeason> {
   final Value<String> id;
   final Value<String> ownerId;
   final Value<String> sectorId;
+  final Value<String?> agriculturalSeasonId;
   final Value<String> cropId;
   final Value<bool> isCustomCrop;
   final Value<String> status;
   final Value<DateTime> startsOn;
   final Value<DateTime?> endsOn;
+  final Value<String?> notes;
+  final Value<int> version;
+  final Value<String> syncState;
+  final Value<DateTime?> serverUpdatedAt;
+  final Value<String?> lastSyncErrorCode;
+  final Value<DateTime?> deletedAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const CropSeasonsCompanion({
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
     this.sectorId = const Value.absent(),
+    this.agriculturalSeasonId = const Value.absent(),
     this.cropId = const Value.absent(),
     this.isCustomCrop = const Value.absent(),
     this.status = const Value.absent(),
     this.startsOn = const Value.absent(),
     this.endsOn = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.version = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.lastSyncErrorCode = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -5364,11 +7107,18 @@ class CropSeasonsCompanion extends UpdateCompanion<CropSeason> {
     required String id,
     required String ownerId,
     required String sectorId,
+    this.agriculturalSeasonId = const Value.absent(),
     required String cropId,
     this.isCustomCrop = const Value.absent(),
     this.status = const Value.absent(),
     required DateTime startsOn,
     this.endsOn = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.version = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.lastSyncErrorCode = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -5381,11 +7131,18 @@ class CropSeasonsCompanion extends UpdateCompanion<CropSeason> {
     Expression<String>? id,
     Expression<String>? ownerId,
     Expression<String>? sectorId,
+    Expression<String>? agriculturalSeasonId,
     Expression<String>? cropId,
     Expression<bool>? isCustomCrop,
     Expression<String>? status,
     Expression<DateTime>? startsOn,
     Expression<DateTime>? endsOn,
+    Expression<String>? notes,
+    Expression<int>? version,
+    Expression<String>? syncState,
+    Expression<DateTime>? serverUpdatedAt,
+    Expression<String>? lastSyncErrorCode,
+    Expression<DateTime>? deletedAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
@@ -5393,11 +7150,19 @@ class CropSeasonsCompanion extends UpdateCompanion<CropSeason> {
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
       if (sectorId != null) 'sector_id': sectorId,
+      if (agriculturalSeasonId != null)
+        'agricultural_season_id': agriculturalSeasonId,
       if (cropId != null) 'crop_id': cropId,
       if (isCustomCrop != null) 'is_custom_crop': isCustomCrop,
       if (status != null) 'status': status,
       if (startsOn != null) 'starts_on': startsOn,
       if (endsOn != null) 'ends_on': endsOn,
+      if (notes != null) 'notes': notes,
+      if (version != null) 'version': version,
+      if (syncState != null) 'sync_state': syncState,
+      if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
+      if (lastSyncErrorCode != null) 'last_sync_error_code': lastSyncErrorCode,
+      if (deletedAt != null) 'deleted_at': deletedAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -5407,11 +7172,18 @@ class CropSeasonsCompanion extends UpdateCompanion<CropSeason> {
     Value<String>? id,
     Value<String>? ownerId,
     Value<String>? sectorId,
+    Value<String?>? agriculturalSeasonId,
     Value<String>? cropId,
     Value<bool>? isCustomCrop,
     Value<String>? status,
     Value<DateTime>? startsOn,
     Value<DateTime?>? endsOn,
+    Value<String?>? notes,
+    Value<int>? version,
+    Value<String>? syncState,
+    Value<DateTime?>? serverUpdatedAt,
+    Value<String?>? lastSyncErrorCode,
+    Value<DateTime?>? deletedAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
@@ -5419,11 +7191,18 @@ class CropSeasonsCompanion extends UpdateCompanion<CropSeason> {
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
       sectorId: sectorId ?? this.sectorId,
+      agriculturalSeasonId: agriculturalSeasonId ?? this.agriculturalSeasonId,
       cropId: cropId ?? this.cropId,
       isCustomCrop: isCustomCrop ?? this.isCustomCrop,
       status: status ?? this.status,
       startsOn: startsOn ?? this.startsOn,
       endsOn: endsOn ?? this.endsOn,
+      notes: notes ?? this.notes,
+      version: version ?? this.version,
+      syncState: syncState ?? this.syncState,
+      serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+      lastSyncErrorCode: lastSyncErrorCode ?? this.lastSyncErrorCode,
+      deletedAt: deletedAt ?? this.deletedAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -5441,6 +7220,11 @@ class CropSeasonsCompanion extends UpdateCompanion<CropSeason> {
     if (sectorId.present) {
       map['sector_id'] = Variable<String>(sectorId.value);
     }
+    if (agriculturalSeasonId.present) {
+      map['agricultural_season_id'] = Variable<String>(
+        agriculturalSeasonId.value,
+      );
+    }
     if (cropId.present) {
       map['crop_id'] = Variable<String>(cropId.value);
     }
@@ -5455,6 +7239,24 @@ class CropSeasonsCompanion extends UpdateCompanion<CropSeason> {
     }
     if (endsOn.present) {
       map['ends_on'] = Variable<DateTime>(endsOn.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(syncState.value);
+    }
+    if (serverUpdatedAt.present) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt.value);
+    }
+    if (lastSyncErrorCode.present) {
+      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
     }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
@@ -5471,12 +7273,2006 @@ class CropSeasonsCompanion extends UpdateCompanion<CropSeason> {
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('sectorId: $sectorId, ')
+          ..write('agriculturalSeasonId: $agriculturalSeasonId, ')
           ..write('cropId: $cropId, ')
           ..write('isCustomCrop: $isCustomCrop, ')
           ..write('status: $status, ')
           ..write('startsOn: $startsOn, ')
           ..write('endsOn: $endsOn, ')
+          ..write('notes: $notes, ')
+          ..write('version: $version, ')
+          ..write('syncState: $syncState, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
+          ..write('deletedAt: $deletedAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AgriculturalSeasonsTable extends AgriculturalSeasons
+    with TableInfo<$AgriculturalSeasonsTable, AgriculturalSeason> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AgriculturalSeasonsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _ownerIdMeta = const VerificationMeta(
+    'ownerId',
+  );
+  @override
+  late final GeneratedColumn<String> ownerId = GeneratedColumn<String>(
+    'owner_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _parcelIdMeta = const VerificationMeta(
+    'parcelId',
+  );
+  @override
+  late final GeneratedColumn<String> parcelId = GeneratedColumn<String>(
+    'parcel_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES parcels (id)',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 120,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startsOnMeta = const VerificationMeta(
+    'startsOn',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startsOn = GeneratedColumn<DateTime>(
+    'starts_on',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endsOnMeta = const VerificationMeta('endsOn');
+  @override
+  late final GeneratedColumn<DateTime> endsOn = GeneratedColumn<DateTime>(
+    'ends_on',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('planned'),
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isMigrationBackfillMeta =
+      const VerificationMeta('isMigrationBackfill');
+  @override
+  late final GeneratedColumn<bool> isMigrationBackfill = GeneratedColumn<bool>(
+    'is_migration_backfill',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_migration_backfill" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _syncStateMeta = const VerificationMeta(
+    'syncState',
+  );
+  @override
+  late final GeneratedColumn<String> syncState = GeneratedColumn<String>(
+    'sync_state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverUpdatedAtMeta = const VerificationMeta(
+    'serverUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> serverUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'server_updated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastSyncErrorCodeMeta = const VerificationMeta(
+    'lastSyncErrorCode',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncErrorCode =
+      GeneratedColumn<String>(
+        'last_sync_error_code',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    ownerId,
+    parcelId,
+    name,
+    startsOn,
+    endsOn,
+    status,
+    notes,
+    isMigrationBackfill,
+    version,
+    syncState,
+    updatedAt,
+    serverUpdatedAt,
+    lastSyncErrorCode,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'agricultural_seasons';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AgriculturalSeason> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('owner_id')) {
+      context.handle(
+        _ownerIdMeta,
+        ownerId.isAcceptableOrUnknown(data['owner_id']!, _ownerIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ownerIdMeta);
+    }
+    if (data.containsKey('parcel_id')) {
+      context.handle(
+        _parcelIdMeta,
+        parcelId.isAcceptableOrUnknown(data['parcel_id']!, _parcelIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_parcelIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('starts_on')) {
+      context.handle(
+        _startsOnMeta,
+        startsOn.isAcceptableOrUnknown(data['starts_on']!, _startsOnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startsOnMeta);
+    }
+    if (data.containsKey('ends_on')) {
+      context.handle(
+        _endsOnMeta,
+        endsOn.isAcceptableOrUnknown(data['ends_on']!, _endsOnMeta),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('is_migration_backfill')) {
+      context.handle(
+        _isMigrationBackfillMeta,
+        isMigrationBackfill.isAcceptableOrUnknown(
+          data['is_migration_backfill']!,
+          _isMigrationBackfillMeta,
+        ),
+      );
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    }
+    if (data.containsKey('sync_state')) {
+      context.handle(
+        _syncStateMeta,
+        syncState.isAcceptableOrUnknown(data['sync_state']!, _syncStateMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('server_updated_at')) {
+      context.handle(
+        _serverUpdatedAtMeta,
+        serverUpdatedAt.isAcceptableOrUnknown(
+          data['server_updated_at']!,
+          _serverUpdatedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_sync_error_code')) {
+      context.handle(
+        _lastSyncErrorCodeMeta,
+        lastSyncErrorCode.isAcceptableOrUnknown(
+          data['last_sync_error_code']!,
+          _lastSyncErrorCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AgriculturalSeason map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AgriculturalSeason(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      ownerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}owner_id'],
+      )!,
+      parcelId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}parcel_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      startsOn: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}starts_on'],
+      )!,
+      endsOn: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}ends_on'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      isMigrationBackfill: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_migration_backfill'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      syncState: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_state'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      serverUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}server_updated_at'],
+      ),
+      lastSyncErrorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error_code'],
+      ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $AgriculturalSeasonsTable createAlias(String alias) {
+    return $AgriculturalSeasonsTable(attachedDatabase, alias);
+  }
+}
+
+class AgriculturalSeason extends DataClass
+    implements Insertable<AgriculturalSeason> {
+  final String id;
+  final String ownerId;
+  final String parcelId;
+  final String name;
+  final DateTime startsOn;
+  final DateTime? endsOn;
+  final String status;
+  final String? notes;
+  final bool isMigrationBackfill;
+  final int version;
+  final String syncState;
+  final DateTime updatedAt;
+  final DateTime? serverUpdatedAt;
+  final String? lastSyncErrorCode;
+  final DateTime? deletedAt;
+  const AgriculturalSeason({
+    required this.id,
+    required this.ownerId,
+    required this.parcelId,
+    required this.name,
+    required this.startsOn,
+    this.endsOn,
+    required this.status,
+    this.notes,
+    required this.isMigrationBackfill,
+    required this.version,
+    required this.syncState,
+    required this.updatedAt,
+    this.serverUpdatedAt,
+    this.lastSyncErrorCode,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['owner_id'] = Variable<String>(ownerId);
+    map['parcel_id'] = Variable<String>(parcelId);
+    map['name'] = Variable<String>(name);
+    map['starts_on'] = Variable<DateTime>(startsOn);
+    if (!nullToAbsent || endsOn != null) {
+      map['ends_on'] = Variable<DateTime>(endsOn);
+    }
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['is_migration_backfill'] = Variable<bool>(isMigrationBackfill);
+    map['version'] = Variable<int>(version);
+    map['sync_state'] = Variable<String>(syncState);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || serverUpdatedAt != null) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
+    }
+    if (!nullToAbsent || lastSyncErrorCode != null) {
+      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode);
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    return map;
+  }
+
+  AgriculturalSeasonsCompanion toCompanion(bool nullToAbsent) {
+    return AgriculturalSeasonsCompanion(
+      id: Value(id),
+      ownerId: Value(ownerId),
+      parcelId: Value(parcelId),
+      name: Value(name),
+      startsOn: Value(startsOn),
+      endsOn: endsOn == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endsOn),
+      status: Value(status),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      isMigrationBackfill: Value(isMigrationBackfill),
+      version: Value(version),
+      syncState: Value(syncState),
+      updatedAt: Value(updatedAt),
+      serverUpdatedAt: serverUpdatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverUpdatedAt),
+      lastSyncErrorCode: lastSyncErrorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncErrorCode),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory AgriculturalSeason.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AgriculturalSeason(
+      id: serializer.fromJson<String>(json['id']),
+      ownerId: serializer.fromJson<String>(json['ownerId']),
+      parcelId: serializer.fromJson<String>(json['parcelId']),
+      name: serializer.fromJson<String>(json['name']),
+      startsOn: serializer.fromJson<DateTime>(json['startsOn']),
+      endsOn: serializer.fromJson<DateTime?>(json['endsOn']),
+      status: serializer.fromJson<String>(json['status']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      isMigrationBackfill: serializer.fromJson<bool>(
+        json['isMigrationBackfill'],
+      ),
+      version: serializer.fromJson<int>(json['version']),
+      syncState: serializer.fromJson<String>(json['syncState']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      serverUpdatedAt: serializer.fromJson<DateTime?>(json['serverUpdatedAt']),
+      lastSyncErrorCode: serializer.fromJson<String?>(
+        json['lastSyncErrorCode'],
+      ),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'ownerId': serializer.toJson<String>(ownerId),
+      'parcelId': serializer.toJson<String>(parcelId),
+      'name': serializer.toJson<String>(name),
+      'startsOn': serializer.toJson<DateTime>(startsOn),
+      'endsOn': serializer.toJson<DateTime?>(endsOn),
+      'status': serializer.toJson<String>(status),
+      'notes': serializer.toJson<String?>(notes),
+      'isMigrationBackfill': serializer.toJson<bool>(isMigrationBackfill),
+      'version': serializer.toJson<int>(version),
+      'syncState': serializer.toJson<String>(syncState),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'serverUpdatedAt': serializer.toJson<DateTime?>(serverUpdatedAt),
+      'lastSyncErrorCode': serializer.toJson<String?>(lastSyncErrorCode),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+    };
+  }
+
+  AgriculturalSeason copyWith({
+    String? id,
+    String? ownerId,
+    String? parcelId,
+    String? name,
+    DateTime? startsOn,
+    Value<DateTime?> endsOn = const Value.absent(),
+    String? status,
+    Value<String?> notes = const Value.absent(),
+    bool? isMigrationBackfill,
+    int? version,
+    String? syncState,
+    DateTime? updatedAt,
+    Value<DateTime?> serverUpdatedAt = const Value.absent(),
+    Value<String?> lastSyncErrorCode = const Value.absent(),
+    Value<DateTime?> deletedAt = const Value.absent(),
+  }) => AgriculturalSeason(
+    id: id ?? this.id,
+    ownerId: ownerId ?? this.ownerId,
+    parcelId: parcelId ?? this.parcelId,
+    name: name ?? this.name,
+    startsOn: startsOn ?? this.startsOn,
+    endsOn: endsOn.present ? endsOn.value : this.endsOn,
+    status: status ?? this.status,
+    notes: notes.present ? notes.value : this.notes,
+    isMigrationBackfill: isMigrationBackfill ?? this.isMigrationBackfill,
+    version: version ?? this.version,
+    syncState: syncState ?? this.syncState,
+    updatedAt: updatedAt ?? this.updatedAt,
+    serverUpdatedAt: serverUpdatedAt.present
+        ? serverUpdatedAt.value
+        : this.serverUpdatedAt,
+    lastSyncErrorCode: lastSyncErrorCode.present
+        ? lastSyncErrorCode.value
+        : this.lastSyncErrorCode,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  AgriculturalSeason copyWithCompanion(AgriculturalSeasonsCompanion data) {
+    return AgriculturalSeason(
+      id: data.id.present ? data.id.value : this.id,
+      ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
+      parcelId: data.parcelId.present ? data.parcelId.value : this.parcelId,
+      name: data.name.present ? data.name.value : this.name,
+      startsOn: data.startsOn.present ? data.startsOn.value : this.startsOn,
+      endsOn: data.endsOn.present ? data.endsOn.value : this.endsOn,
+      status: data.status.present ? data.status.value : this.status,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      isMigrationBackfill: data.isMigrationBackfill.present
+          ? data.isMigrationBackfill.value
+          : this.isMigrationBackfill,
+      version: data.version.present ? data.version.value : this.version,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      serverUpdatedAt: data.serverUpdatedAt.present
+          ? data.serverUpdatedAt.value
+          : this.serverUpdatedAt,
+      lastSyncErrorCode: data.lastSyncErrorCode.present
+          ? data.lastSyncErrorCode.value
+          : this.lastSyncErrorCode,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AgriculturalSeason(')
+          ..write('id: $id, ')
+          ..write('ownerId: $ownerId, ')
+          ..write('parcelId: $parcelId, ')
+          ..write('name: $name, ')
+          ..write('startsOn: $startsOn, ')
+          ..write('endsOn: $endsOn, ')
+          ..write('status: $status, ')
+          ..write('notes: $notes, ')
+          ..write('isMigrationBackfill: $isMigrationBackfill, ')
+          ..write('version: $version, ')
+          ..write('syncState: $syncState, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    ownerId,
+    parcelId,
+    name,
+    startsOn,
+    endsOn,
+    status,
+    notes,
+    isMigrationBackfill,
+    version,
+    syncState,
+    updatedAt,
+    serverUpdatedAt,
+    lastSyncErrorCode,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AgriculturalSeason &&
+          other.id == this.id &&
+          other.ownerId == this.ownerId &&
+          other.parcelId == this.parcelId &&
+          other.name == this.name &&
+          other.startsOn == this.startsOn &&
+          other.endsOn == this.endsOn &&
+          other.status == this.status &&
+          other.notes == this.notes &&
+          other.isMigrationBackfill == this.isMigrationBackfill &&
+          other.version == this.version &&
+          other.syncState == this.syncState &&
+          other.updatedAt == this.updatedAt &&
+          other.serverUpdatedAt == this.serverUpdatedAt &&
+          other.lastSyncErrorCode == this.lastSyncErrorCode &&
+          other.deletedAt == this.deletedAt);
+}
+
+class AgriculturalSeasonsCompanion extends UpdateCompanion<AgriculturalSeason> {
+  final Value<String> id;
+  final Value<String> ownerId;
+  final Value<String> parcelId;
+  final Value<String> name;
+  final Value<DateTime> startsOn;
+  final Value<DateTime?> endsOn;
+  final Value<String> status;
+  final Value<String?> notes;
+  final Value<bool> isMigrationBackfill;
+  final Value<int> version;
+  final Value<String> syncState;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> serverUpdatedAt;
+  final Value<String?> lastSyncErrorCode;
+  final Value<DateTime?> deletedAt;
+  final Value<int> rowid;
+  const AgriculturalSeasonsCompanion({
+    this.id = const Value.absent(),
+    this.ownerId = const Value.absent(),
+    this.parcelId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.startsOn = const Value.absent(),
+    this.endsOn = const Value.absent(),
+    this.status = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.isMigrationBackfill = const Value.absent(),
+    this.version = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.lastSyncErrorCode = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AgriculturalSeasonsCompanion.insert({
+    required String id,
+    required String ownerId,
+    required String parcelId,
+    required String name,
+    required DateTime startsOn,
+    this.endsOn = const Value.absent(),
+    this.status = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.isMigrationBackfill = const Value.absent(),
+    this.version = const Value.absent(),
+    this.syncState = const Value.absent(),
+    required DateTime updatedAt,
+    this.serverUpdatedAt = const Value.absent(),
+    this.lastSyncErrorCode = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       ownerId = Value(ownerId),
+       parcelId = Value(parcelId),
+       name = Value(name),
+       startsOn = Value(startsOn),
+       updatedAt = Value(updatedAt);
+  static Insertable<AgriculturalSeason> custom({
+    Expression<String>? id,
+    Expression<String>? ownerId,
+    Expression<String>? parcelId,
+    Expression<String>? name,
+    Expression<DateTime>? startsOn,
+    Expression<DateTime>? endsOn,
+    Expression<String>? status,
+    Expression<String>? notes,
+    Expression<bool>? isMigrationBackfill,
+    Expression<int>? version,
+    Expression<String>? syncState,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? serverUpdatedAt,
+    Expression<String>? lastSyncErrorCode,
+    Expression<DateTime>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (ownerId != null) 'owner_id': ownerId,
+      if (parcelId != null) 'parcel_id': parcelId,
+      if (name != null) 'name': name,
+      if (startsOn != null) 'starts_on': startsOn,
+      if (endsOn != null) 'ends_on': endsOn,
+      if (status != null) 'status': status,
+      if (notes != null) 'notes': notes,
+      if (isMigrationBackfill != null)
+        'is_migration_backfill': isMigrationBackfill,
+      if (version != null) 'version': version,
+      if (syncState != null) 'sync_state': syncState,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
+      if (lastSyncErrorCode != null) 'last_sync_error_code': lastSyncErrorCode,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AgriculturalSeasonsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? ownerId,
+    Value<String>? parcelId,
+    Value<String>? name,
+    Value<DateTime>? startsOn,
+    Value<DateTime?>? endsOn,
+    Value<String>? status,
+    Value<String?>? notes,
+    Value<bool>? isMigrationBackfill,
+    Value<int>? version,
+    Value<String>? syncState,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? serverUpdatedAt,
+    Value<String?>? lastSyncErrorCode,
+    Value<DateTime?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return AgriculturalSeasonsCompanion(
+      id: id ?? this.id,
+      ownerId: ownerId ?? this.ownerId,
+      parcelId: parcelId ?? this.parcelId,
+      name: name ?? this.name,
+      startsOn: startsOn ?? this.startsOn,
+      endsOn: endsOn ?? this.endsOn,
+      status: status ?? this.status,
+      notes: notes ?? this.notes,
+      isMigrationBackfill: isMigrationBackfill ?? this.isMigrationBackfill,
+      version: version ?? this.version,
+      syncState: syncState ?? this.syncState,
+      updatedAt: updatedAt ?? this.updatedAt,
+      serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+      lastSyncErrorCode: lastSyncErrorCode ?? this.lastSyncErrorCode,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (ownerId.present) {
+      map['owner_id'] = Variable<String>(ownerId.value);
+    }
+    if (parcelId.present) {
+      map['parcel_id'] = Variable<String>(parcelId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (startsOn.present) {
+      map['starts_on'] = Variable<DateTime>(startsOn.value);
+    }
+    if (endsOn.present) {
+      map['ends_on'] = Variable<DateTime>(endsOn.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (isMigrationBackfill.present) {
+      map['is_migration_backfill'] = Variable<bool>(isMigrationBackfill.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(syncState.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (serverUpdatedAt.present) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt.value);
+    }
+    if (lastSyncErrorCode.present) {
+      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AgriculturalSeasonsCompanion(')
+          ..write('id: $id, ')
+          ..write('ownerId: $ownerId, ')
+          ..write('parcelId: $parcelId, ')
+          ..write('name: $name, ')
+          ..write('startsOn: $startsOn, ')
+          ..write('endsOn: $endsOn, ')
+          ..write('status: $status, ')
+          ..write('notes: $notes, ')
+          ..write('isMigrationBackfill: $isMigrationBackfill, ')
+          ..write('version: $version, ')
+          ..write('syncState: $syncState, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SectorIrrigationConfigsTable extends SectorIrrigationConfigs
+    with TableInfo<$SectorIrrigationConfigsTable, SectorIrrigationConfig> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SectorIrrigationConfigsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _ownerIdMeta = const VerificationMeta(
+    'ownerId',
+  );
+  @override
+  late final GeneratedColumn<String> ownerId = GeneratedColumn<String>(
+    'owner_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sectorIdMeta = const VerificationMeta(
+    'sectorId',
+  );
+  @override
+  late final GeneratedColumn<String> sectorId = GeneratedColumn<String>(
+    'sector_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES sectors (id)',
+    ),
+  );
+  static const VerificationMeta _methodMeta = const VerificationMeta('method');
+  @override
+  late final GeneratedColumn<String> method = GeneratedColumn<String>(
+    'method',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('drip'),
+  );
+  static const VerificationMeta _plantCountMeta = const VerificationMeta(
+    'plantCount',
+  );
+  @override
+  late final GeneratedColumn<int> plantCount = GeneratedColumn<int>(
+    'plant_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _emitterCountMeta = const VerificationMeta(
+    'emitterCount',
+  );
+  @override
+  late final GeneratedColumn<int> emitterCount = GeneratedColumn<int>(
+    'emitter_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _emittersPerPlantMilliMeta =
+      const VerificationMeta('emittersPerPlantMilli');
+  @override
+  late final GeneratedColumn<int> emittersPerPlantMilli = GeneratedColumn<int>(
+    'emitters_per_plant_milli',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _flowMlMinMeta = const VerificationMeta(
+    'flowMlMin',
+  );
+  @override
+  late final GeneratedColumn<int> flowMlMin = GeneratedColumn<int>(
+    'flow_ml_min',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pressureKpaMeta = const VerificationMeta(
+    'pressureKpa',
+  );
+  @override
+  late final GeneratedColumn<int> pressureKpa = GeneratedColumn<int>(
+    'pressure_kpa',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _distributionNotesMeta = const VerificationMeta(
+    'distributionNotes',
+  );
+  @override
+  late final GeneratedColumn<String> distributionNotes =
+      GeneratedColumn<String>(
+        'distribution_notes',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _effectiveFromMeta = const VerificationMeta(
+    'effectiveFrom',
+  );
+  @override
+  late final GeneratedColumn<DateTime> effectiveFrom =
+      GeneratedColumn<DateTime>(
+        'effective_from',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _effectiveToMeta = const VerificationMeta(
+    'effectiveTo',
+  );
+  @override
+  late final GeneratedColumn<DateTime> effectiveTo = GeneratedColumn<DateTime>(
+    'effective_to',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _configVersionMeta = const VerificationMeta(
+    'configVersion',
+  );
+  @override
+  late final GeneratedColumn<int> configVersion = GeneratedColumn<int>(
+    'config_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _syncStateMeta = const VerificationMeta(
+    'syncState',
+  );
+  @override
+  late final GeneratedColumn<String> syncState = GeneratedColumn<String>(
+    'sync_state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverUpdatedAtMeta = const VerificationMeta(
+    'serverUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> serverUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'server_updated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastSyncErrorCodeMeta = const VerificationMeta(
+    'lastSyncErrorCode',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncErrorCode =
+      GeneratedColumn<String>(
+        'last_sync_error_code',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    ownerId,
+    sectorId,
+    method,
+    plantCount,
+    emitterCount,
+    emittersPerPlantMilli,
+    flowMlMin,
+    pressureKpa,
+    distributionNotes,
+    effectiveFrom,
+    effectiveTo,
+    configVersion,
+    version,
+    syncState,
+    updatedAt,
+    serverUpdatedAt,
+    lastSyncErrorCode,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sector_irrigation_configs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SectorIrrigationConfig> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('owner_id')) {
+      context.handle(
+        _ownerIdMeta,
+        ownerId.isAcceptableOrUnknown(data['owner_id']!, _ownerIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ownerIdMeta);
+    }
+    if (data.containsKey('sector_id')) {
+      context.handle(
+        _sectorIdMeta,
+        sectorId.isAcceptableOrUnknown(data['sector_id']!, _sectorIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sectorIdMeta);
+    }
+    if (data.containsKey('method')) {
+      context.handle(
+        _methodMeta,
+        method.isAcceptableOrUnknown(data['method']!, _methodMeta),
+      );
+    }
+    if (data.containsKey('plant_count')) {
+      context.handle(
+        _plantCountMeta,
+        plantCount.isAcceptableOrUnknown(data['plant_count']!, _plantCountMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_plantCountMeta);
+    }
+    if (data.containsKey('emitter_count')) {
+      context.handle(
+        _emitterCountMeta,
+        emitterCount.isAcceptableOrUnknown(
+          data['emitter_count']!,
+          _emitterCountMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_emitterCountMeta);
+    }
+    if (data.containsKey('emitters_per_plant_milli')) {
+      context.handle(
+        _emittersPerPlantMilliMeta,
+        emittersPerPlantMilli.isAcceptableOrUnknown(
+          data['emitters_per_plant_milli']!,
+          _emittersPerPlantMilliMeta,
+        ),
+      );
+    }
+    if (data.containsKey('flow_ml_min')) {
+      context.handle(
+        _flowMlMinMeta,
+        flowMlMin.isAcceptableOrUnknown(data['flow_ml_min']!, _flowMlMinMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_flowMlMinMeta);
+    }
+    if (data.containsKey('pressure_kpa')) {
+      context.handle(
+        _pressureKpaMeta,
+        pressureKpa.isAcceptableOrUnknown(
+          data['pressure_kpa']!,
+          _pressureKpaMeta,
+        ),
+      );
+    }
+    if (data.containsKey('distribution_notes')) {
+      context.handle(
+        _distributionNotesMeta,
+        distributionNotes.isAcceptableOrUnknown(
+          data['distribution_notes']!,
+          _distributionNotesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('effective_from')) {
+      context.handle(
+        _effectiveFromMeta,
+        effectiveFrom.isAcceptableOrUnknown(
+          data['effective_from']!,
+          _effectiveFromMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_effectiveFromMeta);
+    }
+    if (data.containsKey('effective_to')) {
+      context.handle(
+        _effectiveToMeta,
+        effectiveTo.isAcceptableOrUnknown(
+          data['effective_to']!,
+          _effectiveToMeta,
+        ),
+      );
+    }
+    if (data.containsKey('config_version')) {
+      context.handle(
+        _configVersionMeta,
+        configVersion.isAcceptableOrUnknown(
+          data['config_version']!,
+          _configVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_configVersionMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    }
+    if (data.containsKey('sync_state')) {
+      context.handle(
+        _syncStateMeta,
+        syncState.isAcceptableOrUnknown(data['sync_state']!, _syncStateMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('server_updated_at')) {
+      context.handle(
+        _serverUpdatedAtMeta,
+        serverUpdatedAt.isAcceptableOrUnknown(
+          data['server_updated_at']!,
+          _serverUpdatedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_sync_error_code')) {
+      context.handle(
+        _lastSyncErrorCodeMeta,
+        lastSyncErrorCode.isAcceptableOrUnknown(
+          data['last_sync_error_code']!,
+          _lastSyncErrorCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SectorIrrigationConfig map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SectorIrrigationConfig(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      ownerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}owner_id'],
+      )!,
+      sectorId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sector_id'],
+      )!,
+      method: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}method'],
+      )!,
+      plantCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}plant_count'],
+      )!,
+      emitterCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}emitter_count'],
+      )!,
+      emittersPerPlantMilli: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}emitters_per_plant_milli'],
+      ),
+      flowMlMin: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}flow_ml_min'],
+      )!,
+      pressureKpa: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}pressure_kpa'],
+      ),
+      distributionNotes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}distribution_notes'],
+      ),
+      effectiveFrom: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}effective_from'],
+      )!,
+      effectiveTo: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}effective_to'],
+      ),
+      configVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}config_version'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      syncState: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_state'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      serverUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}server_updated_at'],
+      ),
+      lastSyncErrorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error_code'],
+      ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $SectorIrrigationConfigsTable createAlias(String alias) {
+    return $SectorIrrigationConfigsTable(attachedDatabase, alias);
+  }
+}
+
+class SectorIrrigationConfig extends DataClass
+    implements Insertable<SectorIrrigationConfig> {
+  final String id;
+  final String ownerId;
+  final String sectorId;
+  final String method;
+  final int plantCount;
+  final int emitterCount;
+  final int? emittersPerPlantMilli;
+  final int flowMlMin;
+  final int? pressureKpa;
+  final String? distributionNotes;
+  final DateTime effectiveFrom;
+  final DateTime? effectiveTo;
+  final int configVersion;
+  final int version;
+  final String syncState;
+  final DateTime updatedAt;
+  final DateTime? serverUpdatedAt;
+  final String? lastSyncErrorCode;
+  final DateTime? deletedAt;
+  const SectorIrrigationConfig({
+    required this.id,
+    required this.ownerId,
+    required this.sectorId,
+    required this.method,
+    required this.plantCount,
+    required this.emitterCount,
+    this.emittersPerPlantMilli,
+    required this.flowMlMin,
+    this.pressureKpa,
+    this.distributionNotes,
+    required this.effectiveFrom,
+    this.effectiveTo,
+    required this.configVersion,
+    required this.version,
+    required this.syncState,
+    required this.updatedAt,
+    this.serverUpdatedAt,
+    this.lastSyncErrorCode,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['owner_id'] = Variable<String>(ownerId);
+    map['sector_id'] = Variable<String>(sectorId);
+    map['method'] = Variable<String>(method);
+    map['plant_count'] = Variable<int>(plantCount);
+    map['emitter_count'] = Variable<int>(emitterCount);
+    if (!nullToAbsent || emittersPerPlantMilli != null) {
+      map['emitters_per_plant_milli'] = Variable<int>(emittersPerPlantMilli);
+    }
+    map['flow_ml_min'] = Variable<int>(flowMlMin);
+    if (!nullToAbsent || pressureKpa != null) {
+      map['pressure_kpa'] = Variable<int>(pressureKpa);
+    }
+    if (!nullToAbsent || distributionNotes != null) {
+      map['distribution_notes'] = Variable<String>(distributionNotes);
+    }
+    map['effective_from'] = Variable<DateTime>(effectiveFrom);
+    if (!nullToAbsent || effectiveTo != null) {
+      map['effective_to'] = Variable<DateTime>(effectiveTo);
+    }
+    map['config_version'] = Variable<int>(configVersion);
+    map['version'] = Variable<int>(version);
+    map['sync_state'] = Variable<String>(syncState);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || serverUpdatedAt != null) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
+    }
+    if (!nullToAbsent || lastSyncErrorCode != null) {
+      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode);
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    return map;
+  }
+
+  SectorIrrigationConfigsCompanion toCompanion(bool nullToAbsent) {
+    return SectorIrrigationConfigsCompanion(
+      id: Value(id),
+      ownerId: Value(ownerId),
+      sectorId: Value(sectorId),
+      method: Value(method),
+      plantCount: Value(plantCount),
+      emitterCount: Value(emitterCount),
+      emittersPerPlantMilli: emittersPerPlantMilli == null && nullToAbsent
+          ? const Value.absent()
+          : Value(emittersPerPlantMilli),
+      flowMlMin: Value(flowMlMin),
+      pressureKpa: pressureKpa == null && nullToAbsent
+          ? const Value.absent()
+          : Value(pressureKpa),
+      distributionNotes: distributionNotes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(distributionNotes),
+      effectiveFrom: Value(effectiveFrom),
+      effectiveTo: effectiveTo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(effectiveTo),
+      configVersion: Value(configVersion),
+      version: Value(version),
+      syncState: Value(syncState),
+      updatedAt: Value(updatedAt),
+      serverUpdatedAt: serverUpdatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverUpdatedAt),
+      lastSyncErrorCode: lastSyncErrorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncErrorCode),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory SectorIrrigationConfig.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SectorIrrigationConfig(
+      id: serializer.fromJson<String>(json['id']),
+      ownerId: serializer.fromJson<String>(json['ownerId']),
+      sectorId: serializer.fromJson<String>(json['sectorId']),
+      method: serializer.fromJson<String>(json['method']),
+      plantCount: serializer.fromJson<int>(json['plantCount']),
+      emitterCount: serializer.fromJson<int>(json['emitterCount']),
+      emittersPerPlantMilli: serializer.fromJson<int?>(
+        json['emittersPerPlantMilli'],
+      ),
+      flowMlMin: serializer.fromJson<int>(json['flowMlMin']),
+      pressureKpa: serializer.fromJson<int?>(json['pressureKpa']),
+      distributionNotes: serializer.fromJson<String?>(
+        json['distributionNotes'],
+      ),
+      effectiveFrom: serializer.fromJson<DateTime>(json['effectiveFrom']),
+      effectiveTo: serializer.fromJson<DateTime?>(json['effectiveTo']),
+      configVersion: serializer.fromJson<int>(json['configVersion']),
+      version: serializer.fromJson<int>(json['version']),
+      syncState: serializer.fromJson<String>(json['syncState']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      serverUpdatedAt: serializer.fromJson<DateTime?>(json['serverUpdatedAt']),
+      lastSyncErrorCode: serializer.fromJson<String?>(
+        json['lastSyncErrorCode'],
+      ),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'ownerId': serializer.toJson<String>(ownerId),
+      'sectorId': serializer.toJson<String>(sectorId),
+      'method': serializer.toJson<String>(method),
+      'plantCount': serializer.toJson<int>(plantCount),
+      'emitterCount': serializer.toJson<int>(emitterCount),
+      'emittersPerPlantMilli': serializer.toJson<int?>(emittersPerPlantMilli),
+      'flowMlMin': serializer.toJson<int>(flowMlMin),
+      'pressureKpa': serializer.toJson<int?>(pressureKpa),
+      'distributionNotes': serializer.toJson<String?>(distributionNotes),
+      'effectiveFrom': serializer.toJson<DateTime>(effectiveFrom),
+      'effectiveTo': serializer.toJson<DateTime?>(effectiveTo),
+      'configVersion': serializer.toJson<int>(configVersion),
+      'version': serializer.toJson<int>(version),
+      'syncState': serializer.toJson<String>(syncState),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'serverUpdatedAt': serializer.toJson<DateTime?>(serverUpdatedAt),
+      'lastSyncErrorCode': serializer.toJson<String?>(lastSyncErrorCode),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+    };
+  }
+
+  SectorIrrigationConfig copyWith({
+    String? id,
+    String? ownerId,
+    String? sectorId,
+    String? method,
+    int? plantCount,
+    int? emitterCount,
+    Value<int?> emittersPerPlantMilli = const Value.absent(),
+    int? flowMlMin,
+    Value<int?> pressureKpa = const Value.absent(),
+    Value<String?> distributionNotes = const Value.absent(),
+    DateTime? effectiveFrom,
+    Value<DateTime?> effectiveTo = const Value.absent(),
+    int? configVersion,
+    int? version,
+    String? syncState,
+    DateTime? updatedAt,
+    Value<DateTime?> serverUpdatedAt = const Value.absent(),
+    Value<String?> lastSyncErrorCode = const Value.absent(),
+    Value<DateTime?> deletedAt = const Value.absent(),
+  }) => SectorIrrigationConfig(
+    id: id ?? this.id,
+    ownerId: ownerId ?? this.ownerId,
+    sectorId: sectorId ?? this.sectorId,
+    method: method ?? this.method,
+    plantCount: plantCount ?? this.plantCount,
+    emitterCount: emitterCount ?? this.emitterCount,
+    emittersPerPlantMilli: emittersPerPlantMilli.present
+        ? emittersPerPlantMilli.value
+        : this.emittersPerPlantMilli,
+    flowMlMin: flowMlMin ?? this.flowMlMin,
+    pressureKpa: pressureKpa.present ? pressureKpa.value : this.pressureKpa,
+    distributionNotes: distributionNotes.present
+        ? distributionNotes.value
+        : this.distributionNotes,
+    effectiveFrom: effectiveFrom ?? this.effectiveFrom,
+    effectiveTo: effectiveTo.present ? effectiveTo.value : this.effectiveTo,
+    configVersion: configVersion ?? this.configVersion,
+    version: version ?? this.version,
+    syncState: syncState ?? this.syncState,
+    updatedAt: updatedAt ?? this.updatedAt,
+    serverUpdatedAt: serverUpdatedAt.present
+        ? serverUpdatedAt.value
+        : this.serverUpdatedAt,
+    lastSyncErrorCode: lastSyncErrorCode.present
+        ? lastSyncErrorCode.value
+        : this.lastSyncErrorCode,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  SectorIrrigationConfig copyWithCompanion(
+    SectorIrrigationConfigsCompanion data,
+  ) {
+    return SectorIrrigationConfig(
+      id: data.id.present ? data.id.value : this.id,
+      ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
+      sectorId: data.sectorId.present ? data.sectorId.value : this.sectorId,
+      method: data.method.present ? data.method.value : this.method,
+      plantCount: data.plantCount.present
+          ? data.plantCount.value
+          : this.plantCount,
+      emitterCount: data.emitterCount.present
+          ? data.emitterCount.value
+          : this.emitterCount,
+      emittersPerPlantMilli: data.emittersPerPlantMilli.present
+          ? data.emittersPerPlantMilli.value
+          : this.emittersPerPlantMilli,
+      flowMlMin: data.flowMlMin.present ? data.flowMlMin.value : this.flowMlMin,
+      pressureKpa: data.pressureKpa.present
+          ? data.pressureKpa.value
+          : this.pressureKpa,
+      distributionNotes: data.distributionNotes.present
+          ? data.distributionNotes.value
+          : this.distributionNotes,
+      effectiveFrom: data.effectiveFrom.present
+          ? data.effectiveFrom.value
+          : this.effectiveFrom,
+      effectiveTo: data.effectiveTo.present
+          ? data.effectiveTo.value
+          : this.effectiveTo,
+      configVersion: data.configVersion.present
+          ? data.configVersion.value
+          : this.configVersion,
+      version: data.version.present ? data.version.value : this.version,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      serverUpdatedAt: data.serverUpdatedAt.present
+          ? data.serverUpdatedAt.value
+          : this.serverUpdatedAt,
+      lastSyncErrorCode: data.lastSyncErrorCode.present
+          ? data.lastSyncErrorCode.value
+          : this.lastSyncErrorCode,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SectorIrrigationConfig(')
+          ..write('id: $id, ')
+          ..write('ownerId: $ownerId, ')
+          ..write('sectorId: $sectorId, ')
+          ..write('method: $method, ')
+          ..write('plantCount: $plantCount, ')
+          ..write('emitterCount: $emitterCount, ')
+          ..write('emittersPerPlantMilli: $emittersPerPlantMilli, ')
+          ..write('flowMlMin: $flowMlMin, ')
+          ..write('pressureKpa: $pressureKpa, ')
+          ..write('distributionNotes: $distributionNotes, ')
+          ..write('effectiveFrom: $effectiveFrom, ')
+          ..write('effectiveTo: $effectiveTo, ')
+          ..write('configVersion: $configVersion, ')
+          ..write('version: $version, ')
+          ..write('syncState: $syncState, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    ownerId,
+    sectorId,
+    method,
+    plantCount,
+    emitterCount,
+    emittersPerPlantMilli,
+    flowMlMin,
+    pressureKpa,
+    distributionNotes,
+    effectiveFrom,
+    effectiveTo,
+    configVersion,
+    version,
+    syncState,
+    updatedAt,
+    serverUpdatedAt,
+    lastSyncErrorCode,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SectorIrrigationConfig &&
+          other.id == this.id &&
+          other.ownerId == this.ownerId &&
+          other.sectorId == this.sectorId &&
+          other.method == this.method &&
+          other.plantCount == this.plantCount &&
+          other.emitterCount == this.emitterCount &&
+          other.emittersPerPlantMilli == this.emittersPerPlantMilli &&
+          other.flowMlMin == this.flowMlMin &&
+          other.pressureKpa == this.pressureKpa &&
+          other.distributionNotes == this.distributionNotes &&
+          other.effectiveFrom == this.effectiveFrom &&
+          other.effectiveTo == this.effectiveTo &&
+          other.configVersion == this.configVersion &&
+          other.version == this.version &&
+          other.syncState == this.syncState &&
+          other.updatedAt == this.updatedAt &&
+          other.serverUpdatedAt == this.serverUpdatedAt &&
+          other.lastSyncErrorCode == this.lastSyncErrorCode &&
+          other.deletedAt == this.deletedAt);
+}
+
+class SectorIrrigationConfigsCompanion
+    extends UpdateCompanion<SectorIrrigationConfig> {
+  final Value<String> id;
+  final Value<String> ownerId;
+  final Value<String> sectorId;
+  final Value<String> method;
+  final Value<int> plantCount;
+  final Value<int> emitterCount;
+  final Value<int?> emittersPerPlantMilli;
+  final Value<int> flowMlMin;
+  final Value<int?> pressureKpa;
+  final Value<String?> distributionNotes;
+  final Value<DateTime> effectiveFrom;
+  final Value<DateTime?> effectiveTo;
+  final Value<int> configVersion;
+  final Value<int> version;
+  final Value<String> syncState;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> serverUpdatedAt;
+  final Value<String?> lastSyncErrorCode;
+  final Value<DateTime?> deletedAt;
+  final Value<int> rowid;
+  const SectorIrrigationConfigsCompanion({
+    this.id = const Value.absent(),
+    this.ownerId = const Value.absent(),
+    this.sectorId = const Value.absent(),
+    this.method = const Value.absent(),
+    this.plantCount = const Value.absent(),
+    this.emitterCount = const Value.absent(),
+    this.emittersPerPlantMilli = const Value.absent(),
+    this.flowMlMin = const Value.absent(),
+    this.pressureKpa = const Value.absent(),
+    this.distributionNotes = const Value.absent(),
+    this.effectiveFrom = const Value.absent(),
+    this.effectiveTo = const Value.absent(),
+    this.configVersion = const Value.absent(),
+    this.version = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.lastSyncErrorCode = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SectorIrrigationConfigsCompanion.insert({
+    required String id,
+    required String ownerId,
+    required String sectorId,
+    this.method = const Value.absent(),
+    required int plantCount,
+    required int emitterCount,
+    this.emittersPerPlantMilli = const Value.absent(),
+    required int flowMlMin,
+    this.pressureKpa = const Value.absent(),
+    this.distributionNotes = const Value.absent(),
+    required DateTime effectiveFrom,
+    this.effectiveTo = const Value.absent(),
+    required int configVersion,
+    this.version = const Value.absent(),
+    this.syncState = const Value.absent(),
+    required DateTime updatedAt,
+    this.serverUpdatedAt = const Value.absent(),
+    this.lastSyncErrorCode = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       ownerId = Value(ownerId),
+       sectorId = Value(sectorId),
+       plantCount = Value(plantCount),
+       emitterCount = Value(emitterCount),
+       flowMlMin = Value(flowMlMin),
+       effectiveFrom = Value(effectiveFrom),
+       configVersion = Value(configVersion),
+       updatedAt = Value(updatedAt);
+  static Insertable<SectorIrrigationConfig> custom({
+    Expression<String>? id,
+    Expression<String>? ownerId,
+    Expression<String>? sectorId,
+    Expression<String>? method,
+    Expression<int>? plantCount,
+    Expression<int>? emitterCount,
+    Expression<int>? emittersPerPlantMilli,
+    Expression<int>? flowMlMin,
+    Expression<int>? pressureKpa,
+    Expression<String>? distributionNotes,
+    Expression<DateTime>? effectiveFrom,
+    Expression<DateTime>? effectiveTo,
+    Expression<int>? configVersion,
+    Expression<int>? version,
+    Expression<String>? syncState,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? serverUpdatedAt,
+    Expression<String>? lastSyncErrorCode,
+    Expression<DateTime>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (ownerId != null) 'owner_id': ownerId,
+      if (sectorId != null) 'sector_id': sectorId,
+      if (method != null) 'method': method,
+      if (plantCount != null) 'plant_count': plantCount,
+      if (emitterCount != null) 'emitter_count': emitterCount,
+      if (emittersPerPlantMilli != null)
+        'emitters_per_plant_milli': emittersPerPlantMilli,
+      if (flowMlMin != null) 'flow_ml_min': flowMlMin,
+      if (pressureKpa != null) 'pressure_kpa': pressureKpa,
+      if (distributionNotes != null) 'distribution_notes': distributionNotes,
+      if (effectiveFrom != null) 'effective_from': effectiveFrom,
+      if (effectiveTo != null) 'effective_to': effectiveTo,
+      if (configVersion != null) 'config_version': configVersion,
+      if (version != null) 'version': version,
+      if (syncState != null) 'sync_state': syncState,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
+      if (lastSyncErrorCode != null) 'last_sync_error_code': lastSyncErrorCode,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SectorIrrigationConfigsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? ownerId,
+    Value<String>? sectorId,
+    Value<String>? method,
+    Value<int>? plantCount,
+    Value<int>? emitterCount,
+    Value<int?>? emittersPerPlantMilli,
+    Value<int>? flowMlMin,
+    Value<int?>? pressureKpa,
+    Value<String?>? distributionNotes,
+    Value<DateTime>? effectiveFrom,
+    Value<DateTime?>? effectiveTo,
+    Value<int>? configVersion,
+    Value<int>? version,
+    Value<String>? syncState,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? serverUpdatedAt,
+    Value<String?>? lastSyncErrorCode,
+    Value<DateTime?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return SectorIrrigationConfigsCompanion(
+      id: id ?? this.id,
+      ownerId: ownerId ?? this.ownerId,
+      sectorId: sectorId ?? this.sectorId,
+      method: method ?? this.method,
+      plantCount: plantCount ?? this.plantCount,
+      emitterCount: emitterCount ?? this.emitterCount,
+      emittersPerPlantMilli:
+          emittersPerPlantMilli ?? this.emittersPerPlantMilli,
+      flowMlMin: flowMlMin ?? this.flowMlMin,
+      pressureKpa: pressureKpa ?? this.pressureKpa,
+      distributionNotes: distributionNotes ?? this.distributionNotes,
+      effectiveFrom: effectiveFrom ?? this.effectiveFrom,
+      effectiveTo: effectiveTo ?? this.effectiveTo,
+      configVersion: configVersion ?? this.configVersion,
+      version: version ?? this.version,
+      syncState: syncState ?? this.syncState,
+      updatedAt: updatedAt ?? this.updatedAt,
+      serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+      lastSyncErrorCode: lastSyncErrorCode ?? this.lastSyncErrorCode,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (ownerId.present) {
+      map['owner_id'] = Variable<String>(ownerId.value);
+    }
+    if (sectorId.present) {
+      map['sector_id'] = Variable<String>(sectorId.value);
+    }
+    if (method.present) {
+      map['method'] = Variable<String>(method.value);
+    }
+    if (plantCount.present) {
+      map['plant_count'] = Variable<int>(plantCount.value);
+    }
+    if (emitterCount.present) {
+      map['emitter_count'] = Variable<int>(emitterCount.value);
+    }
+    if (emittersPerPlantMilli.present) {
+      map['emitters_per_plant_milli'] = Variable<int>(
+        emittersPerPlantMilli.value,
+      );
+    }
+    if (flowMlMin.present) {
+      map['flow_ml_min'] = Variable<int>(flowMlMin.value);
+    }
+    if (pressureKpa.present) {
+      map['pressure_kpa'] = Variable<int>(pressureKpa.value);
+    }
+    if (distributionNotes.present) {
+      map['distribution_notes'] = Variable<String>(distributionNotes.value);
+    }
+    if (effectiveFrom.present) {
+      map['effective_from'] = Variable<DateTime>(effectiveFrom.value);
+    }
+    if (effectiveTo.present) {
+      map['effective_to'] = Variable<DateTime>(effectiveTo.value);
+    }
+    if (configVersion.present) {
+      map['config_version'] = Variable<int>(configVersion.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(syncState.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (serverUpdatedAt.present) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt.value);
+    }
+    if (lastSyncErrorCode.present) {
+      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SectorIrrigationConfigsCompanion(')
+          ..write('id: $id, ')
+          ..write('ownerId: $ownerId, ')
+          ..write('sectorId: $sectorId, ')
+          ..write('method: $method, ')
+          ..write('plantCount: $plantCount, ')
+          ..write('emitterCount: $emitterCount, ')
+          ..write('emittersPerPlantMilli: $emittersPerPlantMilli, ')
+          ..write('flowMlMin: $flowMlMin, ')
+          ..write('pressureKpa: $pressureKpa, ')
+          ..write('distributionNotes: $distributionNotes, ')
+          ..write('effectiveFrom: $effectiveFrom, ')
+          ..write('effectiveTo: $effectiveTo, ')
+          ..write('configVersion: $configVersion, ')
+          ..write('version: $version, ')
+          ..write('syncState: $syncState, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
+          ..write('deletedAt: $deletedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -5544,6 +9340,17 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _cropAssignmentIdMeta = const VerificationMeta(
+    'cropAssignmentId',
+  );
+  @override
+  late final GeneratedColumn<String> cropAssignmentId = GeneratedColumn<String>(
+    'crop_assignment_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
   late final GeneratedColumn<String> type = GeneratedColumn<String>(
@@ -5576,6 +9383,39 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
     requiredDuringInsert: false,
     defaultValue: const Constant('{}'),
   );
+  static const VerificationMeta _detailsSchemaVersionMeta =
+      const VerificationMeta('detailsSchemaVersion');
+  @override
+  late final GeneratedColumn<int> detailsSchemaVersion = GeneratedColumn<int>(
+    'details_schema_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('recorded'),
+  );
+  static const VerificationMeta _supersedesLaborIdMeta = const VerificationMeta(
+    'supersedesLaborId',
+  );
+  @override
+  late final GeneratedColumn<String> supersedesLaborId =
+      GeneratedColumn<String>(
+        'supersedes_labor_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
@@ -5596,6 +9436,65 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _syncStateMeta = const VerificationMeta(
+    'syncState',
+  );
+  @override
+  late final GeneratedColumn<String> syncState = GeneratedColumn<String>(
+    'sync_state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  static const VerificationMeta _serverUpdatedAtMeta = const VerificationMeta(
+    'serverUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> serverUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'server_updated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastSyncErrorCodeMeta = const VerificationMeta(
+    'lastSyncErrorCode',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncErrorCode =
+      GeneratedColumn<String>(
+        'last_sync_error_code',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -5614,11 +9513,20 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
     parcelId,
     sectorId,
     seasonId,
+    cropAssignmentId,
     type,
     customName,
     detailsJson,
+    detailsSchemaVersion,
+    status,
+    supersedesLaborId,
     notes,
     occurredAt,
+    version,
+    syncState,
+    serverUpdatedAt,
+    lastSyncErrorCode,
+    deletedAt,
     updatedAt,
   ];
   @override
@@ -5668,6 +9576,15 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
         seasonId.isAcceptableOrUnknown(data['season_id']!, _seasonIdMeta),
       );
     }
+    if (data.containsKey('crop_assignment_id')) {
+      context.handle(
+        _cropAssignmentIdMeta,
+        cropAssignmentId.isAcceptableOrUnknown(
+          data['crop_assignment_id']!,
+          _cropAssignmentIdMeta,
+        ),
+      );
+    }
     if (data.containsKey('type')) {
       context.handle(
         _typeMeta,
@@ -5691,6 +9608,30 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
         ),
       );
     }
+    if (data.containsKey('details_schema_version')) {
+      context.handle(
+        _detailsSchemaVersionMeta,
+        detailsSchemaVersion.isAcceptableOrUnknown(
+          data['details_schema_version']!,
+          _detailsSchemaVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('supersedes_labor_id')) {
+      context.handle(
+        _supersedesLaborIdMeta,
+        supersedesLaborId.isAcceptableOrUnknown(
+          data['supersedes_labor_id']!,
+          _supersedesLaborIdMeta,
+        ),
+      );
+    }
     if (data.containsKey('notes')) {
       context.handle(
         _notesMeta,
@@ -5704,6 +9645,42 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
       );
     } else if (isInserting) {
       context.missing(_occurredAtMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    }
+    if (data.containsKey('sync_state')) {
+      context.handle(
+        _syncStateMeta,
+        syncState.isAcceptableOrUnknown(data['sync_state']!, _syncStateMeta),
+      );
+    }
+    if (data.containsKey('server_updated_at')) {
+      context.handle(
+        _serverUpdatedAtMeta,
+        serverUpdatedAt.isAcceptableOrUnknown(
+          data['server_updated_at']!,
+          _serverUpdatedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_sync_error_code')) {
+      context.handle(
+        _lastSyncErrorCodeMeta,
+        lastSyncErrorCode.isAcceptableOrUnknown(
+          data['last_sync_error_code']!,
+          _lastSyncErrorCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
     }
     if (data.containsKey('updated_at')) {
       context.handle(
@@ -5742,6 +9719,10 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
         DriftSqlType.string,
         data['${effectivePrefix}season_id'],
       ),
+      cropAssignmentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}crop_assignment_id'],
+      ),
       type: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}type'],
@@ -5754,6 +9735,18 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
         DriftSqlType.string,
         data['${effectivePrefix}details_json'],
       )!,
+      detailsSchemaVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}details_schema_version'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      supersedesLaborId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}supersedes_labor_id'],
+      ),
       notes: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}notes'],
@@ -5762,6 +9755,26 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}occurred_at'],
       )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      syncState: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_state'],
+      )!,
+      serverUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}server_updated_at'],
+      ),
+      lastSyncErrorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error_code'],
+      ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -5781,11 +9794,20 @@ class Labor extends DataClass implements Insertable<Labor> {
   final String parcelId;
   final String sectorId;
   final String? seasonId;
+  final String? cropAssignmentId;
   final String type;
   final String? customName;
   final String detailsJson;
+  final int detailsSchemaVersion;
+  final String status;
+  final String? supersedesLaborId;
   final String? notes;
   final DateTime occurredAt;
+  final int version;
+  final String syncState;
+  final DateTime? serverUpdatedAt;
+  final String? lastSyncErrorCode;
+  final DateTime? deletedAt;
   final DateTime updatedAt;
   const Labor({
     required this.id,
@@ -5793,11 +9815,20 @@ class Labor extends DataClass implements Insertable<Labor> {
     required this.parcelId,
     required this.sectorId,
     this.seasonId,
+    this.cropAssignmentId,
     required this.type,
     this.customName,
     required this.detailsJson,
+    required this.detailsSchemaVersion,
+    required this.status,
+    this.supersedesLaborId,
     this.notes,
     required this.occurredAt,
+    required this.version,
+    required this.syncState,
+    this.serverUpdatedAt,
+    this.lastSyncErrorCode,
+    this.deletedAt,
     required this.updatedAt,
   });
   @override
@@ -5810,15 +9841,34 @@ class Labor extends DataClass implements Insertable<Labor> {
     if (!nullToAbsent || seasonId != null) {
       map['season_id'] = Variable<String>(seasonId);
     }
+    if (!nullToAbsent || cropAssignmentId != null) {
+      map['crop_assignment_id'] = Variable<String>(cropAssignmentId);
+    }
     map['type'] = Variable<String>(type);
     if (!nullToAbsent || customName != null) {
       map['custom_name'] = Variable<String>(customName);
     }
     map['details_json'] = Variable<String>(detailsJson);
+    map['details_schema_version'] = Variable<int>(detailsSchemaVersion);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || supersedesLaborId != null) {
+      map['supersedes_labor_id'] = Variable<String>(supersedesLaborId);
+    }
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
     }
     map['occurred_at'] = Variable<DateTime>(occurredAt);
+    map['version'] = Variable<int>(version);
+    map['sync_state'] = Variable<String>(syncState);
+    if (!nullToAbsent || serverUpdatedAt != null) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
+    }
+    if (!nullToAbsent || lastSyncErrorCode != null) {
+      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode);
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
@@ -5832,15 +9882,34 @@ class Labor extends DataClass implements Insertable<Labor> {
       seasonId: seasonId == null && nullToAbsent
           ? const Value.absent()
           : Value(seasonId),
+      cropAssignmentId: cropAssignmentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cropAssignmentId),
       type: Value(type),
       customName: customName == null && nullToAbsent
           ? const Value.absent()
           : Value(customName),
       detailsJson: Value(detailsJson),
+      detailsSchemaVersion: Value(detailsSchemaVersion),
+      status: Value(status),
+      supersedesLaborId: supersedesLaborId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(supersedesLaborId),
       notes: notes == null && nullToAbsent
           ? const Value.absent()
           : Value(notes),
       occurredAt: Value(occurredAt),
+      version: Value(version),
+      syncState: Value(syncState),
+      serverUpdatedAt: serverUpdatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverUpdatedAt),
+      lastSyncErrorCode: lastSyncErrorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncErrorCode),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
       updatedAt: Value(updatedAt),
     );
   }
@@ -5856,11 +9925,26 @@ class Labor extends DataClass implements Insertable<Labor> {
       parcelId: serializer.fromJson<String>(json['parcelId']),
       sectorId: serializer.fromJson<String>(json['sectorId']),
       seasonId: serializer.fromJson<String?>(json['seasonId']),
+      cropAssignmentId: serializer.fromJson<String?>(json['cropAssignmentId']),
       type: serializer.fromJson<String>(json['type']),
       customName: serializer.fromJson<String?>(json['customName']),
       detailsJson: serializer.fromJson<String>(json['detailsJson']),
+      detailsSchemaVersion: serializer.fromJson<int>(
+        json['detailsSchemaVersion'],
+      ),
+      status: serializer.fromJson<String>(json['status']),
+      supersedesLaborId: serializer.fromJson<String?>(
+        json['supersedesLaborId'],
+      ),
       notes: serializer.fromJson<String?>(json['notes']),
       occurredAt: serializer.fromJson<DateTime>(json['occurredAt']),
+      version: serializer.fromJson<int>(json['version']),
+      syncState: serializer.fromJson<String>(json['syncState']),
+      serverUpdatedAt: serializer.fromJson<DateTime?>(json['serverUpdatedAt']),
+      lastSyncErrorCode: serializer.fromJson<String?>(
+        json['lastSyncErrorCode'],
+      ),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
@@ -5873,11 +9957,20 @@ class Labor extends DataClass implements Insertable<Labor> {
       'parcelId': serializer.toJson<String>(parcelId),
       'sectorId': serializer.toJson<String>(sectorId),
       'seasonId': serializer.toJson<String?>(seasonId),
+      'cropAssignmentId': serializer.toJson<String?>(cropAssignmentId),
       'type': serializer.toJson<String>(type),
       'customName': serializer.toJson<String?>(customName),
       'detailsJson': serializer.toJson<String>(detailsJson),
+      'detailsSchemaVersion': serializer.toJson<int>(detailsSchemaVersion),
+      'status': serializer.toJson<String>(status),
+      'supersedesLaborId': serializer.toJson<String?>(supersedesLaborId),
       'notes': serializer.toJson<String?>(notes),
       'occurredAt': serializer.toJson<DateTime>(occurredAt),
+      'version': serializer.toJson<int>(version),
+      'syncState': serializer.toJson<String>(syncState),
+      'serverUpdatedAt': serializer.toJson<DateTime?>(serverUpdatedAt),
+      'lastSyncErrorCode': serializer.toJson<String?>(lastSyncErrorCode),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
@@ -5888,11 +9981,20 @@ class Labor extends DataClass implements Insertable<Labor> {
     String? parcelId,
     String? sectorId,
     Value<String?> seasonId = const Value.absent(),
+    Value<String?> cropAssignmentId = const Value.absent(),
     String? type,
     Value<String?> customName = const Value.absent(),
     String? detailsJson,
+    int? detailsSchemaVersion,
+    String? status,
+    Value<String?> supersedesLaborId = const Value.absent(),
     Value<String?> notes = const Value.absent(),
     DateTime? occurredAt,
+    int? version,
+    String? syncState,
+    Value<DateTime?> serverUpdatedAt = const Value.absent(),
+    Value<String?> lastSyncErrorCode = const Value.absent(),
+    Value<DateTime?> deletedAt = const Value.absent(),
     DateTime? updatedAt,
   }) => Labor(
     id: id ?? this.id,
@@ -5900,11 +10002,28 @@ class Labor extends DataClass implements Insertable<Labor> {
     parcelId: parcelId ?? this.parcelId,
     sectorId: sectorId ?? this.sectorId,
     seasonId: seasonId.present ? seasonId.value : this.seasonId,
+    cropAssignmentId: cropAssignmentId.present
+        ? cropAssignmentId.value
+        : this.cropAssignmentId,
     type: type ?? this.type,
     customName: customName.present ? customName.value : this.customName,
     detailsJson: detailsJson ?? this.detailsJson,
+    detailsSchemaVersion: detailsSchemaVersion ?? this.detailsSchemaVersion,
+    status: status ?? this.status,
+    supersedesLaborId: supersedesLaborId.present
+        ? supersedesLaborId.value
+        : this.supersedesLaborId,
     notes: notes.present ? notes.value : this.notes,
     occurredAt: occurredAt ?? this.occurredAt,
+    version: version ?? this.version,
+    syncState: syncState ?? this.syncState,
+    serverUpdatedAt: serverUpdatedAt.present
+        ? serverUpdatedAt.value
+        : this.serverUpdatedAt,
+    lastSyncErrorCode: lastSyncErrorCode.present
+        ? lastSyncErrorCode.value
+        : this.lastSyncErrorCode,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
   Labor copyWithCompanion(LaborsCompanion data) {
@@ -5914,6 +10033,9 @@ class Labor extends DataClass implements Insertable<Labor> {
       parcelId: data.parcelId.present ? data.parcelId.value : this.parcelId,
       sectorId: data.sectorId.present ? data.sectorId.value : this.sectorId,
       seasonId: data.seasonId.present ? data.seasonId.value : this.seasonId,
+      cropAssignmentId: data.cropAssignmentId.present
+          ? data.cropAssignmentId.value
+          : this.cropAssignmentId,
       type: data.type.present ? data.type.value : this.type,
       customName: data.customName.present
           ? data.customName.value
@@ -5921,10 +10043,26 @@ class Labor extends DataClass implements Insertable<Labor> {
       detailsJson: data.detailsJson.present
           ? data.detailsJson.value
           : this.detailsJson,
+      detailsSchemaVersion: data.detailsSchemaVersion.present
+          ? data.detailsSchemaVersion.value
+          : this.detailsSchemaVersion,
+      status: data.status.present ? data.status.value : this.status,
+      supersedesLaborId: data.supersedesLaborId.present
+          ? data.supersedesLaborId.value
+          : this.supersedesLaborId,
       notes: data.notes.present ? data.notes.value : this.notes,
       occurredAt: data.occurredAt.present
           ? data.occurredAt.value
           : this.occurredAt,
+      version: data.version.present ? data.version.value : this.version,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      serverUpdatedAt: data.serverUpdatedAt.present
+          ? data.serverUpdatedAt.value
+          : this.serverUpdatedAt,
+      lastSyncErrorCode: data.lastSyncErrorCode.present
+          ? data.lastSyncErrorCode.value
+          : this.lastSyncErrorCode,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -5937,11 +10075,20 @@ class Labor extends DataClass implements Insertable<Labor> {
           ..write('parcelId: $parcelId, ')
           ..write('sectorId: $sectorId, ')
           ..write('seasonId: $seasonId, ')
+          ..write('cropAssignmentId: $cropAssignmentId, ')
           ..write('type: $type, ')
           ..write('customName: $customName, ')
           ..write('detailsJson: $detailsJson, ')
+          ..write('detailsSchemaVersion: $detailsSchemaVersion, ')
+          ..write('status: $status, ')
+          ..write('supersedesLaborId: $supersedesLaborId, ')
           ..write('notes: $notes, ')
           ..write('occurredAt: $occurredAt, ')
+          ..write('version: $version, ')
+          ..write('syncState: $syncState, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
+          ..write('deletedAt: $deletedAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
@@ -5954,11 +10101,20 @@ class Labor extends DataClass implements Insertable<Labor> {
     parcelId,
     sectorId,
     seasonId,
+    cropAssignmentId,
     type,
     customName,
     detailsJson,
+    detailsSchemaVersion,
+    status,
+    supersedesLaborId,
     notes,
     occurredAt,
+    version,
+    syncState,
+    serverUpdatedAt,
+    lastSyncErrorCode,
+    deletedAt,
     updatedAt,
   );
   @override
@@ -5970,11 +10126,20 @@ class Labor extends DataClass implements Insertable<Labor> {
           other.parcelId == this.parcelId &&
           other.sectorId == this.sectorId &&
           other.seasonId == this.seasonId &&
+          other.cropAssignmentId == this.cropAssignmentId &&
           other.type == this.type &&
           other.customName == this.customName &&
           other.detailsJson == this.detailsJson &&
+          other.detailsSchemaVersion == this.detailsSchemaVersion &&
+          other.status == this.status &&
+          other.supersedesLaborId == this.supersedesLaborId &&
           other.notes == this.notes &&
           other.occurredAt == this.occurredAt &&
+          other.version == this.version &&
+          other.syncState == this.syncState &&
+          other.serverUpdatedAt == this.serverUpdatedAt &&
+          other.lastSyncErrorCode == this.lastSyncErrorCode &&
+          other.deletedAt == this.deletedAt &&
           other.updatedAt == this.updatedAt);
 }
 
@@ -5984,11 +10149,20 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
   final Value<String> parcelId;
   final Value<String> sectorId;
   final Value<String?> seasonId;
+  final Value<String?> cropAssignmentId;
   final Value<String> type;
   final Value<String?> customName;
   final Value<String> detailsJson;
+  final Value<int> detailsSchemaVersion;
+  final Value<String> status;
+  final Value<String?> supersedesLaborId;
   final Value<String?> notes;
   final Value<DateTime> occurredAt;
+  final Value<int> version;
+  final Value<String> syncState;
+  final Value<DateTime?> serverUpdatedAt;
+  final Value<String?> lastSyncErrorCode;
+  final Value<DateTime?> deletedAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const LaborsCompanion({
@@ -5997,11 +10171,20 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
     this.parcelId = const Value.absent(),
     this.sectorId = const Value.absent(),
     this.seasonId = const Value.absent(),
+    this.cropAssignmentId = const Value.absent(),
     this.type = const Value.absent(),
     this.customName = const Value.absent(),
     this.detailsJson = const Value.absent(),
+    this.detailsSchemaVersion = const Value.absent(),
+    this.status = const Value.absent(),
+    this.supersedesLaborId = const Value.absent(),
     this.notes = const Value.absent(),
     this.occurredAt = const Value.absent(),
+    this.version = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.lastSyncErrorCode = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -6011,11 +10194,20 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
     required String parcelId,
     required String sectorId,
     this.seasonId = const Value.absent(),
+    this.cropAssignmentId = const Value.absent(),
     required String type,
     this.customName = const Value.absent(),
     this.detailsJson = const Value.absent(),
+    this.detailsSchemaVersion = const Value.absent(),
+    this.status = const Value.absent(),
+    this.supersedesLaborId = const Value.absent(),
     this.notes = const Value.absent(),
     required DateTime occurredAt,
+    this.version = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.lastSyncErrorCode = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -6031,11 +10223,20 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
     Expression<String>? parcelId,
     Expression<String>? sectorId,
     Expression<String>? seasonId,
+    Expression<String>? cropAssignmentId,
     Expression<String>? type,
     Expression<String>? customName,
     Expression<String>? detailsJson,
+    Expression<int>? detailsSchemaVersion,
+    Expression<String>? status,
+    Expression<String>? supersedesLaborId,
     Expression<String>? notes,
     Expression<DateTime>? occurredAt,
+    Expression<int>? version,
+    Expression<String>? syncState,
+    Expression<DateTime>? serverUpdatedAt,
+    Expression<String>? lastSyncErrorCode,
+    Expression<DateTime>? deletedAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
@@ -6045,11 +10246,21 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
       if (parcelId != null) 'parcel_id': parcelId,
       if (sectorId != null) 'sector_id': sectorId,
       if (seasonId != null) 'season_id': seasonId,
+      if (cropAssignmentId != null) 'crop_assignment_id': cropAssignmentId,
       if (type != null) 'type': type,
       if (customName != null) 'custom_name': customName,
       if (detailsJson != null) 'details_json': detailsJson,
+      if (detailsSchemaVersion != null)
+        'details_schema_version': detailsSchemaVersion,
+      if (status != null) 'status': status,
+      if (supersedesLaborId != null) 'supersedes_labor_id': supersedesLaborId,
       if (notes != null) 'notes': notes,
       if (occurredAt != null) 'occurred_at': occurredAt,
+      if (version != null) 'version': version,
+      if (syncState != null) 'sync_state': syncState,
+      if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
+      if (lastSyncErrorCode != null) 'last_sync_error_code': lastSyncErrorCode,
+      if (deletedAt != null) 'deleted_at': deletedAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -6061,11 +10272,20 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
     Value<String>? parcelId,
     Value<String>? sectorId,
     Value<String?>? seasonId,
+    Value<String?>? cropAssignmentId,
     Value<String>? type,
     Value<String?>? customName,
     Value<String>? detailsJson,
+    Value<int>? detailsSchemaVersion,
+    Value<String>? status,
+    Value<String?>? supersedesLaborId,
     Value<String?>? notes,
     Value<DateTime>? occurredAt,
+    Value<int>? version,
+    Value<String>? syncState,
+    Value<DateTime?>? serverUpdatedAt,
+    Value<String?>? lastSyncErrorCode,
+    Value<DateTime?>? deletedAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
@@ -6075,11 +10295,20 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
       parcelId: parcelId ?? this.parcelId,
       sectorId: sectorId ?? this.sectorId,
       seasonId: seasonId ?? this.seasonId,
+      cropAssignmentId: cropAssignmentId ?? this.cropAssignmentId,
       type: type ?? this.type,
       customName: customName ?? this.customName,
       detailsJson: detailsJson ?? this.detailsJson,
+      detailsSchemaVersion: detailsSchemaVersion ?? this.detailsSchemaVersion,
+      status: status ?? this.status,
+      supersedesLaborId: supersedesLaborId ?? this.supersedesLaborId,
       notes: notes ?? this.notes,
       occurredAt: occurredAt ?? this.occurredAt,
+      version: version ?? this.version,
+      syncState: syncState ?? this.syncState,
+      serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+      lastSyncErrorCode: lastSyncErrorCode ?? this.lastSyncErrorCode,
+      deletedAt: deletedAt ?? this.deletedAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -6103,6 +10332,9 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
     if (seasonId.present) {
       map['season_id'] = Variable<String>(seasonId.value);
     }
+    if (cropAssignmentId.present) {
+      map['crop_assignment_id'] = Variable<String>(cropAssignmentId.value);
+    }
     if (type.present) {
       map['type'] = Variable<String>(type.value);
     }
@@ -6112,11 +10344,35 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
     if (detailsJson.present) {
       map['details_json'] = Variable<String>(detailsJson.value);
     }
+    if (detailsSchemaVersion.present) {
+      map['details_schema_version'] = Variable<int>(detailsSchemaVersion.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (supersedesLaborId.present) {
+      map['supersedes_labor_id'] = Variable<String>(supersedesLaborId.value);
+    }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
     }
     if (occurredAt.present) {
       map['occurred_at'] = Variable<DateTime>(occurredAt.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(syncState.value);
+    }
+    if (serverUpdatedAt.present) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt.value);
+    }
+    if (lastSyncErrorCode.present) {
+      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
     }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
@@ -6135,11 +10391,20 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
           ..write('parcelId: $parcelId, ')
           ..write('sectorId: $sectorId, ')
           ..write('seasonId: $seasonId, ')
+          ..write('cropAssignmentId: $cropAssignmentId, ')
           ..write('type: $type, ')
           ..write('customName: $customName, ')
           ..write('detailsJson: $detailsJson, ')
+          ..write('detailsSchemaVersion: $detailsSchemaVersion, ')
+          ..write('status: $status, ')
+          ..write('supersedesLaborId: $supersedesLaborId, ')
           ..write('notes: $notes, ')
           ..write('occurredAt: $occurredAt, ')
+          ..write('version: $version, ')
+          ..write('syncState: $syncState, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
+          ..write('deletedAt: $deletedAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -6966,6 +11231,17 @@ class $IrrigationRecordsTable extends IrrigationRecords
       'REFERENCES sectors (id)',
     ),
   );
+  static const VerificationMeta _laborIdMeta = const VerificationMeta(
+    'laborId',
+  );
+  @override
+  late final GeneratedColumn<String> laborId = GeneratedColumn<String>(
+    'labor_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _irrigationTypeMeta = const VerificationMeta(
     'irrigationType',
   );
@@ -7022,6 +11298,62 @@ class $IrrigationRecordsTable extends IrrigationRecords
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _configIdMeta = const VerificationMeta(
+    'configId',
+  );
+  @override
+  late final GeneratedColumn<String> configId = GeneratedColumn<String>(
+    'config_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _configVersionMeta = const VerificationMeta(
+    'configVersion',
+  );
+  @override
+  late final GeneratedColumn<int> configVersion = GeneratedColumn<int>(
+    'config_version',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _durationSecondsMeta = const VerificationMeta(
+    'durationSeconds',
+  );
+  @override
+  late final GeneratedColumn<int> durationSeconds = GeneratedColumn<int>(
+    'duration_seconds',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _appliedVolumeMlMeta = const VerificationMeta(
+    'appliedVolumeMl',
+  );
+  @override
+  late final GeneratedColumn<int> appliedVolumeMl = GeneratedColumn<int>(
+    'applied_volume_ml',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _performedDetailsJsonMeta =
+      const VerificationMeta('performedDetailsJson');
+  @override
+  late final GeneratedColumn<String> performedDetailsJson =
+      GeneratedColumn<String>(
+        'performed_details_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('{}'),
+      );
   static const VerificationMeta _irrigatedAtMeta = const VerificationMeta(
     'irrigatedAt',
   );
@@ -7049,11 +11381,17 @@ class $IrrigationRecordsTable extends IrrigationRecords
     id,
     ownerId,
     sectorId,
+    laborId,
     irrigationType,
     soilTypeCode,
     flowLitersPerHour,
     durationMinutes,
     estimatedLiters,
+    configId,
+    configVersion,
+    durationSeconds,
+    appliedVolumeMl,
+    performedDetailsJson,
     irrigatedAt,
     updatedAt,
   ];
@@ -7089,6 +11427,12 @@ class $IrrigationRecordsTable extends IrrigationRecords
       );
     } else if (isInserting) {
       context.missing(_sectorIdMeta);
+    }
+    if (data.containsKey('labor_id')) {
+      context.handle(
+        _laborIdMeta,
+        laborId.isAcceptableOrUnknown(data['labor_id']!, _laborIdMeta),
+      );
     }
     if (data.containsKey('irrigation_type')) {
       context.handle(
@@ -7139,6 +11483,48 @@ class $IrrigationRecordsTable extends IrrigationRecords
         ),
       );
     }
+    if (data.containsKey('config_id')) {
+      context.handle(
+        _configIdMeta,
+        configId.isAcceptableOrUnknown(data['config_id']!, _configIdMeta),
+      );
+    }
+    if (data.containsKey('config_version')) {
+      context.handle(
+        _configVersionMeta,
+        configVersion.isAcceptableOrUnknown(
+          data['config_version']!,
+          _configVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('duration_seconds')) {
+      context.handle(
+        _durationSecondsMeta,
+        durationSeconds.isAcceptableOrUnknown(
+          data['duration_seconds']!,
+          _durationSecondsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('applied_volume_ml')) {
+      context.handle(
+        _appliedVolumeMlMeta,
+        appliedVolumeMl.isAcceptableOrUnknown(
+          data['applied_volume_ml']!,
+          _appliedVolumeMlMeta,
+        ),
+      );
+    }
+    if (data.containsKey('performed_details_json')) {
+      context.handle(
+        _performedDetailsJsonMeta,
+        performedDetailsJson.isAcceptableOrUnknown(
+          data['performed_details_json']!,
+          _performedDetailsJsonMeta,
+        ),
+      );
+    }
     if (data.containsKey('irrigated_at')) {
       context.handle(
         _irrigatedAtMeta,
@@ -7179,6 +11565,10 @@ class $IrrigationRecordsTable extends IrrigationRecords
         DriftSqlType.string,
         data['${effectivePrefix}sector_id'],
       )!,
+      laborId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}labor_id'],
+      ),
       irrigationType: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}irrigation_type'],
@@ -7199,6 +11589,26 @@ class $IrrigationRecordsTable extends IrrigationRecords
         DriftSqlType.double,
         data['${effectivePrefix}estimated_liters'],
       ),
+      configId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}config_id'],
+      ),
+      configVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}config_version'],
+      ),
+      durationSeconds: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_seconds'],
+      ),
+      appliedVolumeMl: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}applied_volume_ml'],
+      ),
+      performedDetailsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}performed_details_json'],
+      )!,
       irrigatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}irrigated_at'],
@@ -7221,22 +11631,34 @@ class IrrigationRecord extends DataClass
   final String id;
   final String ownerId;
   final String sectorId;
+  final String? laborId;
   final String irrigationType;
   final String soilTypeCode;
   final double? flowLitersPerHour;
   final int? durationMinutes;
   final double? estimatedLiters;
+  final String? configId;
+  final int? configVersion;
+  final int? durationSeconds;
+  final int? appliedVolumeMl;
+  final String performedDetailsJson;
   final DateTime irrigatedAt;
   final DateTime updatedAt;
   const IrrigationRecord({
     required this.id,
     required this.ownerId,
     required this.sectorId,
+    this.laborId,
     required this.irrigationType,
     required this.soilTypeCode,
     this.flowLitersPerHour,
     this.durationMinutes,
     this.estimatedLiters,
+    this.configId,
+    this.configVersion,
+    this.durationSeconds,
+    this.appliedVolumeMl,
+    required this.performedDetailsJson,
     required this.irrigatedAt,
     required this.updatedAt,
   });
@@ -7246,6 +11668,9 @@ class IrrigationRecord extends DataClass
     map['id'] = Variable<String>(id);
     map['owner_id'] = Variable<String>(ownerId);
     map['sector_id'] = Variable<String>(sectorId);
+    if (!nullToAbsent || laborId != null) {
+      map['labor_id'] = Variable<String>(laborId);
+    }
     map['irrigation_type'] = Variable<String>(irrigationType);
     map['soil_type_code'] = Variable<String>(soilTypeCode);
     if (!nullToAbsent || flowLitersPerHour != null) {
@@ -7257,6 +11682,19 @@ class IrrigationRecord extends DataClass
     if (!nullToAbsent || estimatedLiters != null) {
       map['estimated_liters'] = Variable<double>(estimatedLiters);
     }
+    if (!nullToAbsent || configId != null) {
+      map['config_id'] = Variable<String>(configId);
+    }
+    if (!nullToAbsent || configVersion != null) {
+      map['config_version'] = Variable<int>(configVersion);
+    }
+    if (!nullToAbsent || durationSeconds != null) {
+      map['duration_seconds'] = Variable<int>(durationSeconds);
+    }
+    if (!nullToAbsent || appliedVolumeMl != null) {
+      map['applied_volume_ml'] = Variable<int>(appliedVolumeMl);
+    }
+    map['performed_details_json'] = Variable<String>(performedDetailsJson);
     map['irrigated_at'] = Variable<DateTime>(irrigatedAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -7267,6 +11705,9 @@ class IrrigationRecord extends DataClass
       id: Value(id),
       ownerId: Value(ownerId),
       sectorId: Value(sectorId),
+      laborId: laborId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(laborId),
       irrigationType: Value(irrigationType),
       soilTypeCode: Value(soilTypeCode),
       flowLitersPerHour: flowLitersPerHour == null && nullToAbsent
@@ -7278,6 +11719,19 @@ class IrrigationRecord extends DataClass
       estimatedLiters: estimatedLiters == null && nullToAbsent
           ? const Value.absent()
           : Value(estimatedLiters),
+      configId: configId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(configId),
+      configVersion: configVersion == null && nullToAbsent
+          ? const Value.absent()
+          : Value(configVersion),
+      durationSeconds: durationSeconds == null && nullToAbsent
+          ? const Value.absent()
+          : Value(durationSeconds),
+      appliedVolumeMl: appliedVolumeMl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(appliedVolumeMl),
+      performedDetailsJson: Value(performedDetailsJson),
       irrigatedAt: Value(irrigatedAt),
       updatedAt: Value(updatedAt),
     );
@@ -7292,6 +11746,7 @@ class IrrigationRecord extends DataClass
       id: serializer.fromJson<String>(json['id']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
       sectorId: serializer.fromJson<String>(json['sectorId']),
+      laborId: serializer.fromJson<String?>(json['laborId']),
       irrigationType: serializer.fromJson<String>(json['irrigationType']),
       soilTypeCode: serializer.fromJson<String>(json['soilTypeCode']),
       flowLitersPerHour: serializer.fromJson<double?>(
@@ -7299,6 +11754,13 @@ class IrrigationRecord extends DataClass
       ),
       durationMinutes: serializer.fromJson<int?>(json['durationMinutes']),
       estimatedLiters: serializer.fromJson<double?>(json['estimatedLiters']),
+      configId: serializer.fromJson<String?>(json['configId']),
+      configVersion: serializer.fromJson<int?>(json['configVersion']),
+      durationSeconds: serializer.fromJson<int?>(json['durationSeconds']),
+      appliedVolumeMl: serializer.fromJson<int?>(json['appliedVolumeMl']),
+      performedDetailsJson: serializer.fromJson<String>(
+        json['performedDetailsJson'],
+      ),
       irrigatedAt: serializer.fromJson<DateTime>(json['irrigatedAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -7310,11 +11772,17 @@ class IrrigationRecord extends DataClass
       'id': serializer.toJson<String>(id),
       'ownerId': serializer.toJson<String>(ownerId),
       'sectorId': serializer.toJson<String>(sectorId),
+      'laborId': serializer.toJson<String?>(laborId),
       'irrigationType': serializer.toJson<String>(irrigationType),
       'soilTypeCode': serializer.toJson<String>(soilTypeCode),
       'flowLitersPerHour': serializer.toJson<double?>(flowLitersPerHour),
       'durationMinutes': serializer.toJson<int?>(durationMinutes),
       'estimatedLiters': serializer.toJson<double?>(estimatedLiters),
+      'configId': serializer.toJson<String?>(configId),
+      'configVersion': serializer.toJson<int?>(configVersion),
+      'durationSeconds': serializer.toJson<int?>(durationSeconds),
+      'appliedVolumeMl': serializer.toJson<int?>(appliedVolumeMl),
+      'performedDetailsJson': serializer.toJson<String>(performedDetailsJson),
       'irrigatedAt': serializer.toJson<DateTime>(irrigatedAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -7324,17 +11792,24 @@ class IrrigationRecord extends DataClass
     String? id,
     String? ownerId,
     String? sectorId,
+    Value<String?> laborId = const Value.absent(),
     String? irrigationType,
     String? soilTypeCode,
     Value<double?> flowLitersPerHour = const Value.absent(),
     Value<int?> durationMinutes = const Value.absent(),
     Value<double?> estimatedLiters = const Value.absent(),
+    Value<String?> configId = const Value.absent(),
+    Value<int?> configVersion = const Value.absent(),
+    Value<int?> durationSeconds = const Value.absent(),
+    Value<int?> appliedVolumeMl = const Value.absent(),
+    String? performedDetailsJson,
     DateTime? irrigatedAt,
     DateTime? updatedAt,
   }) => IrrigationRecord(
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
     sectorId: sectorId ?? this.sectorId,
+    laborId: laborId.present ? laborId.value : this.laborId,
     irrigationType: irrigationType ?? this.irrigationType,
     soilTypeCode: soilTypeCode ?? this.soilTypeCode,
     flowLitersPerHour: flowLitersPerHour.present
@@ -7346,6 +11821,17 @@ class IrrigationRecord extends DataClass
     estimatedLiters: estimatedLiters.present
         ? estimatedLiters.value
         : this.estimatedLiters,
+    configId: configId.present ? configId.value : this.configId,
+    configVersion: configVersion.present
+        ? configVersion.value
+        : this.configVersion,
+    durationSeconds: durationSeconds.present
+        ? durationSeconds.value
+        : this.durationSeconds,
+    appliedVolumeMl: appliedVolumeMl.present
+        ? appliedVolumeMl.value
+        : this.appliedVolumeMl,
+    performedDetailsJson: performedDetailsJson ?? this.performedDetailsJson,
     irrigatedAt: irrigatedAt ?? this.irrigatedAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -7354,6 +11840,7 @@ class IrrigationRecord extends DataClass
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
       sectorId: data.sectorId.present ? data.sectorId.value : this.sectorId,
+      laborId: data.laborId.present ? data.laborId.value : this.laborId,
       irrigationType: data.irrigationType.present
           ? data.irrigationType.value
           : this.irrigationType,
@@ -7369,6 +11856,19 @@ class IrrigationRecord extends DataClass
       estimatedLiters: data.estimatedLiters.present
           ? data.estimatedLiters.value
           : this.estimatedLiters,
+      configId: data.configId.present ? data.configId.value : this.configId,
+      configVersion: data.configVersion.present
+          ? data.configVersion.value
+          : this.configVersion,
+      durationSeconds: data.durationSeconds.present
+          ? data.durationSeconds.value
+          : this.durationSeconds,
+      appliedVolumeMl: data.appliedVolumeMl.present
+          ? data.appliedVolumeMl.value
+          : this.appliedVolumeMl,
+      performedDetailsJson: data.performedDetailsJson.present
+          ? data.performedDetailsJson.value
+          : this.performedDetailsJson,
       irrigatedAt: data.irrigatedAt.present
           ? data.irrigatedAt.value
           : this.irrigatedAt,
@@ -7382,11 +11882,17 @@ class IrrigationRecord extends DataClass
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('sectorId: $sectorId, ')
+          ..write('laborId: $laborId, ')
           ..write('irrigationType: $irrigationType, ')
           ..write('soilTypeCode: $soilTypeCode, ')
           ..write('flowLitersPerHour: $flowLitersPerHour, ')
           ..write('durationMinutes: $durationMinutes, ')
           ..write('estimatedLiters: $estimatedLiters, ')
+          ..write('configId: $configId, ')
+          ..write('configVersion: $configVersion, ')
+          ..write('durationSeconds: $durationSeconds, ')
+          ..write('appliedVolumeMl: $appliedVolumeMl, ')
+          ..write('performedDetailsJson: $performedDetailsJson, ')
           ..write('irrigatedAt: $irrigatedAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -7398,11 +11904,17 @@ class IrrigationRecord extends DataClass
     id,
     ownerId,
     sectorId,
+    laborId,
     irrigationType,
     soilTypeCode,
     flowLitersPerHour,
     durationMinutes,
     estimatedLiters,
+    configId,
+    configVersion,
+    durationSeconds,
+    appliedVolumeMl,
+    performedDetailsJson,
     irrigatedAt,
     updatedAt,
   );
@@ -7413,11 +11925,17 @@ class IrrigationRecord extends DataClass
           other.id == this.id &&
           other.ownerId == this.ownerId &&
           other.sectorId == this.sectorId &&
+          other.laborId == this.laborId &&
           other.irrigationType == this.irrigationType &&
           other.soilTypeCode == this.soilTypeCode &&
           other.flowLitersPerHour == this.flowLitersPerHour &&
           other.durationMinutes == this.durationMinutes &&
           other.estimatedLiters == this.estimatedLiters &&
+          other.configId == this.configId &&
+          other.configVersion == this.configVersion &&
+          other.durationSeconds == this.durationSeconds &&
+          other.appliedVolumeMl == this.appliedVolumeMl &&
+          other.performedDetailsJson == this.performedDetailsJson &&
           other.irrigatedAt == this.irrigatedAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -7426,11 +11944,17 @@ class IrrigationRecordsCompanion extends UpdateCompanion<IrrigationRecord> {
   final Value<String> id;
   final Value<String> ownerId;
   final Value<String> sectorId;
+  final Value<String?> laborId;
   final Value<String> irrigationType;
   final Value<String> soilTypeCode;
   final Value<double?> flowLitersPerHour;
   final Value<int?> durationMinutes;
   final Value<double?> estimatedLiters;
+  final Value<String?> configId;
+  final Value<int?> configVersion;
+  final Value<int?> durationSeconds;
+  final Value<int?> appliedVolumeMl;
+  final Value<String> performedDetailsJson;
   final Value<DateTime> irrigatedAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -7438,11 +11962,17 @@ class IrrigationRecordsCompanion extends UpdateCompanion<IrrigationRecord> {
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
     this.sectorId = const Value.absent(),
+    this.laborId = const Value.absent(),
     this.irrigationType = const Value.absent(),
     this.soilTypeCode = const Value.absent(),
     this.flowLitersPerHour = const Value.absent(),
     this.durationMinutes = const Value.absent(),
     this.estimatedLiters = const Value.absent(),
+    this.configId = const Value.absent(),
+    this.configVersion = const Value.absent(),
+    this.durationSeconds = const Value.absent(),
+    this.appliedVolumeMl = const Value.absent(),
+    this.performedDetailsJson = const Value.absent(),
     this.irrigatedAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -7451,11 +11981,17 @@ class IrrigationRecordsCompanion extends UpdateCompanion<IrrigationRecord> {
     required String id,
     required String ownerId,
     required String sectorId,
+    this.laborId = const Value.absent(),
     required String irrigationType,
     required String soilTypeCode,
     this.flowLitersPerHour = const Value.absent(),
     this.durationMinutes = const Value.absent(),
     this.estimatedLiters = const Value.absent(),
+    this.configId = const Value.absent(),
+    this.configVersion = const Value.absent(),
+    this.durationSeconds = const Value.absent(),
+    this.appliedVolumeMl = const Value.absent(),
+    this.performedDetailsJson = const Value.absent(),
     required DateTime irrigatedAt,
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
@@ -7470,11 +12006,17 @@ class IrrigationRecordsCompanion extends UpdateCompanion<IrrigationRecord> {
     Expression<String>? id,
     Expression<String>? ownerId,
     Expression<String>? sectorId,
+    Expression<String>? laborId,
     Expression<String>? irrigationType,
     Expression<String>? soilTypeCode,
     Expression<double>? flowLitersPerHour,
     Expression<int>? durationMinutes,
     Expression<double>? estimatedLiters,
+    Expression<String>? configId,
+    Expression<int>? configVersion,
+    Expression<int>? durationSeconds,
+    Expression<int>? appliedVolumeMl,
+    Expression<String>? performedDetailsJson,
     Expression<DateTime>? irrigatedAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -7483,11 +12025,18 @@ class IrrigationRecordsCompanion extends UpdateCompanion<IrrigationRecord> {
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
       if (sectorId != null) 'sector_id': sectorId,
+      if (laborId != null) 'labor_id': laborId,
       if (irrigationType != null) 'irrigation_type': irrigationType,
       if (soilTypeCode != null) 'soil_type_code': soilTypeCode,
       if (flowLitersPerHour != null) 'flow_liters_per_hour': flowLitersPerHour,
       if (durationMinutes != null) 'duration_minutes': durationMinutes,
       if (estimatedLiters != null) 'estimated_liters': estimatedLiters,
+      if (configId != null) 'config_id': configId,
+      if (configVersion != null) 'config_version': configVersion,
+      if (durationSeconds != null) 'duration_seconds': durationSeconds,
+      if (appliedVolumeMl != null) 'applied_volume_ml': appliedVolumeMl,
+      if (performedDetailsJson != null)
+        'performed_details_json': performedDetailsJson,
       if (irrigatedAt != null) 'irrigated_at': irrigatedAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -7498,11 +12047,17 @@ class IrrigationRecordsCompanion extends UpdateCompanion<IrrigationRecord> {
     Value<String>? id,
     Value<String>? ownerId,
     Value<String>? sectorId,
+    Value<String?>? laborId,
     Value<String>? irrigationType,
     Value<String>? soilTypeCode,
     Value<double?>? flowLitersPerHour,
     Value<int?>? durationMinutes,
     Value<double?>? estimatedLiters,
+    Value<String?>? configId,
+    Value<int?>? configVersion,
+    Value<int?>? durationSeconds,
+    Value<int?>? appliedVolumeMl,
+    Value<String>? performedDetailsJson,
     Value<DateTime>? irrigatedAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -7511,11 +12066,17 @@ class IrrigationRecordsCompanion extends UpdateCompanion<IrrigationRecord> {
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
       sectorId: sectorId ?? this.sectorId,
+      laborId: laborId ?? this.laborId,
       irrigationType: irrigationType ?? this.irrigationType,
       soilTypeCode: soilTypeCode ?? this.soilTypeCode,
       flowLitersPerHour: flowLitersPerHour ?? this.flowLitersPerHour,
       durationMinutes: durationMinutes ?? this.durationMinutes,
       estimatedLiters: estimatedLiters ?? this.estimatedLiters,
+      configId: configId ?? this.configId,
+      configVersion: configVersion ?? this.configVersion,
+      durationSeconds: durationSeconds ?? this.durationSeconds,
+      appliedVolumeMl: appliedVolumeMl ?? this.appliedVolumeMl,
+      performedDetailsJson: performedDetailsJson ?? this.performedDetailsJson,
       irrigatedAt: irrigatedAt ?? this.irrigatedAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -7534,6 +12095,9 @@ class IrrigationRecordsCompanion extends UpdateCompanion<IrrigationRecord> {
     if (sectorId.present) {
       map['sector_id'] = Variable<String>(sectorId.value);
     }
+    if (laborId.present) {
+      map['labor_id'] = Variable<String>(laborId.value);
+    }
     if (irrigationType.present) {
       map['irrigation_type'] = Variable<String>(irrigationType.value);
     }
@@ -7548,6 +12112,23 @@ class IrrigationRecordsCompanion extends UpdateCompanion<IrrigationRecord> {
     }
     if (estimatedLiters.present) {
       map['estimated_liters'] = Variable<double>(estimatedLiters.value);
+    }
+    if (configId.present) {
+      map['config_id'] = Variable<String>(configId.value);
+    }
+    if (configVersion.present) {
+      map['config_version'] = Variable<int>(configVersion.value);
+    }
+    if (durationSeconds.present) {
+      map['duration_seconds'] = Variable<int>(durationSeconds.value);
+    }
+    if (appliedVolumeMl.present) {
+      map['applied_volume_ml'] = Variable<int>(appliedVolumeMl.value);
+    }
+    if (performedDetailsJson.present) {
+      map['performed_details_json'] = Variable<String>(
+        performedDetailsJson.value,
+      );
     }
     if (irrigatedAt.present) {
       map['irrigated_at'] = Variable<DateTime>(irrigatedAt.value);
@@ -7567,11 +12148,17 @@ class IrrigationRecordsCompanion extends UpdateCompanion<IrrigationRecord> {
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('sectorId: $sectorId, ')
+          ..write('laborId: $laborId, ')
           ..write('irrigationType: $irrigationType, ')
           ..write('soilTypeCode: $soilTypeCode, ')
           ..write('flowLitersPerHour: $flowLitersPerHour, ')
           ..write('durationMinutes: $durationMinutes, ')
           ..write('estimatedLiters: $estimatedLiters, ')
+          ..write('configId: $configId, ')
+          ..write('configVersion: $configVersion, ')
+          ..write('durationSeconds: $durationSeconds, ')
+          ..write('appliedVolumeMl: $appliedVolumeMl, ')
+          ..write('performedDetailsJson: $performedDetailsJson, ')
           ..write('irrigatedAt: $irrigatedAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -7688,6 +12275,17 @@ class $CropIrrigationRulesTable extends CropIrrigationRules
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _reviewerMeta = const VerificationMeta(
+    'reviewer',
+  );
+  @override
+  late final GeneratedColumn<String> reviewer = GeneratedColumn<String>(
+    'reviewer',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _approvedAtMeta = const VerificationMeta(
     'approvedAt',
   );
@@ -7698,6 +12296,51 @@ class $CropIrrigationRulesTable extends CropIrrigationRules
     true,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
+  );
+  static const VerificationMeta _approvedVectorCountMeta =
+      const VerificationMeta('approvedVectorCount');
+  @override
+  late final GeneratedColumn<int> approvedVectorCount = GeneratedColumn<int>(
+    'approved_vector_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _baseMlPerPlantMeta = const VerificationMeta(
+    'baseMlPerPlant',
+  );
+  @override
+  late final GeneratedColumn<int> baseMlPerPlant = GeneratedColumn<int>(
+    'base_ml_per_plant',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1000),
+  );
+  static const VerificationMeta _minimumAdjustmentBpMeta =
+      const VerificationMeta('minimumAdjustmentBp');
+  @override
+  late final GeneratedColumn<int> minimumAdjustmentBp = GeneratedColumn<int>(
+    'minimum_adjustment_bp',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(5000),
+  );
+  static const VerificationMeta _maximumAdjustmentBpMeta =
+      const VerificationMeta('maximumAdjustmentBp');
+  @override
+  late final GeneratedColumn<int> maximumAdjustmentBp = GeneratedColumn<int>(
+    'maximum_adjustment_bp',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(15000),
   );
   static const VerificationMeta _isActiveMeta = const VerificationMeta(
     'isActive',
@@ -7726,7 +12369,12 @@ class $CropIrrigationRulesTable extends CropIrrigationRules
     maximumDurationMinutes,
     sourceTitle,
     sourceReference,
+    reviewer,
     approvedAt,
+    approvedVectorCount,
+    baseMlPerPlant,
+    minimumAdjustmentBp,
+    maximumAdjustmentBp,
     isActive,
   ];
   @override
@@ -7839,10 +12487,52 @@ class $CropIrrigationRulesTable extends CropIrrigationRules
     } else if (isInserting) {
       context.missing(_sourceReferenceMeta);
     }
+    if (data.containsKey('reviewer')) {
+      context.handle(
+        _reviewerMeta,
+        reviewer.isAcceptableOrUnknown(data['reviewer']!, _reviewerMeta),
+      );
+    }
     if (data.containsKey('approved_at')) {
       context.handle(
         _approvedAtMeta,
         approvedAt.isAcceptableOrUnknown(data['approved_at']!, _approvedAtMeta),
+      );
+    }
+    if (data.containsKey('approved_vector_count')) {
+      context.handle(
+        _approvedVectorCountMeta,
+        approvedVectorCount.isAcceptableOrUnknown(
+          data['approved_vector_count']!,
+          _approvedVectorCountMeta,
+        ),
+      );
+    }
+    if (data.containsKey('base_ml_per_plant')) {
+      context.handle(
+        _baseMlPerPlantMeta,
+        baseMlPerPlant.isAcceptableOrUnknown(
+          data['base_ml_per_plant']!,
+          _baseMlPerPlantMeta,
+        ),
+      );
+    }
+    if (data.containsKey('minimum_adjustment_bp')) {
+      context.handle(
+        _minimumAdjustmentBpMeta,
+        minimumAdjustmentBp.isAcceptableOrUnknown(
+          data['minimum_adjustment_bp']!,
+          _minimumAdjustmentBpMeta,
+        ),
+      );
+    }
+    if (data.containsKey('maximum_adjustment_bp')) {
+      context.handle(
+        _maximumAdjustmentBpMeta,
+        maximumAdjustmentBp.isAcceptableOrUnknown(
+          data['maximum_adjustment_bp']!,
+          _maximumAdjustmentBpMeta,
+        ),
       );
     }
     if (data.containsKey('is_active')) {
@@ -7900,10 +12590,30 @@ class $CropIrrigationRulesTable extends CropIrrigationRules
         DriftSqlType.string,
         data['${effectivePrefix}source_reference'],
       )!,
+      reviewer: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reviewer'],
+      ),
       approvedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}approved_at'],
       ),
+      approvedVectorCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}approved_vector_count'],
+      )!,
+      baseMlPerPlant: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}base_ml_per_plant'],
+      )!,
+      minimumAdjustmentBp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}minimum_adjustment_bp'],
+      )!,
+      maximumAdjustmentBp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}maximum_adjustment_bp'],
+      )!,
       isActive: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_active'],
@@ -7929,7 +12639,12 @@ class CropIrrigationRule extends DataClass
   final int maximumDurationMinutes;
   final String sourceTitle;
   final String sourceReference;
+  final String? reviewer;
   final DateTime? approvedAt;
+  final int approvedVectorCount;
+  final int baseMlPerPlant;
+  final int minimumAdjustmentBp;
+  final int maximumAdjustmentBp;
   final bool isActive;
   const CropIrrigationRule({
     required this.id,
@@ -7942,7 +12657,12 @@ class CropIrrigationRule extends DataClass
     required this.maximumDurationMinutes,
     required this.sourceTitle,
     required this.sourceReference,
+    this.reviewer,
     this.approvedAt,
+    required this.approvedVectorCount,
+    required this.baseMlPerPlant,
+    required this.minimumAdjustmentBp,
+    required this.maximumAdjustmentBp,
     required this.isActive,
   });
   @override
@@ -7958,9 +12678,16 @@ class CropIrrigationRule extends DataClass
     map['maximum_duration_minutes'] = Variable<int>(maximumDurationMinutes);
     map['source_title'] = Variable<String>(sourceTitle);
     map['source_reference'] = Variable<String>(sourceReference);
+    if (!nullToAbsent || reviewer != null) {
+      map['reviewer'] = Variable<String>(reviewer);
+    }
     if (!nullToAbsent || approvedAt != null) {
       map['approved_at'] = Variable<DateTime>(approvedAt);
     }
+    map['approved_vector_count'] = Variable<int>(approvedVectorCount);
+    map['base_ml_per_plant'] = Variable<int>(baseMlPerPlant);
+    map['minimum_adjustment_bp'] = Variable<int>(minimumAdjustmentBp);
+    map['maximum_adjustment_bp'] = Variable<int>(maximumAdjustmentBp);
     map['is_active'] = Variable<bool>(isActive);
     return map;
   }
@@ -7977,9 +12704,16 @@ class CropIrrigationRule extends DataClass
       maximumDurationMinutes: Value(maximumDurationMinutes),
       sourceTitle: Value(sourceTitle),
       sourceReference: Value(sourceReference),
+      reviewer: reviewer == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reviewer),
       approvedAt: approvedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(approvedAt),
+      approvedVectorCount: Value(approvedVectorCount),
+      baseMlPerPlant: Value(baseMlPerPlant),
+      minimumAdjustmentBp: Value(minimumAdjustmentBp),
+      maximumAdjustmentBp: Value(maximumAdjustmentBp),
       isActive: Value(isActive),
     );
   }
@@ -8006,7 +12740,18 @@ class CropIrrigationRule extends DataClass
       ),
       sourceTitle: serializer.fromJson<String>(json['sourceTitle']),
       sourceReference: serializer.fromJson<String>(json['sourceReference']),
+      reviewer: serializer.fromJson<String?>(json['reviewer']),
       approvedAt: serializer.fromJson<DateTime?>(json['approvedAt']),
+      approvedVectorCount: serializer.fromJson<int>(
+        json['approvedVectorCount'],
+      ),
+      baseMlPerPlant: serializer.fromJson<int>(json['baseMlPerPlant']),
+      minimumAdjustmentBp: serializer.fromJson<int>(
+        json['minimumAdjustmentBp'],
+      ),
+      maximumAdjustmentBp: serializer.fromJson<int>(
+        json['maximumAdjustmentBp'],
+      ),
       isActive: serializer.fromJson<bool>(json['isActive']),
     );
   }
@@ -8024,7 +12769,12 @@ class CropIrrigationRule extends DataClass
       'maximumDurationMinutes': serializer.toJson<int>(maximumDurationMinutes),
       'sourceTitle': serializer.toJson<String>(sourceTitle),
       'sourceReference': serializer.toJson<String>(sourceReference),
+      'reviewer': serializer.toJson<String?>(reviewer),
       'approvedAt': serializer.toJson<DateTime?>(approvedAt),
+      'approvedVectorCount': serializer.toJson<int>(approvedVectorCount),
+      'baseMlPerPlant': serializer.toJson<int>(baseMlPerPlant),
+      'minimumAdjustmentBp': serializer.toJson<int>(minimumAdjustmentBp),
+      'maximumAdjustmentBp': serializer.toJson<int>(maximumAdjustmentBp),
       'isActive': serializer.toJson<bool>(isActive),
     };
   }
@@ -8040,7 +12790,12 @@ class CropIrrigationRule extends DataClass
     int? maximumDurationMinutes,
     String? sourceTitle,
     String? sourceReference,
+    Value<String?> reviewer = const Value.absent(),
     Value<DateTime?> approvedAt = const Value.absent(),
+    int? approvedVectorCount,
+    int? baseMlPerPlant,
+    int? minimumAdjustmentBp,
+    int? maximumAdjustmentBp,
     bool? isActive,
   }) => CropIrrigationRule(
     id: id ?? this.id,
@@ -8056,7 +12811,12 @@ class CropIrrigationRule extends DataClass
         maximumDurationMinutes ?? this.maximumDurationMinutes,
     sourceTitle: sourceTitle ?? this.sourceTitle,
     sourceReference: sourceReference ?? this.sourceReference,
+    reviewer: reviewer.present ? reviewer.value : this.reviewer,
     approvedAt: approvedAt.present ? approvedAt.value : this.approvedAt,
+    approvedVectorCount: approvedVectorCount ?? this.approvedVectorCount,
+    baseMlPerPlant: baseMlPerPlant ?? this.baseMlPerPlant,
+    minimumAdjustmentBp: minimumAdjustmentBp ?? this.minimumAdjustmentBp,
+    maximumAdjustmentBp: maximumAdjustmentBp ?? this.maximumAdjustmentBp,
     isActive: isActive ?? this.isActive,
   );
   CropIrrigationRule copyWithCompanion(CropIrrigationRulesCompanion data) {
@@ -8085,9 +12845,22 @@ class CropIrrigationRule extends DataClass
       sourceReference: data.sourceReference.present
           ? data.sourceReference.value
           : this.sourceReference,
+      reviewer: data.reviewer.present ? data.reviewer.value : this.reviewer,
       approvedAt: data.approvedAt.present
           ? data.approvedAt.value
           : this.approvedAt,
+      approvedVectorCount: data.approvedVectorCount.present
+          ? data.approvedVectorCount.value
+          : this.approvedVectorCount,
+      baseMlPerPlant: data.baseMlPerPlant.present
+          ? data.baseMlPerPlant.value
+          : this.baseMlPerPlant,
+      minimumAdjustmentBp: data.minimumAdjustmentBp.present
+          ? data.minimumAdjustmentBp.value
+          : this.minimumAdjustmentBp,
+      maximumAdjustmentBp: data.maximumAdjustmentBp.present
+          ? data.maximumAdjustmentBp.value
+          : this.maximumAdjustmentBp,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
     );
   }
@@ -8105,7 +12878,12 @@ class CropIrrigationRule extends DataClass
           ..write('maximumDurationMinutes: $maximumDurationMinutes, ')
           ..write('sourceTitle: $sourceTitle, ')
           ..write('sourceReference: $sourceReference, ')
+          ..write('reviewer: $reviewer, ')
           ..write('approvedAt: $approvedAt, ')
+          ..write('approvedVectorCount: $approvedVectorCount, ')
+          ..write('baseMlPerPlant: $baseMlPerPlant, ')
+          ..write('minimumAdjustmentBp: $minimumAdjustmentBp, ')
+          ..write('maximumAdjustmentBp: $maximumAdjustmentBp, ')
           ..write('isActive: $isActive')
           ..write(')'))
         .toString();
@@ -8123,7 +12901,12 @@ class CropIrrigationRule extends DataClass
     maximumDurationMinutes,
     sourceTitle,
     sourceReference,
+    reviewer,
     approvedAt,
+    approvedVectorCount,
+    baseMlPerPlant,
+    minimumAdjustmentBp,
+    maximumAdjustmentBp,
     isActive,
   );
   @override
@@ -8140,7 +12923,12 @@ class CropIrrigationRule extends DataClass
           other.maximumDurationMinutes == this.maximumDurationMinutes &&
           other.sourceTitle == this.sourceTitle &&
           other.sourceReference == this.sourceReference &&
+          other.reviewer == this.reviewer &&
           other.approvedAt == this.approvedAt &&
+          other.approvedVectorCount == this.approvedVectorCount &&
+          other.baseMlPerPlant == this.baseMlPerPlant &&
+          other.minimumAdjustmentBp == this.minimumAdjustmentBp &&
+          other.maximumAdjustmentBp == this.maximumAdjustmentBp &&
           other.isActive == this.isActive);
 }
 
@@ -8155,7 +12943,12 @@ class CropIrrigationRulesCompanion extends UpdateCompanion<CropIrrigationRule> {
   final Value<int> maximumDurationMinutes;
   final Value<String> sourceTitle;
   final Value<String> sourceReference;
+  final Value<String?> reviewer;
   final Value<DateTime?> approvedAt;
+  final Value<int> approvedVectorCount;
+  final Value<int> baseMlPerPlant;
+  final Value<int> minimumAdjustmentBp;
+  final Value<int> maximumAdjustmentBp;
   final Value<bool> isActive;
   final Value<int> rowid;
   const CropIrrigationRulesCompanion({
@@ -8169,7 +12962,12 @@ class CropIrrigationRulesCompanion extends UpdateCompanion<CropIrrigationRule> {
     this.maximumDurationMinutes = const Value.absent(),
     this.sourceTitle = const Value.absent(),
     this.sourceReference = const Value.absent(),
+    this.reviewer = const Value.absent(),
     this.approvedAt = const Value.absent(),
+    this.approvedVectorCount = const Value.absent(),
+    this.baseMlPerPlant = const Value.absent(),
+    this.minimumAdjustmentBp = const Value.absent(),
+    this.maximumAdjustmentBp = const Value.absent(),
     this.isActive = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -8184,7 +12982,12 @@ class CropIrrigationRulesCompanion extends UpdateCompanion<CropIrrigationRule> {
     required int maximumDurationMinutes,
     required String sourceTitle,
     required String sourceReference,
+    this.reviewer = const Value.absent(),
     this.approvedAt = const Value.absent(),
+    this.approvedVectorCount = const Value.absent(),
+    this.baseMlPerPlant = const Value.absent(),
+    this.minimumAdjustmentBp = const Value.absent(),
+    this.maximumAdjustmentBp = const Value.absent(),
     this.isActive = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -8208,7 +13011,12 @@ class CropIrrigationRulesCompanion extends UpdateCompanion<CropIrrigationRule> {
     Expression<int>? maximumDurationMinutes,
     Expression<String>? sourceTitle,
     Expression<String>? sourceReference,
+    Expression<String>? reviewer,
     Expression<DateTime>? approvedAt,
+    Expression<int>? approvedVectorCount,
+    Expression<int>? baseMlPerPlant,
+    Expression<int>? minimumAdjustmentBp,
+    Expression<int>? maximumAdjustmentBp,
     Expression<bool>? isActive,
     Expression<int>? rowid,
   }) {
@@ -8226,7 +13034,15 @@ class CropIrrigationRulesCompanion extends UpdateCompanion<CropIrrigationRule> {
         'maximum_duration_minutes': maximumDurationMinutes,
       if (sourceTitle != null) 'source_title': sourceTitle,
       if (sourceReference != null) 'source_reference': sourceReference,
+      if (reviewer != null) 'reviewer': reviewer,
       if (approvedAt != null) 'approved_at': approvedAt,
+      if (approvedVectorCount != null)
+        'approved_vector_count': approvedVectorCount,
+      if (baseMlPerPlant != null) 'base_ml_per_plant': baseMlPerPlant,
+      if (minimumAdjustmentBp != null)
+        'minimum_adjustment_bp': minimumAdjustmentBp,
+      if (maximumAdjustmentBp != null)
+        'maximum_adjustment_bp': maximumAdjustmentBp,
       if (isActive != null) 'is_active': isActive,
       if (rowid != null) 'rowid': rowid,
     });
@@ -8243,7 +13059,12 @@ class CropIrrigationRulesCompanion extends UpdateCompanion<CropIrrigationRule> {
     Value<int>? maximumDurationMinutes,
     Value<String>? sourceTitle,
     Value<String>? sourceReference,
+    Value<String?>? reviewer,
     Value<DateTime?>? approvedAt,
+    Value<int>? approvedVectorCount,
+    Value<int>? baseMlPerPlant,
+    Value<int>? minimumAdjustmentBp,
+    Value<int>? maximumAdjustmentBp,
     Value<bool>? isActive,
     Value<int>? rowid,
   }) {
@@ -8261,7 +13082,12 @@ class CropIrrigationRulesCompanion extends UpdateCompanion<CropIrrigationRule> {
           maximumDurationMinutes ?? this.maximumDurationMinutes,
       sourceTitle: sourceTitle ?? this.sourceTitle,
       sourceReference: sourceReference ?? this.sourceReference,
+      reviewer: reviewer ?? this.reviewer,
       approvedAt: approvedAt ?? this.approvedAt,
+      approvedVectorCount: approvedVectorCount ?? this.approvedVectorCount,
+      baseMlPerPlant: baseMlPerPlant ?? this.baseMlPerPlant,
+      minimumAdjustmentBp: minimumAdjustmentBp ?? this.minimumAdjustmentBp,
+      maximumAdjustmentBp: maximumAdjustmentBp ?? this.maximumAdjustmentBp,
       isActive: isActive ?? this.isActive,
       rowid: rowid ?? this.rowid,
     );
@@ -8306,8 +13132,23 @@ class CropIrrigationRulesCompanion extends UpdateCompanion<CropIrrigationRule> {
     if (sourceReference.present) {
       map['source_reference'] = Variable<String>(sourceReference.value);
     }
+    if (reviewer.present) {
+      map['reviewer'] = Variable<String>(reviewer.value);
+    }
     if (approvedAt.present) {
       map['approved_at'] = Variable<DateTime>(approvedAt.value);
+    }
+    if (approvedVectorCount.present) {
+      map['approved_vector_count'] = Variable<int>(approvedVectorCount.value);
+    }
+    if (baseMlPerPlant.present) {
+      map['base_ml_per_plant'] = Variable<int>(baseMlPerPlant.value);
+    }
+    if (minimumAdjustmentBp.present) {
+      map['minimum_adjustment_bp'] = Variable<int>(minimumAdjustmentBp.value);
+    }
+    if (maximumAdjustmentBp.present) {
+      map['maximum_adjustment_bp'] = Variable<int>(maximumAdjustmentBp.value);
     }
     if (isActive.present) {
       map['is_active'] = Variable<bool>(isActive.value);
@@ -8331,7 +13172,12 @@ class CropIrrigationRulesCompanion extends UpdateCompanion<CropIrrigationRule> {
           ..write('maximumDurationMinutes: $maximumDurationMinutes, ')
           ..write('sourceTitle: $sourceTitle, ')
           ..write('sourceReference: $sourceReference, ')
+          ..write('reviewer: $reviewer, ')
           ..write('approvedAt: $approvedAt, ')
+          ..write('approvedVectorCount: $approvedVectorCount, ')
+          ..write('baseMlPerPlant: $baseMlPerPlant, ')
+          ..write('minimumAdjustmentBp: $minimumAdjustmentBp, ')
+          ..write('maximumAdjustmentBp: $maximumAdjustmentBp, ')
           ..write('isActive: $isActive, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -8375,6 +13221,63 @@ class $IrrigationEstimatesTable extends IrrigationEstimates
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _irrigationLaborIdMeta = const VerificationMeta(
+    'irrigationLaborId',
+  );
+  @override
+  late final GeneratedColumn<String> irrigationLaborId =
+      GeneratedColumn<String>(
+        'irrigation_labor_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _cropAssignmentIdMeta = const VerificationMeta(
+    'cropAssignmentId',
+  );
+  @override
+  late final GeneratedColumn<String> cropAssignmentId = GeneratedColumn<String>(
+    'crop_assignment_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _configIdMeta = const VerificationMeta(
+    'configId',
+  );
+  @override
+  late final GeneratedColumn<String> configId = GeneratedColumn<String>(
+    'config_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _configVersionMeta = const VerificationMeta(
+    'configVersion',
+  );
+  @override
+  late final GeneratedColumn<int> configVersion = GeneratedColumn<int>(
+    'config_version',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _algorithmVersionMeta = const VerificationMeta(
+    'algorithmVersion',
+  );
+  @override
+  late final GeneratedColumn<int> algorithmVersion = GeneratedColumn<int>(
+    'algorithm_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
   );
   static const VerificationMeta _ruleIdMeta = const VerificationMeta('ruleId');
   @override
@@ -8450,6 +13353,29 @@ class $IrrigationEstimatesTable extends IrrigationEstimates
     requiredDuringInsert: false,
     defaultValue: const Constant('[]'),
   );
+  static const VerificationMeta _explanationJsonMeta = const VerificationMeta(
+    'explanationJson',
+  );
+  @override
+  late final GeneratedColumn<String> explanationJson = GeneratedColumn<String>(
+    'explanation_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('{}'),
+  );
+  static const VerificationMeta _calculatedAtMeta = const VerificationMeta(
+    'calculatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> calculatedAt = GeneratedColumn<DateTime>(
+    'calculated_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -8466,6 +13392,11 @@ class $IrrigationEstimatesTable extends IrrigationEstimates
     id,
     ownerId,
     sectorId,
+    irrigationLaborId,
+    cropAssignmentId,
+    configId,
+    configVersion,
+    algorithmVersion,
     ruleId,
     ruleVersion,
     soilTypeCode,
@@ -8473,6 +13404,8 @@ class $IrrigationEstimatesTable extends IrrigationEstimates
     estimatedLitersMilli,
     recommendedMinutes,
     warningsJson,
+    explanationJson,
+    calculatedAt,
     createdAt,
   ];
   @override
@@ -8507,6 +13440,48 @@ class $IrrigationEstimatesTable extends IrrigationEstimates
       );
     } else if (isInserting) {
       context.missing(_sectorIdMeta);
+    }
+    if (data.containsKey('irrigation_labor_id')) {
+      context.handle(
+        _irrigationLaborIdMeta,
+        irrigationLaborId.isAcceptableOrUnknown(
+          data['irrigation_labor_id']!,
+          _irrigationLaborIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('crop_assignment_id')) {
+      context.handle(
+        _cropAssignmentIdMeta,
+        cropAssignmentId.isAcceptableOrUnknown(
+          data['crop_assignment_id']!,
+          _cropAssignmentIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('config_id')) {
+      context.handle(
+        _configIdMeta,
+        configId.isAcceptableOrUnknown(data['config_id']!, _configIdMeta),
+      );
+    }
+    if (data.containsKey('config_version')) {
+      context.handle(
+        _configVersionMeta,
+        configVersion.isAcceptableOrUnknown(
+          data['config_version']!,
+          _configVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('algorithm_version')) {
+      context.handle(
+        _algorithmVersionMeta,
+        algorithmVersion.isAcceptableOrUnknown(
+          data['algorithm_version']!,
+          _algorithmVersionMeta,
+        ),
+      );
     }
     if (data.containsKey('rule_id')) {
       context.handle(
@@ -8577,6 +13552,24 @@ class $IrrigationEstimatesTable extends IrrigationEstimates
         ),
       );
     }
+    if (data.containsKey('explanation_json')) {
+      context.handle(
+        _explanationJsonMeta,
+        explanationJson.isAcceptableOrUnknown(
+          data['explanation_json']!,
+          _explanationJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('calculated_at')) {
+      context.handle(
+        _calculatedAtMeta,
+        calculatedAt.isAcceptableOrUnknown(
+          data['calculated_at']!,
+          _calculatedAtMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -8606,6 +13599,26 @@ class $IrrigationEstimatesTable extends IrrigationEstimates
         DriftSqlType.string,
         data['${effectivePrefix}sector_id'],
       )!,
+      irrigationLaborId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}irrigation_labor_id'],
+      ),
+      cropAssignmentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}crop_assignment_id'],
+      ),
+      configId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}config_id'],
+      ),
+      configVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}config_version'],
+      ),
+      algorithmVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}algorithm_version'],
+      )!,
       ruleId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}rule_id'],
@@ -8634,6 +13647,14 @@ class $IrrigationEstimatesTable extends IrrigationEstimates
         DriftSqlType.string,
         data['${effectivePrefix}warnings_json'],
       )!,
+      explanationJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}explanation_json'],
+      )!,
+      calculatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}calculated_at'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -8652,6 +13673,11 @@ class IrrigationEstimate extends DataClass
   final String id;
   final String ownerId;
   final String sectorId;
+  final String? irrigationLaborId;
+  final String? cropAssignmentId;
+  final String? configId;
+  final int? configVersion;
+  final int algorithmVersion;
   final String ruleId;
   final int ruleVersion;
   final String soilTypeCode;
@@ -8659,11 +13685,18 @@ class IrrigationEstimate extends DataClass
   final int estimatedLitersMilli;
   final int recommendedMinutes;
   final String warningsJson;
+  final String explanationJson;
+  final DateTime? calculatedAt;
   final DateTime createdAt;
   const IrrigationEstimate({
     required this.id,
     required this.ownerId,
     required this.sectorId,
+    this.irrigationLaborId,
+    this.cropAssignmentId,
+    this.configId,
+    this.configVersion,
+    required this.algorithmVersion,
     required this.ruleId,
     required this.ruleVersion,
     required this.soilTypeCode,
@@ -8671,6 +13704,8 @@ class IrrigationEstimate extends DataClass
     required this.estimatedLitersMilli,
     required this.recommendedMinutes,
     required this.warningsJson,
+    required this.explanationJson,
+    this.calculatedAt,
     required this.createdAt,
   });
   @override
@@ -8679,6 +13714,19 @@ class IrrigationEstimate extends DataClass
     map['id'] = Variable<String>(id);
     map['owner_id'] = Variable<String>(ownerId);
     map['sector_id'] = Variable<String>(sectorId);
+    if (!nullToAbsent || irrigationLaborId != null) {
+      map['irrigation_labor_id'] = Variable<String>(irrigationLaborId);
+    }
+    if (!nullToAbsent || cropAssignmentId != null) {
+      map['crop_assignment_id'] = Variable<String>(cropAssignmentId);
+    }
+    if (!nullToAbsent || configId != null) {
+      map['config_id'] = Variable<String>(configId);
+    }
+    if (!nullToAbsent || configVersion != null) {
+      map['config_version'] = Variable<int>(configVersion);
+    }
+    map['algorithm_version'] = Variable<int>(algorithmVersion);
     map['rule_id'] = Variable<String>(ruleId);
     map['rule_version'] = Variable<int>(ruleVersion);
     map['soil_type_code'] = Variable<String>(soilTypeCode);
@@ -8686,6 +13734,10 @@ class IrrigationEstimate extends DataClass
     map['estimated_liters_milli'] = Variable<int>(estimatedLitersMilli);
     map['recommended_minutes'] = Variable<int>(recommendedMinutes);
     map['warnings_json'] = Variable<String>(warningsJson);
+    map['explanation_json'] = Variable<String>(explanationJson);
+    if (!nullToAbsent || calculatedAt != null) {
+      map['calculated_at'] = Variable<DateTime>(calculatedAt);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -8695,6 +13747,19 @@ class IrrigationEstimate extends DataClass
       id: Value(id),
       ownerId: Value(ownerId),
       sectorId: Value(sectorId),
+      irrigationLaborId: irrigationLaborId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(irrigationLaborId),
+      cropAssignmentId: cropAssignmentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cropAssignmentId),
+      configId: configId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(configId),
+      configVersion: configVersion == null && nullToAbsent
+          ? const Value.absent()
+          : Value(configVersion),
+      algorithmVersion: Value(algorithmVersion),
       ruleId: Value(ruleId),
       ruleVersion: Value(ruleVersion),
       soilTypeCode: Value(soilTypeCode),
@@ -8702,6 +13767,10 @@ class IrrigationEstimate extends DataClass
       estimatedLitersMilli: Value(estimatedLitersMilli),
       recommendedMinutes: Value(recommendedMinutes),
       warningsJson: Value(warningsJson),
+      explanationJson: Value(explanationJson),
+      calculatedAt: calculatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(calculatedAt),
       createdAt: Value(createdAt),
     );
   }
@@ -8715,6 +13784,13 @@ class IrrigationEstimate extends DataClass
       id: serializer.fromJson<String>(json['id']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
       sectorId: serializer.fromJson<String>(json['sectorId']),
+      irrigationLaborId: serializer.fromJson<String?>(
+        json['irrigationLaborId'],
+      ),
+      cropAssignmentId: serializer.fromJson<String?>(json['cropAssignmentId']),
+      configId: serializer.fromJson<String?>(json['configId']),
+      configVersion: serializer.fromJson<int?>(json['configVersion']),
+      algorithmVersion: serializer.fromJson<int>(json['algorithmVersion']),
       ruleId: serializer.fromJson<String>(json['ruleId']),
       ruleVersion: serializer.fromJson<int>(json['ruleVersion']),
       soilTypeCode: serializer.fromJson<String>(json['soilTypeCode']),
@@ -8724,6 +13800,8 @@ class IrrigationEstimate extends DataClass
       ),
       recommendedMinutes: serializer.fromJson<int>(json['recommendedMinutes']),
       warningsJson: serializer.fromJson<String>(json['warningsJson']),
+      explanationJson: serializer.fromJson<String>(json['explanationJson']),
+      calculatedAt: serializer.fromJson<DateTime?>(json['calculatedAt']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -8734,6 +13812,11 @@ class IrrigationEstimate extends DataClass
       'id': serializer.toJson<String>(id),
       'ownerId': serializer.toJson<String>(ownerId),
       'sectorId': serializer.toJson<String>(sectorId),
+      'irrigationLaborId': serializer.toJson<String?>(irrigationLaborId),
+      'cropAssignmentId': serializer.toJson<String?>(cropAssignmentId),
+      'configId': serializer.toJson<String?>(configId),
+      'configVersion': serializer.toJson<int?>(configVersion),
+      'algorithmVersion': serializer.toJson<int>(algorithmVersion),
       'ruleId': serializer.toJson<String>(ruleId),
       'ruleVersion': serializer.toJson<int>(ruleVersion),
       'soilTypeCode': serializer.toJson<String>(soilTypeCode),
@@ -8741,6 +13824,8 @@ class IrrigationEstimate extends DataClass
       'estimatedLitersMilli': serializer.toJson<int>(estimatedLitersMilli),
       'recommendedMinutes': serializer.toJson<int>(recommendedMinutes),
       'warningsJson': serializer.toJson<String>(warningsJson),
+      'explanationJson': serializer.toJson<String>(explanationJson),
+      'calculatedAt': serializer.toJson<DateTime?>(calculatedAt),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -8749,6 +13834,11 @@ class IrrigationEstimate extends DataClass
     String? id,
     String? ownerId,
     String? sectorId,
+    Value<String?> irrigationLaborId = const Value.absent(),
+    Value<String?> cropAssignmentId = const Value.absent(),
+    Value<String?> configId = const Value.absent(),
+    Value<int?> configVersion = const Value.absent(),
+    int? algorithmVersion,
     String? ruleId,
     int? ruleVersion,
     String? soilTypeCode,
@@ -8756,11 +13846,24 @@ class IrrigationEstimate extends DataClass
     int? estimatedLitersMilli,
     int? recommendedMinutes,
     String? warningsJson,
+    String? explanationJson,
+    Value<DateTime?> calculatedAt = const Value.absent(),
     DateTime? createdAt,
   }) => IrrigationEstimate(
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
     sectorId: sectorId ?? this.sectorId,
+    irrigationLaborId: irrigationLaborId.present
+        ? irrigationLaborId.value
+        : this.irrigationLaborId,
+    cropAssignmentId: cropAssignmentId.present
+        ? cropAssignmentId.value
+        : this.cropAssignmentId,
+    configId: configId.present ? configId.value : this.configId,
+    configVersion: configVersion.present
+        ? configVersion.value
+        : this.configVersion,
+    algorithmVersion: algorithmVersion ?? this.algorithmVersion,
     ruleId: ruleId ?? this.ruleId,
     ruleVersion: ruleVersion ?? this.ruleVersion,
     soilTypeCode: soilTypeCode ?? this.soilTypeCode,
@@ -8768,6 +13871,8 @@ class IrrigationEstimate extends DataClass
     estimatedLitersMilli: estimatedLitersMilli ?? this.estimatedLitersMilli,
     recommendedMinutes: recommendedMinutes ?? this.recommendedMinutes,
     warningsJson: warningsJson ?? this.warningsJson,
+    explanationJson: explanationJson ?? this.explanationJson,
+    calculatedAt: calculatedAt.present ? calculatedAt.value : this.calculatedAt,
     createdAt: createdAt ?? this.createdAt,
   );
   IrrigationEstimate copyWithCompanion(IrrigationEstimatesCompanion data) {
@@ -8775,6 +13880,19 @@ class IrrigationEstimate extends DataClass
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
       sectorId: data.sectorId.present ? data.sectorId.value : this.sectorId,
+      irrigationLaborId: data.irrigationLaborId.present
+          ? data.irrigationLaborId.value
+          : this.irrigationLaborId,
+      cropAssignmentId: data.cropAssignmentId.present
+          ? data.cropAssignmentId.value
+          : this.cropAssignmentId,
+      configId: data.configId.present ? data.configId.value : this.configId,
+      configVersion: data.configVersion.present
+          ? data.configVersion.value
+          : this.configVersion,
+      algorithmVersion: data.algorithmVersion.present
+          ? data.algorithmVersion.value
+          : this.algorithmVersion,
       ruleId: data.ruleId.present ? data.ruleId.value : this.ruleId,
       ruleVersion: data.ruleVersion.present
           ? data.ruleVersion.value
@@ -8794,6 +13912,12 @@ class IrrigationEstimate extends DataClass
       warningsJson: data.warningsJson.present
           ? data.warningsJson.value
           : this.warningsJson,
+      explanationJson: data.explanationJson.present
+          ? data.explanationJson.value
+          : this.explanationJson,
+      calculatedAt: data.calculatedAt.present
+          ? data.calculatedAt.value
+          : this.calculatedAt,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -8804,6 +13928,11 @@ class IrrigationEstimate extends DataClass
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('sectorId: $sectorId, ')
+          ..write('irrigationLaborId: $irrigationLaborId, ')
+          ..write('cropAssignmentId: $cropAssignmentId, ')
+          ..write('configId: $configId, ')
+          ..write('configVersion: $configVersion, ')
+          ..write('algorithmVersion: $algorithmVersion, ')
           ..write('ruleId: $ruleId, ')
           ..write('ruleVersion: $ruleVersion, ')
           ..write('soilTypeCode: $soilTypeCode, ')
@@ -8811,6 +13940,8 @@ class IrrigationEstimate extends DataClass
           ..write('estimatedLitersMilli: $estimatedLitersMilli, ')
           ..write('recommendedMinutes: $recommendedMinutes, ')
           ..write('warningsJson: $warningsJson, ')
+          ..write('explanationJson: $explanationJson, ')
+          ..write('calculatedAt: $calculatedAt, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -8821,6 +13952,11 @@ class IrrigationEstimate extends DataClass
     id,
     ownerId,
     sectorId,
+    irrigationLaborId,
+    cropAssignmentId,
+    configId,
+    configVersion,
+    algorithmVersion,
     ruleId,
     ruleVersion,
     soilTypeCode,
@@ -8828,6 +13964,8 @@ class IrrigationEstimate extends DataClass
     estimatedLitersMilli,
     recommendedMinutes,
     warningsJson,
+    explanationJson,
+    calculatedAt,
     createdAt,
   );
   @override
@@ -8837,6 +13975,11 @@ class IrrigationEstimate extends DataClass
           other.id == this.id &&
           other.ownerId == this.ownerId &&
           other.sectorId == this.sectorId &&
+          other.irrigationLaborId == this.irrigationLaborId &&
+          other.cropAssignmentId == this.cropAssignmentId &&
+          other.configId == this.configId &&
+          other.configVersion == this.configVersion &&
+          other.algorithmVersion == this.algorithmVersion &&
           other.ruleId == this.ruleId &&
           other.ruleVersion == this.ruleVersion &&
           other.soilTypeCode == this.soilTypeCode &&
@@ -8844,6 +13987,8 @@ class IrrigationEstimate extends DataClass
           other.estimatedLitersMilli == this.estimatedLitersMilli &&
           other.recommendedMinutes == this.recommendedMinutes &&
           other.warningsJson == this.warningsJson &&
+          other.explanationJson == this.explanationJson &&
+          other.calculatedAt == this.calculatedAt &&
           other.createdAt == this.createdAt);
 }
 
@@ -8851,6 +13996,11 @@ class IrrigationEstimatesCompanion extends UpdateCompanion<IrrigationEstimate> {
   final Value<String> id;
   final Value<String> ownerId;
   final Value<String> sectorId;
+  final Value<String?> irrigationLaborId;
+  final Value<String?> cropAssignmentId;
+  final Value<String?> configId;
+  final Value<int?> configVersion;
+  final Value<int> algorithmVersion;
   final Value<String> ruleId;
   final Value<int> ruleVersion;
   final Value<String> soilTypeCode;
@@ -8858,12 +14008,19 @@ class IrrigationEstimatesCompanion extends UpdateCompanion<IrrigationEstimate> {
   final Value<int> estimatedLitersMilli;
   final Value<int> recommendedMinutes;
   final Value<String> warningsJson;
+  final Value<String> explanationJson;
+  final Value<DateTime?> calculatedAt;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
   const IrrigationEstimatesCompanion({
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
     this.sectorId = const Value.absent(),
+    this.irrigationLaborId = const Value.absent(),
+    this.cropAssignmentId = const Value.absent(),
+    this.configId = const Value.absent(),
+    this.configVersion = const Value.absent(),
+    this.algorithmVersion = const Value.absent(),
     this.ruleId = const Value.absent(),
     this.ruleVersion = const Value.absent(),
     this.soilTypeCode = const Value.absent(),
@@ -8871,6 +14028,8 @@ class IrrigationEstimatesCompanion extends UpdateCompanion<IrrigationEstimate> {
     this.estimatedLitersMilli = const Value.absent(),
     this.recommendedMinutes = const Value.absent(),
     this.warningsJson = const Value.absent(),
+    this.explanationJson = const Value.absent(),
+    this.calculatedAt = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -8878,6 +14037,11 @@ class IrrigationEstimatesCompanion extends UpdateCompanion<IrrigationEstimate> {
     required String id,
     required String ownerId,
     required String sectorId,
+    this.irrigationLaborId = const Value.absent(),
+    this.cropAssignmentId = const Value.absent(),
+    this.configId = const Value.absent(),
+    this.configVersion = const Value.absent(),
+    this.algorithmVersion = const Value.absent(),
     required String ruleId,
     required int ruleVersion,
     required String soilTypeCode,
@@ -8885,6 +14049,8 @@ class IrrigationEstimatesCompanion extends UpdateCompanion<IrrigationEstimate> {
     required int estimatedLitersMilli,
     required int recommendedMinutes,
     this.warningsJson = const Value.absent(),
+    this.explanationJson = const Value.absent(),
+    this.calculatedAt = const Value.absent(),
     required DateTime createdAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -8901,6 +14067,11 @@ class IrrigationEstimatesCompanion extends UpdateCompanion<IrrigationEstimate> {
     Expression<String>? id,
     Expression<String>? ownerId,
     Expression<String>? sectorId,
+    Expression<String>? irrigationLaborId,
+    Expression<String>? cropAssignmentId,
+    Expression<String>? configId,
+    Expression<int>? configVersion,
+    Expression<int>? algorithmVersion,
     Expression<String>? ruleId,
     Expression<int>? ruleVersion,
     Expression<String>? soilTypeCode,
@@ -8908,6 +14079,8 @@ class IrrigationEstimatesCompanion extends UpdateCompanion<IrrigationEstimate> {
     Expression<int>? estimatedLitersMilli,
     Expression<int>? recommendedMinutes,
     Expression<String>? warningsJson,
+    Expression<String>? explanationJson,
+    Expression<DateTime>? calculatedAt,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
@@ -8915,6 +14088,11 @@ class IrrigationEstimatesCompanion extends UpdateCompanion<IrrigationEstimate> {
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
       if (sectorId != null) 'sector_id': sectorId,
+      if (irrigationLaborId != null) 'irrigation_labor_id': irrigationLaborId,
+      if (cropAssignmentId != null) 'crop_assignment_id': cropAssignmentId,
+      if (configId != null) 'config_id': configId,
+      if (configVersion != null) 'config_version': configVersion,
+      if (algorithmVersion != null) 'algorithm_version': algorithmVersion,
       if (ruleId != null) 'rule_id': ruleId,
       if (ruleVersion != null) 'rule_version': ruleVersion,
       if (soilTypeCode != null) 'soil_type_code': soilTypeCode,
@@ -8923,6 +14101,8 @@ class IrrigationEstimatesCompanion extends UpdateCompanion<IrrigationEstimate> {
         'estimated_liters_milli': estimatedLitersMilli,
       if (recommendedMinutes != null) 'recommended_minutes': recommendedMinutes,
       if (warningsJson != null) 'warnings_json': warningsJson,
+      if (explanationJson != null) 'explanation_json': explanationJson,
+      if (calculatedAt != null) 'calculated_at': calculatedAt,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -8932,6 +14112,11 @@ class IrrigationEstimatesCompanion extends UpdateCompanion<IrrigationEstimate> {
     Value<String>? id,
     Value<String>? ownerId,
     Value<String>? sectorId,
+    Value<String?>? irrigationLaborId,
+    Value<String?>? cropAssignmentId,
+    Value<String?>? configId,
+    Value<int?>? configVersion,
+    Value<int>? algorithmVersion,
     Value<String>? ruleId,
     Value<int>? ruleVersion,
     Value<String>? soilTypeCode,
@@ -8939,6 +14124,8 @@ class IrrigationEstimatesCompanion extends UpdateCompanion<IrrigationEstimate> {
     Value<int>? estimatedLitersMilli,
     Value<int>? recommendedMinutes,
     Value<String>? warningsJson,
+    Value<String>? explanationJson,
+    Value<DateTime?>? calculatedAt,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
@@ -8946,6 +14133,11 @@ class IrrigationEstimatesCompanion extends UpdateCompanion<IrrigationEstimate> {
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
       sectorId: sectorId ?? this.sectorId,
+      irrigationLaborId: irrigationLaborId ?? this.irrigationLaborId,
+      cropAssignmentId: cropAssignmentId ?? this.cropAssignmentId,
+      configId: configId ?? this.configId,
+      configVersion: configVersion ?? this.configVersion,
+      algorithmVersion: algorithmVersion ?? this.algorithmVersion,
       ruleId: ruleId ?? this.ruleId,
       ruleVersion: ruleVersion ?? this.ruleVersion,
       soilTypeCode: soilTypeCode ?? this.soilTypeCode,
@@ -8953,6 +14145,8 @@ class IrrigationEstimatesCompanion extends UpdateCompanion<IrrigationEstimate> {
       estimatedLitersMilli: estimatedLitersMilli ?? this.estimatedLitersMilli,
       recommendedMinutes: recommendedMinutes ?? this.recommendedMinutes,
       warningsJson: warningsJson ?? this.warningsJson,
+      explanationJson: explanationJson ?? this.explanationJson,
+      calculatedAt: calculatedAt ?? this.calculatedAt,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
@@ -8969,6 +14163,21 @@ class IrrigationEstimatesCompanion extends UpdateCompanion<IrrigationEstimate> {
     }
     if (sectorId.present) {
       map['sector_id'] = Variable<String>(sectorId.value);
+    }
+    if (irrigationLaborId.present) {
+      map['irrigation_labor_id'] = Variable<String>(irrigationLaborId.value);
+    }
+    if (cropAssignmentId.present) {
+      map['crop_assignment_id'] = Variable<String>(cropAssignmentId.value);
+    }
+    if (configId.present) {
+      map['config_id'] = Variable<String>(configId.value);
+    }
+    if (configVersion.present) {
+      map['config_version'] = Variable<int>(configVersion.value);
+    }
+    if (algorithmVersion.present) {
+      map['algorithm_version'] = Variable<int>(algorithmVersion.value);
     }
     if (ruleId.present) {
       map['rule_id'] = Variable<String>(ruleId.value);
@@ -8991,6 +14200,12 @@ class IrrigationEstimatesCompanion extends UpdateCompanion<IrrigationEstimate> {
     if (warningsJson.present) {
       map['warnings_json'] = Variable<String>(warningsJson.value);
     }
+    if (explanationJson.present) {
+      map['explanation_json'] = Variable<String>(explanationJson.value);
+    }
+    if (calculatedAt.present) {
+      map['calculated_at'] = Variable<DateTime>(calculatedAt.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -9006,6 +14221,11 @@ class IrrigationEstimatesCompanion extends UpdateCompanion<IrrigationEstimate> {
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('sectorId: $sectorId, ')
+          ..write('irrigationLaborId: $irrigationLaborId, ')
+          ..write('cropAssignmentId: $cropAssignmentId, ')
+          ..write('configId: $configId, ')
+          ..write('configVersion: $configVersion, ')
+          ..write('algorithmVersion: $algorithmVersion, ')
           ..write('ruleId: $ruleId, ')
           ..write('ruleVersion: $ruleVersion, ')
           ..write('soilTypeCode: $soilTypeCode, ')
@@ -9013,6 +14233,8 @@ class IrrigationEstimatesCompanion extends UpdateCompanion<IrrigationEstimate> {
           ..write('estimatedLitersMilli: $estimatedLitersMilli, ')
           ..write('recommendedMinutes: $recommendedMinutes, ')
           ..write('warningsJson: $warningsJson, ')
+          ..write('explanationJson: $explanationJson, ')
+          ..write('calculatedAt: $calculatedAt, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -9070,6 +14292,17 @@ class $ProductionRecordsTable extends ProductionRecords
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES sectors (id)',
     ),
+  );
+  static const VerificationMeta _laborIdMeta = const VerificationMeta(
+    'laborId',
+  );
+  @override
+  late final GeneratedColumn<String> laborId = GeneratedColumn<String>(
+    'labor_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _seasonIdMeta = const VerificationMeta(
     'seasonId',
@@ -9150,6 +14383,7 @@ class $ProductionRecordsTable extends ProductionRecords
     ownerId,
     parcelId,
     sectorId,
+    laborId,
     seasonId,
     cropId,
     quantity,
@@ -9198,6 +14432,12 @@ class $ProductionRecordsTable extends ProductionRecords
       );
     } else if (isInserting) {
       context.missing(_sectorIdMeta);
+    }
+    if (data.containsKey('labor_id')) {
+      context.handle(
+        _laborIdMeta,
+        laborId.isAcceptableOrUnknown(data['labor_id']!, _laborIdMeta),
+      );
     }
     if (data.containsKey('season_id')) {
       context.handle(
@@ -9263,6 +14503,10 @@ class $ProductionRecordsTable extends ProductionRecords
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {laborId},
+  ];
+  @override
   ProductionRecord map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ProductionRecord(
@@ -9282,6 +14526,10 @@ class $ProductionRecordsTable extends ProductionRecords
         DriftSqlType.string,
         data['${effectivePrefix}sector_id'],
       )!,
+      laborId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}labor_id'],
+      ),
       seasonId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}season_id'],
@@ -9325,6 +14573,7 @@ class ProductionRecord extends DataClass
   final String ownerId;
   final String parcelId;
   final String sectorId;
+  final String? laborId;
   final String? seasonId;
   final String cropId;
   final double quantity;
@@ -9337,6 +14586,7 @@ class ProductionRecord extends DataClass
     required this.ownerId,
     required this.parcelId,
     required this.sectorId,
+    this.laborId,
     this.seasonId,
     required this.cropId,
     required this.quantity,
@@ -9352,6 +14602,9 @@ class ProductionRecord extends DataClass
     map['owner_id'] = Variable<String>(ownerId);
     map['parcel_id'] = Variable<String>(parcelId);
     map['sector_id'] = Variable<String>(sectorId);
+    if (!nullToAbsent || laborId != null) {
+      map['labor_id'] = Variable<String>(laborId);
+    }
     if (!nullToAbsent || seasonId != null) {
       map['season_id'] = Variable<String>(seasonId);
     }
@@ -9372,6 +14625,9 @@ class ProductionRecord extends DataClass
       ownerId: Value(ownerId),
       parcelId: Value(parcelId),
       sectorId: Value(sectorId),
+      laborId: laborId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(laborId),
       seasonId: seasonId == null && nullToAbsent
           ? const Value.absent()
           : Value(seasonId),
@@ -9396,6 +14652,7 @@ class ProductionRecord extends DataClass
       ownerId: serializer.fromJson<String>(json['ownerId']),
       parcelId: serializer.fromJson<String>(json['parcelId']),
       sectorId: serializer.fromJson<String>(json['sectorId']),
+      laborId: serializer.fromJson<String?>(json['laborId']),
       seasonId: serializer.fromJson<String?>(json['seasonId']),
       cropId: serializer.fromJson<String>(json['cropId']),
       quantity: serializer.fromJson<double>(json['quantity']),
@@ -9413,6 +14670,7 @@ class ProductionRecord extends DataClass
       'ownerId': serializer.toJson<String>(ownerId),
       'parcelId': serializer.toJson<String>(parcelId),
       'sectorId': serializer.toJson<String>(sectorId),
+      'laborId': serializer.toJson<String?>(laborId),
       'seasonId': serializer.toJson<String?>(seasonId),
       'cropId': serializer.toJson<String>(cropId),
       'quantity': serializer.toJson<double>(quantity),
@@ -9428,6 +14686,7 @@ class ProductionRecord extends DataClass
     String? ownerId,
     String? parcelId,
     String? sectorId,
+    Value<String?> laborId = const Value.absent(),
     Value<String?> seasonId = const Value.absent(),
     String? cropId,
     double? quantity,
@@ -9440,6 +14699,7 @@ class ProductionRecord extends DataClass
     ownerId: ownerId ?? this.ownerId,
     parcelId: parcelId ?? this.parcelId,
     sectorId: sectorId ?? this.sectorId,
+    laborId: laborId.present ? laborId.value : this.laborId,
     seasonId: seasonId.present ? seasonId.value : this.seasonId,
     cropId: cropId ?? this.cropId,
     quantity: quantity ?? this.quantity,
@@ -9454,6 +14714,7 @@ class ProductionRecord extends DataClass
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
       parcelId: data.parcelId.present ? data.parcelId.value : this.parcelId,
       sectorId: data.sectorId.present ? data.sectorId.value : this.sectorId,
+      laborId: data.laborId.present ? data.laborId.value : this.laborId,
       seasonId: data.seasonId.present ? data.seasonId.value : this.seasonId,
       cropId: data.cropId.present ? data.cropId.value : this.cropId,
       quantity: data.quantity.present ? data.quantity.value : this.quantity,
@@ -9475,6 +14736,7 @@ class ProductionRecord extends DataClass
           ..write('ownerId: $ownerId, ')
           ..write('parcelId: $parcelId, ')
           ..write('sectorId: $sectorId, ')
+          ..write('laborId: $laborId, ')
           ..write('seasonId: $seasonId, ')
           ..write('cropId: $cropId, ')
           ..write('quantity: $quantity, ')
@@ -9492,6 +14754,7 @@ class ProductionRecord extends DataClass
     ownerId,
     parcelId,
     sectorId,
+    laborId,
     seasonId,
     cropId,
     quantity,
@@ -9508,6 +14771,7 @@ class ProductionRecord extends DataClass
           other.ownerId == this.ownerId &&
           other.parcelId == this.parcelId &&
           other.sectorId == this.sectorId &&
+          other.laborId == this.laborId &&
           other.seasonId == this.seasonId &&
           other.cropId == this.cropId &&
           other.quantity == this.quantity &&
@@ -9522,6 +14786,7 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
   final Value<String> ownerId;
   final Value<String> parcelId;
   final Value<String> sectorId;
+  final Value<String?> laborId;
   final Value<String?> seasonId;
   final Value<String> cropId;
   final Value<double> quantity;
@@ -9535,6 +14800,7 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
     this.ownerId = const Value.absent(),
     this.parcelId = const Value.absent(),
     this.sectorId = const Value.absent(),
+    this.laborId = const Value.absent(),
     this.seasonId = const Value.absent(),
     this.cropId = const Value.absent(),
     this.quantity = const Value.absent(),
@@ -9549,6 +14815,7 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
     required String ownerId,
     required String parcelId,
     required String sectorId,
+    this.laborId = const Value.absent(),
     this.seasonId = const Value.absent(),
     required String cropId,
     required double quantity,
@@ -9571,6 +14838,7 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
     Expression<String>? ownerId,
     Expression<String>? parcelId,
     Expression<String>? sectorId,
+    Expression<String>? laborId,
     Expression<String>? seasonId,
     Expression<String>? cropId,
     Expression<double>? quantity,
@@ -9585,6 +14853,7 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
       if (ownerId != null) 'owner_id': ownerId,
       if (parcelId != null) 'parcel_id': parcelId,
       if (sectorId != null) 'sector_id': sectorId,
+      if (laborId != null) 'labor_id': laborId,
       if (seasonId != null) 'season_id': seasonId,
       if (cropId != null) 'crop_id': cropId,
       if (quantity != null) 'quantity': quantity,
@@ -9601,6 +14870,7 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
     Value<String>? ownerId,
     Value<String>? parcelId,
     Value<String>? sectorId,
+    Value<String?>? laborId,
     Value<String?>? seasonId,
     Value<String>? cropId,
     Value<double>? quantity,
@@ -9615,6 +14885,7 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
       ownerId: ownerId ?? this.ownerId,
       parcelId: parcelId ?? this.parcelId,
       sectorId: sectorId ?? this.sectorId,
+      laborId: laborId ?? this.laborId,
       seasonId: seasonId ?? this.seasonId,
       cropId: cropId ?? this.cropId,
       quantity: quantity ?? this.quantity,
@@ -9640,6 +14911,9 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
     }
     if (sectorId.present) {
       map['sector_id'] = Variable<String>(sectorId.value);
+    }
+    if (laborId.present) {
+      map['labor_id'] = Variable<String>(laborId.value);
     }
     if (seasonId.present) {
       map['season_id'] = Variable<String>(seasonId.value);
@@ -9675,6 +14949,7 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
           ..write('ownerId: $ownerId, ')
           ..write('parcelId: $parcelId, ')
           ..write('sectorId: $sectorId, ')
+          ..write('laborId: $laborId, ')
           ..write('seasonId: $seasonId, ')
           ..write('cropId: $cropId, ')
           ..write('quantity: $quantity, ')
@@ -10349,6 +15624,17 @@ class $RemindersTable extends Reminders
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _parcelIdMeta = const VerificationMeta(
+    'parcelId',
+  );
+  @override
+  late final GeneratedColumn<String> parcelId = GeneratedColumn<String>(
+    'parcel_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _sectorIdMeta = const VerificationMeta(
     'sectorId',
   );
@@ -10378,6 +15664,17 @@ class $RemindersTable extends Reminders
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _scheduledAtMeta = const VerificationMeta(
     'scheduledAt',
   );
@@ -10388,6 +15685,28 @@ class $RemindersTable extends Reminders
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceTimeZoneMeta = const VerificationMeta(
+    'sourceTimeZone',
+  );
+  @override
+  late final GeneratedColumn<String> sourceTimeZone = GeneratedColumn<String>(
+    'source_time_zone',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('UTC'),
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('scheduled'),
   );
   static const VerificationMeta _isCompletedMeta = const VerificationMeta(
     'isCompleted',
@@ -10404,6 +15723,110 @@ class $RemindersTable extends Reminders
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _completedAtMeta = const VerificationMeta(
+    'completedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> completedAt = GeneratedColumn<DateTime>(
+    'completed_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _cancelledAtMeta = const VerificationMeta(
+    'cancelledAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> cancelledAt = GeneratedColumn<DateTime>(
+    'cancelled_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _androidNotificationIdMeta =
+      const VerificationMeta('androidNotificationId');
+  @override
+  late final GeneratedColumn<int> androidNotificationId = GeneratedColumn<int>(
+    'android_notification_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _notificationStateMeta = const VerificationMeta(
+    'notificationState',
+  );
+  @override
+  late final GeneratedColumn<String> notificationState =
+      GeneratedColumn<String>(
+        'notification_state',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('none'),
+      );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _syncStateMeta = const VerificationMeta(
+    'syncState',
+  );
+  @override
+  late final GeneratedColumn<String> syncState = GeneratedColumn<String>(
+    'sync_state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  static const VerificationMeta _serverUpdatedAtMeta = const VerificationMeta(
+    'serverUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> serverUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'server_updated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastSyncErrorCodeMeta = const VerificationMeta(
+    'lastSyncErrorCode',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncErrorCode =
+      GeneratedColumn<String>(
+        'last_sync_error_code',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -10419,11 +15842,24 @@ class $RemindersTable extends Reminders
   List<GeneratedColumn> get $columns => [
     id,
     ownerId,
+    parcelId,
     sectorId,
     title,
     notes,
+    description,
     scheduledAt,
+    sourceTimeZone,
+    status,
     isCompleted,
+    completedAt,
+    cancelledAt,
+    androidNotificationId,
+    notificationState,
+    version,
+    syncState,
+    serverUpdatedAt,
+    lastSyncErrorCode,
+    deletedAt,
     updatedAt,
   ];
   @override
@@ -10451,6 +15887,12 @@ class $RemindersTable extends Reminders
     } else if (isInserting) {
       context.missing(_ownerIdMeta);
     }
+    if (data.containsKey('parcel_id')) {
+      context.handle(
+        _parcelIdMeta,
+        parcelId.isAcceptableOrUnknown(data['parcel_id']!, _parcelIdMeta),
+      );
+    }
     if (data.containsKey('sector_id')) {
       context.handle(
         _sectorIdMeta,
@@ -10471,6 +15913,15 @@ class $RemindersTable extends Reminders
         notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
       );
     }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
     if (data.containsKey('scheduled_at')) {
       context.handle(
         _scheduledAtMeta,
@@ -10482,6 +15933,21 @@ class $RemindersTable extends Reminders
     } else if (isInserting) {
       context.missing(_scheduledAtMeta);
     }
+    if (data.containsKey('source_time_zone')) {
+      context.handle(
+        _sourceTimeZoneMeta,
+        sourceTimeZone.isAcceptableOrUnknown(
+          data['source_time_zone']!,
+          _sourceTimeZoneMeta,
+        ),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
     if (data.containsKey('is_completed')) {
       context.handle(
         _isCompletedMeta,
@@ -10489,6 +15955,78 @@ class $RemindersTable extends Reminders
           data['is_completed']!,
           _isCompletedMeta,
         ),
+      );
+    }
+    if (data.containsKey('completed_at')) {
+      context.handle(
+        _completedAtMeta,
+        completedAt.isAcceptableOrUnknown(
+          data['completed_at']!,
+          _completedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('cancelled_at')) {
+      context.handle(
+        _cancelledAtMeta,
+        cancelledAt.isAcceptableOrUnknown(
+          data['cancelled_at']!,
+          _cancelledAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('android_notification_id')) {
+      context.handle(
+        _androidNotificationIdMeta,
+        androidNotificationId.isAcceptableOrUnknown(
+          data['android_notification_id']!,
+          _androidNotificationIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('notification_state')) {
+      context.handle(
+        _notificationStateMeta,
+        notificationState.isAcceptableOrUnknown(
+          data['notification_state']!,
+          _notificationStateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    }
+    if (data.containsKey('sync_state')) {
+      context.handle(
+        _syncStateMeta,
+        syncState.isAcceptableOrUnknown(data['sync_state']!, _syncStateMeta),
+      );
+    }
+    if (data.containsKey('server_updated_at')) {
+      context.handle(
+        _serverUpdatedAtMeta,
+        serverUpdatedAt.isAcceptableOrUnknown(
+          data['server_updated_at']!,
+          _serverUpdatedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_sync_error_code')) {
+      context.handle(
+        _lastSyncErrorCodeMeta,
+        lastSyncErrorCode.isAcceptableOrUnknown(
+          data['last_sync_error_code']!,
+          _lastSyncErrorCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
       );
     }
     if (data.containsKey('updated_at')) {
@@ -10516,6 +16054,10 @@ class $RemindersTable extends Reminders
         DriftSqlType.string,
         data['${effectivePrefix}owner_id'],
       )!,
+      parcelId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}parcel_id'],
+      ),
       sectorId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}sector_id'],
@@ -10528,14 +16070,62 @@ class $RemindersTable extends Reminders
         DriftSqlType.string,
         data['${effectivePrefix}notes'],
       ),
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
       scheduledAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}scheduled_at'],
+      )!,
+      sourceTimeZone: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_time_zone'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
       )!,
       isCompleted: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_completed'],
       )!,
+      completedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}completed_at'],
+      ),
+      cancelledAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}cancelled_at'],
+      ),
+      androidNotificationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}android_notification_id'],
+      ),
+      notificationState: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notification_state'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      syncState: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_state'],
+      )!,
+      serverUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}server_updated_at'],
+      ),
+      lastSyncErrorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error_code'],
+      ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -10552,20 +16142,46 @@ class $RemindersTable extends Reminders
 class Reminder extends DataClass implements Insertable<Reminder> {
   final String id;
   final String ownerId;
+  final String? parcelId;
   final String? sectorId;
   final String title;
   final String? notes;
+  final String? description;
   final DateTime scheduledAt;
+  final String sourceTimeZone;
+  final String status;
   final bool isCompleted;
+  final DateTime? completedAt;
+  final DateTime? cancelledAt;
+  final int? androidNotificationId;
+  final String notificationState;
+  final int version;
+  final String syncState;
+  final DateTime? serverUpdatedAt;
+  final String? lastSyncErrorCode;
+  final DateTime? deletedAt;
   final DateTime updatedAt;
   const Reminder({
     required this.id,
     required this.ownerId,
+    this.parcelId,
     this.sectorId,
     required this.title,
     this.notes,
+    this.description,
     required this.scheduledAt,
+    required this.sourceTimeZone,
+    required this.status,
     required this.isCompleted,
+    this.completedAt,
+    this.cancelledAt,
+    this.androidNotificationId,
+    required this.notificationState,
+    required this.version,
+    required this.syncState,
+    this.serverUpdatedAt,
+    this.lastSyncErrorCode,
+    this.deletedAt,
     required this.updatedAt,
   });
   @override
@@ -10573,6 +16189,9 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['owner_id'] = Variable<String>(ownerId);
+    if (!nullToAbsent || parcelId != null) {
+      map['parcel_id'] = Variable<String>(parcelId);
+    }
     if (!nullToAbsent || sectorId != null) {
       map['sector_id'] = Variable<String>(sectorId);
     }
@@ -10580,8 +16199,34 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
     }
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
     map['scheduled_at'] = Variable<DateTime>(scheduledAt);
+    map['source_time_zone'] = Variable<String>(sourceTimeZone);
+    map['status'] = Variable<String>(status);
     map['is_completed'] = Variable<bool>(isCompleted);
+    if (!nullToAbsent || completedAt != null) {
+      map['completed_at'] = Variable<DateTime>(completedAt);
+    }
+    if (!nullToAbsent || cancelledAt != null) {
+      map['cancelled_at'] = Variable<DateTime>(cancelledAt);
+    }
+    if (!nullToAbsent || androidNotificationId != null) {
+      map['android_notification_id'] = Variable<int>(androidNotificationId);
+    }
+    map['notification_state'] = Variable<String>(notificationState);
+    map['version'] = Variable<int>(version);
+    map['sync_state'] = Variable<String>(syncState);
+    if (!nullToAbsent || serverUpdatedAt != null) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
+    }
+    if (!nullToAbsent || lastSyncErrorCode != null) {
+      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode);
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
@@ -10590,6 +16235,9 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     return RemindersCompanion(
       id: Value(id),
       ownerId: Value(ownerId),
+      parcelId: parcelId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(parcelId),
       sectorId: sectorId == null && nullToAbsent
           ? const Value.absent()
           : Value(sectorId),
@@ -10597,8 +16245,34 @@ class Reminder extends DataClass implements Insertable<Reminder> {
       notes: notes == null && nullToAbsent
           ? const Value.absent()
           : Value(notes),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
       scheduledAt: Value(scheduledAt),
+      sourceTimeZone: Value(sourceTimeZone),
+      status: Value(status),
       isCompleted: Value(isCompleted),
+      completedAt: completedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(completedAt),
+      cancelledAt: cancelledAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cancelledAt),
+      androidNotificationId: androidNotificationId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(androidNotificationId),
+      notificationState: Value(notificationState),
+      version: Value(version),
+      syncState: Value(syncState),
+      serverUpdatedAt: serverUpdatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverUpdatedAt),
+      lastSyncErrorCode: lastSyncErrorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncErrorCode),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
       updatedAt: Value(updatedAt),
     );
   }
@@ -10611,11 +16285,28 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     return Reminder(
       id: serializer.fromJson<String>(json['id']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
+      parcelId: serializer.fromJson<String?>(json['parcelId']),
       sectorId: serializer.fromJson<String?>(json['sectorId']),
       title: serializer.fromJson<String>(json['title']),
       notes: serializer.fromJson<String?>(json['notes']),
+      description: serializer.fromJson<String?>(json['description']),
       scheduledAt: serializer.fromJson<DateTime>(json['scheduledAt']),
+      sourceTimeZone: serializer.fromJson<String>(json['sourceTimeZone']),
+      status: serializer.fromJson<String>(json['status']),
       isCompleted: serializer.fromJson<bool>(json['isCompleted']),
+      completedAt: serializer.fromJson<DateTime?>(json['completedAt']),
+      cancelledAt: serializer.fromJson<DateTime?>(json['cancelledAt']),
+      androidNotificationId: serializer.fromJson<int?>(
+        json['androidNotificationId'],
+      ),
+      notificationState: serializer.fromJson<String>(json['notificationState']),
+      version: serializer.fromJson<int>(json['version']),
+      syncState: serializer.fromJson<String>(json['syncState']),
+      serverUpdatedAt: serializer.fromJson<DateTime?>(json['serverUpdatedAt']),
+      lastSyncErrorCode: serializer.fromJson<String?>(
+        json['lastSyncErrorCode'],
+      ),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
@@ -10625,11 +16316,24 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'ownerId': serializer.toJson<String>(ownerId),
+      'parcelId': serializer.toJson<String?>(parcelId),
       'sectorId': serializer.toJson<String?>(sectorId),
       'title': serializer.toJson<String>(title),
       'notes': serializer.toJson<String?>(notes),
+      'description': serializer.toJson<String?>(description),
       'scheduledAt': serializer.toJson<DateTime>(scheduledAt),
+      'sourceTimeZone': serializer.toJson<String>(sourceTimeZone),
+      'status': serializer.toJson<String>(status),
       'isCompleted': serializer.toJson<bool>(isCompleted),
+      'completedAt': serializer.toJson<DateTime?>(completedAt),
+      'cancelledAt': serializer.toJson<DateTime?>(cancelledAt),
+      'androidNotificationId': serializer.toJson<int?>(androidNotificationId),
+      'notificationState': serializer.toJson<String>(notificationState),
+      'version': serializer.toJson<int>(version),
+      'syncState': serializer.toJson<String>(syncState),
+      'serverUpdatedAt': serializer.toJson<DateTime?>(serverUpdatedAt),
+      'lastSyncErrorCode': serializer.toJson<String?>(lastSyncErrorCode),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
@@ -10637,35 +16341,96 @@ class Reminder extends DataClass implements Insertable<Reminder> {
   Reminder copyWith({
     String? id,
     String? ownerId,
+    Value<String?> parcelId = const Value.absent(),
     Value<String?> sectorId = const Value.absent(),
     String? title,
     Value<String?> notes = const Value.absent(),
+    Value<String?> description = const Value.absent(),
     DateTime? scheduledAt,
+    String? sourceTimeZone,
+    String? status,
     bool? isCompleted,
+    Value<DateTime?> completedAt = const Value.absent(),
+    Value<DateTime?> cancelledAt = const Value.absent(),
+    Value<int?> androidNotificationId = const Value.absent(),
+    String? notificationState,
+    int? version,
+    String? syncState,
+    Value<DateTime?> serverUpdatedAt = const Value.absent(),
+    Value<String?> lastSyncErrorCode = const Value.absent(),
+    Value<DateTime?> deletedAt = const Value.absent(),
     DateTime? updatedAt,
   }) => Reminder(
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
+    parcelId: parcelId.present ? parcelId.value : this.parcelId,
     sectorId: sectorId.present ? sectorId.value : this.sectorId,
     title: title ?? this.title,
     notes: notes.present ? notes.value : this.notes,
+    description: description.present ? description.value : this.description,
     scheduledAt: scheduledAt ?? this.scheduledAt,
+    sourceTimeZone: sourceTimeZone ?? this.sourceTimeZone,
+    status: status ?? this.status,
     isCompleted: isCompleted ?? this.isCompleted,
+    completedAt: completedAt.present ? completedAt.value : this.completedAt,
+    cancelledAt: cancelledAt.present ? cancelledAt.value : this.cancelledAt,
+    androidNotificationId: androidNotificationId.present
+        ? androidNotificationId.value
+        : this.androidNotificationId,
+    notificationState: notificationState ?? this.notificationState,
+    version: version ?? this.version,
+    syncState: syncState ?? this.syncState,
+    serverUpdatedAt: serverUpdatedAt.present
+        ? serverUpdatedAt.value
+        : this.serverUpdatedAt,
+    lastSyncErrorCode: lastSyncErrorCode.present
+        ? lastSyncErrorCode.value
+        : this.lastSyncErrorCode,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
   Reminder copyWithCompanion(RemindersCompanion data) {
     return Reminder(
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
+      parcelId: data.parcelId.present ? data.parcelId.value : this.parcelId,
       sectorId: data.sectorId.present ? data.sectorId.value : this.sectorId,
       title: data.title.present ? data.title.value : this.title,
       notes: data.notes.present ? data.notes.value : this.notes,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
       scheduledAt: data.scheduledAt.present
           ? data.scheduledAt.value
           : this.scheduledAt,
+      sourceTimeZone: data.sourceTimeZone.present
+          ? data.sourceTimeZone.value
+          : this.sourceTimeZone,
+      status: data.status.present ? data.status.value : this.status,
       isCompleted: data.isCompleted.present
           ? data.isCompleted.value
           : this.isCompleted,
+      completedAt: data.completedAt.present
+          ? data.completedAt.value
+          : this.completedAt,
+      cancelledAt: data.cancelledAt.present
+          ? data.cancelledAt.value
+          : this.cancelledAt,
+      androidNotificationId: data.androidNotificationId.present
+          ? data.androidNotificationId.value
+          : this.androidNotificationId,
+      notificationState: data.notificationState.present
+          ? data.notificationState.value
+          : this.notificationState,
+      version: data.version.present ? data.version.value : this.version,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      serverUpdatedAt: data.serverUpdatedAt.present
+          ? data.serverUpdatedAt.value
+          : this.serverUpdatedAt,
+      lastSyncErrorCode: data.lastSyncErrorCode.present
+          ? data.lastSyncErrorCode.value
+          : this.lastSyncErrorCode,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -10675,70 +16440,148 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     return (StringBuffer('Reminder(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
+          ..write('parcelId: $parcelId, ')
           ..write('sectorId: $sectorId, ')
           ..write('title: $title, ')
           ..write('notes: $notes, ')
+          ..write('description: $description, ')
           ..write('scheduledAt: $scheduledAt, ')
+          ..write('sourceTimeZone: $sourceTimeZone, ')
+          ..write('status: $status, ')
           ..write('isCompleted: $isCompleted, ')
+          ..write('completedAt: $completedAt, ')
+          ..write('cancelledAt: $cancelledAt, ')
+          ..write('androidNotificationId: $androidNotificationId, ')
+          ..write('notificationState: $notificationState, ')
+          ..write('version: $version, ')
+          ..write('syncState: $syncState, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
+          ..write('deletedAt: $deletedAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     ownerId,
+    parcelId,
     sectorId,
     title,
     notes,
+    description,
     scheduledAt,
+    sourceTimeZone,
+    status,
     isCompleted,
+    completedAt,
+    cancelledAt,
+    androidNotificationId,
+    notificationState,
+    version,
+    syncState,
+    serverUpdatedAt,
+    lastSyncErrorCode,
+    deletedAt,
     updatedAt,
-  );
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Reminder &&
           other.id == this.id &&
           other.ownerId == this.ownerId &&
+          other.parcelId == this.parcelId &&
           other.sectorId == this.sectorId &&
           other.title == this.title &&
           other.notes == this.notes &&
+          other.description == this.description &&
           other.scheduledAt == this.scheduledAt &&
+          other.sourceTimeZone == this.sourceTimeZone &&
+          other.status == this.status &&
           other.isCompleted == this.isCompleted &&
+          other.completedAt == this.completedAt &&
+          other.cancelledAt == this.cancelledAt &&
+          other.androidNotificationId == this.androidNotificationId &&
+          other.notificationState == this.notificationState &&
+          other.version == this.version &&
+          other.syncState == this.syncState &&
+          other.serverUpdatedAt == this.serverUpdatedAt &&
+          other.lastSyncErrorCode == this.lastSyncErrorCode &&
+          other.deletedAt == this.deletedAt &&
           other.updatedAt == this.updatedAt);
 }
 
 class RemindersCompanion extends UpdateCompanion<Reminder> {
   final Value<String> id;
   final Value<String> ownerId;
+  final Value<String?> parcelId;
   final Value<String?> sectorId;
   final Value<String> title;
   final Value<String?> notes;
+  final Value<String?> description;
   final Value<DateTime> scheduledAt;
+  final Value<String> sourceTimeZone;
+  final Value<String> status;
   final Value<bool> isCompleted;
+  final Value<DateTime?> completedAt;
+  final Value<DateTime?> cancelledAt;
+  final Value<int?> androidNotificationId;
+  final Value<String> notificationState;
+  final Value<int> version;
+  final Value<String> syncState;
+  final Value<DateTime?> serverUpdatedAt;
+  final Value<String?> lastSyncErrorCode;
+  final Value<DateTime?> deletedAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const RemindersCompanion({
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
+    this.parcelId = const Value.absent(),
     this.sectorId = const Value.absent(),
     this.title = const Value.absent(),
     this.notes = const Value.absent(),
+    this.description = const Value.absent(),
     this.scheduledAt = const Value.absent(),
+    this.sourceTimeZone = const Value.absent(),
+    this.status = const Value.absent(),
     this.isCompleted = const Value.absent(),
+    this.completedAt = const Value.absent(),
+    this.cancelledAt = const Value.absent(),
+    this.androidNotificationId = const Value.absent(),
+    this.notificationState = const Value.absent(),
+    this.version = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.lastSyncErrorCode = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   RemindersCompanion.insert({
     required String id,
     required String ownerId,
+    this.parcelId = const Value.absent(),
     this.sectorId = const Value.absent(),
     required String title,
     this.notes = const Value.absent(),
+    this.description = const Value.absent(),
     required DateTime scheduledAt,
+    this.sourceTimeZone = const Value.absent(),
+    this.status = const Value.absent(),
     this.isCompleted = const Value.absent(),
+    this.completedAt = const Value.absent(),
+    this.cancelledAt = const Value.absent(),
+    this.androidNotificationId = const Value.absent(),
+    this.notificationState = const Value.absent(),
+    this.version = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.lastSyncErrorCode = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -10749,22 +16592,49 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
   static Insertable<Reminder> custom({
     Expression<String>? id,
     Expression<String>? ownerId,
+    Expression<String>? parcelId,
     Expression<String>? sectorId,
     Expression<String>? title,
     Expression<String>? notes,
+    Expression<String>? description,
     Expression<DateTime>? scheduledAt,
+    Expression<String>? sourceTimeZone,
+    Expression<String>? status,
     Expression<bool>? isCompleted,
+    Expression<DateTime>? completedAt,
+    Expression<DateTime>? cancelledAt,
+    Expression<int>? androidNotificationId,
+    Expression<String>? notificationState,
+    Expression<int>? version,
+    Expression<String>? syncState,
+    Expression<DateTime>? serverUpdatedAt,
+    Expression<String>? lastSyncErrorCode,
+    Expression<DateTime>? deletedAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
+      if (parcelId != null) 'parcel_id': parcelId,
       if (sectorId != null) 'sector_id': sectorId,
       if (title != null) 'title': title,
       if (notes != null) 'notes': notes,
+      if (description != null) 'description': description,
       if (scheduledAt != null) 'scheduled_at': scheduledAt,
+      if (sourceTimeZone != null) 'source_time_zone': sourceTimeZone,
+      if (status != null) 'status': status,
       if (isCompleted != null) 'is_completed': isCompleted,
+      if (completedAt != null) 'completed_at': completedAt,
+      if (cancelledAt != null) 'cancelled_at': cancelledAt,
+      if (androidNotificationId != null)
+        'android_notification_id': androidNotificationId,
+      if (notificationState != null) 'notification_state': notificationState,
+      if (version != null) 'version': version,
+      if (syncState != null) 'sync_state': syncState,
+      if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
+      if (lastSyncErrorCode != null) 'last_sync_error_code': lastSyncErrorCode,
+      if (deletedAt != null) 'deleted_at': deletedAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -10773,22 +16643,49 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
   RemindersCompanion copyWith({
     Value<String>? id,
     Value<String>? ownerId,
+    Value<String?>? parcelId,
     Value<String?>? sectorId,
     Value<String>? title,
     Value<String?>? notes,
+    Value<String?>? description,
     Value<DateTime>? scheduledAt,
+    Value<String>? sourceTimeZone,
+    Value<String>? status,
     Value<bool>? isCompleted,
+    Value<DateTime?>? completedAt,
+    Value<DateTime?>? cancelledAt,
+    Value<int?>? androidNotificationId,
+    Value<String>? notificationState,
+    Value<int>? version,
+    Value<String>? syncState,
+    Value<DateTime?>? serverUpdatedAt,
+    Value<String?>? lastSyncErrorCode,
+    Value<DateTime?>? deletedAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
     return RemindersCompanion(
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
+      parcelId: parcelId ?? this.parcelId,
       sectorId: sectorId ?? this.sectorId,
       title: title ?? this.title,
       notes: notes ?? this.notes,
+      description: description ?? this.description,
       scheduledAt: scheduledAt ?? this.scheduledAt,
+      sourceTimeZone: sourceTimeZone ?? this.sourceTimeZone,
+      status: status ?? this.status,
       isCompleted: isCompleted ?? this.isCompleted,
+      completedAt: completedAt ?? this.completedAt,
+      cancelledAt: cancelledAt ?? this.cancelledAt,
+      androidNotificationId:
+          androidNotificationId ?? this.androidNotificationId,
+      notificationState: notificationState ?? this.notificationState,
+      version: version ?? this.version,
+      syncState: syncState ?? this.syncState,
+      serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+      lastSyncErrorCode: lastSyncErrorCode ?? this.lastSyncErrorCode,
+      deletedAt: deletedAt ?? this.deletedAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -10803,6 +16700,9 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
     if (ownerId.present) {
       map['owner_id'] = Variable<String>(ownerId.value);
     }
+    if (parcelId.present) {
+      map['parcel_id'] = Variable<String>(parcelId.value);
+    }
     if (sectorId.present) {
       map['sector_id'] = Variable<String>(sectorId.value);
     }
@@ -10812,11 +16712,49 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
     }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
     if (scheduledAt.present) {
       map['scheduled_at'] = Variable<DateTime>(scheduledAt.value);
     }
+    if (sourceTimeZone.present) {
+      map['source_time_zone'] = Variable<String>(sourceTimeZone.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
     if (isCompleted.present) {
       map['is_completed'] = Variable<bool>(isCompleted.value);
+    }
+    if (completedAt.present) {
+      map['completed_at'] = Variable<DateTime>(completedAt.value);
+    }
+    if (cancelledAt.present) {
+      map['cancelled_at'] = Variable<DateTime>(cancelledAt.value);
+    }
+    if (androidNotificationId.present) {
+      map['android_notification_id'] = Variable<int>(
+        androidNotificationId.value,
+      );
+    }
+    if (notificationState.present) {
+      map['notification_state'] = Variable<String>(notificationState.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(syncState.value);
+    }
+    if (serverUpdatedAt.present) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt.value);
+    }
+    if (lastSyncErrorCode.present) {
+      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
     }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
@@ -10832,11 +16770,24 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
     return (StringBuffer('RemindersCompanion(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
+          ..write('parcelId: $parcelId, ')
           ..write('sectorId: $sectorId, ')
           ..write('title: $title, ')
           ..write('notes: $notes, ')
+          ..write('description: $description, ')
           ..write('scheduledAt: $scheduledAt, ')
+          ..write('sourceTimeZone: $sourceTimeZone, ')
+          ..write('status: $status, ')
           ..write('isCompleted: $isCompleted, ')
+          ..write('completedAt: $completedAt, ')
+          ..write('cancelledAt: $cancelledAt, ')
+          ..write('androidNotificationId: $androidNotificationId, ')
+          ..write('notificationState: $notificationState, ')
+          ..write('version: $version, ')
+          ..write('syncState: $syncState, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
+          ..write('deletedAt: $deletedAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -12124,6 +18075,17 @@ class $WeatherCacheTable extends WeatherCache
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _parcelIdMeta = const VerificationMeta(
+    'parcelId',
+  );
+  @override
+  late final GeneratedColumn<String> parcelId = GeneratedColumn<String>(
+    'parcel_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _localityMeta = const VerificationMeta(
     'locality',
   );
@@ -12134,6 +18096,18 @@ class $WeatherCacheTable extends WeatherCache
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _providerMeta = const VerificationMeta(
+    'provider',
+  );
+  @override
+  late final GeneratedColumn<String> provider = GeneratedColumn<String>(
+    'provider',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('weatherapi'),
   );
   static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
     'payloadJson',
@@ -12146,6 +18120,17 @@ class $WeatherCacheTable extends WeatherCache
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _observedAtMeta = const VerificationMeta(
+    'observedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> observedAt = GeneratedColumn<DateTime>(
+    'observed_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _fetchedAtMeta = const VerificationMeta(
     'fetchedAt',
   );
@@ -12157,13 +18142,52 @@ class $WeatherCacheTable extends WeatherCache
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _expiresAtMeta = const VerificationMeta(
+    'expiresAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> expiresAt = GeneratedColumn<DateTime>(
+    'expires_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _attributionMeta = const VerificationMeta(
+    'attribution',
+  );
+  @override
+  late final GeneratedColumn<String> attribution = GeneratedColumn<String>(
+    'attribution',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _errorCodeMeta = const VerificationMeta(
+    'errorCode',
+  );
+  @override
+  late final GeneratedColumn<String> errorCode = GeneratedColumn<String>(
+    'error_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     ownerId,
+    parcelId,
     locality,
+    provider,
     payloadJson,
+    observedAt,
     fetchedAt,
+    expiresAt,
+    attribution,
+    errorCode,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -12190,6 +18214,12 @@ class $WeatherCacheTable extends WeatherCache
     } else if (isInserting) {
       context.missing(_ownerIdMeta);
     }
+    if (data.containsKey('parcel_id')) {
+      context.handle(
+        _parcelIdMeta,
+        parcelId.isAcceptableOrUnknown(data['parcel_id']!, _parcelIdMeta),
+      );
+    }
     if (data.containsKey('locality')) {
       context.handle(
         _localityMeta,
@@ -12197,6 +18227,12 @@ class $WeatherCacheTable extends WeatherCache
       );
     } else if (isInserting) {
       context.missing(_localityMeta);
+    }
+    if (data.containsKey('provider')) {
+      context.handle(
+        _providerMeta,
+        provider.isAcceptableOrUnknown(data['provider']!, _providerMeta),
+      );
     }
     if (data.containsKey('payload_json')) {
       context.handle(
@@ -12209,6 +18245,12 @@ class $WeatherCacheTable extends WeatherCache
     } else if (isInserting) {
       context.missing(_payloadJsonMeta);
     }
+    if (data.containsKey('observed_at')) {
+      context.handle(
+        _observedAtMeta,
+        observedAt.isAcceptableOrUnknown(data['observed_at']!, _observedAtMeta),
+      );
+    }
     if (data.containsKey('fetched_at')) {
       context.handle(
         _fetchedAtMeta,
@@ -12216,6 +18258,27 @@ class $WeatherCacheTable extends WeatherCache
       );
     } else if (isInserting) {
       context.missing(_fetchedAtMeta);
+    }
+    if (data.containsKey('expires_at')) {
+      context.handle(
+        _expiresAtMeta,
+        expiresAt.isAcceptableOrUnknown(data['expires_at']!, _expiresAtMeta),
+      );
+    }
+    if (data.containsKey('attribution')) {
+      context.handle(
+        _attributionMeta,
+        attribution.isAcceptableOrUnknown(
+          data['attribution']!,
+          _attributionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('error_code')) {
+      context.handle(
+        _errorCodeMeta,
+        errorCode.isAcceptableOrUnknown(data['error_code']!, _errorCodeMeta),
+      );
     }
     return context;
   }
@@ -12234,18 +18297,42 @@ class $WeatherCacheTable extends WeatherCache
         DriftSqlType.string,
         data['${effectivePrefix}owner_id'],
       )!,
+      parcelId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}parcel_id'],
+      ),
       locality: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}locality'],
+      )!,
+      provider: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}provider'],
       )!,
       payloadJson: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}payload_json'],
       )!,
+      observedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}observed_at'],
+      ),
       fetchedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}fetched_at'],
       )!,
+      expiresAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}expires_at'],
+      ),
+      attribution: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}attribution'],
+      ),
+      errorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}error_code'],
+      ),
     );
   }
 
@@ -12259,24 +18346,52 @@ class WeatherCacheData extends DataClass
     implements Insertable<WeatherCacheData> {
   final String id;
   final String ownerId;
+  final String? parcelId;
   final String locality;
+  final String provider;
   final String payloadJson;
+  final DateTime? observedAt;
   final DateTime fetchedAt;
+  final DateTime? expiresAt;
+  final String? attribution;
+  final String? errorCode;
   const WeatherCacheData({
     required this.id,
     required this.ownerId,
+    this.parcelId,
     required this.locality,
+    required this.provider,
     required this.payloadJson,
+    this.observedAt,
     required this.fetchedAt,
+    this.expiresAt,
+    this.attribution,
+    this.errorCode,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['owner_id'] = Variable<String>(ownerId);
+    if (!nullToAbsent || parcelId != null) {
+      map['parcel_id'] = Variable<String>(parcelId);
+    }
     map['locality'] = Variable<String>(locality);
+    map['provider'] = Variable<String>(provider);
     map['payload_json'] = Variable<String>(payloadJson);
+    if (!nullToAbsent || observedAt != null) {
+      map['observed_at'] = Variable<DateTime>(observedAt);
+    }
     map['fetched_at'] = Variable<DateTime>(fetchedAt);
+    if (!nullToAbsent || expiresAt != null) {
+      map['expires_at'] = Variable<DateTime>(expiresAt);
+    }
+    if (!nullToAbsent || attribution != null) {
+      map['attribution'] = Variable<String>(attribution);
+    }
+    if (!nullToAbsent || errorCode != null) {
+      map['error_code'] = Variable<String>(errorCode);
+    }
     return map;
   }
 
@@ -12284,9 +18399,25 @@ class WeatherCacheData extends DataClass
     return WeatherCacheCompanion(
       id: Value(id),
       ownerId: Value(ownerId),
+      parcelId: parcelId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(parcelId),
       locality: Value(locality),
+      provider: Value(provider),
       payloadJson: Value(payloadJson),
+      observedAt: observedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(observedAt),
       fetchedAt: Value(fetchedAt),
+      expiresAt: expiresAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(expiresAt),
+      attribution: attribution == null && nullToAbsent
+          ? const Value.absent()
+          : Value(attribution),
+      errorCode: errorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(errorCode),
     );
   }
 
@@ -12298,9 +18429,15 @@ class WeatherCacheData extends DataClass
     return WeatherCacheData(
       id: serializer.fromJson<String>(json['id']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
+      parcelId: serializer.fromJson<String?>(json['parcelId']),
       locality: serializer.fromJson<String>(json['locality']),
+      provider: serializer.fromJson<String>(json['provider']),
       payloadJson: serializer.fromJson<String>(json['payloadJson']),
+      observedAt: serializer.fromJson<DateTime?>(json['observedAt']),
       fetchedAt: serializer.fromJson<DateTime>(json['fetchedAt']),
+      expiresAt: serializer.fromJson<DateTime?>(json['expiresAt']),
+      attribution: serializer.fromJson<String?>(json['attribution']),
+      errorCode: serializer.fromJson<String?>(json['errorCode']),
     );
   }
   @override
@@ -12309,34 +18446,62 @@ class WeatherCacheData extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'ownerId': serializer.toJson<String>(ownerId),
+      'parcelId': serializer.toJson<String?>(parcelId),
       'locality': serializer.toJson<String>(locality),
+      'provider': serializer.toJson<String>(provider),
       'payloadJson': serializer.toJson<String>(payloadJson),
+      'observedAt': serializer.toJson<DateTime?>(observedAt),
       'fetchedAt': serializer.toJson<DateTime>(fetchedAt),
+      'expiresAt': serializer.toJson<DateTime?>(expiresAt),
+      'attribution': serializer.toJson<String?>(attribution),
+      'errorCode': serializer.toJson<String?>(errorCode),
     };
   }
 
   WeatherCacheData copyWith({
     String? id,
     String? ownerId,
+    Value<String?> parcelId = const Value.absent(),
     String? locality,
+    String? provider,
     String? payloadJson,
+    Value<DateTime?> observedAt = const Value.absent(),
     DateTime? fetchedAt,
+    Value<DateTime?> expiresAt = const Value.absent(),
+    Value<String?> attribution = const Value.absent(),
+    Value<String?> errorCode = const Value.absent(),
   }) => WeatherCacheData(
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
+    parcelId: parcelId.present ? parcelId.value : this.parcelId,
     locality: locality ?? this.locality,
+    provider: provider ?? this.provider,
     payloadJson: payloadJson ?? this.payloadJson,
+    observedAt: observedAt.present ? observedAt.value : this.observedAt,
     fetchedAt: fetchedAt ?? this.fetchedAt,
+    expiresAt: expiresAt.present ? expiresAt.value : this.expiresAt,
+    attribution: attribution.present ? attribution.value : this.attribution,
+    errorCode: errorCode.present ? errorCode.value : this.errorCode,
   );
   WeatherCacheData copyWithCompanion(WeatherCacheCompanion data) {
     return WeatherCacheData(
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
+      parcelId: data.parcelId.present ? data.parcelId.value : this.parcelId,
       locality: data.locality.present ? data.locality.value : this.locality,
+      provider: data.provider.present ? data.provider.value : this.provider,
       payloadJson: data.payloadJson.present
           ? data.payloadJson.value
           : this.payloadJson,
+      observedAt: data.observedAt.present
+          ? data.observedAt.value
+          : this.observedAt,
       fetchedAt: data.fetchedAt.present ? data.fetchedAt.value : this.fetchedAt,
+      expiresAt: data.expiresAt.present ? data.expiresAt.value : this.expiresAt,
+      attribution: data.attribution.present
+          ? data.attribution.value
+          : this.attribution,
+      errorCode: data.errorCode.present ? data.errorCode.value : this.errorCode,
     );
   }
 
@@ -12345,48 +18510,89 @@ class WeatherCacheData extends DataClass
     return (StringBuffer('WeatherCacheData(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
+          ..write('parcelId: $parcelId, ')
           ..write('locality: $locality, ')
+          ..write('provider: $provider, ')
           ..write('payloadJson: $payloadJson, ')
-          ..write('fetchedAt: $fetchedAt')
+          ..write('observedAt: $observedAt, ')
+          ..write('fetchedAt: $fetchedAt, ')
+          ..write('expiresAt: $expiresAt, ')
+          ..write('attribution: $attribution, ')
+          ..write('errorCode: $errorCode')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, ownerId, locality, payloadJson, fetchedAt);
+  int get hashCode => Object.hash(
+    id,
+    ownerId,
+    parcelId,
+    locality,
+    provider,
+    payloadJson,
+    observedAt,
+    fetchedAt,
+    expiresAt,
+    attribution,
+    errorCode,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is WeatherCacheData &&
           other.id == this.id &&
           other.ownerId == this.ownerId &&
+          other.parcelId == this.parcelId &&
           other.locality == this.locality &&
+          other.provider == this.provider &&
           other.payloadJson == this.payloadJson &&
-          other.fetchedAt == this.fetchedAt);
+          other.observedAt == this.observedAt &&
+          other.fetchedAt == this.fetchedAt &&
+          other.expiresAt == this.expiresAt &&
+          other.attribution == this.attribution &&
+          other.errorCode == this.errorCode);
 }
 
 class WeatherCacheCompanion extends UpdateCompanion<WeatherCacheData> {
   final Value<String> id;
   final Value<String> ownerId;
+  final Value<String?> parcelId;
   final Value<String> locality;
+  final Value<String> provider;
   final Value<String> payloadJson;
+  final Value<DateTime?> observedAt;
   final Value<DateTime> fetchedAt;
+  final Value<DateTime?> expiresAt;
+  final Value<String?> attribution;
+  final Value<String?> errorCode;
   final Value<int> rowid;
   const WeatherCacheCompanion({
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
+    this.parcelId = const Value.absent(),
     this.locality = const Value.absent(),
+    this.provider = const Value.absent(),
     this.payloadJson = const Value.absent(),
+    this.observedAt = const Value.absent(),
     this.fetchedAt = const Value.absent(),
+    this.expiresAt = const Value.absent(),
+    this.attribution = const Value.absent(),
+    this.errorCode = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   WeatherCacheCompanion.insert({
     required String id,
     required String ownerId,
+    this.parcelId = const Value.absent(),
     required String locality,
+    this.provider = const Value.absent(),
     required String payloadJson,
+    this.observedAt = const Value.absent(),
     required DateTime fetchedAt,
+    this.expiresAt = const Value.absent(),
+    this.attribution = const Value.absent(),
+    this.errorCode = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        ownerId = Value(ownerId),
@@ -12396,17 +18602,29 @@ class WeatherCacheCompanion extends UpdateCompanion<WeatherCacheData> {
   static Insertable<WeatherCacheData> custom({
     Expression<String>? id,
     Expression<String>? ownerId,
+    Expression<String>? parcelId,
     Expression<String>? locality,
+    Expression<String>? provider,
     Expression<String>? payloadJson,
+    Expression<DateTime>? observedAt,
     Expression<DateTime>? fetchedAt,
+    Expression<DateTime>? expiresAt,
+    Expression<String>? attribution,
+    Expression<String>? errorCode,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
+      if (parcelId != null) 'parcel_id': parcelId,
       if (locality != null) 'locality': locality,
+      if (provider != null) 'provider': provider,
       if (payloadJson != null) 'payload_json': payloadJson,
+      if (observedAt != null) 'observed_at': observedAt,
       if (fetchedAt != null) 'fetched_at': fetchedAt,
+      if (expiresAt != null) 'expires_at': expiresAt,
+      if (attribution != null) 'attribution': attribution,
+      if (errorCode != null) 'error_code': errorCode,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -12414,17 +18632,29 @@ class WeatherCacheCompanion extends UpdateCompanion<WeatherCacheData> {
   WeatherCacheCompanion copyWith({
     Value<String>? id,
     Value<String>? ownerId,
+    Value<String?>? parcelId,
     Value<String>? locality,
+    Value<String>? provider,
     Value<String>? payloadJson,
+    Value<DateTime?>? observedAt,
     Value<DateTime>? fetchedAt,
+    Value<DateTime?>? expiresAt,
+    Value<String?>? attribution,
+    Value<String?>? errorCode,
     Value<int>? rowid,
   }) {
     return WeatherCacheCompanion(
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
+      parcelId: parcelId ?? this.parcelId,
       locality: locality ?? this.locality,
+      provider: provider ?? this.provider,
       payloadJson: payloadJson ?? this.payloadJson,
+      observedAt: observedAt ?? this.observedAt,
       fetchedAt: fetchedAt ?? this.fetchedAt,
+      expiresAt: expiresAt ?? this.expiresAt,
+      attribution: attribution ?? this.attribution,
+      errorCode: errorCode ?? this.errorCode,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -12438,14 +18668,32 @@ class WeatherCacheCompanion extends UpdateCompanion<WeatherCacheData> {
     if (ownerId.present) {
       map['owner_id'] = Variable<String>(ownerId.value);
     }
+    if (parcelId.present) {
+      map['parcel_id'] = Variable<String>(parcelId.value);
+    }
     if (locality.present) {
       map['locality'] = Variable<String>(locality.value);
+    }
+    if (provider.present) {
+      map['provider'] = Variable<String>(provider.value);
     }
     if (payloadJson.present) {
       map['payload_json'] = Variable<String>(payloadJson.value);
     }
+    if (observedAt.present) {
+      map['observed_at'] = Variable<DateTime>(observedAt.value);
+    }
     if (fetchedAt.present) {
       map['fetched_at'] = Variable<DateTime>(fetchedAt.value);
+    }
+    if (expiresAt.present) {
+      map['expires_at'] = Variable<DateTime>(expiresAt.value);
+    }
+    if (attribution.present) {
+      map['attribution'] = Variable<String>(attribution.value);
+    }
+    if (errorCode.present) {
+      map['error_code'] = Variable<String>(errorCode.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -12458,9 +18706,15 @@ class WeatherCacheCompanion extends UpdateCompanion<WeatherCacheData> {
     return (StringBuffer('WeatherCacheCompanion(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
+          ..write('parcelId: $parcelId, ')
           ..write('locality: $locality, ')
+          ..write('provider: $provider, ')
           ..write('payloadJson: $payloadJson, ')
+          ..write('observedAt: $observedAt, ')
           ..write('fetchedAt: $fetchedAt, ')
+          ..write('expiresAt: $expiresAt, ')
+          ..write('attribution: $attribution, ')
+          ..write('errorCode: $errorCode, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -12493,6 +18747,18 @@ class $AiMessagesTable extends AiMessages
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _clientMessageIdMeta = const VerificationMeta(
+    'clientMessageId',
+  );
+  @override
+  late final GeneratedColumn<String> clientMessageId = GeneratedColumn<String>(
+    'client_message_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _roleMeta = const VerificationMeta('role');
   @override
   late final GeneratedColumn<String> role = GeneratedColumn<String>(
@@ -12513,6 +18779,60 @@ class $AiMessagesTable extends AiMessages
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
+  @override
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
+    'state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('sent'),
+  );
+  static const VerificationMeta _replyToClientMessageIdMeta =
+      const VerificationMeta('replyToClientMessageId');
+  @override
+  late final GeneratedColumn<String> replyToClientMessageId =
+      GeneratedColumn<String>(
+        'reply_to_client_message_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _remoteResponseIdMeta = const VerificationMeta(
+    'remoteResponseId',
+  );
+  @override
+  late final GeneratedColumn<String> remoteResponseId = GeneratedColumn<String>(
+    'remote_response_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _policyVersionMeta = const VerificationMeta(
+    'policyVersion',
+  );
+  @override
+  late final GeneratedColumn<String> policyVersion = GeneratedColumn<String>(
+    'policy_version',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _errorCodeMeta = const VerificationMeta(
+    'errorCode',
+  );
+  @override
+  late final GeneratedColumn<String> errorCode = GeneratedColumn<String>(
+    'error_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -12525,7 +18845,19 @@ class $AiMessagesTable extends AiMessages
     requiredDuringInsert: true,
   );
   @override
-  List<GeneratedColumn> get $columns => [id, ownerId, role, content, createdAt];
+  List<GeneratedColumn> get $columns => [
+    id,
+    ownerId,
+    clientMessageId,
+    role,
+    content,
+    state,
+    replyToClientMessageId,
+    remoteResponseId,
+    policyVersion,
+    errorCode,
+    createdAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -12551,6 +18883,15 @@ class $AiMessagesTable extends AiMessages
     } else if (isInserting) {
       context.missing(_ownerIdMeta);
     }
+    if (data.containsKey('client_message_id')) {
+      context.handle(
+        _clientMessageIdMeta,
+        clientMessageId.isAcceptableOrUnknown(
+          data['client_message_id']!,
+          _clientMessageIdMeta,
+        ),
+      );
+    }
     if (data.containsKey('role')) {
       context.handle(
         _roleMeta,
@@ -12566,6 +18907,45 @@ class $AiMessagesTable extends AiMessages
       );
     } else if (isInserting) {
       context.missing(_contentMeta);
+    }
+    if (data.containsKey('state')) {
+      context.handle(
+        _stateMeta,
+        state.isAcceptableOrUnknown(data['state']!, _stateMeta),
+      );
+    }
+    if (data.containsKey('reply_to_client_message_id')) {
+      context.handle(
+        _replyToClientMessageIdMeta,
+        replyToClientMessageId.isAcceptableOrUnknown(
+          data['reply_to_client_message_id']!,
+          _replyToClientMessageIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('remote_response_id')) {
+      context.handle(
+        _remoteResponseIdMeta,
+        remoteResponseId.isAcceptableOrUnknown(
+          data['remote_response_id']!,
+          _remoteResponseIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('policy_version')) {
+      context.handle(
+        _policyVersionMeta,
+        policyVersion.isAcceptableOrUnknown(
+          data['policy_version']!,
+          _policyVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('error_code')) {
+      context.handle(
+        _errorCodeMeta,
+        errorCode.isAcceptableOrUnknown(data['error_code']!, _errorCodeMeta),
+      );
     }
     if (data.containsKey('created_at')) {
       context.handle(
@@ -12592,6 +18972,10 @@ class $AiMessagesTable extends AiMessages
         DriftSqlType.string,
         data['${effectivePrefix}owner_id'],
       )!,
+      clientMessageId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}client_message_id'],
+      )!,
       role: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}role'],
@@ -12600,6 +18984,26 @@ class $AiMessagesTable extends AiMessages
         DriftSqlType.string,
         data['${effectivePrefix}content'],
       )!,
+      state: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}state'],
+      )!,
+      replyToClientMessageId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reply_to_client_message_id'],
+      ),
+      remoteResponseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}remote_response_id'],
+      ),
+      policyVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}policy_version'],
+      ),
+      errorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}error_code'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -12616,14 +19020,26 @@ class $AiMessagesTable extends AiMessages
 class AiMessage extends DataClass implements Insertable<AiMessage> {
   final String id;
   final String ownerId;
+  final String clientMessageId;
   final String role;
   final String content;
+  final String state;
+  final String? replyToClientMessageId;
+  final String? remoteResponseId;
+  final String? policyVersion;
+  final String? errorCode;
   final DateTime createdAt;
   const AiMessage({
     required this.id,
     required this.ownerId,
+    required this.clientMessageId,
     required this.role,
     required this.content,
+    required this.state,
+    this.replyToClientMessageId,
+    this.remoteResponseId,
+    this.policyVersion,
+    this.errorCode,
     required this.createdAt,
   });
   @override
@@ -12631,8 +19047,24 @@ class AiMessage extends DataClass implements Insertable<AiMessage> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['owner_id'] = Variable<String>(ownerId);
+    map['client_message_id'] = Variable<String>(clientMessageId);
     map['role'] = Variable<String>(role);
     map['content'] = Variable<String>(content);
+    map['state'] = Variable<String>(state);
+    if (!nullToAbsent || replyToClientMessageId != null) {
+      map['reply_to_client_message_id'] = Variable<String>(
+        replyToClientMessageId,
+      );
+    }
+    if (!nullToAbsent || remoteResponseId != null) {
+      map['remote_response_id'] = Variable<String>(remoteResponseId);
+    }
+    if (!nullToAbsent || policyVersion != null) {
+      map['policy_version'] = Variable<String>(policyVersion);
+    }
+    if (!nullToAbsent || errorCode != null) {
+      map['error_code'] = Variable<String>(errorCode);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -12641,8 +19073,22 @@ class AiMessage extends DataClass implements Insertable<AiMessage> {
     return AiMessagesCompanion(
       id: Value(id),
       ownerId: Value(ownerId),
+      clientMessageId: Value(clientMessageId),
       role: Value(role),
       content: Value(content),
+      state: Value(state),
+      replyToClientMessageId: replyToClientMessageId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(replyToClientMessageId),
+      remoteResponseId: remoteResponseId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remoteResponseId),
+      policyVersion: policyVersion == null && nullToAbsent
+          ? const Value.absent()
+          : Value(policyVersion),
+      errorCode: errorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(errorCode),
       createdAt: Value(createdAt),
     );
   }
@@ -12655,8 +19101,16 @@ class AiMessage extends DataClass implements Insertable<AiMessage> {
     return AiMessage(
       id: serializer.fromJson<String>(json['id']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
+      clientMessageId: serializer.fromJson<String>(json['clientMessageId']),
       role: serializer.fromJson<String>(json['role']),
       content: serializer.fromJson<String>(json['content']),
+      state: serializer.fromJson<String>(json['state']),
+      replyToClientMessageId: serializer.fromJson<String?>(
+        json['replyToClientMessageId'],
+      ),
+      remoteResponseId: serializer.fromJson<String?>(json['remoteResponseId']),
+      policyVersion: serializer.fromJson<String?>(json['policyVersion']),
+      errorCode: serializer.fromJson<String?>(json['errorCode']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -12666,8 +19120,16 @@ class AiMessage extends DataClass implements Insertable<AiMessage> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'ownerId': serializer.toJson<String>(ownerId),
+      'clientMessageId': serializer.toJson<String>(clientMessageId),
       'role': serializer.toJson<String>(role),
       'content': serializer.toJson<String>(content),
+      'state': serializer.toJson<String>(state),
+      'replyToClientMessageId': serializer.toJson<String?>(
+        replyToClientMessageId,
+      ),
+      'remoteResponseId': serializer.toJson<String?>(remoteResponseId),
+      'policyVersion': serializer.toJson<String?>(policyVersion),
+      'errorCode': serializer.toJson<String?>(errorCode),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -12675,22 +19137,54 @@ class AiMessage extends DataClass implements Insertable<AiMessage> {
   AiMessage copyWith({
     String? id,
     String? ownerId,
+    String? clientMessageId,
     String? role,
     String? content,
+    String? state,
+    Value<String?> replyToClientMessageId = const Value.absent(),
+    Value<String?> remoteResponseId = const Value.absent(),
+    Value<String?> policyVersion = const Value.absent(),
+    Value<String?> errorCode = const Value.absent(),
     DateTime? createdAt,
   }) => AiMessage(
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
+    clientMessageId: clientMessageId ?? this.clientMessageId,
     role: role ?? this.role,
     content: content ?? this.content,
+    state: state ?? this.state,
+    replyToClientMessageId: replyToClientMessageId.present
+        ? replyToClientMessageId.value
+        : this.replyToClientMessageId,
+    remoteResponseId: remoteResponseId.present
+        ? remoteResponseId.value
+        : this.remoteResponseId,
+    policyVersion: policyVersion.present
+        ? policyVersion.value
+        : this.policyVersion,
+    errorCode: errorCode.present ? errorCode.value : this.errorCode,
     createdAt: createdAt ?? this.createdAt,
   );
   AiMessage copyWithCompanion(AiMessagesCompanion data) {
     return AiMessage(
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
+      clientMessageId: data.clientMessageId.present
+          ? data.clientMessageId.value
+          : this.clientMessageId,
       role: data.role.present ? data.role.value : this.role,
       content: data.content.present ? data.content.value : this.content,
+      state: data.state.present ? data.state.value : this.state,
+      replyToClientMessageId: data.replyToClientMessageId.present
+          ? data.replyToClientMessageId.value
+          : this.replyToClientMessageId,
+      remoteResponseId: data.remoteResponseId.present
+          ? data.remoteResponseId.value
+          : this.remoteResponseId,
+      policyVersion: data.policyVersion.present
+          ? data.policyVersion.value
+          : this.policyVersion,
+      errorCode: data.errorCode.present ? data.errorCode.value : this.errorCode,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -12700,46 +19194,88 @@ class AiMessage extends DataClass implements Insertable<AiMessage> {
     return (StringBuffer('AiMessage(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
+          ..write('clientMessageId: $clientMessageId, ')
           ..write('role: $role, ')
           ..write('content: $content, ')
+          ..write('state: $state, ')
+          ..write('replyToClientMessageId: $replyToClientMessageId, ')
+          ..write('remoteResponseId: $remoteResponseId, ')
+          ..write('policyVersion: $policyVersion, ')
+          ..write('errorCode: $errorCode, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, ownerId, role, content, createdAt);
+  int get hashCode => Object.hash(
+    id,
+    ownerId,
+    clientMessageId,
+    role,
+    content,
+    state,
+    replyToClientMessageId,
+    remoteResponseId,
+    policyVersion,
+    errorCode,
+    createdAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is AiMessage &&
           other.id == this.id &&
           other.ownerId == this.ownerId &&
+          other.clientMessageId == this.clientMessageId &&
           other.role == this.role &&
           other.content == this.content &&
+          other.state == this.state &&
+          other.replyToClientMessageId == this.replyToClientMessageId &&
+          other.remoteResponseId == this.remoteResponseId &&
+          other.policyVersion == this.policyVersion &&
+          other.errorCode == this.errorCode &&
           other.createdAt == this.createdAt);
 }
 
 class AiMessagesCompanion extends UpdateCompanion<AiMessage> {
   final Value<String> id;
   final Value<String> ownerId;
+  final Value<String> clientMessageId;
   final Value<String> role;
   final Value<String> content;
+  final Value<String> state;
+  final Value<String?> replyToClientMessageId;
+  final Value<String?> remoteResponseId;
+  final Value<String?> policyVersion;
+  final Value<String?> errorCode;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
   const AiMessagesCompanion({
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
+    this.clientMessageId = const Value.absent(),
     this.role = const Value.absent(),
     this.content = const Value.absent(),
+    this.state = const Value.absent(),
+    this.replyToClientMessageId = const Value.absent(),
+    this.remoteResponseId = const Value.absent(),
+    this.policyVersion = const Value.absent(),
+    this.errorCode = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   AiMessagesCompanion.insert({
     required String id,
     required String ownerId,
+    this.clientMessageId = const Value.absent(),
     required String role,
     required String content,
+    this.state = const Value.absent(),
+    this.replyToClientMessageId = const Value.absent(),
+    this.remoteResponseId = const Value.absent(),
+    this.policyVersion = const Value.absent(),
+    this.errorCode = const Value.absent(),
     required DateTime createdAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -12750,16 +19286,29 @@ class AiMessagesCompanion extends UpdateCompanion<AiMessage> {
   static Insertable<AiMessage> custom({
     Expression<String>? id,
     Expression<String>? ownerId,
+    Expression<String>? clientMessageId,
     Expression<String>? role,
     Expression<String>? content,
+    Expression<String>? state,
+    Expression<String>? replyToClientMessageId,
+    Expression<String>? remoteResponseId,
+    Expression<String>? policyVersion,
+    Expression<String>? errorCode,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
+      if (clientMessageId != null) 'client_message_id': clientMessageId,
       if (role != null) 'role': role,
       if (content != null) 'content': content,
+      if (state != null) 'state': state,
+      if (replyToClientMessageId != null)
+        'reply_to_client_message_id': replyToClientMessageId,
+      if (remoteResponseId != null) 'remote_response_id': remoteResponseId,
+      if (policyVersion != null) 'policy_version': policyVersion,
+      if (errorCode != null) 'error_code': errorCode,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -12768,16 +19317,29 @@ class AiMessagesCompanion extends UpdateCompanion<AiMessage> {
   AiMessagesCompanion copyWith({
     Value<String>? id,
     Value<String>? ownerId,
+    Value<String>? clientMessageId,
     Value<String>? role,
     Value<String>? content,
+    Value<String>? state,
+    Value<String?>? replyToClientMessageId,
+    Value<String?>? remoteResponseId,
+    Value<String?>? policyVersion,
+    Value<String?>? errorCode,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
     return AiMessagesCompanion(
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
+      clientMessageId: clientMessageId ?? this.clientMessageId,
       role: role ?? this.role,
       content: content ?? this.content,
+      state: state ?? this.state,
+      replyToClientMessageId:
+          replyToClientMessageId ?? this.replyToClientMessageId,
+      remoteResponseId: remoteResponseId ?? this.remoteResponseId,
+      policyVersion: policyVersion ?? this.policyVersion,
+      errorCode: errorCode ?? this.errorCode,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
@@ -12792,11 +19354,31 @@ class AiMessagesCompanion extends UpdateCompanion<AiMessage> {
     if (ownerId.present) {
       map['owner_id'] = Variable<String>(ownerId.value);
     }
+    if (clientMessageId.present) {
+      map['client_message_id'] = Variable<String>(clientMessageId.value);
+    }
     if (role.present) {
       map['role'] = Variable<String>(role.value);
     }
     if (content.present) {
       map['content'] = Variable<String>(content.value);
+    }
+    if (state.present) {
+      map['state'] = Variable<String>(state.value);
+    }
+    if (replyToClientMessageId.present) {
+      map['reply_to_client_message_id'] = Variable<String>(
+        replyToClientMessageId.value,
+      );
+    }
+    if (remoteResponseId.present) {
+      map['remote_response_id'] = Variable<String>(remoteResponseId.value);
+    }
+    if (policyVersion.present) {
+      map['policy_version'] = Variable<String>(policyVersion.value);
+    }
+    if (errorCode.present) {
+      map['error_code'] = Variable<String>(errorCode.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -12812,8 +19394,14 @@ class AiMessagesCompanion extends UpdateCompanion<AiMessage> {
     return (StringBuffer('AiMessagesCompanion(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
+          ..write('clientMessageId: $clientMessageId, ')
           ..write('role: $role, ')
           ..write('content: $content, ')
+          ..write('state: $state, ')
+          ..write('replyToClientMessageId: $replyToClientMessageId, ')
+          ..write('remoteResponseId: $remoteResponseId, ')
+          ..write('policyVersion: $policyVersion, ')
+          ..write('errorCode: $errorCode, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -13200,6 +19788,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $OfficialCropsTable officialCrops = $OfficialCropsTable(this);
   late final $CustomCropsTable customCrops = $CustomCropsTable(this);
   late final $CropSeasonsTable cropSeasons = $CropSeasonsTable(this);
+  late final $AgriculturalSeasonsTable agriculturalSeasons =
+      $AgriculturalSeasonsTable(this);
+  late final $SectorIrrigationConfigsTable sectorIrrigationConfigs =
+      $SectorIrrigationConfigsTable(this);
   late final $LaborsTable labors = $LaborsTable(this);
   late final $SoilMeasurementsTable soilMeasurements = $SoilMeasurementsTable(
     this,
@@ -13245,6 +19837,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     officialCrops,
     customCrops,
     cropSeasons,
+    agriculturalSeasons,
+    sectorIrrigationConfigs,
     labors,
     soilMeasurements,
     irrigationRecords,
@@ -13657,14 +20251,20 @@ typedef $$SyncOutboxTableCreateCompanionBuilder = SyncOutboxCompanion Function({
   required String aggregateType,
   required String aggregateId,
   required String mutationKind,
+  Value<String?> deviceId,
+  Value<int> protocolVersion,
   Value<int?> baseVersion,
   required String payloadJson,
+  Value<int> payloadSchemaVersion,
+  Value<String?> requestHash,
   Value<String?> dependencyOperationId,
   Value<String> state,
   Value<int> attemptCount,
   Value<DateTime?> nextAttemptAt,
   Value<String?> lastErrorCode,
   required DateTime createdAt,
+  Value<DateTime?> lastAttemptedAt,
+  Value<DateTime?> completedAt,
   Value<int> rowid,
 });
 typedef $$SyncOutboxTableUpdateCompanionBuilder = SyncOutboxCompanion Function({
@@ -13673,14 +20273,20 @@ typedef $$SyncOutboxTableUpdateCompanionBuilder = SyncOutboxCompanion Function({
   Value<String> aggregateType,
   Value<String> aggregateId,
   Value<String> mutationKind,
+  Value<String?> deviceId,
+  Value<int> protocolVersion,
   Value<int?> baseVersion,
   Value<String> payloadJson,
+  Value<int> payloadSchemaVersion,
+  Value<String?> requestHash,
   Value<String?> dependencyOperationId,
   Value<String> state,
   Value<int> attemptCount,
   Value<DateTime?> nextAttemptAt,
   Value<String?> lastErrorCode,
   Value<DateTime> createdAt,
+  Value<DateTime?> lastAttemptedAt,
+  Value<DateTime?> completedAt,
   Value<int> rowid,
 });
 
@@ -13718,6 +20324,16 @@ class $$SyncOutboxTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get deviceId => $composableBuilder(
+    column: $table.deviceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get protocolVersion => $composableBuilder(
+    column: $table.protocolVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<int> get baseVersion => $composableBuilder(
     column: $table.baseVersion,
     builder: (column) => ColumnFilters(column),
@@ -13725,6 +20341,16 @@ class $$SyncOutboxTableFilterComposer
 
   ColumnFilters<String> get payloadJson => $composableBuilder(
     column: $table.payloadJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get payloadSchemaVersion => $composableBuilder(
+    column: $table.payloadSchemaVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get requestHash => $composableBuilder(
+    column: $table.requestHash,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -13755,6 +20381,16 @@ class $$SyncOutboxTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastAttemptedAt => $composableBuilder(
+    column: $table.lastAttemptedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -13793,6 +20429,16 @@ class $$SyncOutboxTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get deviceId => $composableBuilder(
+    column: $table.deviceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get protocolVersion => $composableBuilder(
+    column: $table.protocolVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get baseVersion => $composableBuilder(
     column: $table.baseVersion,
     builder: (column) => ColumnOrderings(column),
@@ -13800,6 +20446,16 @@ class $$SyncOutboxTableOrderingComposer
 
   ColumnOrderings<String> get payloadJson => $composableBuilder(
     column: $table.payloadJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get payloadSchemaVersion => $composableBuilder(
+    column: $table.payloadSchemaVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get requestHash => $composableBuilder(
+    column: $table.requestHash,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -13830,6 +20486,16 @@ class $$SyncOutboxTableOrderingComposer
 
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastAttemptedAt => $composableBuilder(
+    column: $table.lastAttemptedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -13866,6 +20532,14 @@ class $$SyncOutboxTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get deviceId =>
+      $composableBuilder(column: $table.deviceId, builder: (column) => column);
+
+  GeneratedColumn<int> get protocolVersion => $composableBuilder(
+    column: $table.protocolVersion,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get baseVersion => $composableBuilder(
     column: $table.baseVersion,
     builder: (column) => column,
@@ -13873,6 +20547,16 @@ class $$SyncOutboxTableAnnotationComposer
 
   GeneratedColumn<String> get payloadJson => $composableBuilder(
     column: $table.payloadJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get payloadSchemaVersion => $composableBuilder(
+    column: $table.payloadSchemaVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get requestHash => $composableBuilder(
+    column: $table.requestHash,
     builder: (column) => column,
   );
 
@@ -13901,6 +20585,16 @@ class $$SyncOutboxTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastAttemptedAt => $composableBuilder(
+    column: $table.lastAttemptedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => column,
+  );
 }
 
 class $$SyncOutboxTableTableManager
@@ -13939,14 +20633,20 @@ class $$SyncOutboxTableTableManager
                 Value<String> aggregateType = const Value.absent(),
                 Value<String> aggregateId = const Value.absent(),
                 Value<String> mutationKind = const Value.absent(),
+                Value<String?> deviceId = const Value.absent(),
+                Value<int> protocolVersion = const Value.absent(),
                 Value<int?> baseVersion = const Value.absent(),
                 Value<String> payloadJson = const Value.absent(),
+                Value<int> payloadSchemaVersion = const Value.absent(),
+                Value<String?> requestHash = const Value.absent(),
                 Value<String?> dependencyOperationId = const Value.absent(),
                 Value<String> state = const Value.absent(),
                 Value<int> attemptCount = const Value.absent(),
                 Value<DateTime?> nextAttemptAt = const Value.absent(),
                 Value<String?> lastErrorCode = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> lastAttemptedAt = const Value.absent(),
+                Value<DateTime?> completedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SyncOutboxCompanion(
                 operationId: operationId,
@@ -13954,14 +20654,20 @@ class $$SyncOutboxTableTableManager
                 aggregateType: aggregateType,
                 aggregateId: aggregateId,
                 mutationKind: mutationKind,
+                deviceId: deviceId,
+                protocolVersion: protocolVersion,
                 baseVersion: baseVersion,
                 payloadJson: payloadJson,
+                payloadSchemaVersion: payloadSchemaVersion,
+                requestHash: requestHash,
                 dependencyOperationId: dependencyOperationId,
                 state: state,
                 attemptCount: attemptCount,
                 nextAttemptAt: nextAttemptAt,
                 lastErrorCode: lastErrorCode,
                 createdAt: createdAt,
+                lastAttemptedAt: lastAttemptedAt,
+                completedAt: completedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -13971,14 +20677,20 @@ class $$SyncOutboxTableTableManager
                 required String aggregateType,
                 required String aggregateId,
                 required String mutationKind,
+                Value<String?> deviceId = const Value.absent(),
+                Value<int> protocolVersion = const Value.absent(),
                 Value<int?> baseVersion = const Value.absent(),
                 required String payloadJson,
+                Value<int> payloadSchemaVersion = const Value.absent(),
+                Value<String?> requestHash = const Value.absent(),
                 Value<String?> dependencyOperationId = const Value.absent(),
                 Value<String> state = const Value.absent(),
                 Value<int> attemptCount = const Value.absent(),
                 Value<DateTime?> nextAttemptAt = const Value.absent(),
                 Value<String?> lastErrorCode = const Value.absent(),
                 required DateTime createdAt,
+                Value<DateTime?> lastAttemptedAt = const Value.absent(),
+                Value<DateTime?> completedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SyncOutboxCompanion.insert(
                 operationId: operationId,
@@ -13986,14 +20698,20 @@ class $$SyncOutboxTableTableManager
                 aggregateType: aggregateType,
                 aggregateId: aggregateId,
                 mutationKind: mutationKind,
+                deviceId: deviceId,
+                protocolVersion: protocolVersion,
                 baseVersion: baseVersion,
                 payloadJson: payloadJson,
+                payloadSchemaVersion: payloadSchemaVersion,
+                requestHash: requestHash,
                 dependencyOperationId: dependencyOperationId,
                 state: state,
                 attemptCount: attemptCount,
                 nextAttemptAt: nextAttemptAt,
                 lastErrorCode: lastErrorCode,
                 createdAt: createdAt,
+                lastAttemptedAt: lastAttemptedAt,
+                completedAt: completedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -14211,7 +20929,14 @@ typedef $$SyncConflictsTableCreateCompanionBuilder =
       required String aggregateType,
       required String aggregateId,
       required String localJson,
+      Value<String?> baseJson,
       required String remoteJson,
+      Value<int?> remoteVersion,
+      Value<String?> sourceOperationId,
+      Value<String> state,
+      Value<String?> resolutionChoice,
+      Value<String?> resolutionOperationId,
+      Value<String?> errorCode,
       required DateTime detectedAt,
       Value<DateTime?> resolvedAt,
       Value<int> rowid,
@@ -14223,7 +20948,14 @@ typedef $$SyncConflictsTableUpdateCompanionBuilder =
       Value<String> aggregateType,
       Value<String> aggregateId,
       Value<String> localJson,
+      Value<String?> baseJson,
       Value<String> remoteJson,
+      Value<int?> remoteVersion,
+      Value<String?> sourceOperationId,
+      Value<String> state,
+      Value<String?> resolutionChoice,
+      Value<String?> resolutionOperationId,
+      Value<String?> errorCode,
       Value<DateTime> detectedAt,
       Value<DateTime?> resolvedAt,
       Value<int> rowid,
@@ -14263,8 +20995,43 @@ class $$SyncConflictsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get baseJson => $composableBuilder(
+    column: $table.baseJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get remoteJson => $composableBuilder(
     column: $table.remoteJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get remoteVersion => $composableBuilder(
+    column: $table.remoteVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceOperationId => $composableBuilder(
+    column: $table.sourceOperationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get resolutionChoice => $composableBuilder(
+    column: $table.resolutionChoice,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get resolutionOperationId => $composableBuilder(
+    column: $table.resolutionOperationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get errorCode => $composableBuilder(
+    column: $table.errorCode,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -14313,8 +21080,43 @@ class $$SyncConflictsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get baseJson => $composableBuilder(
+    column: $table.baseJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get remoteJson => $composableBuilder(
     column: $table.remoteJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get remoteVersion => $composableBuilder(
+    column: $table.remoteVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceOperationId => $composableBuilder(
+    column: $table.sourceOperationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get resolutionChoice => $composableBuilder(
+    column: $table.resolutionChoice,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get resolutionOperationId => $composableBuilder(
+    column: $table.resolutionOperationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get errorCode => $composableBuilder(
+    column: $table.errorCode,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -14359,10 +21161,39 @@ class $$SyncConflictsTableAnnotationComposer
   GeneratedColumn<String> get localJson =>
       $composableBuilder(column: $table.localJson, builder: (column) => column);
 
+  GeneratedColumn<String> get baseJson =>
+      $composableBuilder(column: $table.baseJson, builder: (column) => column);
+
   GeneratedColumn<String> get remoteJson => $composableBuilder(
     column: $table.remoteJson,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get remoteVersion => $composableBuilder(
+    column: $table.remoteVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceOperationId => $composableBuilder(
+    column: $table.sourceOperationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+
+  GeneratedColumn<String> get resolutionChoice => $composableBuilder(
+    column: $table.resolutionChoice,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get resolutionOperationId => $composableBuilder(
+    column: $table.resolutionOperationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get errorCode =>
+      $composableBuilder(column: $table.errorCode, builder: (column) => column);
 
   GeneratedColumn<DateTime> get detectedAt => $composableBuilder(
     column: $table.detectedAt,
@@ -14411,7 +21242,14 @@ class $$SyncConflictsTableTableManager
                 Value<String> aggregateType = const Value.absent(),
                 Value<String> aggregateId = const Value.absent(),
                 Value<String> localJson = const Value.absent(),
+                Value<String?> baseJson = const Value.absent(),
                 Value<String> remoteJson = const Value.absent(),
+                Value<int?> remoteVersion = const Value.absent(),
+                Value<String?> sourceOperationId = const Value.absent(),
+                Value<String> state = const Value.absent(),
+                Value<String?> resolutionChoice = const Value.absent(),
+                Value<String?> resolutionOperationId = const Value.absent(),
+                Value<String?> errorCode = const Value.absent(),
                 Value<DateTime> detectedAt = const Value.absent(),
                 Value<DateTime?> resolvedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -14421,7 +21259,14 @@ class $$SyncConflictsTableTableManager
                 aggregateType: aggregateType,
                 aggregateId: aggregateId,
                 localJson: localJson,
+                baseJson: baseJson,
                 remoteJson: remoteJson,
+                remoteVersion: remoteVersion,
+                sourceOperationId: sourceOperationId,
+                state: state,
+                resolutionChoice: resolutionChoice,
+                resolutionOperationId: resolutionOperationId,
+                errorCode: errorCode,
                 detectedAt: detectedAt,
                 resolvedAt: resolvedAt,
                 rowid: rowid,
@@ -14433,7 +21278,14 @@ class $$SyncConflictsTableTableManager
                 required String aggregateType,
                 required String aggregateId,
                 required String localJson,
+                Value<String?> baseJson = const Value.absent(),
                 required String remoteJson,
+                Value<int?> remoteVersion = const Value.absent(),
+                Value<String?> sourceOperationId = const Value.absent(),
+                Value<String> state = const Value.absent(),
+                Value<String?> resolutionChoice = const Value.absent(),
+                Value<String?> resolutionOperationId = const Value.absent(),
+                Value<String?> errorCode = const Value.absent(),
                 required DateTime detectedAt,
                 Value<DateTime?> resolvedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -14443,7 +21295,14 @@ class $$SyncConflictsTableTableManager
                 aggregateType: aggregateType,
                 aggregateId: aggregateId,
                 localJson: localJson,
+                baseJson: baseJson,
                 remoteJson: remoteJson,
+                remoteVersion: remoteVersion,
+                sourceOperationId: sourceOperationId,
+                state: state,
+                resolutionChoice: resolutionChoice,
+                resolutionOperationId: resolutionOperationId,
+                errorCode: errorCode,
                 detectedAt: detectedAt,
                 resolvedAt: resolvedAt,
                 rowid: rowid,
@@ -14682,6 +21541,9 @@ typedef $$ParcelsTableCreateCompanionBuilder = ParcelsCompanion Function({
   Value<bool> isActive,
   Value<bool> isArchived,
   Value<int> version,
+  Value<String> syncState,
+  Value<DateTime?> serverUpdatedAt,
+  Value<String?> lastSyncErrorCode,
   required DateTime updatedAt,
   Value<DateTime?> deletedAt,
   Value<int> rowid,
@@ -14696,6 +21558,9 @@ typedef $$ParcelsTableUpdateCompanionBuilder = ParcelsCompanion Function({
   Value<bool> isActive,
   Value<bool> isArchived,
   Value<int> version,
+  Value<String> syncState,
+  Value<DateTime?> serverUpdatedAt,
+  Value<String?> lastSyncErrorCode,
   Value<DateTime> updatedAt,
   Value<DateTime?> deletedAt,
   Value<int> rowid,
@@ -14719,6 +21584,30 @@ final class $$ParcelsTableReferences
     ).filter((f) => f.parcelId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_sectorsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $AgriculturalSeasonsTable,
+    List<AgriculturalSeason>
+  >
+  _agriculturalSeasonsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.agriculturalSeasons,
+        aliasName: 'parcels__id__agricultural_seasons__parcel_id',
+      );
+
+  $$AgriculturalSeasonsTableProcessedTableManager get agriculturalSeasonsRefs {
+    final manager = $$AgriculturalSeasonsTableTableManager(
+      $_db,
+      $_db.agriculturalSeasons,
+    ).filter((f) => f.parcelId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _agriculturalSeasonsRefsTable($_db),
+    );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -14779,6 +21668,21 @@ class $$ParcelsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
@@ -14805,6 +21709,31 @@ class $$ParcelsTableFilterComposer
           }) => $$SectorsTableFilterComposer(
             $db: $db,
             $table: $db.sectors,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> agriculturalSeasonsRefs(
+    Expression<bool> Function($$AgriculturalSeasonsTableFilterComposer f) f,
+  ) {
+    final $$AgriculturalSeasonsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.agriculturalSeasons,
+      getReferencedColumn: (t) => t.parcelId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AgriculturalSeasonsTableFilterComposer(
+            $db: $db,
+            $table: $db.agriculturalSeasons,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -14869,6 +21798,21 @@ class $$ParcelsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
@@ -14922,6 +21866,19 @@ class $$ParcelsTableAnnotationComposer
   GeneratedColumn<int> get version =>
       $composableBuilder(column: $table.version, builder: (column) => column);
 
+  GeneratedColumn<String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
@@ -14952,6 +21909,32 @@ class $$ParcelsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> agriculturalSeasonsRefs<T extends Object>(
+    Expression<T> Function($$AgriculturalSeasonsTableAnnotationComposer a) f,
+  ) {
+    final $$AgriculturalSeasonsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.agriculturalSeasons,
+          getReferencedColumn: (t) => t.parcelId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$AgriculturalSeasonsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.agriculturalSeasons,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$ParcelsTableTableManager
@@ -14967,7 +21950,10 @@ class $$ParcelsTableTableManager
           $$ParcelsTableUpdateCompanionBuilder,
           (Parcel, $$ParcelsTableReferences),
           Parcel,
-          PrefetchHooks Function({bool sectorsRefs})
+          PrefetchHooks Function({
+            bool sectorsRefs,
+            bool agriculturalSeasonsRefs,
+          })
         > {
   $$ParcelsTableTableManager(_$AppDatabase db, $ParcelsTable table)
     : super(
@@ -14991,6 +21977,9 @@ class $$ParcelsTableTableManager
                 Value<bool> isActive = const Value.absent(),
                 Value<bool> isArchived = const Value.absent(),
                 Value<int> version = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String?> lastSyncErrorCode = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -15004,6 +21993,9 @@ class $$ParcelsTableTableManager
                 isActive: isActive,
                 isArchived: isArchived,
                 version: version,
+                syncState: syncState,
+                serverUpdatedAt: serverUpdatedAt,
+                lastSyncErrorCode: lastSyncErrorCode,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
                 rowid: rowid,
@@ -15019,6 +22011,9 @@ class $$ParcelsTableTableManager
                 Value<bool> isActive = const Value.absent(),
                 Value<bool> isArchived = const Value.absent(),
                 Value<int> version = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String?> lastSyncErrorCode = const Value.absent(),
                 required DateTime updatedAt,
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -15032,6 +22027,9 @@ class $$ParcelsTableTableManager
                 isActive: isActive,
                 isArchived: isArchived,
                 version: version,
+                syncState: syncState,
+                serverUpdatedAt: serverUpdatedAt,
+                lastSyncErrorCode: lastSyncErrorCode,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
                 rowid: rowid,
@@ -15044,28 +22042,63 @@ class $$ParcelsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({sectorsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (sectorsRefs) db.sectors],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (sectorsRefs)
-                    await $_getPrefetchedData<Parcel, $ParcelsTable, Sector>(
-                      currentTable: table,
-                      referencedTable: $$ParcelsTableReferences
-                          ._sectorsRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$ParcelsTableReferences(db, table, p0).sectorsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.parcelId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({sectorsRefs = false, agriculturalSeasonsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (sectorsRefs) db.sectors,
+                    if (agriculturalSeasonsRefs) db.agriculturalSeasons,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (sectorsRefs)
+                        await $_getPrefetchedData<
+                          Parcel,
+                          $ParcelsTable,
+                          Sector
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ParcelsTableReferences
+                              ._sectorsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ParcelsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).sectorsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.parcelId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (agriculturalSeasonsRefs)
+                        await $_getPrefetchedData<
+                          Parcel,
+                          $ParcelsTable,
+                          AgriculturalSeason
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ParcelsTableReferences
+                              ._agriculturalSeasonsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ParcelsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).agriculturalSeasonsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.parcelId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -15082,7 +22115,7 @@ typedef $$ParcelsTableProcessedTableManager =
       $$ParcelsTableUpdateCompanionBuilder,
       (Parcel, $$ParcelsTableReferences),
       Parcel,
-      PrefetchHooks Function({bool sectorsRefs})
+      PrefetchHooks Function({bool sectorsRefs, bool agriculturalSeasonsRefs})
     >;
 typedef $$SectorsTableCreateCompanionBuilder = SectorsCompanion Function({
   required String id,
@@ -15094,6 +22127,9 @@ typedef $$SectorsTableCreateCompanionBuilder = SectorsCompanion Function({
   required String polygonJson,
   required double areaSquareMeters,
   Value<int> version,
+  Value<String> syncState,
+  Value<DateTime?> serverUpdatedAt,
+  Value<String?> lastSyncErrorCode,
   required DateTime updatedAt,
   Value<DateTime?> deletedAt,
   Value<int> rowid,
@@ -15108,6 +22144,9 @@ typedef $$SectorsTableUpdateCompanionBuilder = SectorsCompanion Function({
   Value<String> polygonJson,
   Value<double> areaSquareMeters,
   Value<int> version,
+  Value<String> syncState,
+  Value<DateTime?> serverUpdatedAt,
+  Value<String?> lastSyncErrorCode,
   Value<DateTime> updatedAt,
   Value<DateTime?> deletedAt,
   Value<int> rowid,
@@ -15147,6 +22186,31 @@ final class $$SectorsTableReferences
     ).filter((f) => f.sectorId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_cropSeasonsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $SectorIrrigationConfigsTable,
+    List<SectorIrrigationConfig>
+  >
+  _sectorIrrigationConfigsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.sectorIrrigationConfigs,
+        aliasName: 'sectors__id__sector_irrigation_configs__sector_id',
+      );
+
+  $$SectorIrrigationConfigsTableProcessedTableManager
+  get sectorIrrigationConfigsRefs {
+    final manager = $$SectorIrrigationConfigsTableTableManager(
+      $_db,
+      $_db.sectorIrrigationConfigs,
+    ).filter((f) => f.sectorId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _sectorIrrigationConfigsRefsTable($_db),
+    );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -15283,6 +22347,21 @@ class $$SectorsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
@@ -15338,6 +22417,32 @@ class $$SectorsTableFilterComposer
                 $removeJoinBuilderFromRootComposer,
           ),
     );
+    return f(composer);
+  }
+
+  Expression<bool> sectorIrrigationConfigsRefs(
+    Expression<bool> Function($$SectorIrrigationConfigsTableFilterComposer f) f,
+  ) {
+    final $$SectorIrrigationConfigsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.sectorIrrigationConfigs,
+          getReferencedColumn: (t) => t.sectorId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SectorIrrigationConfigsTableFilterComposer(
+                $db: $db,
+                $table: $db.sectorIrrigationConfigs,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 
@@ -15491,6 +22596,21 @@ class $$SectorsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
@@ -15562,6 +22682,19 @@ class $$SectorsTableAnnotationComposer
   GeneratedColumn<int> get version =>
       $composableBuilder(column: $table.version, builder: (column) => column);
 
+  GeneratedColumn<String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
@@ -15613,6 +22746,33 @@ class $$SectorsTableAnnotationComposer
                 $removeJoinBuilderFromRootComposer,
           ),
     );
+    return f(composer);
+  }
+
+  Expression<T> sectorIrrigationConfigsRefs<T extends Object>(
+    Expression<T> Function($$SectorIrrigationConfigsTableAnnotationComposer a)
+    f,
+  ) {
+    final $$SectorIrrigationConfigsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.sectorIrrigationConfigs,
+          getReferencedColumn: (t) => t.sectorId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SectorIrrigationConfigsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.sectorIrrigationConfigs,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 
@@ -15735,6 +22895,7 @@ class $$SectorsTableTableManager
           PrefetchHooks Function({
             bool parcelId,
             bool cropSeasonsRefs,
+            bool sectorIrrigationConfigsRefs,
             bool laborsRefs,
             bool soilMeasurementsRefs,
             bool irrigationRecordsRefs,
@@ -15763,6 +22924,9 @@ class $$SectorsTableTableManager
                 Value<String> polygonJson = const Value.absent(),
                 Value<double> areaSquareMeters = const Value.absent(),
                 Value<int> version = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String?> lastSyncErrorCode = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -15776,6 +22940,9 @@ class $$SectorsTableTableManager
                 polygonJson: polygonJson,
                 areaSquareMeters: areaSquareMeters,
                 version: version,
+                syncState: syncState,
+                serverUpdatedAt: serverUpdatedAt,
+                lastSyncErrorCode: lastSyncErrorCode,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
                 rowid: rowid,
@@ -15791,6 +22958,9 @@ class $$SectorsTableTableManager
                 required String polygonJson,
                 required double areaSquareMeters,
                 Value<int> version = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String?> lastSyncErrorCode = const Value.absent(),
                 required DateTime updatedAt,
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -15804,6 +22974,9 @@ class $$SectorsTableTableManager
                 polygonJson: polygonJson,
                 areaSquareMeters: areaSquareMeters,
                 version: version,
+                syncState: syncState,
+                serverUpdatedAt: serverUpdatedAt,
+                lastSyncErrorCode: lastSyncErrorCode,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
                 rowid: rowid,
@@ -15820,6 +22993,7 @@ class $$SectorsTableTableManager
               ({
                 parcelId = false,
                 cropSeasonsRefs = false,
+                sectorIrrigationConfigsRefs = false,
                 laborsRefs = false,
                 soilMeasurementsRefs = false,
                 irrigationRecordsRefs = false,
@@ -15829,6 +23003,7 @@ class $$SectorsTableTableManager
                   db: db,
                   explicitlyWatchedTables: [
                     if (cropSeasonsRefs) db.cropSeasons,
+                    if (sectorIrrigationConfigsRefs) db.sectorIrrigationConfigs,
                     if (laborsRefs) db.labors,
                     if (soilMeasurementsRefs) db.soilMeasurements,
                     if (irrigationRecordsRefs) db.irrigationRecords,
@@ -15881,6 +23056,27 @@ class $$SectorsTableTableManager
                                 table,
                                 p0,
                               ).cropSeasonsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.sectorId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (sectorIrrigationConfigsRefs)
+                        await $_getPrefetchedData<
+                          Sector,
+                          $SectorsTable,
+                          SectorIrrigationConfig
+                        >(
+                          currentTable: table,
+                          referencedTable: $$SectorsTableReferences
+                              ._sectorIrrigationConfigsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$SectorsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).sectorIrrigationConfigsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.sectorId == item.id,
@@ -15990,6 +23186,7 @@ typedef $$SectorsTableProcessedTableManager =
       PrefetchHooks Function({
         bool parcelId,
         bool cropSeasonsRefs,
+        bool sectorIrrigationConfigsRefs,
         bool laborsRefs,
         bool soilMeasurementsRefs,
         bool irrigationRecordsRefs,
@@ -16247,7 +23444,15 @@ typedef $$CustomCropsTableCreateCompanionBuilder =
       required String id,
       required String ownerId,
       required String name,
+      Value<String> normalizedName,
+      Value<String?> description,
       Value<String?> notes,
+      Value<DateTime?> archivedAt,
+      Value<int> version,
+      Value<String> syncState,
+      Value<DateTime?> serverUpdatedAt,
+      Value<String?> lastSyncErrorCode,
+      Value<DateTime?> deletedAt,
       required DateTime updatedAt,
       Value<int> rowid,
     });
@@ -16256,7 +23461,15 @@ typedef $$CustomCropsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> ownerId,
       Value<String> name,
+      Value<String> normalizedName,
+      Value<String?> description,
       Value<String?> notes,
+      Value<DateTime?> archivedAt,
+      Value<int> version,
+      Value<String> syncState,
+      Value<DateTime?> serverUpdatedAt,
+      Value<String?> lastSyncErrorCode,
+      Value<DateTime?> deletedAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
     });
@@ -16285,8 +23498,48 @@ class $$CustomCropsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get normalizedName => $composableBuilder(
+    column: $table.normalizedName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get notes => $composableBuilder(
     column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -16320,8 +23573,48 @@ class $$CustomCropsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get normalizedName => $composableBuilder(
+    column: $table.normalizedName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get notes => $composableBuilder(
     column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -16349,8 +23642,42 @@ class $$CustomCropsTableAnnotationComposer
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
+  GeneratedColumn<String> get normalizedName => $composableBuilder(
+    column: $table.normalizedName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
+
+  GeneratedColumn<String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
@@ -16390,14 +23717,30 @@ class $$CustomCropsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> ownerId = const Value.absent(),
                 Value<String> name = const Value.absent(),
+                Value<String> normalizedName = const Value.absent(),
+                Value<String?> description = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
+                Value<DateTime?> archivedAt = const Value.absent(),
+                Value<int> version = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String?> lastSyncErrorCode = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CustomCropsCompanion(
                 id: id,
                 ownerId: ownerId,
                 name: name,
+                normalizedName: normalizedName,
+                description: description,
                 notes: notes,
+                archivedAt: archivedAt,
+                version: version,
+                syncState: syncState,
+                serverUpdatedAt: serverUpdatedAt,
+                lastSyncErrorCode: lastSyncErrorCode,
+                deletedAt: deletedAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -16406,14 +23749,30 @@ class $$CustomCropsTableTableManager
                 required String id,
                 required String ownerId,
                 required String name,
+                Value<String> normalizedName = const Value.absent(),
+                Value<String?> description = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
+                Value<DateTime?> archivedAt = const Value.absent(),
+                Value<int> version = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String?> lastSyncErrorCode = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => CustomCropsCompanion.insert(
                 id: id,
                 ownerId: ownerId,
                 name: name,
+                normalizedName: normalizedName,
+                description: description,
                 notes: notes,
+                archivedAt: archivedAt,
+                version: version,
+                syncState: syncState,
+                serverUpdatedAt: serverUpdatedAt,
+                lastSyncErrorCode: lastSyncErrorCode,
+                deletedAt: deletedAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -16447,11 +23806,18 @@ typedef $$CropSeasonsTableCreateCompanionBuilder =
       required String id,
       required String ownerId,
       required String sectorId,
+      Value<String?> agriculturalSeasonId,
       required String cropId,
       Value<bool> isCustomCrop,
       Value<String> status,
       required DateTime startsOn,
       Value<DateTime?> endsOn,
+      Value<String?> notes,
+      Value<int> version,
+      Value<String> syncState,
+      Value<DateTime?> serverUpdatedAt,
+      Value<String?> lastSyncErrorCode,
+      Value<DateTime?> deletedAt,
       required DateTime updatedAt,
       Value<int> rowid,
     });
@@ -16460,11 +23826,18 @@ typedef $$CropSeasonsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> ownerId,
       Value<String> sectorId,
+      Value<String?> agriculturalSeasonId,
       Value<String> cropId,
       Value<bool> isCustomCrop,
       Value<String> status,
       Value<DateTime> startsOn,
       Value<DateTime?> endsOn,
+      Value<String?> notes,
+      Value<int> version,
+      Value<String> syncState,
+      Value<DateTime?> serverUpdatedAt,
+      Value<String?> lastSyncErrorCode,
+      Value<DateTime?> deletedAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
     });
@@ -16510,6 +23883,11 @@ class $$CropSeasonsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get agriculturalSeasonId => $composableBuilder(
+    column: $table.agriculturalSeasonId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get cropId => $composableBuilder(
     column: $table.cropId,
     builder: (column) => ColumnFilters(column),
@@ -16532,6 +23910,36 @@ class $$CropSeasonsTableFilterComposer
 
   ColumnFilters<DateTime> get endsOn => $composableBuilder(
     column: $table.endsOn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -16583,6 +23991,11 @@ class $$CropSeasonsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get agriculturalSeasonId => $composableBuilder(
+    column: $table.agriculturalSeasonId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get cropId => $composableBuilder(
     column: $table.cropId,
     builder: (column) => ColumnOrderings(column),
@@ -16605,6 +24018,36 @@ class $$CropSeasonsTableOrderingComposer
 
   ColumnOrderings<DateTime> get endsOn => $composableBuilder(
     column: $table.endsOn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -16652,6 +24095,11 @@ class $$CropSeasonsTableAnnotationComposer
   GeneratedColumn<String> get ownerId =>
       $composableBuilder(column: $table.ownerId, builder: (column) => column);
 
+  GeneratedColumn<String> get agriculturalSeasonId => $composableBuilder(
+    column: $table.agriculturalSeasonId,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get cropId =>
       $composableBuilder(column: $table.cropId, builder: (column) => column);
 
@@ -16668,6 +24116,28 @@ class $$CropSeasonsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get endsOn =>
       $composableBuilder(column: $table.endsOn, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
+
+  GeneratedColumn<String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
@@ -16727,22 +24197,36 @@ class $$CropSeasonsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> ownerId = const Value.absent(),
                 Value<String> sectorId = const Value.absent(),
+                Value<String?> agriculturalSeasonId = const Value.absent(),
                 Value<String> cropId = const Value.absent(),
                 Value<bool> isCustomCrop = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<DateTime> startsOn = const Value.absent(),
                 Value<DateTime?> endsOn = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<int> version = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String?> lastSyncErrorCode = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CropSeasonsCompanion(
                 id: id,
                 ownerId: ownerId,
                 sectorId: sectorId,
+                agriculturalSeasonId: agriculturalSeasonId,
                 cropId: cropId,
                 isCustomCrop: isCustomCrop,
                 status: status,
                 startsOn: startsOn,
                 endsOn: endsOn,
+                notes: notes,
+                version: version,
+                syncState: syncState,
+                serverUpdatedAt: serverUpdatedAt,
+                lastSyncErrorCode: lastSyncErrorCode,
+                deletedAt: deletedAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -16751,22 +24235,36 @@ class $$CropSeasonsTableTableManager
                 required String id,
                 required String ownerId,
                 required String sectorId,
+                Value<String?> agriculturalSeasonId = const Value.absent(),
                 required String cropId,
                 Value<bool> isCustomCrop = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 required DateTime startsOn,
                 Value<DateTime?> endsOn = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<int> version = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String?> lastSyncErrorCode = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => CropSeasonsCompanion.insert(
                 id: id,
                 ownerId: ownerId,
                 sectorId: sectorId,
+                agriculturalSeasonId: agriculturalSeasonId,
                 cropId: cropId,
                 isCustomCrop: isCustomCrop,
                 status: status,
                 startsOn: startsOn,
                 endsOn: endsOn,
+                notes: notes,
+                version: version,
+                syncState: syncState,
+                serverUpdatedAt: serverUpdatedAt,
+                lastSyncErrorCode: lastSyncErrorCode,
+                deletedAt: deletedAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -16835,17 +24333,1177 @@ typedef $$CropSeasonsTableProcessedTableManager =
       CropSeason,
       PrefetchHooks Function({bool sectorId})
     >;
+typedef $$AgriculturalSeasonsTableCreateCompanionBuilder =
+    AgriculturalSeasonsCompanion Function({
+      required String id,
+      required String ownerId,
+      required String parcelId,
+      required String name,
+      required DateTime startsOn,
+      Value<DateTime?> endsOn,
+      Value<String> status,
+      Value<String?> notes,
+      Value<bool> isMigrationBackfill,
+      Value<int> version,
+      Value<String> syncState,
+      required DateTime updatedAt,
+      Value<DateTime?> serverUpdatedAt,
+      Value<String?> lastSyncErrorCode,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+typedef $$AgriculturalSeasonsTableUpdateCompanionBuilder =
+    AgriculturalSeasonsCompanion Function({
+      Value<String> id,
+      Value<String> ownerId,
+      Value<String> parcelId,
+      Value<String> name,
+      Value<DateTime> startsOn,
+      Value<DateTime?> endsOn,
+      Value<String> status,
+      Value<String?> notes,
+      Value<bool> isMigrationBackfill,
+      Value<int> version,
+      Value<String> syncState,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> serverUpdatedAt,
+      Value<String?> lastSyncErrorCode,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+
+final class $$AgriculturalSeasonsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $AgriculturalSeasonsTable,
+          AgriculturalSeason
+        > {
+  $$AgriculturalSeasonsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $ParcelsTable _parcelIdTable(_$AppDatabase db) =>
+      db.parcels.createAlias('agricultural_seasons__parcel_id__parcels__id');
+
+  $$ParcelsTableProcessedTableManager get parcelId {
+    final $_column = $_itemColumn<String>('parcel_id')!;
+
+    final manager = $$ParcelsTableTableManager(
+      $_db,
+      $_db.parcels,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_parcelIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$AgriculturalSeasonsTableFilterComposer
+    extends Composer<_$AppDatabase, $AgriculturalSeasonsTable> {
+  $$AgriculturalSeasonsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ownerId => $composableBuilder(
+    column: $table.ownerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startsOn => $composableBuilder(
+    column: $table.startsOn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get endsOn => $composableBuilder(
+    column: $table.endsOn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isMigrationBackfill => $composableBuilder(
+    column: $table.isMigrationBackfill,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ParcelsTableFilterComposer get parcelId {
+    final $$ParcelsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.parcelId,
+      referencedTable: $db.parcels,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ParcelsTableFilterComposer(
+            $db: $db,
+            $table: $db.parcels,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$AgriculturalSeasonsTableOrderingComposer
+    extends Composer<_$AppDatabase, $AgriculturalSeasonsTable> {
+  $$AgriculturalSeasonsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ownerId => $composableBuilder(
+    column: $table.ownerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startsOn => $composableBuilder(
+    column: $table.startsOn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get endsOn => $composableBuilder(
+    column: $table.endsOn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isMigrationBackfill => $composableBuilder(
+    column: $table.isMigrationBackfill,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ParcelsTableOrderingComposer get parcelId {
+    final $$ParcelsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.parcelId,
+      referencedTable: $db.parcels,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ParcelsTableOrderingComposer(
+            $db: $db,
+            $table: $db.parcels,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$AgriculturalSeasonsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AgriculturalSeasonsTable> {
+  $$AgriculturalSeasonsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get ownerId =>
+      $composableBuilder(column: $table.ownerId, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startsOn =>
+      $composableBuilder(column: $table.startsOn, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get endsOn =>
+      $composableBuilder(column: $table.endsOn, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<bool> get isMigrationBackfill => $composableBuilder(
+    column: $table.isMigrationBackfill,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
+
+  GeneratedColumn<String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  $$ParcelsTableAnnotationComposer get parcelId {
+    final $$ParcelsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.parcelId,
+      referencedTable: $db.parcels,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ParcelsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.parcels,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$AgriculturalSeasonsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AgriculturalSeasonsTable,
+          AgriculturalSeason,
+          $$AgriculturalSeasonsTableFilterComposer,
+          $$AgriculturalSeasonsTableOrderingComposer,
+          $$AgriculturalSeasonsTableAnnotationComposer,
+          $$AgriculturalSeasonsTableCreateCompanionBuilder,
+          $$AgriculturalSeasonsTableUpdateCompanionBuilder,
+          (AgriculturalSeason, $$AgriculturalSeasonsTableReferences),
+          AgriculturalSeason,
+          PrefetchHooks Function({bool parcelId})
+        > {
+  $$AgriculturalSeasonsTableTableManager(
+    _$AppDatabase db,
+    $AgriculturalSeasonsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AgriculturalSeasonsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AgriculturalSeasonsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$AgriculturalSeasonsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> ownerId = const Value.absent(),
+                Value<String> parcelId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<DateTime> startsOn = const Value.absent(),
+                Value<DateTime?> endsOn = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<bool> isMigrationBackfill = const Value.absent(),
+                Value<int> version = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String?> lastSyncErrorCode = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AgriculturalSeasonsCompanion(
+                id: id,
+                ownerId: ownerId,
+                parcelId: parcelId,
+                name: name,
+                startsOn: startsOn,
+                endsOn: endsOn,
+                status: status,
+                notes: notes,
+                isMigrationBackfill: isMigrationBackfill,
+                version: version,
+                syncState: syncState,
+                updatedAt: updatedAt,
+                serverUpdatedAt: serverUpdatedAt,
+                lastSyncErrorCode: lastSyncErrorCode,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String ownerId,
+                required String parcelId,
+                required String name,
+                required DateTime startsOn,
+                Value<DateTime?> endsOn = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<bool> isMigrationBackfill = const Value.absent(),
+                Value<int> version = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                required DateTime updatedAt,
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String?> lastSyncErrorCode = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AgriculturalSeasonsCompanion.insert(
+                id: id,
+                ownerId: ownerId,
+                parcelId: parcelId,
+                name: name,
+                startsOn: startsOn,
+                endsOn: endsOn,
+                status: status,
+                notes: notes,
+                isMigrationBackfill: isMigrationBackfill,
+                version: version,
+                syncState: syncState,
+                updatedAt: updatedAt,
+                serverUpdatedAt: serverUpdatedAt,
+                lastSyncErrorCode: lastSyncErrorCode,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$AgriculturalSeasonsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({parcelId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (parcelId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.parcelId,
+                        referencedTable: $$AgriculturalSeasonsTableReferences
+                            ._parcelIdTable(db),
+                        referencedColumn: $$AgriculturalSeasonsTableReferences
+                            ._parcelIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$AgriculturalSeasonsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AgriculturalSeasonsTable,
+      AgriculturalSeason,
+      $$AgriculturalSeasonsTableFilterComposer,
+      $$AgriculturalSeasonsTableOrderingComposer,
+      $$AgriculturalSeasonsTableAnnotationComposer,
+      $$AgriculturalSeasonsTableCreateCompanionBuilder,
+      $$AgriculturalSeasonsTableUpdateCompanionBuilder,
+      (AgriculturalSeason, $$AgriculturalSeasonsTableReferences),
+      AgriculturalSeason,
+      PrefetchHooks Function({bool parcelId})
+    >;
+typedef $$SectorIrrigationConfigsTableCreateCompanionBuilder =
+    SectorIrrigationConfigsCompanion Function({
+      required String id,
+      required String ownerId,
+      required String sectorId,
+      Value<String> method,
+      required int plantCount,
+      required int emitterCount,
+      Value<int?> emittersPerPlantMilli,
+      required int flowMlMin,
+      Value<int?> pressureKpa,
+      Value<String?> distributionNotes,
+      required DateTime effectiveFrom,
+      Value<DateTime?> effectiveTo,
+      required int configVersion,
+      Value<int> version,
+      Value<String> syncState,
+      required DateTime updatedAt,
+      Value<DateTime?> serverUpdatedAt,
+      Value<String?> lastSyncErrorCode,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+typedef $$SectorIrrigationConfigsTableUpdateCompanionBuilder =
+    SectorIrrigationConfigsCompanion Function({
+      Value<String> id,
+      Value<String> ownerId,
+      Value<String> sectorId,
+      Value<String> method,
+      Value<int> plantCount,
+      Value<int> emitterCount,
+      Value<int?> emittersPerPlantMilli,
+      Value<int> flowMlMin,
+      Value<int?> pressureKpa,
+      Value<String?> distributionNotes,
+      Value<DateTime> effectiveFrom,
+      Value<DateTime?> effectiveTo,
+      Value<int> configVersion,
+      Value<int> version,
+      Value<String> syncState,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> serverUpdatedAt,
+      Value<String?> lastSyncErrorCode,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+
+final class $$SectorIrrigationConfigsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $SectorIrrigationConfigsTable,
+          SectorIrrigationConfig
+        > {
+  $$SectorIrrigationConfigsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $SectorsTable _sectorIdTable(_$AppDatabase db) => db.sectors
+      .createAlias('sector_irrigation_configs__sector_id__sectors__id');
+
+  $$SectorsTableProcessedTableManager get sectorId {
+    final $_column = $_itemColumn<String>('sector_id')!;
+
+    final manager = $$SectorsTableTableManager(
+      $_db,
+      $_db.sectors,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_sectorIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$SectorIrrigationConfigsTableFilterComposer
+    extends Composer<_$AppDatabase, $SectorIrrigationConfigsTable> {
+  $$SectorIrrigationConfigsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ownerId => $composableBuilder(
+    column: $table.ownerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get method => $composableBuilder(
+    column: $table.method,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get plantCount => $composableBuilder(
+    column: $table.plantCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get emitterCount => $composableBuilder(
+    column: $table.emitterCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get emittersPerPlantMilli => $composableBuilder(
+    column: $table.emittersPerPlantMilli,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get flowMlMin => $composableBuilder(
+    column: $table.flowMlMin,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get pressureKpa => $composableBuilder(
+    column: $table.pressureKpa,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get distributionNotes => $composableBuilder(
+    column: $table.distributionNotes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get effectiveFrom => $composableBuilder(
+    column: $table.effectiveFrom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get effectiveTo => $composableBuilder(
+    column: $table.effectiveTo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get configVersion => $composableBuilder(
+    column: $table.configVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$SectorsTableFilterComposer get sectorId {
+    final $$SectorsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sectorId,
+      referencedTable: $db.sectors,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SectorsTableFilterComposer(
+            $db: $db,
+            $table: $db.sectors,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SectorIrrigationConfigsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SectorIrrigationConfigsTable> {
+  $$SectorIrrigationConfigsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ownerId => $composableBuilder(
+    column: $table.ownerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get method => $composableBuilder(
+    column: $table.method,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get plantCount => $composableBuilder(
+    column: $table.plantCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get emitterCount => $composableBuilder(
+    column: $table.emitterCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get emittersPerPlantMilli => $composableBuilder(
+    column: $table.emittersPerPlantMilli,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get flowMlMin => $composableBuilder(
+    column: $table.flowMlMin,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get pressureKpa => $composableBuilder(
+    column: $table.pressureKpa,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get distributionNotes => $composableBuilder(
+    column: $table.distributionNotes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get effectiveFrom => $composableBuilder(
+    column: $table.effectiveFrom,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get effectiveTo => $composableBuilder(
+    column: $table.effectiveTo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get configVersion => $composableBuilder(
+    column: $table.configVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$SectorsTableOrderingComposer get sectorId {
+    final $$SectorsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sectorId,
+      referencedTable: $db.sectors,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SectorsTableOrderingComposer(
+            $db: $db,
+            $table: $db.sectors,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SectorIrrigationConfigsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SectorIrrigationConfigsTable> {
+  $$SectorIrrigationConfigsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get ownerId =>
+      $composableBuilder(column: $table.ownerId, builder: (column) => column);
+
+  GeneratedColumn<String> get method =>
+      $composableBuilder(column: $table.method, builder: (column) => column);
+
+  GeneratedColumn<int> get plantCount => $composableBuilder(
+    column: $table.plantCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get emitterCount => $composableBuilder(
+    column: $table.emitterCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get emittersPerPlantMilli => $composableBuilder(
+    column: $table.emittersPerPlantMilli,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get flowMlMin =>
+      $composableBuilder(column: $table.flowMlMin, builder: (column) => column);
+
+  GeneratedColumn<int> get pressureKpa => $composableBuilder(
+    column: $table.pressureKpa,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get distributionNotes => $composableBuilder(
+    column: $table.distributionNotes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get effectiveFrom => $composableBuilder(
+    column: $table.effectiveFrom,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get effectiveTo => $composableBuilder(
+    column: $table.effectiveTo,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get configVersion => $composableBuilder(
+    column: $table.configVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
+
+  GeneratedColumn<String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  $$SectorsTableAnnotationComposer get sectorId {
+    final $$SectorsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sectorId,
+      referencedTable: $db.sectors,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SectorsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.sectors,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SectorIrrigationConfigsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SectorIrrigationConfigsTable,
+          SectorIrrigationConfig,
+          $$SectorIrrigationConfigsTableFilterComposer,
+          $$SectorIrrigationConfigsTableOrderingComposer,
+          $$SectorIrrigationConfigsTableAnnotationComposer,
+          $$SectorIrrigationConfigsTableCreateCompanionBuilder,
+          $$SectorIrrigationConfigsTableUpdateCompanionBuilder,
+          (SectorIrrigationConfig, $$SectorIrrigationConfigsTableReferences),
+          SectorIrrigationConfig,
+          PrefetchHooks Function({bool sectorId})
+        > {
+  $$SectorIrrigationConfigsTableTableManager(
+    _$AppDatabase db,
+    $SectorIrrigationConfigsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SectorIrrigationConfigsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$SectorIrrigationConfigsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$SectorIrrigationConfigsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> ownerId = const Value.absent(),
+                Value<String> sectorId = const Value.absent(),
+                Value<String> method = const Value.absent(),
+                Value<int> plantCount = const Value.absent(),
+                Value<int> emitterCount = const Value.absent(),
+                Value<int?> emittersPerPlantMilli = const Value.absent(),
+                Value<int> flowMlMin = const Value.absent(),
+                Value<int?> pressureKpa = const Value.absent(),
+                Value<String?> distributionNotes = const Value.absent(),
+                Value<DateTime> effectiveFrom = const Value.absent(),
+                Value<DateTime?> effectiveTo = const Value.absent(),
+                Value<int> configVersion = const Value.absent(),
+                Value<int> version = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String?> lastSyncErrorCode = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SectorIrrigationConfigsCompanion(
+                id: id,
+                ownerId: ownerId,
+                sectorId: sectorId,
+                method: method,
+                plantCount: plantCount,
+                emitterCount: emitterCount,
+                emittersPerPlantMilli: emittersPerPlantMilli,
+                flowMlMin: flowMlMin,
+                pressureKpa: pressureKpa,
+                distributionNotes: distributionNotes,
+                effectiveFrom: effectiveFrom,
+                effectiveTo: effectiveTo,
+                configVersion: configVersion,
+                version: version,
+                syncState: syncState,
+                updatedAt: updatedAt,
+                serverUpdatedAt: serverUpdatedAt,
+                lastSyncErrorCode: lastSyncErrorCode,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String ownerId,
+                required String sectorId,
+                Value<String> method = const Value.absent(),
+                required int plantCount,
+                required int emitterCount,
+                Value<int?> emittersPerPlantMilli = const Value.absent(),
+                required int flowMlMin,
+                Value<int?> pressureKpa = const Value.absent(),
+                Value<String?> distributionNotes = const Value.absent(),
+                required DateTime effectiveFrom,
+                Value<DateTime?> effectiveTo = const Value.absent(),
+                required int configVersion,
+                Value<int> version = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                required DateTime updatedAt,
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String?> lastSyncErrorCode = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SectorIrrigationConfigsCompanion.insert(
+                id: id,
+                ownerId: ownerId,
+                sectorId: sectorId,
+                method: method,
+                plantCount: plantCount,
+                emitterCount: emitterCount,
+                emittersPerPlantMilli: emittersPerPlantMilli,
+                flowMlMin: flowMlMin,
+                pressureKpa: pressureKpa,
+                distributionNotes: distributionNotes,
+                effectiveFrom: effectiveFrom,
+                effectiveTo: effectiveTo,
+                configVersion: configVersion,
+                version: version,
+                syncState: syncState,
+                updatedAt: updatedAt,
+                serverUpdatedAt: serverUpdatedAt,
+                lastSyncErrorCode: lastSyncErrorCode,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$SectorIrrigationConfigsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({sectorId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (sectorId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.sectorId,
+                        referencedTable:
+                            $$SectorIrrigationConfigsTableReferences
+                                ._sectorIdTable(db),
+                        referencedColumn:
+                            $$SectorIrrigationConfigsTableReferences
+                                ._sectorIdTable(db)
+                                .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$SectorIrrigationConfigsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SectorIrrigationConfigsTable,
+      SectorIrrigationConfig,
+      $$SectorIrrigationConfigsTableFilterComposer,
+      $$SectorIrrigationConfigsTableOrderingComposer,
+      $$SectorIrrigationConfigsTableAnnotationComposer,
+      $$SectorIrrigationConfigsTableCreateCompanionBuilder,
+      $$SectorIrrigationConfigsTableUpdateCompanionBuilder,
+      (SectorIrrigationConfig, $$SectorIrrigationConfigsTableReferences),
+      SectorIrrigationConfig,
+      PrefetchHooks Function({bool sectorId})
+    >;
 typedef $$LaborsTableCreateCompanionBuilder = LaborsCompanion Function({
   required String id,
   required String ownerId,
   required String parcelId,
   required String sectorId,
   Value<String?> seasonId,
+  Value<String?> cropAssignmentId,
   required String type,
   Value<String?> customName,
   Value<String> detailsJson,
+  Value<int> detailsSchemaVersion,
+  Value<String> status,
+  Value<String?> supersedesLaborId,
   Value<String?> notes,
   required DateTime occurredAt,
+  Value<int> version,
+  Value<String> syncState,
+  Value<DateTime?> serverUpdatedAt,
+  Value<String?> lastSyncErrorCode,
+  Value<DateTime?> deletedAt,
   required DateTime updatedAt,
   Value<int> rowid,
 });
@@ -16855,11 +25513,20 @@ typedef $$LaborsTableUpdateCompanionBuilder = LaborsCompanion Function({
   Value<String> parcelId,
   Value<String> sectorId,
   Value<String?> seasonId,
+  Value<String?> cropAssignmentId,
   Value<String> type,
   Value<String?> customName,
   Value<String> detailsJson,
+  Value<int> detailsSchemaVersion,
+  Value<String> status,
+  Value<String?> supersedesLaborId,
   Value<String?> notes,
   Value<DateTime> occurredAt,
+  Value<int> version,
+  Value<String> syncState,
+  Value<DateTime?> serverUpdatedAt,
+  Value<String?> lastSyncErrorCode,
+  Value<DateTime?> deletedAt,
   Value<DateTime> updatedAt,
   Value<int> rowid,
 });
@@ -16915,6 +25582,11 @@ class $$LaborsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get cropAssignmentId => $composableBuilder(
+    column: $table.cropAssignmentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get type => $composableBuilder(
     column: $table.type,
     builder: (column) => ColumnFilters(column),
@@ -16930,6 +25602,21 @@ class $$LaborsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get detailsSchemaVersion => $composableBuilder(
+    column: $table.detailsSchemaVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get supersedesLaborId => $composableBuilder(
+    column: $table.supersedesLaborId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get notes => $composableBuilder(
     column: $table.notes,
     builder: (column) => ColumnFilters(column),
@@ -16937,6 +25624,31 @@ class $$LaborsTableFilterComposer
 
   ColumnFilters<DateTime> get occurredAt => $composableBuilder(
     column: $table.occurredAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -16998,6 +25710,11 @@ class $$LaborsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get cropAssignmentId => $composableBuilder(
+    column: $table.cropAssignmentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get type => $composableBuilder(
     column: $table.type,
     builder: (column) => ColumnOrderings(column),
@@ -17013,6 +25730,21 @@ class $$LaborsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get detailsSchemaVersion => $composableBuilder(
+    column: $table.detailsSchemaVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get supersedesLaborId => $composableBuilder(
+    column: $table.supersedesLaborId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get notes => $composableBuilder(
     column: $table.notes,
     builder: (column) => ColumnOrderings(column),
@@ -17020,6 +25752,31 @@ class $$LaborsTableOrderingComposer
 
   ColumnOrderings<DateTime> get occurredAt => $composableBuilder(
     column: $table.occurredAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -17073,6 +25830,11 @@ class $$LaborsTableAnnotationComposer
   GeneratedColumn<String> get seasonId =>
       $composableBuilder(column: $table.seasonId, builder: (column) => column);
 
+  GeneratedColumn<String> get cropAssignmentId => $composableBuilder(
+    column: $table.cropAssignmentId,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
 
@@ -17086,6 +25848,19 @@ class $$LaborsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<int> get detailsSchemaVersion => $composableBuilder(
+    column: $table.detailsSchemaVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get supersedesLaborId => $composableBuilder(
+    column: $table.supersedesLaborId,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
 
@@ -17093,6 +25868,25 @@ class $$LaborsTableAnnotationComposer
     column: $table.occurredAt,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
+
+  GeneratedColumn<String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
@@ -17154,11 +25948,20 @@ class $$LaborsTableTableManager
                 Value<String> parcelId = const Value.absent(),
                 Value<String> sectorId = const Value.absent(),
                 Value<String?> seasonId = const Value.absent(),
+                Value<String?> cropAssignmentId = const Value.absent(),
                 Value<String> type = const Value.absent(),
                 Value<String?> customName = const Value.absent(),
                 Value<String> detailsJson = const Value.absent(),
+                Value<int> detailsSchemaVersion = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> supersedesLaborId = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<DateTime> occurredAt = const Value.absent(),
+                Value<int> version = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String?> lastSyncErrorCode = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => LaborsCompanion(
@@ -17167,11 +25970,20 @@ class $$LaborsTableTableManager
                 parcelId: parcelId,
                 sectorId: sectorId,
                 seasonId: seasonId,
+                cropAssignmentId: cropAssignmentId,
                 type: type,
                 customName: customName,
                 detailsJson: detailsJson,
+                detailsSchemaVersion: detailsSchemaVersion,
+                status: status,
+                supersedesLaborId: supersedesLaborId,
                 notes: notes,
                 occurredAt: occurredAt,
+                version: version,
+                syncState: syncState,
+                serverUpdatedAt: serverUpdatedAt,
+                lastSyncErrorCode: lastSyncErrorCode,
+                deletedAt: deletedAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -17182,11 +25994,20 @@ class $$LaborsTableTableManager
                 required String parcelId,
                 required String sectorId,
                 Value<String?> seasonId = const Value.absent(),
+                Value<String?> cropAssignmentId = const Value.absent(),
                 required String type,
                 Value<String?> customName = const Value.absent(),
                 Value<String> detailsJson = const Value.absent(),
+                Value<int> detailsSchemaVersion = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> supersedesLaborId = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 required DateTime occurredAt,
+                Value<int> version = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String?> lastSyncErrorCode = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => LaborsCompanion.insert(
@@ -17195,11 +26016,20 @@ class $$LaborsTableTableManager
                 parcelId: parcelId,
                 sectorId: sectorId,
                 seasonId: seasonId,
+                cropAssignmentId: cropAssignmentId,
                 type: type,
                 customName: customName,
                 detailsJson: detailsJson,
+                detailsSchemaVersion: detailsSchemaVersion,
+                status: status,
+                supersedesLaborId: supersedesLaborId,
                 notes: notes,
                 occurredAt: occurredAt,
+                version: version,
+                syncState: syncState,
+                serverUpdatedAt: serverUpdatedAt,
+                lastSyncErrorCode: lastSyncErrorCode,
+                deletedAt: deletedAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -17756,11 +26586,17 @@ typedef $$IrrigationRecordsTableCreateCompanionBuilder =
       required String id,
       required String ownerId,
       required String sectorId,
+      Value<String?> laborId,
       required String irrigationType,
       required String soilTypeCode,
       Value<double?> flowLitersPerHour,
       Value<int?> durationMinutes,
       Value<double?> estimatedLiters,
+      Value<String?> configId,
+      Value<int?> configVersion,
+      Value<int?> durationSeconds,
+      Value<int?> appliedVolumeMl,
+      Value<String> performedDetailsJson,
       required DateTime irrigatedAt,
       required DateTime updatedAt,
       Value<int> rowid,
@@ -17770,11 +26606,17 @@ typedef $$IrrigationRecordsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> ownerId,
       Value<String> sectorId,
+      Value<String?> laborId,
       Value<String> irrigationType,
       Value<String> soilTypeCode,
       Value<double?> flowLitersPerHour,
       Value<int?> durationMinutes,
       Value<double?> estimatedLiters,
+      Value<String?> configId,
+      Value<int?> configVersion,
+      Value<int?> durationSeconds,
+      Value<int?> appliedVolumeMl,
+      Value<String> performedDetailsJson,
       Value<DateTime> irrigatedAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -17830,6 +26672,11 @@ class $$IrrigationRecordsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get laborId => $composableBuilder(
+    column: $table.laborId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get irrigationType => $composableBuilder(
     column: $table.irrigationType,
     builder: (column) => ColumnFilters(column),
@@ -17852,6 +26699,31 @@ class $$IrrigationRecordsTableFilterComposer
 
   ColumnFilters<double> get estimatedLiters => $composableBuilder(
     column: $table.estimatedLiters,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get configId => $composableBuilder(
+    column: $table.configId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get configVersion => $composableBuilder(
+    column: $table.configVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get durationSeconds => $composableBuilder(
+    column: $table.durationSeconds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get appliedVolumeMl => $composableBuilder(
+    column: $table.appliedVolumeMl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get performedDetailsJson => $composableBuilder(
+    column: $table.performedDetailsJson,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -17908,6 +26780,11 @@ class $$IrrigationRecordsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get laborId => $composableBuilder(
+    column: $table.laborId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get irrigationType => $composableBuilder(
     column: $table.irrigationType,
     builder: (column) => ColumnOrderings(column),
@@ -17930,6 +26807,31 @@ class $$IrrigationRecordsTableOrderingComposer
 
   ColumnOrderings<double> get estimatedLiters => $composableBuilder(
     column: $table.estimatedLiters,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get configId => $composableBuilder(
+    column: $table.configId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get configVersion => $composableBuilder(
+    column: $table.configVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get durationSeconds => $composableBuilder(
+    column: $table.durationSeconds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get appliedVolumeMl => $composableBuilder(
+    column: $table.appliedVolumeMl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get performedDetailsJson => $composableBuilder(
+    column: $table.performedDetailsJson,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -17982,6 +26884,9 @@ class $$IrrigationRecordsTableAnnotationComposer
   GeneratedColumn<String> get ownerId =>
       $composableBuilder(column: $table.ownerId, builder: (column) => column);
 
+  GeneratedColumn<String> get laborId =>
+      $composableBuilder(column: $table.laborId, builder: (column) => column);
+
   GeneratedColumn<String> get irrigationType => $composableBuilder(
     column: $table.irrigationType,
     builder: (column) => column,
@@ -18004,6 +26909,29 @@ class $$IrrigationRecordsTableAnnotationComposer
 
   GeneratedColumn<double> get estimatedLiters => $composableBuilder(
     column: $table.estimatedLiters,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get configId =>
+      $composableBuilder(column: $table.configId, builder: (column) => column);
+
+  GeneratedColumn<int> get configVersion => $composableBuilder(
+    column: $table.configVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get durationSeconds => $composableBuilder(
+    column: $table.durationSeconds,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get appliedVolumeMl => $composableBuilder(
+    column: $table.appliedVolumeMl,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get performedDetailsJson => $composableBuilder(
+    column: $table.performedDetailsJson,
     builder: (column) => column,
   );
 
@@ -18075,11 +27003,17 @@ class $$IrrigationRecordsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> ownerId = const Value.absent(),
                 Value<String> sectorId = const Value.absent(),
+                Value<String?> laborId = const Value.absent(),
                 Value<String> irrigationType = const Value.absent(),
                 Value<String> soilTypeCode = const Value.absent(),
                 Value<double?> flowLitersPerHour = const Value.absent(),
                 Value<int?> durationMinutes = const Value.absent(),
                 Value<double?> estimatedLiters = const Value.absent(),
+                Value<String?> configId = const Value.absent(),
+                Value<int?> configVersion = const Value.absent(),
+                Value<int?> durationSeconds = const Value.absent(),
+                Value<int?> appliedVolumeMl = const Value.absent(),
+                Value<String> performedDetailsJson = const Value.absent(),
                 Value<DateTime> irrigatedAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -18087,11 +27021,17 @@ class $$IrrigationRecordsTableTableManager
                 id: id,
                 ownerId: ownerId,
                 sectorId: sectorId,
+                laborId: laborId,
                 irrigationType: irrigationType,
                 soilTypeCode: soilTypeCode,
                 flowLitersPerHour: flowLitersPerHour,
                 durationMinutes: durationMinutes,
                 estimatedLiters: estimatedLiters,
+                configId: configId,
+                configVersion: configVersion,
+                durationSeconds: durationSeconds,
+                appliedVolumeMl: appliedVolumeMl,
+                performedDetailsJson: performedDetailsJson,
                 irrigatedAt: irrigatedAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -18101,11 +27041,17 @@ class $$IrrigationRecordsTableTableManager
                 required String id,
                 required String ownerId,
                 required String sectorId,
+                Value<String?> laborId = const Value.absent(),
                 required String irrigationType,
                 required String soilTypeCode,
                 Value<double?> flowLitersPerHour = const Value.absent(),
                 Value<int?> durationMinutes = const Value.absent(),
                 Value<double?> estimatedLiters = const Value.absent(),
+                Value<String?> configId = const Value.absent(),
+                Value<int?> configVersion = const Value.absent(),
+                Value<int?> durationSeconds = const Value.absent(),
+                Value<int?> appliedVolumeMl = const Value.absent(),
+                Value<String> performedDetailsJson = const Value.absent(),
                 required DateTime irrigatedAt,
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
@@ -18113,11 +27059,17 @@ class $$IrrigationRecordsTableTableManager
                 id: id,
                 ownerId: ownerId,
                 sectorId: sectorId,
+                laborId: laborId,
                 irrigationType: irrigationType,
                 soilTypeCode: soilTypeCode,
                 flowLitersPerHour: flowLitersPerHour,
                 durationMinutes: durationMinutes,
                 estimatedLiters: estimatedLiters,
+                configId: configId,
+                configVersion: configVersion,
+                durationSeconds: durationSeconds,
+                appliedVolumeMl: appliedVolumeMl,
+                performedDetailsJson: performedDetailsJson,
                 irrigatedAt: irrigatedAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -18199,7 +27151,12 @@ typedef $$CropIrrigationRulesTableCreateCompanionBuilder =
       required int maximumDurationMinutes,
       required String sourceTitle,
       required String sourceReference,
+      Value<String?> reviewer,
       Value<DateTime?> approvedAt,
+      Value<int> approvedVectorCount,
+      Value<int> baseMlPerPlant,
+      Value<int> minimumAdjustmentBp,
+      Value<int> maximumAdjustmentBp,
       Value<bool> isActive,
       Value<int> rowid,
     });
@@ -18215,7 +27172,12 @@ typedef $$CropIrrigationRulesTableUpdateCompanionBuilder =
       Value<int> maximumDurationMinutes,
       Value<String> sourceTitle,
       Value<String> sourceReference,
+      Value<String?> reviewer,
       Value<DateTime?> approvedAt,
+      Value<int> approvedVectorCount,
+      Value<int> baseMlPerPlant,
+      Value<int> minimumAdjustmentBp,
+      Value<int> maximumAdjustmentBp,
       Value<bool> isActive,
       Value<int> rowid,
     });
@@ -18279,8 +27241,33 @@ class $$CropIrrigationRulesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get reviewer => $composableBuilder(
+    column: $table.reviewer,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<DateTime> get approvedAt => $composableBuilder(
     column: $table.approvedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get approvedVectorCount => $composableBuilder(
+    column: $table.approvedVectorCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get baseMlPerPlant => $composableBuilder(
+    column: $table.baseMlPerPlant,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get minimumAdjustmentBp => $composableBuilder(
+    column: $table.minimumAdjustmentBp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get maximumAdjustmentBp => $composableBuilder(
+    column: $table.maximumAdjustmentBp,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -18349,8 +27336,33 @@ class $$CropIrrigationRulesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get reviewer => $composableBuilder(
+    column: $table.reviewer,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get approvedAt => $composableBuilder(
     column: $table.approvedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get approvedVectorCount => $composableBuilder(
+    column: $table.approvedVectorCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get baseMlPerPlant => $composableBuilder(
+    column: $table.baseMlPerPlant,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get minimumAdjustmentBp => $composableBuilder(
+    column: $table.minimumAdjustmentBp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get maximumAdjustmentBp => $composableBuilder(
+    column: $table.maximumAdjustmentBp,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -18413,8 +27425,31 @@ class $$CropIrrigationRulesTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get reviewer =>
+      $composableBuilder(column: $table.reviewer, builder: (column) => column);
+
   GeneratedColumn<DateTime> get approvedAt => $composableBuilder(
     column: $table.approvedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get approvedVectorCount => $composableBuilder(
+    column: $table.approvedVectorCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get baseMlPerPlant => $composableBuilder(
+    column: $table.baseMlPerPlant,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get minimumAdjustmentBp => $composableBuilder(
+    column: $table.minimumAdjustmentBp,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get maximumAdjustmentBp => $composableBuilder(
+    column: $table.maximumAdjustmentBp,
     builder: (column) => column,
   );
 
@@ -18475,7 +27510,12 @@ class $$CropIrrigationRulesTableTableManager
                 Value<int> maximumDurationMinutes = const Value.absent(),
                 Value<String> sourceTitle = const Value.absent(),
                 Value<String> sourceReference = const Value.absent(),
+                Value<String?> reviewer = const Value.absent(),
                 Value<DateTime?> approvedAt = const Value.absent(),
+                Value<int> approvedVectorCount = const Value.absent(),
+                Value<int> baseMlPerPlant = const Value.absent(),
+                Value<int> minimumAdjustmentBp = const Value.absent(),
+                Value<int> maximumAdjustmentBp = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CropIrrigationRulesCompanion(
@@ -18489,7 +27529,12 @@ class $$CropIrrigationRulesTableTableManager
                 maximumDurationMinutes: maximumDurationMinutes,
                 sourceTitle: sourceTitle,
                 sourceReference: sourceReference,
+                reviewer: reviewer,
                 approvedAt: approvedAt,
+                approvedVectorCount: approvedVectorCount,
+                baseMlPerPlant: baseMlPerPlant,
+                minimumAdjustmentBp: minimumAdjustmentBp,
+                maximumAdjustmentBp: maximumAdjustmentBp,
                 isActive: isActive,
                 rowid: rowid,
               ),
@@ -18505,7 +27550,12 @@ class $$CropIrrigationRulesTableTableManager
                 required int maximumDurationMinutes,
                 required String sourceTitle,
                 required String sourceReference,
+                Value<String?> reviewer = const Value.absent(),
                 Value<DateTime?> approvedAt = const Value.absent(),
+                Value<int> approvedVectorCount = const Value.absent(),
+                Value<int> baseMlPerPlant = const Value.absent(),
+                Value<int> minimumAdjustmentBp = const Value.absent(),
+                Value<int> maximumAdjustmentBp = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CropIrrigationRulesCompanion.insert(
@@ -18519,7 +27569,12 @@ class $$CropIrrigationRulesTableTableManager
                 maximumDurationMinutes: maximumDurationMinutes,
                 sourceTitle: sourceTitle,
                 sourceReference: sourceReference,
+                reviewer: reviewer,
                 approvedAt: approvedAt,
+                approvedVectorCount: approvedVectorCount,
+                baseMlPerPlant: baseMlPerPlant,
+                minimumAdjustmentBp: minimumAdjustmentBp,
+                maximumAdjustmentBp: maximumAdjustmentBp,
                 isActive: isActive,
                 rowid: rowid,
               ),
@@ -18557,6 +27612,11 @@ typedef $$IrrigationEstimatesTableCreateCompanionBuilder =
       required String id,
       required String ownerId,
       required String sectorId,
+      Value<String?> irrigationLaborId,
+      Value<String?> cropAssignmentId,
+      Value<String?> configId,
+      Value<int?> configVersion,
+      Value<int> algorithmVersion,
       required String ruleId,
       required int ruleVersion,
       required String soilTypeCode,
@@ -18564,6 +27624,8 @@ typedef $$IrrigationEstimatesTableCreateCompanionBuilder =
       required int estimatedLitersMilli,
       required int recommendedMinutes,
       Value<String> warningsJson,
+      Value<String> explanationJson,
+      Value<DateTime?> calculatedAt,
       required DateTime createdAt,
       Value<int> rowid,
     });
@@ -18572,6 +27634,11 @@ typedef $$IrrigationEstimatesTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> ownerId,
       Value<String> sectorId,
+      Value<String?> irrigationLaborId,
+      Value<String?> cropAssignmentId,
+      Value<String?> configId,
+      Value<int?> configVersion,
+      Value<int> algorithmVersion,
       Value<String> ruleId,
       Value<int> ruleVersion,
       Value<String> soilTypeCode,
@@ -18579,6 +27646,8 @@ typedef $$IrrigationEstimatesTableUpdateCompanionBuilder =
       Value<int> estimatedLitersMilli,
       Value<int> recommendedMinutes,
       Value<String> warningsJson,
+      Value<String> explanationJson,
+      Value<DateTime?> calculatedAt,
       Value<DateTime> createdAt,
       Value<int> rowid,
     });
@@ -18604,6 +27673,31 @@ class $$IrrigationEstimatesTableFilterComposer
 
   ColumnFilters<String> get sectorId => $composableBuilder(
     column: $table.sectorId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get irrigationLaborId => $composableBuilder(
+    column: $table.irrigationLaborId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cropAssignmentId => $composableBuilder(
+    column: $table.cropAssignmentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get configId => $composableBuilder(
+    column: $table.configId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get configVersion => $composableBuilder(
+    column: $table.configVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get algorithmVersion => $composableBuilder(
+    column: $table.algorithmVersion,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -18642,6 +27736,16 @@ class $$IrrigationEstimatesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get explanationJson => $composableBuilder(
+    column: $table.explanationJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get calculatedAt => $composableBuilder(
+    column: $table.calculatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
@@ -18669,6 +27773,31 @@ class $$IrrigationEstimatesTableOrderingComposer
 
   ColumnOrderings<String> get sectorId => $composableBuilder(
     column: $table.sectorId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get irrigationLaborId => $composableBuilder(
+    column: $table.irrigationLaborId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cropAssignmentId => $composableBuilder(
+    column: $table.cropAssignmentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get configId => $composableBuilder(
+    column: $table.configId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get configVersion => $composableBuilder(
+    column: $table.configVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get algorithmVersion => $composableBuilder(
+    column: $table.algorithmVersion,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -18707,6 +27836,16 @@ class $$IrrigationEstimatesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get explanationJson => $composableBuilder(
+    column: $table.explanationJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get calculatedAt => $composableBuilder(
+    column: $table.calculatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -18730,6 +27869,29 @@ class $$IrrigationEstimatesTableAnnotationComposer
 
   GeneratedColumn<String> get sectorId =>
       $composableBuilder(column: $table.sectorId, builder: (column) => column);
+
+  GeneratedColumn<String> get irrigationLaborId => $composableBuilder(
+    column: $table.irrigationLaborId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get cropAssignmentId => $composableBuilder(
+    column: $table.cropAssignmentId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get configId =>
+      $composableBuilder(column: $table.configId, builder: (column) => column);
+
+  GeneratedColumn<int> get configVersion => $composableBuilder(
+    column: $table.configVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get algorithmVersion => $composableBuilder(
+    column: $table.algorithmVersion,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get ruleId =>
       $composableBuilder(column: $table.ruleId, builder: (column) => column);
@@ -18761,6 +27923,16 @@ class $$IrrigationEstimatesTableAnnotationComposer
 
   GeneratedColumn<String> get warningsJson => $composableBuilder(
     column: $table.warningsJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get explanationJson => $composableBuilder(
+    column: $table.explanationJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get calculatedAt => $composableBuilder(
+    column: $table.calculatedAt,
     builder: (column) => column,
   );
 
@@ -18814,6 +27986,11 @@ class $$IrrigationEstimatesTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> ownerId = const Value.absent(),
                 Value<String> sectorId = const Value.absent(),
+                Value<String?> irrigationLaborId = const Value.absent(),
+                Value<String?> cropAssignmentId = const Value.absent(),
+                Value<String?> configId = const Value.absent(),
+                Value<int?> configVersion = const Value.absent(),
+                Value<int> algorithmVersion = const Value.absent(),
                 Value<String> ruleId = const Value.absent(),
                 Value<int> ruleVersion = const Value.absent(),
                 Value<String> soilTypeCode = const Value.absent(),
@@ -18821,12 +27998,19 @@ class $$IrrigationEstimatesTableTableManager
                 Value<int> estimatedLitersMilli = const Value.absent(),
                 Value<int> recommendedMinutes = const Value.absent(),
                 Value<String> warningsJson = const Value.absent(),
+                Value<String> explanationJson = const Value.absent(),
+                Value<DateTime?> calculatedAt = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => IrrigationEstimatesCompanion(
                 id: id,
                 ownerId: ownerId,
                 sectorId: sectorId,
+                irrigationLaborId: irrigationLaborId,
+                cropAssignmentId: cropAssignmentId,
+                configId: configId,
+                configVersion: configVersion,
+                algorithmVersion: algorithmVersion,
                 ruleId: ruleId,
                 ruleVersion: ruleVersion,
                 soilTypeCode: soilTypeCode,
@@ -18834,6 +28018,8 @@ class $$IrrigationEstimatesTableTableManager
                 estimatedLitersMilli: estimatedLitersMilli,
                 recommendedMinutes: recommendedMinutes,
                 warningsJson: warningsJson,
+                explanationJson: explanationJson,
+                calculatedAt: calculatedAt,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -18842,6 +28028,11 @@ class $$IrrigationEstimatesTableTableManager
                 required String id,
                 required String ownerId,
                 required String sectorId,
+                Value<String?> irrigationLaborId = const Value.absent(),
+                Value<String?> cropAssignmentId = const Value.absent(),
+                Value<String?> configId = const Value.absent(),
+                Value<int?> configVersion = const Value.absent(),
+                Value<int> algorithmVersion = const Value.absent(),
                 required String ruleId,
                 required int ruleVersion,
                 required String soilTypeCode,
@@ -18849,12 +28040,19 @@ class $$IrrigationEstimatesTableTableManager
                 required int estimatedLitersMilli,
                 required int recommendedMinutes,
                 Value<String> warningsJson = const Value.absent(),
+                Value<String> explanationJson = const Value.absent(),
+                Value<DateTime?> calculatedAt = const Value.absent(),
                 required DateTime createdAt,
                 Value<int> rowid = const Value.absent(),
               }) => IrrigationEstimatesCompanion.insert(
                 id: id,
                 ownerId: ownerId,
                 sectorId: sectorId,
+                irrigationLaborId: irrigationLaborId,
+                cropAssignmentId: cropAssignmentId,
+                configId: configId,
+                configVersion: configVersion,
+                algorithmVersion: algorithmVersion,
                 ruleId: ruleId,
                 ruleVersion: ruleVersion,
                 soilTypeCode: soilTypeCode,
@@ -18862,6 +28060,8 @@ class $$IrrigationEstimatesTableTableManager
                 estimatedLitersMilli: estimatedLitersMilli,
                 recommendedMinutes: recommendedMinutes,
                 warningsJson: warningsJson,
+                explanationJson: explanationJson,
+                calculatedAt: calculatedAt,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -18900,6 +28100,7 @@ typedef $$ProductionRecordsTableCreateCompanionBuilder =
       required String ownerId,
       required String parcelId,
       required String sectorId,
+      Value<String?> laborId,
       Value<String?> seasonId,
       required String cropId,
       required double quantity,
@@ -18915,6 +28116,7 @@ typedef $$ProductionRecordsTableUpdateCompanionBuilder =
       Value<String> ownerId,
       Value<String> parcelId,
       Value<String> sectorId,
+      Value<String?> laborId,
       Value<String?> seasonId,
       Value<String> cropId,
       Value<double> quantity,
@@ -18977,6 +28179,11 @@ class $$ProductionRecordsTableFilterComposer
 
   ColumnFilters<String> get parcelId => $composableBuilder(
     column: $table.parcelId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get laborId => $composableBuilder(
+    column: $table.laborId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -19063,6 +28270,11 @@ class $$ProductionRecordsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get laborId => $composableBuilder(
+    column: $table.laborId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get seasonId => $composableBuilder(
     column: $table.seasonId,
     builder: (column) => ColumnOrderings(column),
@@ -19139,6 +28351,9 @@ class $$ProductionRecordsTableAnnotationComposer
 
   GeneratedColumn<String> get parcelId =>
       $composableBuilder(column: $table.parcelId, builder: (column) => column);
+
+  GeneratedColumn<String> get laborId =>
+      $composableBuilder(column: $table.laborId, builder: (column) => column);
 
   GeneratedColumn<String> get seasonId =>
       $composableBuilder(column: $table.seasonId, builder: (column) => column);
@@ -19226,6 +28441,7 @@ class $$ProductionRecordsTableTableManager
                 Value<String> ownerId = const Value.absent(),
                 Value<String> parcelId = const Value.absent(),
                 Value<String> sectorId = const Value.absent(),
+                Value<String?> laborId = const Value.absent(),
                 Value<String?> seasonId = const Value.absent(),
                 Value<String> cropId = const Value.absent(),
                 Value<double> quantity = const Value.absent(),
@@ -19239,6 +28455,7 @@ class $$ProductionRecordsTableTableManager
                 ownerId: ownerId,
                 parcelId: parcelId,
                 sectorId: sectorId,
+                laborId: laborId,
                 seasonId: seasonId,
                 cropId: cropId,
                 quantity: quantity,
@@ -19254,6 +28471,7 @@ class $$ProductionRecordsTableTableManager
                 required String ownerId,
                 required String parcelId,
                 required String sectorId,
+                Value<String?> laborId = const Value.absent(),
                 Value<String?> seasonId = const Value.absent(),
                 required String cropId,
                 required double quantity,
@@ -19267,6 +28485,7 @@ class $$ProductionRecordsTableTableManager
                 ownerId: ownerId,
                 parcelId: parcelId,
                 sectorId: sectorId,
+                laborId: laborId,
                 seasonId: seasonId,
                 cropId: cropId,
                 quantity: quantity,
@@ -19657,22 +28876,48 @@ typedef $$PhotoAttachmentsTableProcessedTableManager =
 typedef $$RemindersTableCreateCompanionBuilder = RemindersCompanion Function({
   required String id,
   required String ownerId,
+  Value<String?> parcelId,
   Value<String?> sectorId,
   required String title,
   Value<String?> notes,
+  Value<String?> description,
   required DateTime scheduledAt,
+  Value<String> sourceTimeZone,
+  Value<String> status,
   Value<bool> isCompleted,
+  Value<DateTime?> completedAt,
+  Value<DateTime?> cancelledAt,
+  Value<int?> androidNotificationId,
+  Value<String> notificationState,
+  Value<int> version,
+  Value<String> syncState,
+  Value<DateTime?> serverUpdatedAt,
+  Value<String?> lastSyncErrorCode,
+  Value<DateTime?> deletedAt,
   required DateTime updatedAt,
   Value<int> rowid,
 });
 typedef $$RemindersTableUpdateCompanionBuilder = RemindersCompanion Function({
   Value<String> id,
   Value<String> ownerId,
+  Value<String?> parcelId,
   Value<String?> sectorId,
   Value<String> title,
   Value<String?> notes,
+  Value<String?> description,
   Value<DateTime> scheduledAt,
+  Value<String> sourceTimeZone,
+  Value<String> status,
   Value<bool> isCompleted,
+  Value<DateTime?> completedAt,
+  Value<DateTime?> cancelledAt,
+  Value<int?> androidNotificationId,
+  Value<String> notificationState,
+  Value<int> version,
+  Value<String> syncState,
+  Value<DateTime?> serverUpdatedAt,
+  Value<String?> lastSyncErrorCode,
+  Value<DateTime?> deletedAt,
   Value<DateTime> updatedAt,
   Value<int> rowid,
 });
@@ -19696,6 +28941,11 @@ class $$RemindersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get parcelId => $composableBuilder(
+    column: $table.parcelId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get sectorId => $composableBuilder(
     column: $table.sectorId,
     builder: (column) => ColumnFilters(column),
@@ -19711,13 +28961,73 @@ class $$RemindersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<DateTime> get scheduledAt => $composableBuilder(
     column: $table.scheduledAt,
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get sourceTimeZone => $composableBuilder(
+    column: $table.sourceTimeZone,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<bool> get isCompleted => $composableBuilder(
     column: $table.isCompleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get cancelledAt => $composableBuilder(
+    column: $table.cancelledAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get androidNotificationId => $composableBuilder(
+    column: $table.androidNotificationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notificationState => $composableBuilder(
+    column: $table.notificationState,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -19746,6 +29056,11 @@ class $$RemindersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get parcelId => $composableBuilder(
+    column: $table.parcelId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get sectorId => $composableBuilder(
     column: $table.sectorId,
     builder: (column) => ColumnOrderings(column),
@@ -19761,13 +29076,73 @@ class $$RemindersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get scheduledAt => $composableBuilder(
     column: $table.scheduledAt,
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get sourceTimeZone => $composableBuilder(
+    column: $table.sourceTimeZone,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get isCompleted => $composableBuilder(
     column: $table.isCompleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get cancelledAt => $composableBuilder(
+    column: $table.cancelledAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get androidNotificationId => $composableBuilder(
+    column: $table.androidNotificationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notificationState => $composableBuilder(
+    column: $table.notificationState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -19792,6 +29167,9 @@ class $$RemindersTableAnnotationComposer
   GeneratedColumn<String> get ownerId =>
       $composableBuilder(column: $table.ownerId, builder: (column) => column);
 
+  GeneratedColumn<String> get parcelId =>
+      $composableBuilder(column: $table.parcelId, builder: (column) => column);
+
   GeneratedColumn<String> get sectorId =>
       $composableBuilder(column: $table.sectorId, builder: (column) => column);
 
@@ -19801,15 +29179,67 @@ class $$RemindersTableAnnotationComposer
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
 
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get scheduledAt => $composableBuilder(
     column: $table.scheduledAt,
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get sourceTimeZone => $composableBuilder(
+    column: $table.sourceTimeZone,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
   GeneratedColumn<bool> get isCompleted => $composableBuilder(
     column: $table.isCompleted,
     builder: (column) => column,
   );
+
+  GeneratedColumn<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get cancelledAt => $composableBuilder(
+    column: $table.cancelledAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get androidNotificationId => $composableBuilder(
+    column: $table.androidNotificationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get notificationState => $composableBuilder(
+    column: $table.notificationState,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
+
+  GeneratedColumn<String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastSyncErrorCode => $composableBuilder(
+    column: $table.lastSyncErrorCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
@@ -19845,21 +29275,47 @@ class $$RemindersTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> ownerId = const Value.absent(),
+                Value<String?> parcelId = const Value.absent(),
                 Value<String?> sectorId = const Value.absent(),
                 Value<String> title = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
+                Value<String?> description = const Value.absent(),
                 Value<DateTime> scheduledAt = const Value.absent(),
+                Value<String> sourceTimeZone = const Value.absent(),
+                Value<String> status = const Value.absent(),
                 Value<bool> isCompleted = const Value.absent(),
+                Value<DateTime?> completedAt = const Value.absent(),
+                Value<DateTime?> cancelledAt = const Value.absent(),
+                Value<int?> androidNotificationId = const Value.absent(),
+                Value<String> notificationState = const Value.absent(),
+                Value<int> version = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String?> lastSyncErrorCode = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RemindersCompanion(
                 id: id,
                 ownerId: ownerId,
+                parcelId: parcelId,
                 sectorId: sectorId,
                 title: title,
                 notes: notes,
+                description: description,
                 scheduledAt: scheduledAt,
+                sourceTimeZone: sourceTimeZone,
+                status: status,
                 isCompleted: isCompleted,
+                completedAt: completedAt,
+                cancelledAt: cancelledAt,
+                androidNotificationId: androidNotificationId,
+                notificationState: notificationState,
+                version: version,
+                syncState: syncState,
+                serverUpdatedAt: serverUpdatedAt,
+                lastSyncErrorCode: lastSyncErrorCode,
+                deletedAt: deletedAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -19867,21 +29323,47 @@ class $$RemindersTableTableManager
               ({
                 required String id,
                 required String ownerId,
+                Value<String?> parcelId = const Value.absent(),
                 Value<String?> sectorId = const Value.absent(),
                 required String title,
                 Value<String?> notes = const Value.absent(),
+                Value<String?> description = const Value.absent(),
                 required DateTime scheduledAt,
+                Value<String> sourceTimeZone = const Value.absent(),
+                Value<String> status = const Value.absent(),
                 Value<bool> isCompleted = const Value.absent(),
+                Value<DateTime?> completedAt = const Value.absent(),
+                Value<DateTime?> cancelledAt = const Value.absent(),
+                Value<int?> androidNotificationId = const Value.absent(),
+                Value<String> notificationState = const Value.absent(),
+                Value<int> version = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String?> lastSyncErrorCode = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => RemindersCompanion.insert(
                 id: id,
                 ownerId: ownerId,
+                parcelId: parcelId,
                 sectorId: sectorId,
                 title: title,
                 notes: notes,
+                description: description,
                 scheduledAt: scheduledAt,
+                sourceTimeZone: sourceTimeZone,
+                status: status,
                 isCompleted: isCompleted,
+                completedAt: completedAt,
+                cancelledAt: cancelledAt,
+                androidNotificationId: androidNotificationId,
+                notificationState: notificationState,
+                version: version,
+                syncState: syncState,
+                serverUpdatedAt: serverUpdatedAt,
+                lastSyncErrorCode: lastSyncErrorCode,
+                deletedAt: deletedAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -20546,18 +30028,30 @@ typedef $$WeatherCacheTableCreateCompanionBuilder =
     WeatherCacheCompanion Function({
       required String id,
       required String ownerId,
+      Value<String?> parcelId,
       required String locality,
+      Value<String> provider,
       required String payloadJson,
+      Value<DateTime?> observedAt,
       required DateTime fetchedAt,
+      Value<DateTime?> expiresAt,
+      Value<String?> attribution,
+      Value<String?> errorCode,
       Value<int> rowid,
     });
 typedef $$WeatherCacheTableUpdateCompanionBuilder =
     WeatherCacheCompanion Function({
       Value<String> id,
       Value<String> ownerId,
+      Value<String?> parcelId,
       Value<String> locality,
+      Value<String> provider,
       Value<String> payloadJson,
+      Value<DateTime?> observedAt,
       Value<DateTime> fetchedAt,
+      Value<DateTime?> expiresAt,
+      Value<String?> attribution,
+      Value<String?> errorCode,
       Value<int> rowid,
     });
 
@@ -20580,8 +30074,18 @@ class $$WeatherCacheTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get parcelId => $composableBuilder(
+    column: $table.parcelId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get locality => $composableBuilder(
     column: $table.locality,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get provider => $composableBuilder(
+    column: $table.provider,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -20590,8 +30094,28 @@ class $$WeatherCacheTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<DateTime> get observedAt => $composableBuilder(
+    column: $table.observedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<DateTime> get fetchedAt => $composableBuilder(
     column: $table.fetchedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get expiresAt => $composableBuilder(
+    column: $table.expiresAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get attribution => $composableBuilder(
+    column: $table.attribution,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get errorCode => $composableBuilder(
+    column: $table.errorCode,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -20615,8 +30139,18 @@ class $$WeatherCacheTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get parcelId => $composableBuilder(
+    column: $table.parcelId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get locality => $composableBuilder(
     column: $table.locality,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get provider => $composableBuilder(
+    column: $table.provider,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -20625,8 +30159,28 @@ class $$WeatherCacheTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get observedAt => $composableBuilder(
+    column: $table.observedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get fetchedAt => $composableBuilder(
     column: $table.fetchedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get expiresAt => $composableBuilder(
+    column: $table.expiresAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get attribution => $composableBuilder(
+    column: $table.attribution,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get errorCode => $composableBuilder(
+    column: $table.errorCode,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -20646,16 +30200,38 @@ class $$WeatherCacheTableAnnotationComposer
   GeneratedColumn<String> get ownerId =>
       $composableBuilder(column: $table.ownerId, builder: (column) => column);
 
+  GeneratedColumn<String> get parcelId =>
+      $composableBuilder(column: $table.parcelId, builder: (column) => column);
+
   GeneratedColumn<String> get locality =>
       $composableBuilder(column: $table.locality, builder: (column) => column);
+
+  GeneratedColumn<String> get provider =>
+      $composableBuilder(column: $table.provider, builder: (column) => column);
 
   GeneratedColumn<String> get payloadJson => $composableBuilder(
     column: $table.payloadJson,
     builder: (column) => column,
   );
 
+  GeneratedColumn<DateTime> get observedAt => $composableBuilder(
+    column: $table.observedAt,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get fetchedAt =>
       $composableBuilder(column: $table.fetchedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get expiresAt =>
+      $composableBuilder(column: $table.expiresAt, builder: (column) => column);
+
+  GeneratedColumn<String> get attribution => $composableBuilder(
+    column: $table.attribution,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get errorCode =>
+      $composableBuilder(column: $table.errorCode, builder: (column) => column);
 }
 
 class $$WeatherCacheTableTableManager
@@ -20691,32 +30267,56 @@ class $$WeatherCacheTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> ownerId = const Value.absent(),
+                Value<String?> parcelId = const Value.absent(),
                 Value<String> locality = const Value.absent(),
+                Value<String> provider = const Value.absent(),
                 Value<String> payloadJson = const Value.absent(),
+                Value<DateTime?> observedAt = const Value.absent(),
                 Value<DateTime> fetchedAt = const Value.absent(),
+                Value<DateTime?> expiresAt = const Value.absent(),
+                Value<String?> attribution = const Value.absent(),
+                Value<String?> errorCode = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WeatherCacheCompanion(
                 id: id,
                 ownerId: ownerId,
+                parcelId: parcelId,
                 locality: locality,
+                provider: provider,
                 payloadJson: payloadJson,
+                observedAt: observedAt,
                 fetchedAt: fetchedAt,
+                expiresAt: expiresAt,
+                attribution: attribution,
+                errorCode: errorCode,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String id,
                 required String ownerId,
+                Value<String?> parcelId = const Value.absent(),
                 required String locality,
+                Value<String> provider = const Value.absent(),
                 required String payloadJson,
+                Value<DateTime?> observedAt = const Value.absent(),
                 required DateTime fetchedAt,
+                Value<DateTime?> expiresAt = const Value.absent(),
+                Value<String?> attribution = const Value.absent(),
+                Value<String?> errorCode = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WeatherCacheCompanion.insert(
                 id: id,
                 ownerId: ownerId,
+                parcelId: parcelId,
                 locality: locality,
+                provider: provider,
                 payloadJson: payloadJson,
+                observedAt: observedAt,
                 fetchedAt: fetchedAt,
+                expiresAt: expiresAt,
+                attribution: attribution,
+                errorCode: errorCode,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -20747,16 +30347,28 @@ typedef $$WeatherCacheTableProcessedTableManager =
 typedef $$AiMessagesTableCreateCompanionBuilder = AiMessagesCompanion Function({
   required String id,
   required String ownerId,
+  Value<String> clientMessageId,
   required String role,
   required String content,
+  Value<String> state,
+  Value<String?> replyToClientMessageId,
+  Value<String?> remoteResponseId,
+  Value<String?> policyVersion,
+  Value<String?> errorCode,
   required DateTime createdAt,
   Value<int> rowid,
 });
 typedef $$AiMessagesTableUpdateCompanionBuilder = AiMessagesCompanion Function({
   Value<String> id,
   Value<String> ownerId,
+  Value<String> clientMessageId,
   Value<String> role,
   Value<String> content,
+  Value<String> state,
+  Value<String?> replyToClientMessageId,
+  Value<String?> remoteResponseId,
+  Value<String?> policyVersion,
+  Value<String?> errorCode,
   Value<DateTime> createdAt,
   Value<int> rowid,
 });
@@ -20780,6 +30392,11 @@ class $$AiMessagesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get clientMessageId => $composableBuilder(
+    column: $table.clientMessageId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get role => $composableBuilder(
     column: $table.role,
     builder: (column) => ColumnFilters(column),
@@ -20787,6 +30404,31 @@ class $$AiMessagesTableFilterComposer
 
   ColumnFilters<String> get content => $composableBuilder(
     column: $table.content,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get replyToClientMessageId => $composableBuilder(
+    column: $table.replyToClientMessageId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get remoteResponseId => $composableBuilder(
+    column: $table.remoteResponseId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get policyVersion => $composableBuilder(
+    column: $table.policyVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get errorCode => $composableBuilder(
+    column: $table.errorCode,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -20815,6 +30457,11 @@ class $$AiMessagesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get clientMessageId => $composableBuilder(
+    column: $table.clientMessageId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get role => $composableBuilder(
     column: $table.role,
     builder: (column) => ColumnOrderings(column),
@@ -20822,6 +30469,31 @@ class $$AiMessagesTableOrderingComposer
 
   ColumnOrderings<String> get content => $composableBuilder(
     column: $table.content,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get replyToClientMessageId => $composableBuilder(
+    column: $table.replyToClientMessageId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get remoteResponseId => $composableBuilder(
+    column: $table.remoteResponseId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get policyVersion => $composableBuilder(
+    column: $table.policyVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get errorCode => $composableBuilder(
+    column: $table.errorCode,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -20846,11 +30518,37 @@ class $$AiMessagesTableAnnotationComposer
   GeneratedColumn<String> get ownerId =>
       $composableBuilder(column: $table.ownerId, builder: (column) => column);
 
+  GeneratedColumn<String> get clientMessageId => $composableBuilder(
+    column: $table.clientMessageId,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get role =>
       $composableBuilder(column: $table.role, builder: (column) => column);
 
   GeneratedColumn<String> get content =>
       $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<String> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+
+  GeneratedColumn<String> get replyToClientMessageId => $composableBuilder(
+    column: $table.replyToClientMessageId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get remoteResponseId => $composableBuilder(
+    column: $table.remoteResponseId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get policyVersion => $composableBuilder(
+    column: $table.policyVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get errorCode =>
+      $composableBuilder(column: $table.errorCode, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -20889,15 +30587,27 @@ class $$AiMessagesTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> ownerId = const Value.absent(),
+                Value<String> clientMessageId = const Value.absent(),
                 Value<String> role = const Value.absent(),
                 Value<String> content = const Value.absent(),
+                Value<String> state = const Value.absent(),
+                Value<String?> replyToClientMessageId = const Value.absent(),
+                Value<String?> remoteResponseId = const Value.absent(),
+                Value<String?> policyVersion = const Value.absent(),
+                Value<String?> errorCode = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AiMessagesCompanion(
                 id: id,
                 ownerId: ownerId,
+                clientMessageId: clientMessageId,
                 role: role,
                 content: content,
+                state: state,
+                replyToClientMessageId: replyToClientMessageId,
+                remoteResponseId: remoteResponseId,
+                policyVersion: policyVersion,
+                errorCode: errorCode,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -20905,15 +30615,27 @@ class $$AiMessagesTableTableManager
               ({
                 required String id,
                 required String ownerId,
+                Value<String> clientMessageId = const Value.absent(),
                 required String role,
                 required String content,
+                Value<String> state = const Value.absent(),
+                Value<String?> replyToClientMessageId = const Value.absent(),
+                Value<String?> remoteResponseId = const Value.absent(),
+                Value<String?> policyVersion = const Value.absent(),
+                Value<String?> errorCode = const Value.absent(),
                 required DateTime createdAt,
                 Value<int> rowid = const Value.absent(),
               }) => AiMessagesCompanion.insert(
                 id: id,
                 ownerId: ownerId,
+                clientMessageId: clientMessageId,
                 role: role,
                 content: content,
+                state: state,
+                replyToClientMessageId: replyToClientMessageId,
+                remoteResponseId: remoteResponseId,
+                policyVersion: policyVersion,
+                errorCode: errorCode,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -21173,6 +30895,13 @@ class $AppDatabaseManager {
       $$CustomCropsTableTableManager(_db, _db.customCrops);
   $$CropSeasonsTableTableManager get cropSeasons =>
       $$CropSeasonsTableTableManager(_db, _db.cropSeasons);
+  $$AgriculturalSeasonsTableTableManager get agriculturalSeasons =>
+      $$AgriculturalSeasonsTableTableManager(_db, _db.agriculturalSeasons);
+  $$SectorIrrigationConfigsTableTableManager get sectorIrrigationConfigs =>
+      $$SectorIrrigationConfigsTableTableManager(
+        _db,
+        _db.sectorIrrigationConfigs,
+      );
   $$LaborsTableTableManager get labors =>
       $$LaborsTableTableManager(_db, _db.labors);
   $$SoilMeasurementsTableTableManager get soilMeasurements =>

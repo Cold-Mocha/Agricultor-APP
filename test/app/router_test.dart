@@ -21,19 +21,62 @@ void main() {
     expect(find.text('Acceso'), findsOneWidget);
     expect(find.text('Correo electrónico'), findsOneWidget);
   });
+
+  testWidgets('locked owner cannot render a private route', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(const _LockedRepository()),
+        ],
+        child: const AgroCampoApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Acceso'), findsOneWidget);
+    expect(find.text('Desbloquear con biometría'), findsOneWidget);
+    expect(find.text('Resumen del campo'), findsNothing);
+  });
 }
 
-final class _SignedOutRepository implements AuthRepository {
-  const _SignedOutRepository();
+final class _LockedRepository implements AuthRepository {
+  const _LockedRepository();
 
   @override
-  Future<String?> restoreLocalOwnerId() async => null;
+  Future<RestoredAuthSession?> restoreSession() async =>
+      const RestoredAuthSession(
+        ownerId: 'owner-1',
+        biometricEnabled: true,
+        offline: true,
+      );
 
   @override
   Future<AuthenticatedOwner> signIn({
     required String email,
     required String password,
   }) => throw UnimplementedError();
+
+  @override
+  Future<void> setBiometricEnabled(bool enabled) async {}
+
+  @override
+  Future<void> signOut() async {}
+}
+
+final class _SignedOutRepository implements AuthRepository {
+  const _SignedOutRepository();
+
+  @override
+  Future<RestoredAuthSession?> restoreSession() async => null;
+
+  @override
+  Future<AuthenticatedOwner> signIn({
+    required String email,
+    required String password,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<void> setBiometricEnabled(bool enabled) async {}
 
   @override
   Future<void> signOut() async {}

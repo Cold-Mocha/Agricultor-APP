@@ -11,7 +11,7 @@ This guide defines the reproducible setup and verification sequence for implemen
 - Node.js for the existing static-prototype acceptance checks.
 - Docker and Supabase CLI for local PostgreSQL/Auth/Storage/Functions tests.
 - Firebase CLI plus FlutterFire configuration tooling for Android FCM.
-- A real Android device for GPS, Google Maps platform view, camera, notification and OEM/background verification.
+- A real Android device for GPS, network map behavior, camera, notification and OEM/background verification.
 
 Run first:
 
@@ -27,13 +27,12 @@ The implementation must not create or validate an iOS release.
 
 ## 2. Environment separation
 
-Maintain independent development, staging and production configuration. Each environment has separate Supabase, Firebase, Google Maps/Places, Weather and Gemini resources.
+Maintain independent development, staging and production configuration. Each environment has separate Supabase, Firebase, Weather and Gemini resources. OpenStreetMap uses no API key.
 
 ### Values allowed in Android build/app
 
 - Supabase URL and publishable key.
 - Firebase Android client configuration.
-- Google Maps Android key restricted by package name, signing certificate and enabled APIs.
 - Non-secret environment identifiers and feature contract versions.
 
 ### Server-only secrets
@@ -98,12 +97,13 @@ Seed only the approved crop catalog and explicit test fixtures. Do not seed work
 
 ## 6. Android provider setup
 
-### Google Maps and Places
+### OpenStreetMap
 
-- Enable only required Android APIs.
-- Restrict key by exact application ID and debug/release signing certificates.
-- Configure separate quotas and alerts per environment.
-- Validate attribution/policy and do not implement tile caching.
+- Use `https://tile.openstreetmap.org/{z}/{x}/{y}.png` as visual layer only.
+- Set `userAgentPackageName` to the real application ID, `cl.agrocampo.app`.
+- Keep `© OpenStreetMap contributors` permanently visible.
+- Do not add an API key, bulk download or prefetch. Respect HTTP cache headers and the OSM tile policy.
+- Validate that persisted parcel/sector polygons remain usable when tile requests fail.
 
 ### Firebase/FCM
 
@@ -189,7 +189,7 @@ Release-candidate gates add:
 flutter build appbundle --release
 ```
 
-The integration suite runs on emulator and on at least one physical Android device. Camera, native permission dialogs, Google Maps platform view, FCM delivery and OEM background restrictions require the physical-device matrix even when automated tests pass.
+The integration suite runs on emulator and on at least one physical Android device. Camera, native permission dialogs, GPS/map behavior with real connectivity, FCM delivery and OEM background restrictions require the physical-device matrix even when automated tests pass.
 
 ## 11. Existing prototype regression checks
 

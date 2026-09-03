@@ -10,7 +10,7 @@
 - [x] Fotografías privadas, hash, deduplicación y respaldo reintentable.
 - [x] Recordatorios locales, instalaciones FCM y envío servidor.
 - [x] Revisión apícola con responsable descriptivo.
-- [x] WeatherAPI desacoplada, cacheada y no bloqueante.
+- [x] Open-Meteo desacoplado, cacheado y no bloqueante.
 - [x] AgroIA consultiva, segura y degradable.
 - [x] Exportación XLSX offline con relaciones y pendientes.
 - [x] Goldens, accesibilidad, seguridad, rendimiento y resiliencia documentados.

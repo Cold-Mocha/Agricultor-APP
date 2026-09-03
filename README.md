@@ -28,9 +28,16 @@ flutter build apk --debug
 flutter build appbundle --release
 ```
 
-No añada secretos al repositorio. `GOOGLE_MAPS_ANDROID_KEY` se inyecta en el entorno de build;
-WeatherAPI, Gemini y la cuenta Firebase se configuran como secretos de Supabase. `.env`,
-`google-services.json`, keystores y `key.properties` están ignorados.
+No añada secretos al repositorio. OpenStreetMap no usa API key: el cliente identifica la aplicación
+con `cl.agrocampo.app`, usa el endpoint oficial de teselas y muestra atribución enlazada. Flutter
+inicializa Supabase con `SUPABASE_URL` y `SUPABASE_PUBLISHABLE_KEY`; esta última es una clave pública,
+no una credencial de servidor. El `weather-proxy` autenticado usa Open-Meteo y toma
+`OPEN_METEO_DEFAULT_LATITUDE`, `OPEN_METEO_DEFAULT_LONGITUDE` y opcionalmente
+`OPEN_METEO_FORECAST_URL` desde el entorno de la Edge Function. El endpoint público de Open-Meteo
+no requiere API key para evaluación/no comercial; una publicación comercial debe usar el endpoint
+y plan de cliente aplicable. AgroIA espera `GEMINI_API_KEY` y opcionalmente `GEMINI_MODEL`, siempre
+como secretos de Edge Functions. `.env`, `google-services.json`, keystores y `key.properties` están
+ignorados.
 
 Los tests pgTAP/Deno requieren sus CLIs y un proyecto Supabase local. La firma de producción exige
 un keystore aportado por el propietario. La evidencia de diseño, seguridad, resiliencia, aceptación

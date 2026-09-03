@@ -21,6 +21,11 @@ abstract final class AgroColors {
   static const amberSoft = Color(0xFFFFF1C7);
   static const violet = Color(0xFF6657A6);
   static const violetSoft = Color(0xFFE8E4FF);
+  static const mapCanvas = Color(0xFFEEF2E8);
+  static const mapPolygonActive = Color(0x884B7F52);
+  static const mapPolygonSaved = Color(0x554B7F52);
+  static const mapPolygonStroke = Color(0xFF2F6338);
+  static const mapOverlayShadow = Color(0x33000000);
 }
 
 abstract final class AgroSpacing {
@@ -38,6 +43,25 @@ abstract final class AgroRadii {
   static const large = 22.0;
   static const hero = 24.0;
   static const full = 999.0;
+}
+
+abstract final class AgroSizes {
+  static const touchTarget = 48.0;
+  static const iconAuxiliary = 16.0;
+  static const iconStandard = 20.0;
+  static const iconAction = 24.0;
+  static const iconFeatured = 32.0;
+  static const cropPictogram = 48.0;
+  static const sectorSelectorRow = 56.0;
+  static const globalStatus = 48.0;
+  static const mapPreview = 184.0;
+  static const maxContentWidth = 840.0;
+  static const mapVertexVisual = 20.0;
+}
+
+abstract final class AgroElevation {
+  static const card = 1.0;
+  static const floating = 3.0;
 }
 
 abstract final class AgroMotion {

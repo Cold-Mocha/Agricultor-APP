@@ -9,7 +9,7 @@ void main() {
   test('harvest keeps crop, quantity, unit and traceability', () async {
     final database = createInMemoryDatabase();
     addTearDown(database.close);
-    await seedTerritoryFixture(database);
+    await seedAgriculturalContextFixture(database);
     await ProductionRepository(database).save(
       ownerId: 'owner-1',
       parcelId: 'parcel-1',

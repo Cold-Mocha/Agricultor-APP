@@ -3,6 +3,7 @@ import 'package:agrocampo/app/theme/agro_tokens.dart';
 import 'package:agrocampo/features/apiary/data/apiary_repository.dart';
 import 'package:agrocampo/features/apiary/domain/apiary_inspection_input.dart';
 import 'package:agrocampo/features/auth/presentation/session_controller.dart';
+import 'package:agrocampo/features/context/presentation/agricultural_context_controller.dart';
 import 'package:agrocampo/shared/presentation/components/agro_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -99,9 +100,7 @@ final class _ApiaryInspectionPageState
     if (ownerId == null) return;
     final sectorId =
         widget.sectorId ??
-        (await (database.select(
-          database.sectors,
-        )..where((row) => row.ownerId.equals(ownerId))).getSingleOrNull())?.id;
+        ref.read(agriculturalContextControllerProvider).sectorId;
     if (sectorId == null) return;
     await ApiaryRepository(database).save(
       ownerId: ownerId,

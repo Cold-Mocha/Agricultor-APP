@@ -16,7 +16,7 @@ void main() {
   });
 
   test('scaled integer engine is deterministic for a test-only rule', () {
-    const rule = IrrigationRuleSet(
+    final rule = IrrigationRuleSet(
       id: 'synthetic-test-only',
       cropId: 'test-crop',
       soilTypeCode: 'test-soil',
@@ -27,6 +27,9 @@ void main() {
       maximumDurationMinutes: 120,
       sourceTitle: 'Synthetic test fixture',
       sourceReference: 'not-for-production',
+      reviewer: 'Test reviewer',
+      approvedAt: DateTime.utc(2026),
+      approvedVectorCount: 20,
     );
     for (var vector = 0; vector < 20; vector++) {
       final first = IrrigationCalculator.calculate(
@@ -39,6 +42,28 @@ void main() {
       ) as IrrigationEstimateResult;
       expect(second.estimatedLitersMilli, first.estimatedLitersMilli);
       expect(second.recommendedMinutes, first.recommendedMinutes);
+      expect(first.recommendedVolumeMl, 100000);
+      expect(first.recommendedDurationSeconds, 1801);
+      expect(first.appliedVolumeMl, 99990);
     }
+  });
+
+  test('release gate blocks a rule without reviewer and twenty vectors', () {
+    const rule = IrrigationRuleSet(
+      id: 'not-approved',
+      cropId: 'crop',
+      soilTypeCode: 'soil',
+      version: 1,
+      soilMultiplierPermille: 1000,
+      efficiencyPermille: 1000,
+      minimumDurationMinutes: 1,
+      maximumDurationMinutes: 120,
+      sourceTitle: 'Source',
+      sourceReference: 'Ref',
+    );
+    expect(
+      IrrigationCalculator.calculate(input, rule: rule),
+      isA<IrrigationUnavailable>(),
+    );
   });
 }

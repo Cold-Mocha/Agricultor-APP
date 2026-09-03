@@ -60,7 +60,7 @@ abstract final class AgroTheme {
       ),
       cardTheme: CardThemeData(
         color: AgroColors.surface,
-        elevation: 1,
+        elevation: AgroElevation.card,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AgroRadii.large),
           side: const BorderSide(color: AgroColors.line),
@@ -68,7 +68,23 @@ abstract final class AgroTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size(48, 48),
+          minimumSize: const Size(AgroSizes.touchTarget, AgroSizes.touchTarget),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AgroRadii.large),
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size(AgroSizes.touchTarget, AgroSizes.touchTarget),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AgroRadii.large),
+          ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          minimumSize: const Size(AgroSizes.touchTarget, AgroSizes.touchTarget),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AgroRadii.large),
           ),

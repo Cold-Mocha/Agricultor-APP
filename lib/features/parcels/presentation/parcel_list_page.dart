@@ -1,5 +1,7 @@
 import 'package:agrocampo/app/providers.dart';
+import 'package:agrocampo/app/routing/app_routes.dart';
 import 'package:agrocampo/features/auth/presentation/session_controller.dart';
+import 'package:agrocampo/features/context/presentation/agricultural_context_controller.dart';
 import 'package:agrocampo/features/parcels/data/parcel_repository.dart';
 import 'package:agrocampo/shared/presentation/components/agro_page.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +19,7 @@ final class ParcelListPage extends ConsumerWidget {
       title: 'Parcelas',
       actions: [
         IconButton(
-          onPressed: () => context.push('/parcelas/nueva'),
+          onPressed: () => context.push(AppRoutes.newParcel),
           icon: const Icon(Icons.add),
           tooltip: 'Nueva parcela',
         ),
@@ -42,8 +44,39 @@ final class ParcelListPage extends ConsumerWidget {
                               ? 'Archivada'
                               : parcel.locality ?? 'Sin localidad',
                         ),
+                        trailing: PopupMenuButton<String>(
+                          onSelected: (action) async {
+                            if (action == 'active') {
+                              await ref
+                                  .read(
+                                    agriculturalContextControllerProvider
+                                        .notifier,
+                                  )
+                                  .selectParcel(parcel.id);
+                            } else {
+                              await repository.archive(
+                                ownerId: ownerId,
+                                id: parcel.id,
+                                archived: !parcel.isArchived,
+                              );
+                            }
+                          },
+                          itemBuilder: (_) => [
+                            if (!parcel.isArchived && !parcel.isActive)
+                              const PopupMenuItem(
+                                value: 'active',
+                                child: Text('Usar como activa'),
+                              ),
+                            PopupMenuItem(
+                              value: 'archive',
+                              child: Text(
+                                parcel.isArchived ? 'Restaurar' : 'Archivar',
+                              ),
+                            ),
+                          ],
+                        ),
                         onTap: () =>
-                            context.push('/parcelas/${parcel.id}/editar'),
+                            context.push(AppRoutes.editParcel(parcel.id)),
                       ),
                     ),
                 ],

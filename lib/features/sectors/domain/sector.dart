@@ -10,6 +10,9 @@ final class Sector {
     required this.kind,
     required this.polygon,
     required this.areaSquareMeters,
+    required this.version,
+    required this.syncState,
+    this.deletedAt,
   });
 
   final String id;
@@ -20,4 +23,7 @@ final class Sector {
   final String kind;
   final List<GeoPoint> polygon;
   final double areaSquareMeters;
+  final int version;
+  final String syncState;
+  final DateTime? deletedAt;
 }

@@ -51,6 +51,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/.gradle/
+/android/build/
+/android/app/build/
 
 # Widget Preview related
 .widget_preview/
@@ -59,6 +62,14 @@ app.*.map.json
 .agents/
 .opencode/
 .specify/
+graphify-out/
+
+# Local Supabase CLI state (may contain generated credentials)
+supabase/.branches/
+supabase/.temp/
+
+# Generated golden-test diagnostics; approved baseline images remain tracked
+test/golden/**/failures/
 
 # Flutter auto-generated
 .metadata

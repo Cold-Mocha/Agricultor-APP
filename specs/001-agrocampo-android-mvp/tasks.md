@@ -17,7 +17,7 @@
 ## Phase 1: Gates y setup
 
 - [X] T001 Aprobar arquitectura de motor configurable sin coeficientes inventados en `specs/001-agrocampo-android-mvp/contracts/irrigation-calculation.md`; ninguna recomendación se activa hasta registrar clasificación de suelo, coeficientes, límites, fuentes y veinte vectores validados
-- [X] T002 Cerrar proveedor inicial WeatherAPI, política de clave server-side, retención, caché y atribución en `specs/001-agrocampo-android-mvp/research.md`, `contracts/external-services.md` y `master.md`
+- [X] T002 Cerrar proveedor Open-Meteo, política de endpoint server-side, retención, caché y atribución en `specs/001-agrocampo-android-mvp/research.md`, `contracts/external-services.md` y `master.md`
 - [X] T003 Fijar Flutter 3.47.0/Dart 3.13.0, dependencias compatibles, identidad y SDK Android en `pubspec.yaml`, `pubspec.lock`, `android/app/build.gradle.kts` y `android/app/src/main/AndroidManifest.xml`
 - [X] T004 Crear la estructura feature-first y bootstrap mínimo en `lib/main.dart`, `lib/app/`, `lib/core/`, `lib/features/`, `lib/shared/`, `test/`, `integration_test/` y `drift_schemas/`
 - [X] T005 [P] Implementar configuración tipada por ambiente y política de secretos en `lib/app/bootstrap/app_environment.dart`, `lib/core/network/runtime_config.dart`, `supabase/config.toml` y `.gitignore`
@@ -58,7 +58,7 @@
 - [X] T027 [P] [US1] Completar tablas/DAOs Drift de parcelas, sectores, catálogo oficial/propio, temporadas y asignaciones planificadas en `lib/core/database/tables/territory_tables.dart` y `lib/features/*/data/`
 - [X] T028 [P] [US1] Crear migración Supabase/PostGIS, índices, RLS y transiciones territoriales en `supabase/migrations/0004_territory.sql` y `supabase/tests/database/territory_rls_test.sql`
 - [X] T029 [P] [US1] Sembrar catálogo oficial y mapear pictogramas/activo genérico en `assets/data/crop_catalog_v1.json`, `supabase/seed.sql` y `lib/features/crops/data/crop_seed_loader.dart` según `master.md` → **Color System / Colores de cultivo** e **Iconography**
-- [X] T030 [P] [US1] Implementar geometría determinista y adapters Google Maps/GPS/Places en `lib/core/geometry/`, `lib/features/map/data/` y `android/app/src/main/kotlin/`
+- [X] T030 [P] [US1] Implementar geometría determinista, renderizado `flutter_map`/OpenStreetMap y adapters GPS/Places en `lib/core/geometry/`, `lib/features/map/data/` y `android/app/src/main/kotlin/`
 - [X] T031 [US1] Implementar casos de uso de parcela activa, CRUD, eliminación sin dependencias y archivo/restauración en `lib/features/parcels/domain/` y `lib/features/parcels/data/`
 - [X] T032 [US1] Implementar sectores, contención, superficie y numeración única en `lib/features/sectors/domain/` y `lib/features/sectors/data/`
 - [X] T033 [US1] Implementar catálogo propio, ficha agrícola y rotación `planned|active|ended|cancelled` en `lib/features/crops/domain/` y `lib/features/crops/data/`

@@ -1,6 +1,6 @@
 # Dependencias, licencias y alcance
 
-Fecha de revisión: 2026-08-28.
+Fecha de revisión: 2026-08-30.
 
 ## Dependencias directas justificadas
 
@@ -9,12 +9,12 @@ Fecha de revisión: 2026-08-28.
 - Supabase: autenticación, RLS, Storage, sincronización y Edge Functions.
 - Workmanager/connectivity: sincronización diferida.
 - Secure Storage: sesión cifrada por Android.
-- Google Maps/geolocator: territorio y captura GPS.
+- `flutter_map`/`latlong2`/geolocator: territorio sobre OpenStreetMap y captura GPS.
 - Firebase Messaging/local notifications: avisos remotos y locales.
 - Image Picker/crypto: captura privada y deduplicación SHA-256.
 - Excel 4.0.6: OpenXML XLSX offline; dependencia MIT según su metadata publicada.
 
-`flutter_secure_storage` permanece en 10.3.1 porque la rama 11 exige un compile SDK superior al 36 fijado por el plan. Las claves de Google Maps, WeatherAPI, Gemini, Firebase y Supabase no forman parte del código.
+`flutter_secure_storage` permanece en 10.3.1 porque la rama 11 exige un compile SDK superior al 36 fijado por el plan. OpenStreetMap y el endpoint público de Open-Meteo no usan API key. Las claves privadas de Gemini, Firebase y Supabase no forman parte del código; la clave publicable de Supabase se aporta al compilar como configuración cliente.
 
 ## Exclusiones mantenidas
 

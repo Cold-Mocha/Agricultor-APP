@@ -12,6 +12,7 @@ import 'package:workmanager/workmanager.dart';
 abstract interface class SyncScheduler {
   Future<void> initialize();
   Future<void> schedule({required String ownerId});
+  Future<void> cancel({required String ownerId});
 }
 
 @pragma('vm:entry-point')
@@ -27,8 +28,9 @@ void syncWorkerDispatcher() {
       return true;
     }
     final store = SecureSessionStore(const FlutterSecureStorage());
-    final refreshToken = await store.readRefreshToken();
-    if (refreshToken == null || refreshToken.isEmpty) {
+    final storedSession = await store.read();
+    if (storedSession == null ||
+        storedSession.ownerId != inputData!['ownerId'] as String) {
       return false;
     }
     final database = AppDatabase();
@@ -37,11 +39,12 @@ void syncWorkerDispatcher() {
         config.supabaseUrl,
         config.supabasePublishableKey,
       );
-      await client.auth.setSession(refreshToken);
+      final session = await client.auth.setSession(storedSession.refreshToken);
+      if (session.user?.id != storedSession.ownerId) return false;
       await SyncCoordinator(
         database,
         SupabaseSyncGateway(client),
-      ).synchronize(inputData!['ownerId']! as String);
+      ).synchronize(storedSession.ownerId);
       return true;
     } on Object {
       return false;
@@ -72,4 +75,8 @@ final class WorkManagerSyncScheduler implements SyncScheduler {
         backoffPolicy: BackoffPolicy.exponential,
         backoffPolicyDelay: const Duration(seconds: 30),
       );
+
+  @override
+  Future<void> cancel({required String ownerId}) =>
+      _workmanager.cancelByUniqueName('$taskName.$ownerId');
 }

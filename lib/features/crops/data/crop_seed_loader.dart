@@ -12,9 +12,6 @@ final class CropSeedLoader {
   final AssetBundle _bundle;
 
   Future<void> seedIfEmpty() async {
-    if ((await _database.select(_database.officialCrops).get()).isNotEmpty) {
-      return;
-    }
     final source = await _bundle.loadString('assets/data/crop_catalog_v1.json');
     final rows = (jsonDecode(source) as List<Object?>)
         .cast<Map<String, Object?>>();
@@ -30,9 +27,11 @@ final class CropSeedLoader {
                 category: row['category']! as String,
                 colorToken: row['colorToken']! as String,
                 iconAsset: row['iconAsset']! as String,
+                catalogVersion: const Value(2),
               ),
             )
             .toList(growable: false),
+        mode: InsertMode.insertOrReplace,
       );
     });
   }

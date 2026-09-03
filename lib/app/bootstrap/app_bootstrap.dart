@@ -4,6 +4,7 @@ import 'package:agrocampo/core/auth/auth_repository.dart';
 import 'package:agrocampo/core/auth/secure_session_store.dart';
 import 'package:agrocampo/core/database/app_database.dart';
 import 'package:agrocampo/core/network/runtime_config.dart';
+import 'package:agrocampo/core/notifications/local_notification_scheduler.dart';
 import 'package:agrocampo/core/sync/sync_scheduler.dart';
 import 'package:agrocampo/features/auth/presentation/session_controller.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +16,14 @@ Future<void> bootstrapAgroCampo() async {
   WidgetsFlutterBinding.ensureInitialized();
   final config = RuntimeConfig.fromCompileTime();
   final database = AppDatabase();
-  final client = config.hasSupabase
-      ? SupabaseClient(config.supabaseUrl, config.supabasePublishableKey)
-      : null;
+  SupabaseClient? client;
+  if (config.hasSupabase) {
+    await Supabase.initialize(
+      url: config.supabaseUrl,
+      publishableKey: config.supabasePublishableKey,
+    );
+    client = Supabase.instance.client;
+  }
   const secureStorage = FlutterSecureStorage();
   final authRepository = SupabaseAuthRepository(
     client: client,
@@ -25,13 +31,19 @@ Future<void> bootstrapAgroCampo() async {
   );
   final syncScheduler = WorkManagerSyncScheduler();
   await syncScheduler.initialize();
+  final notificationScheduler = PluginLocalNotificationScheduler();
+  await notificationScheduler.initialize();
   runApp(
     ProviderScope(
       overrides: [
         runtimeConfigProvider.overrideWithValue(config),
         appDatabaseProvider.overrideWithValue(database),
+        supabaseClientProvider.overrideWithValue(client),
         authRepositoryProvider.overrideWithValue(authRepository),
         syncSchedulerProvider.overrideWithValue(syncScheduler),
+        localNotificationSchedulerProvider.overrideWithValue(
+          notificationScheduler,
+        ),
       ],
       child: const AgroCampoApp(),
     ),

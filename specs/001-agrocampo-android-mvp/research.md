@@ -1,6 +1,6 @@
 # Phase 0 Research: AgroCampo Android MVP - Módulo 001
 
-**Fecha de consolidación**: 2026-08-28  
+**Fecha de consolidación**: 2026-08-30
 **Estado**: decisiones técnicas cerradas; quedan únicamente gates de aprobación agronómica y
 verificación contractual externa, ambos ubicados antes de su implementación.  
 **Autoridad funcional**: [spec.md](./spec.md) y constitución 1.0.0.  
@@ -17,7 +17,7 @@ El SDK disponible en el entorno fija Flutter 3.47.0 estable, Dart 3.13.0, Androi
 | Navegación | `go_router` 18.0.0 | Probar shell, restauración y predictive back antes de fijar lockfile. |
 | SQLite | `drift` 2.34.3, `drift_dev` 2.34.5 | Usar motor nativo en background; no añadir `sqflite`. |
 | Supabase | `supabase_flutter` 2.17.2 estable | No adoptar prerelease 3.x en el MVP. |
-| Mapa | `google_maps_flutter` 2.18.0 | Android SDK 24+; sin caché propia de teselas. |
+| Mapa | `flutter_map` 8.3.2, `latlong2` 0.10.1 | Teselas OSM como capa visual; geometría canónica en Drift. |
 | GPS | `geolocator` 14.0.3 | Ubicación sólo en primer plano. |
 | Firebase | `firebase_core` 4.14.0, `firebase_messaging` 16.6.0 | FCM no es temporizador ni fuente de verdad. |
 | Avisos locales | `flutter_local_notifications` 22.3.0 | Requiere configuración Android/desugaring y pruebas en dispositivo. |
@@ -29,7 +29,7 @@ El SDK disponible en el entorno fija Flutter 3.47.0 estable, Dart 3.13.0, Androi
 | Sesión segura | `flutter_secure_storage` 11.0.0 | Backend Android Keystore; contraseña nunca persistida. |
 | XLSX | `excel_community` 2.3.0 | Aislar detrás de contrato y fijar versión exacta. |
 
-Fuentes de baseline: [Flutter 3.47.0](https://docs.flutter.dev/release/release-notes/release-notes-3.47.0), [Dart 3.13](https://dart.dev/changelog), [Riverpod](https://pub.dev/packages/flutter_riverpod), [go_router](https://pub.dev/packages/go_router), [Drift](https://pub.dev/packages/drift), [drift_dev](https://pub.dev/packages/drift_dev), [Supabase Flutter](https://pub.dev/packages/supabase_flutter), [Google Maps Flutter](https://pub.dev/packages/google_maps_flutter), [geolocator](https://pub.dev/packages/geolocator), [Firebase Core](https://pub.dev/packages/firebase_core), [Firebase Messaging](https://pub.dev/packages/firebase_messaging), [notificaciones locales](https://pub.dev/packages/flutter_local_notifications), [Workmanager](https://pub.dev/packages/workmanager), [connectivity_plus](https://pub.dev/packages/connectivity_plus), [image_picker](https://pub.dev/packages/image_picker), [flutter_svg](https://pub.dev/packages/flutter_svg), [Lucide](https://pub.dev/packages/lucide_icons_flutter), [almacenamiento seguro](https://pub.dev/packages/flutter_secure_storage) y [excel_community](https://pub.dev/packages/excel_community).
+Fuentes de baseline: [Flutter 3.47.0](https://docs.flutter.dev/release/release-notes/release-notes-3.47.0), [Dart 3.13](https://dart.dev/changelog), [Riverpod](https://pub.dev/packages/flutter_riverpod), [go_router](https://pub.dev/packages/go_router), [Drift](https://pub.dev/packages/drift), [drift_dev](https://pub.dev/packages/drift_dev), [Supabase Flutter](https://pub.dev/packages/supabase_flutter), [flutter_map](https://pub.dev/packages/flutter_map), [latlong2](https://pub.dev/packages/latlong2), [geolocator](https://pub.dev/packages/geolocator), [Firebase Core](https://pub.dev/packages/firebase_core), [Firebase Messaging](https://pub.dev/packages/firebase_messaging), [notificaciones locales](https://pub.dev/packages/flutter_local_notifications), [Workmanager](https://pub.dev/packages/workmanager), [connectivity_plus](https://pub.dev/packages/connectivity_plus), [image_picker](https://pub.dev/packages/image_picker), [flutter_svg](https://pub.dev/packages/flutter_svg), [Lucide](https://pub.dev/packages/lucide_icons_flutter), [almacenamiento seguro](https://pub.dev/packages/flutter_secure_storage) y [excel_community](https://pub.dev/packages/excel_community).
 
 ## Matriz comparativa y decisión de consolidación
 
@@ -202,38 +202,38 @@ Logout cierra base y coordinador, elimina tokens y no borra automáticamente dat
 
 **Evidence**: [Supabase sessions](https://supabase.com/docs/guides/auth/sessions), [auth state Flutter](https://supabase.com/docs/reference/dart/auth-onauthstatechange) y [custom LocalStorage de Supabase Flutter](https://pub.dev/packages/supabase_flutter).
 
-## D-011 — Google Maps, GPS y búsqueda
+## D-011 — OpenStreetMap, GPS y búsqueda
 
-**Decision**: Google Maps Flutter para mapa/polígonos y `geolocator` para ubicación en primer plano. Places SDK for Android (New) se encapsula mediante un puente Android pequeño para búsqueda; sus resultados se convierten a DTO y se renderizan en Flutter según `master.md`. La geometría confirmada por el agricultor es el dato del dominio.
+**Decision**: `flutter_map` y `latlong2` renderizan mapas y polígonos con teselas públicas de OpenStreetMap; `geolocator` conserva ubicación en primer plano. `PlacesGateway` permanece como límite opcional y deshabilitado mientras no exista un proveedor de búsqueda aprobado. La geometría confirmada por el agricultor es el dato del dominio.
 
-Persistir vértices WGS84 ordenados, superficie y versión de algoritmo. Rechazar polígono con menos de tres puntos distintos, autocruce, área nula o sector fuera de parcela. Sin teselas, renderizar geometría local en fallback esquemático y lista equivalente; no cachear teselas ni snapshots Google para uso offline. Permiso GPS denegado no bloquea dibujo manual; no se solicita ubicación en background.
+Persistir vértices WGS84 ordenados, superficie y versión de algoritmo. Rechazar polígono con menos de tres puntos distintos, autocruce, área nula o sector fuera de parcela. Las teselas sólo son la capa cartográfica: sin ellas, `PolygonLayer` sigue renderizando la geometría local Drift y la lista equivalente. No realizar descarga masiva ni precarga de teselas. Permiso GPS denegado no bloquea dibujo manual; no se solicita ubicación en background.
 
-**Rationale**: El plugin oficial satisface Android y el proveedor puede fallar sin afectar datos locales. Mantener geometría en dominio permite cambiar renderizador sin migrar datos.
+**Rationale**: El proveedor visual puede fallar sin afectar datos locales. Mantener geometría en dominio permitió cambiar el renderizador sin migrar datos ni duplicar GPS, repositorios o providers.
 
 **Alternatives considered**:
 
 - Mapbox: diferido porque el MVP no exige descarga de mapas base y añade SDK/licencia.
-- Búsqueda HTTP directa desde APK: rechazada por seguridad de clave y política del proveedor.
+- Búsqueda HTTP directa desde APK: rechazada hasta aprobar proveedor, contrato y política de uso.
 
-**Evidence**: [Google Maps Flutter](https://pub.dev/packages/google_maps_flutter), [polygons](https://developers.google.com/maps/flutter-package/samples/polygons), [Places autocomplete](https://developers.google.com/maps/documentation/places/android-sdk/place-autocomplete), [Places policies](https://developers.google.com/maps/documentation/places/android-sdk/policies), [tile policies](https://developers.google.com/maps/documentation/tile/policies) y [API security](https://developers.google.com/maps/api-security-best-practices).
+**Evidence**: [flutter_map](https://pub.dev/packages/flutter_map), [PolygonLayer](https://docs.fleaflet.dev/layers/polygon-layer), [TileLayer](https://docs.fleaflet.dev/layers/tile-layer), [política de teselas OSM](https://operations.osmfoundation.org/policies/tiles/) y [atribución OSM](https://www.openstreetmap.org/copyright).
 
-## D-012 — WeatherAPI detrás de Edge Function, con gate contractual
+## D-012 — Open-Meteo detrás de Edge Function, con gate contractual
 
-**Decision**: El propietario aprobó WeatherAPI como proveedor climático inicial el 2026-08-28. La app llamará un Edge Function autenticado por `parcelId`; el servidor obtendrá el centroide autorizado, consultará al proveedor y devolverá un DTO normalizado. La clave no se incorpora en código ni configuración cliente: queda exclusivamente como secreto del entorno de la Edge Function. Drift guardará caché con expiración; el clima es auxiliar y nunca bloquea los flujos offline.
+**Decision**: El propietario aprobó Open-Meteo como proveedor climático el 2026-09-03. La app llama un Edge Function autenticado por `parcelId`; el servidor obtiene una coordenada desde la geometría autorizada de la parcela cuando existe, usa la coordenada de despliegue como respaldo y devuelve un DTO normalizado. No acepta coordenadas arbitrarias del cliente. Drift guarda caché con expiración; el clima es auxiliar y nunca bloquea los flujos offline.
 
-La implementación queda detrás de `WeatherGateway`. Según los términos consultados el 2026-08-28, el uso comercial está permitido dentro del plan contratado; el plan gratuito exige crédito visible a WeatherAPI.com. La caché se limita a 60 minutos para condiciones actuales y 24 horas para pronóstico. No se retienen respuestas ni campos normalizados derivados de condiciones/pronóstico después de su expiración; una estimación de riego sólo conserva el ajuste numérico aplicado, código de proveedor, marca temporal y versión contractual, nunca el payload meteorológico. La UI debe mostrar atribución y el aviso de que el clima es informativo/probabilístico, no base única de decisiones críticas.
+La implementación queda detrás de `WeatherGateway`. El URL entregado es un endpoint público, no una clave API. La caché de condiciones expira a los 60 minutos. No se retiene el payload crudo; una estimación de riego sólo conserva el ajuste numérico aplicado, código de proveedor, marca temporal y versión contractual. La UI muestra atribución enlazada a Open-Meteo y el aviso de que el clima es informativo/probabilístico. El pronóstico no se presenta como alerta meteorológica oficial, por lo que `alerts[]` queda vacío hasta aprobar una fuente autoritativa.
 
-Antes de habilitar tráfico de producción se verifica otra vez el plan vigente y sus términos. Si ya no permiten el uso previsto, se sustituye el proveedor mediante el adapter sin cambiar dominio, almacenamiento, cálculo o componentes.
+Antes de habilitar tráfico comercial se verifica otra vez el plan vigente y sus términos. El endpoint público se usa sólo bajo sus condiciones de evaluación/no comercial; un producto comercial debe configurar en la Edge Function el endpoint y credencial del plan contratado, sin cambiar dominio, almacenamiento, cálculo o componentes Flutter.
 
 **Rationale**: Resuelve el alcance funcional sin exponer clave ni hacer del clima una dependencia crítica. Los límites de caché, atribución y aviso documentan los términos vigentes, que se vuelven a verificar antes de producción por ser externos y mutables.
 
 **Alternatives considered**:
 
-- Open-Meteo: licencia clara con atribución, pero su endpoint gratuito está limitado a uso no comercial; queda como sustituto si se aprueba el plan/licencia aplicable.
+- WeatherAPI: sustituido por la selección expresa de Open-Meteo.
 - OpenWeather: descartado inicialmente por obligaciones de atribución/redistribución que requieren revisión adicional.
-- Consulta directa desde Flutter: rechazada por clave, cuotas y normalización.
+- Consulta directa desde Flutter: rechazada para mantener autenticación, normalización, caché y capacidad de cambiar de plan/proveedor sin recompilar el APK.
 
-**Evidence**: [WeatherAPI pricing](https://www.weatherapi.com/pricing.aspx), [API docs](https://www.weatherapi.com/docs/), [terms](https://www.weatherapi.com/terms.aspx), [Open-Meteo license](https://open-meteo.com/en/license) y [pricing](https://open-meteo.com/en/pricing).
+**Evidence**: [Open-Meteo API](https://open-meteo.com/en/docs), [licencia](https://open-meteo.com/en/license) y [pricing](https://open-meteo.com/en/pricing).
 
 ## D-013 — Recordatorios locales y FCM secundario
 
@@ -300,7 +300,7 @@ El workbook usa IDs/FKs textuales, fechas explícitas, unidades, estado de sincr
 
 ## D-017 — Seguridad de secretos y RLS
 
-**Decision**: El APK sólo contiene la clave publicable Supabase, configuración cliente Firebase y una clave Google Maps Android restringida por package/firma/API. Weather, Gemini, `service_role`, claves secretas Supabase y credenciales FCM viven en secretos server-side separados por ambiente.
+**Decision**: El APK sólo contiene la clave publicable Supabase y configuración cliente Firebase. OpenStreetMap no usa API key; el cliente se identifica con el application ID y muestra atribución. Weather, Gemini, `service_role`, claves secretas Supabase y credenciales FCM viven en secretos server-side separados por ambiente.
 
 Cada Edge Function exige JWT y reduce su consulta a datos del propietario mediante RLS. Logs no contienen token, coordenada exacta, prompt completo, fotografía o payload agrícola. Se definen dev/staging/prod, rotación, cuota y alertas.
 
@@ -315,7 +315,7 @@ Cada Edge Function exige JWT y reduce su consulta a datos del propietario median
 
 ## D-018 — Estrategia de pruebas y controles de política
 
-**Decision**: Combinar pruebas unitarias/domain, Drift, widget, golden, semántica, contratos, pgTAP, integración Flutter y comprobación manual/instrumentada de UI nativa/platform views. Los permisos, cámara, notificaciones y Google Maps se prueban en dispositivo real además de mocks.
+**Decision**: Combinar pruebas unitarias/domain, Drift, widget, golden, semántica, contratos, pgTAP, integración Flutter y comprobación manual/instrumentada de UI nativa. Los permisos, cámara, notificaciones, GPS y comportamiento del mapa con red real se prueban en dispositivo además de mocks.
 
 Los controles obligatorios incluyen:
 

@@ -2,6 +2,14 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
+int stableNotificationId(String value) {
+  var hash = 0x811c9dc5;
+  for (final unit in value.codeUnits) {
+    hash = (hash ^ unit) * 0x01000193 & 0x7fffffff;
+  }
+  return hash == 0 ? 1 : hash;
+}
+
 abstract interface class LocalNotificationScheduler {
   Future<void> initialize();
   Future<bool> requestPermission();

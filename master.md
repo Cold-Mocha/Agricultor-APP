@@ -1026,7 +1026,7 @@ La capa visual consume estados semánticos, no banderas ambiguas. Un registro di
 - Historial vacío: mantener el mensaje actual mejorado y, si corresponde, acceso a Registrar.
 - AgroIA vacío: sugerir preguntas dentro del alcance, sin prometer diagnóstico.
 - Clima sin datos: mostrar última lectura con hora o error; no usar “0” como valor real.
-- Clima WeatherAPI: junto a datos provistos, mostrar crédito visible a WeatherAPI.com y un aviso
+- Clima Open-Meteo: junto a datos provistos, mostrar crédito visible y enlazado a Open-Meteo.com y un aviso
   accesible de que las condiciones/pronósticos son informativos, probabilísticos y no sustituyen
   fuentes oficiales para decisiones críticas. Nunca impedir un flujo local por este aviso.
 - Sincronización con error: indicar que los datos siguen locales y permitir reintentar.

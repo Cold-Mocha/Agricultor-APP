@@ -18,10 +18,29 @@ class ConflictDao extends DatabaseAccessor<AppDatabase>
   Future<void> record(SyncConflictsCompanion conflict) =>
       into(syncConflicts).insertOnConflictUpdate(conflict);
 
-  Future<void> markResolved(String conflictId) =>
+  Future<void> beginResolution(
+    String conflictId,
+    String choice,
+    String operationId,
+  ) =>
       (update(
         syncConflicts,
       )..where((row) => row.conflictId.equals(conflictId))).write(
-        SyncConflictsCompanion(resolvedAt: Value(DateTime.now().toUtc())),
+        SyncConflictsCompanion(
+          state: const Value('resolving'),
+          resolutionChoice: Value(choice),
+          resolutionOperationId: Value(operationId),
+          errorCode: const Value(null),
+        ),
+      );
+
+  Future<void> markResolvedByOperation(String operationId) =>
+      (update(
+        syncConflicts,
+      )..where((row) => row.resolutionOperationId.equals(operationId))).write(
+        SyncConflictsCompanion(
+          state: const Value('resolved'),
+          resolvedAt: Value(DateTime.now().toUtc()),
+        ),
       );
 }

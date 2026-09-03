@@ -14,7 +14,7 @@ La arquitectura será modular por feature, con capas de presentación, dominio y
 
 **Language/Version**: Flutter 3.47.0 estable, Dart 3.13.0 y Kotlin/Gradle sólo para integración Android generada por Flutter.
 
-**Primary Dependencies**: Flutter Material 3, `flutter_riverpod`, `go_router`, `drift`, `supabase_flutter`, `google_maps_flutter`, `geolocator`, `firebase_core`, `firebase_messaging`, `flutter_local_notifications`, `workmanager`, `image_picker`, `flutter_svg`, `lucide_icons_flutter`, `flutter_secure_storage`, `connectivity_plus`, cliente HTTP compatible y generador `.xlsx` validado en `research.md`.
+**Primary Dependencies**: Flutter Material 3, `flutter_riverpod`, `go_router`, `drift`, `supabase_flutter`, `flutter_map`, `latlong2`, `geolocator`, `firebase_core`, `firebase_messaging`, `flutter_local_notifications`, `workmanager`, `image_picker`, `flutter_svg`, `lucide_icons_flutter`, `flutter_secure_storage`, `connectivity_plus`, cliente HTTP compatible y generador `.xlsx` validado en `research.md`.
 
 **Storage**: SQLite mediante Drift para todos los datos operativos, borradores, cachés y cola de sincronización; Supabase PostgreSQL para respaldo remoto; Supabase Storage privado para fotografías; Android Keystore mediante almacenamiento seguro para material de sesión.
 
@@ -323,10 +323,11 @@ El protocolo completo está en [contracts/sync-protocol.md](./contracts/sync-pro
 
 ### Mapas y GPS
 
-- Selección inicial: Google Maps Flutter, compatible con el mínimo Android adoptado.
+- Selección: `flutter_map` 8.3.2 + `latlong2` 0.10.1 con teselas de OpenStreetMap.
 - `geolocator` encapsula permisos, ubicación actual y estados de servicio.
-- El dominio conserva coordenadas/polígonos WGS84 independientes del proveedor; Google Maps sólo renderiza y edita.
+- El dominio conserva coordenadas/polígonos WGS84 independientes del proveedor; OpenStreetMap sólo aporta la capa cartográfica y `PolygonLayer` renderiza/edita.
 - Sin mapa base, la app conserva geometrías guardadas, lista textual de sectores y cálculo local. Búsqueda y teselas se degradan de forma aislada.
+- El cliente usa `cl.agrocampo.app` como `userAgentPackageName`, muestra atribución visible y no descarga ni precarga teselas en masa.
 - PostGIS revalida geometría y superficie al sincronizar; una diferencia fuera de tolerancia genera error explícito o revisión, nunca reemplazo silencioso.
 
 ### Clima
@@ -496,6 +497,6 @@ El plan puede pasar a ejecución del backlog cuando:
 ## Complexity Tracking
 
 No hay violaciones constitucionales ni excepciones de arquitectura. T001 y T002 están cerrados para
-arquitectura: el riego se implementa configurable sin recomendaciones activas por defecto y WeatherAPI
+arquitectura: el riego se implementa configurable sin recomendaciones activas por defecto y Open-Meteo
 queda detrás del adapter aprobado. Cada regla agronómica y los términos externos se revalidan antes
 de su activación o release, respectivamente.

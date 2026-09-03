@@ -2,6 +2,7 @@ import 'package:agrocampo/core/database/app_database.dart';
 import 'package:agrocampo/core/export/xlsx_exporter.dart';
 import 'package:agrocampo/features/agro_ai/data/agro_ai_gateway.dart';
 import 'package:agrocampo/features/agro_ai/data/agro_ai_repository.dart';
+import 'package:agrocampo/features/agro_ai/domain/agro_ai_message.dart';
 import 'package:agrocampo/features/export/data/export_repository.dart';
 import 'package:agrocampo/features/weather/data/weather_gateway.dart';
 import 'package:agrocampo/features/weather/data/weather_repository.dart';
@@ -12,19 +13,25 @@ import 'package:integration_test/integration_test.dart';
 
 final class _Weather implements WeatherGateway {
   @override
-  Future<WeatherSnapshot> fetch(String locality) async => WeatherSnapshot(
+  Future<WeatherSnapshot> fetch({
+    required String locality,
+    String? parcelId,
+  }) async => WeatherSnapshot(
     locality: locality,
     temperatureC: 14,
     humidityPercent: 80,
     rainMillimeters: 2,
     summary: 'Lluvia',
     fetchedAt: DateTime.utc(2026, 8, 28),
+    provider: 'open-meteo',
+    attribution: 'Datos meteorológicos por Open-Meteo.com',
+    attributionUrl: 'https://open-meteo.com/',
   );
 }
 
 final class _Ai implements AgroAiGateway {
   @override
-  Future<String> ask(String question) async =>
+  Future<String> ask(AgroAiRequest request) async =>
       'Valida humedad antes de decidir.';
 }
 

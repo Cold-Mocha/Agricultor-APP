@@ -46,6 +46,15 @@ final class _IntegrationGateway implements SyncGateway {
     this.operations.addAll(
       operations.map((operation) => operation.operationId),
     );
-    return PushResult(acknowledgedOperationIds: this.operations);
+    return PushResult(
+      operations: operations
+          .map(
+            (operation) => PushOperationResult(
+              operationId: operation.operationId,
+              status: PushOperationStatus.applied,
+            ),
+          )
+          .toList(growable: false),
+    );
   }
 }

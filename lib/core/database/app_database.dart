@@ -16,6 +16,7 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
 part 'app_database.g.dart';
+part 'migrations/functional_core_v10.dart';
 
 @DriftDatabase(
   tables: [
@@ -30,6 +31,8 @@ part 'app_database.g.dart';
     OfficialCrops,
     CustomCrops,
     CropSeasons,
+    AgriculturalSeasons,
+    SectorIrrigationConfigs,
     Labors,
     SoilMeasurements,
     IrrigationRecords,
@@ -52,13 +55,16 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (migrator) async {
       await migrator.createAll();
       await customStatement('PRAGMA foreign_keys = ON');
+      for (final statement in _functionalCoreV10Indexes) {
+        await customStatement(statement);
+      }
     },
     onUpgrade: (migrator, from, to) async {
       if (from < 2) {
@@ -99,9 +105,17 @@ class AppDatabase extends _$AppDatabase {
         await migrator.createTable(aiMessages);
         await migrator.createTable(exportSnapshots);
       }
+      if (from < 10) {
+        await transaction(() => _upgradeFunctionalCoreV10(this, migrator));
+      }
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
+      // Idempotent so v10 databases created by older 002 builds also receive
+      // the query indexes without a destructive schema bump.
+      for (final statement in _functionalCoreV10Indexes) {
+        await customStatement(statement);
+      }
     },
   );
 }

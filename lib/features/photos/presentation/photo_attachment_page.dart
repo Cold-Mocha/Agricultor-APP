@@ -4,15 +4,21 @@ import 'package:agrocampo/app/providers.dart';
 import 'package:agrocampo/app/theme/agro_tokens.dart';
 import 'package:agrocampo/core/files/private_file_store.dart';
 import 'package:agrocampo/features/auth/presentation/session_controller.dart';
+import 'package:agrocampo/features/context/domain/agricultural_context.dart';
+import 'package:agrocampo/features/context/presentation/agricultural_context_controller.dart';
 import 'package:agrocampo/features/photos/data/photo_repository.dart';
 import 'package:agrocampo/features/photos/domain/photo_attachment.dart';
+import 'package:agrocampo/shared/presentation/components/agricultural_context_selector.dart';
 import 'package:agrocampo/shared/presentation/components/agro_page.dart';
+import 'package:agrocampo/shared/presentation/components/bound_agricultural_context_card.dart';
+import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 final class PhotoAttachmentPage extends ConsumerStatefulWidget {
-  const PhotoAttachmentPage({super.key});
+  const PhotoAttachmentPage({this.initialSectorId, super.key});
+  final String? initialSectorId;
 
   @override
   ConsumerState<PhotoAttachmentPage> createState() =>
@@ -22,6 +28,16 @@ final class PhotoAttachmentPage extends ConsumerStatefulWidget {
 final class _PhotoAttachmentPageState
     extends ConsumerState<PhotoAttachmentPage> {
   XFile? _selected;
+  BoundAgriculturalContext? _bound;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _bound ??= BoundAgriculturalContext.from(
+      ref.read(agriculturalContextControllerProvider),
+      sectorId: widget.initialSectorId,
+    );
+  }
 
   @override
   Widget build(BuildContext context) => AgroPage(
@@ -29,6 +45,19 @@ final class _PhotoAttachmentPageState
     subtitle: 'Adjuntos privados disponibles sin conexión',
     child: ListView(
       children: [
+        const AgriculturalContextSelector(requireSector: true),
+        BoundAgriculturalContextCard(
+          bound: _bound!,
+          changed: _bound!.differsFrom(
+            ref.watch(agriculturalContextControllerProvider),
+          ),
+          onRebind: () => setState(
+            () => _bound = BoundAgriculturalContext.from(
+              ref.read(agriculturalContextControllerProvider),
+            ),
+          ),
+        ),
+        const SizedBox(height: AgroSpacing.sm),
         if (_selected == null)
           const AspectRatio(
             aspectRatio: 4 / 3,
@@ -82,10 +111,13 @@ final class _PhotoAttachmentPageState
   Future<void> _save() async {
     final ownerId = ref.read(sessionControllerProvider).ownerId;
     final database = ref.read(appDatabaseProvider);
-    if (ownerId == null || _selected == null) return;
-    final sector = await (database.select(
-      database.sectors,
-    )..where((row) => row.ownerId.equals(ownerId))).getSingleOrNull();
+    final sectorId = _bound?.sectorId;
+    if (ownerId == null || sectorId == null || _selected == null) return;
+    final sector =
+        await (database.select(database.sectors)..where(
+              (row) => row.ownerId.equals(ownerId) & row.id.equals(sectorId),
+            ))
+            .getSingleOrNull();
     if (sector == null) return;
     await PhotoRepository(database, PrivateFileStore()).attach(
       PhotoAttachmentInput(

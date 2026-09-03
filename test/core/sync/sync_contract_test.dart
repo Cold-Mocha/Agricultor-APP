@@ -3,6 +3,7 @@ import 'package:agrocampo/core/sync/protocol/sync_contract.dart';
 import 'package:agrocampo/core/sync/sync_coordinator.dart';
 import 'package:agrocampo/core/sync/sync_gateway.dart';
 import 'package:agrocampo/features/parcels/data/parcel_repository.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/in_memory_database.dart';
@@ -73,6 +74,73 @@ void main() {
     expect(result.conflicts, 1);
     expect(await database.select(database.syncConflicts).get(), hasLength(1));
   });
+
+  test('does not acknowledge an unsupported aggregate', () async {
+    await database.syncOutboxDao.enqueue(
+      SyncOutboxCompanion.insert(
+        operationId: 'unsupported-1',
+        ownerId: 'owner-1',
+        aggregateType: 'futureUnsupported',
+        aggregateId: 'sector-1',
+        mutationKind: 'create',
+        payloadJson: '{}',
+        createdAt: DateTime.utc(2026),
+      ),
+    );
+    gateway.loseFirstAck = false;
+
+    await SyncCoordinator(database, gateway).synchronize('owner-1');
+
+    final operation = await database.select(database.syncOutbox).getSingle();
+    expect(operation.state, isNot('done'));
+  });
+
+  test(
+    'does not advance cursor when a pulled entity cannot be applied',
+    () async {
+      gateway.loseFirstAck = false;
+      gateway.pulledChanges = const [
+        RemoteChange(
+          sequence: 8,
+          aggregateType: 'sector',
+          aggregateId: 'sector-1',
+          kind: 'update',
+          payloadJson: '{}',
+          remoteVersion: 1,
+        ),
+      ];
+
+      await expectLater(
+        SyncCoordinator(database, gateway).synchronize('owner-1'),
+        throwsA(anything),
+      );
+
+      expect(
+        await database.syncCursorDao.read('owner-1', SyncCoordinator.stream),
+        0,
+      );
+    },
+  );
+
+  test('recovers a stale sending operation before selecting a batch', () async {
+    await database.syncOutboxDao.enqueue(
+      SyncOutboxCompanion.insert(
+        operationId: 'stale-1',
+        ownerId: 'owner-1',
+        aggregateType: 'parcel',
+        aggregateId: 'parcel-1',
+        mutationKind: 'create',
+        payloadJson: '{"id":"parcel-1"}',
+        state: const Value('sending'),
+        createdAt: DateTime.utc(2026),
+      ),
+    );
+    gateway.loseFirstAck = false;
+
+    await SyncCoordinator(database, gateway).synchronize('owner-1');
+
+    expect(gateway.serverOperationIds, contains('stale-1'));
+  });
 }
 
 final class _AckLossGateway implements SyncGateway {
@@ -80,12 +148,17 @@ final class _AckLossGateway implements SyncGateway {
   bool loseFirstAck = true;
   bool _didLoseAck = false;
   RemoteConflict? conflict;
+  List<RemoteChange> pulledChanges = const [];
 
   @override
   Future<PullResult> pull({
     required String ownerId,
     required int afterCursor,
-  }) async => PullResult(nextCursor: 7, conflicts: [?conflict]);
+  }) async => PullResult(
+    nextCursor: pulledChanges.isEmpty ? 7 : pulledChanges.last.sequence,
+    changes: pulledChanges,
+    conflicts: [?conflict],
+  );
 
   @override
   Future<PushResult> push({
@@ -100,9 +173,14 @@ final class _AckLossGateway implements SyncGateway {
       throw StateError('ACK lost after commit');
     }
     return PushResult(
-      acknowledgedOperationIds: operations
-          .map((operation) => operation.operationId)
-          .toSet(),
+      operations: operations
+          .map(
+            (operation) => PushOperationResult(
+              operationId: operation.operationId,
+              status: PushOperationStatus.applied,
+            ),
+          )
+          .toList(growable: false),
     );
   }
 }

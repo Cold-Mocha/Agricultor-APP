@@ -33,4 +33,40 @@ void main() {
       isFalse,
     );
   });
+
+  test('normalizes closing/consecutive duplicates without mutating input', () {
+    final source = [parent.first, parent.first, ...parent, parent.first];
+    final normalized = PolygonGeometry.normalize(source);
+    expect(normalized, hasLength(4));
+    expect(source, hasLength(7));
+  });
+
+  test('rejects repeated vertices, self intersections and zero area', () {
+    expect(
+      PolygonGeometry.validationError([
+        parent[0],
+        parent[1],
+        parent[2],
+        parent[1],
+      ]),
+      'polygon_has_duplicate_points',
+    );
+    expect(
+      PolygonGeometry.validationError([
+        parent[0],
+        parent[2],
+        parent[1],
+        parent[3],
+      ]),
+      'polygon_self_intersects',
+    );
+    expect(
+      PolygonGeometry.validationError(const [
+        GeoPoint(-38.74, -72.60),
+        GeoPoint(-38.74, -72.59),
+        GeoPoint(-38.74, -72.58),
+      ]),
+      'polygon_area_zero',
+    );
+  });
 }

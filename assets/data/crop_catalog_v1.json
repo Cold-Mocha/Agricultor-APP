@@ -1,10 +1,14 @@
 [
   {"id":"avellano-europeo","commonName":"Avellano europeo","scientificName":"Corylus avellana","category":"frutal","colorToken":"cropOrchard","iconAsset":"assets/icons/crops/custom-crop.svg"},
   {"id":"cerezo","commonName":"Cerezo","scientificName":"Prunus avium","category":"frutal","colorToken":"cropFruit","iconAsset":"assets/icons/crops/custom-crop.svg"},
-  {"id":"frambuesa","commonName":"Frambuesa","scientificName":"Rubus idaeus","category":"berry","colorToken":"cropBerry","iconAsset":"assets/icons/crops/custom-crop.svg"},
-  {"id":"maiz","commonName":"Maíz","scientificName":"Zea mays","category":"cereal","colorToken":"cropCereal","iconAsset":"assets/icons/crops/custom-crop.svg"},
-  {"id":"papa","commonName":"Papa","scientificName":"Solanum tuberosum","category":"tuberculo","colorToken":"cropRoot","iconAsset":"assets/icons/crops/custom-crop.svg"},
+  {"id":"arandano","commonName":"Arándano","scientificName":"Vaccinium corymbosum","category":"berry","colorToken":"cropBerry","iconAsset":"assets/icons/berries.svg"},
+  {"id":"frambuesa","commonName":"Frambuesa","scientificName":"Rubus idaeus","category":"berry","colorToken":"cropBerry","iconAsset":"assets/icons/raspberry.svg"},
+  {"id":"frutilla","commonName":"Frutilla","scientificName":"Fragaria × ananassa","category":"berry","colorToken":"cropBerry","iconAsset":"assets/icons/strawberry.svg"},
+  {"id":"maiz","commonName":"Maíz","scientificName":"Zea mays","category":"cereal","colorToken":"cropCereal","iconAsset":"assets/icons/corn.svg"},
+  {"id":"melon","commonName":"Melón","scientificName":"Cucumis melo","category":"hortaliza","colorToken":"cropFruit","iconAsset":"assets/icons/melon.svg"},
+  {"id":"papa","commonName":"Papa","scientificName":"Solanum tuberosum","category":"tuberculo","colorToken":"cropRoot","iconAsset":"assets/icons/root.svg"},
   {"id":"physalis","commonName":"Physalis","scientificName":"Physalis peruviana","category":"frutal","colorToken":"cropFruit","iconAsset":"assets/icons/crops/physalis.svg"},
+  {"id":"sandia","commonName":"Sandía","scientificName":"Citrullus lanatus","category":"hortaliza","colorToken":"cropFruit","iconAsset":"assets/icons/watermelon.svg"},
   {"id":"trigo","commonName":"Trigo","scientificName":"Triticum aestivum","category":"cereal","colorToken":"cropCereal","iconAsset":"assets/icons/crops/custom-crop.svg"},
   {"id":"vid","commonName":"Vid","scientificName":"Vitis vinifera","category":"frutal","colorToken":"cropVine","iconAsset":"assets/icons/crops/custom-crop.svg"},
   {"id":"apicultura","commonName":"Apicultura","scientificName":null,"category":"apicultura","colorToken":"cropApiary","iconAsset":"assets/icons/crops/apiary.svg"}

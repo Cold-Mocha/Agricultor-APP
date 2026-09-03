@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:agrocampo/core/sync/protocol/sync_contract.dart';
+import 'package:agrocampo/core/sync/protocol/sync_pull_response_parser.dart';
+import 'package:agrocampo/core/sync/protocol/sync_push_response_parser.dart';
 import 'package:agrocampo/core/sync/sync_gateway.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -23,20 +27,35 @@ final class SupabaseSyncGateway implements SyncGateway {
                 'aggregate_type': operation.aggregateType,
                 'aggregate_id': operation.aggregateId,
                 'mutation_kind': operation.kind,
+                'protocol_version': operation.protocolVersion,
+                'payload_schema_version': operation.payloadSchemaVersion,
                 'base_version': operation.baseVersion,
-                'payload': operation.payloadJson,
+                'payload': jsonDecode(operation.payloadJson),
+                'request_hash': operation.requestHash,
+                'depends_on_operation_id': operation.dependsOnOperationId,
               },
             )
             .toList(growable: false),
       },
     );
     final json = response! as Map<String, Object?>;
+    final conflicts = {
+      for (final conflict in _parseConflicts(json['conflicts']))
+        conflict.sourceOperationId: conflict,
+    };
+    final parsed = const SyncPushResponseParser().parse(json, operations);
     return PushResult(
-      acknowledgedOperationIds:
-          ((json['acknowledged_operation_ids'] as List<Object?>?) ?? const [])
-              .whereType<String>()
-              .toSet(),
-      conflicts: _parseConflicts(json['conflicts']),
+      operations: parsed.operations
+          .map(
+            (result) => PushOperationResult(
+              operationId: result.operationId,
+              status: result.status,
+              remoteVersion: result.remoteVersion,
+              errorCode: result.errorCode,
+              conflict: conflicts[result.operationId],
+            ),
+          )
+          .toList(growable: false),
     );
   }
 
@@ -49,26 +68,7 @@ final class SupabaseSyncGateway implements SyncGateway {
       'sync_pull',
       params: {'after_cursor': afterCursor, 'page_size': 200},
     );
-    final rows = response.whereType<Map<String, Object?>>().toList(
-      growable: false,
-    );
-    return PullResult(
-      nextCursor: rows.fold(
-        afterCursor,
-        (cursor, row) => (row['change_seq'] as num).toInt() > cursor
-            ? (row['change_seq'] as num).toInt()
-            : cursor,
-      ),
-      changes: rows
-          .map(
-            (row) => RemoteChange(
-              sequence: (row['change_seq'] as num).toInt(),
-              aggregateType: row['aggregate_type']! as String,
-              payloadJson: row['payload'].toString(),
-            ),
-          )
-          .toList(growable: false),
-    );
+    return const SyncPullResponseParser().parse(response, afterCursor);
   }
 
   List<RemoteConflict> _parseConflicts(Object? value) =>
@@ -80,7 +80,10 @@ final class SupabaseSyncGateway implements SyncGateway {
               aggregateType: row['aggregate_type']! as String,
               aggregateId: row['aggregate_id']! as String,
               localJson: row['local'].toString(),
-              remoteJson: row['remote'].toString(),
+              baseJson: row['base'] == null ? null : jsonEncode(row['base']),
+              remoteJson: jsonEncode(row['remote']),
+              remoteVersion: (row['remote_version'] as num?)?.toInt(),
+              sourceOperationId: row['source_operation_id'] as String?,
             ),
           )
           .toList(growable: false);

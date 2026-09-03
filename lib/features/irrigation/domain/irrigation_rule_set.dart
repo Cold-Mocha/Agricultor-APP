@@ -10,6 +10,12 @@ final class IrrigationRuleSet {
     required this.maximumDurationMinutes,
     required this.sourceTitle,
     required this.sourceReference,
+    this.reviewer,
+    this.approvedAt,
+    this.approvedVectorCount = 0,
+    this.baseMlPerPlant = 1000,
+    this.minimumAdjustmentBp = 5000,
+    this.maximumAdjustmentBp = 15000,
   });
 
   final String id;
@@ -22,6 +28,19 @@ final class IrrigationRuleSet {
   final int maximumDurationMinutes;
   final String sourceTitle;
   final String sourceReference;
+  final String? reviewer;
+  final DateTime? approvedAt;
+  final int approvedVectorCount;
+  final int baseMlPerPlant;
+  final int minimumAdjustmentBp;
+  final int maximumAdjustmentBp;
+
+  bool get releaseApproved =>
+      sourceTitle.trim().isNotEmpty &&
+      sourceReference.trim().isNotEmpty &&
+      (reviewer?.trim().isNotEmpty ?? false) &&
+      approvedAt != null &&
+      approvedVectorCount >= 20;
 
   void validate() {
     if (soilMultiplierPermille <= 0 ||
@@ -35,6 +54,12 @@ final class IrrigationRuleSet {
     }
     if (sourceTitle.trim().isEmpty || sourceReference.trim().isEmpty) {
       throw ArgumentError('rule_source_required');
+    }
+    if (!releaseApproved) throw ArgumentError('rule_release_gate_not_met');
+    if (baseMlPerPlant <= 0 ||
+        minimumAdjustmentBp <= 0 ||
+        maximumAdjustmentBp < minimumAdjustmentBp) {
+      throw ArgumentError('rule_adjustment_bounds_invalid');
     }
   }
 }

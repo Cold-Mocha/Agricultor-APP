@@ -10,6 +10,9 @@ class Parcels extends Table {
   BoolColumn get isActive => boolean().withDefault(const Constant(false))();
   BoolColumn get isArchived => boolean().withDefault(const Constant(false))();
   IntColumn get version => integer().withDefault(const Constant(1))();
+  TextColumn get syncState => text().withDefault(const Constant('pending'))();
+  DateTimeColumn get serverUpdatedAt => dateTime().nullable()();
+  TextColumn get lastSyncErrorCode => text().nullable()();
   DateTimeColumn get updatedAt => dateTime()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
 

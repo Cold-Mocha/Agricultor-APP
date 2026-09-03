@@ -24,8 +24,8 @@ Screens render loading, unavailable, stale, denied, error and recovery states ex
 
 ### Selected services
 
-- Google Maps Flutter for map and polygon rendering.
-- Places SDK for Android (New) for connected location search through a small platform adapter.
+- `flutter_map`/`latlong2` for map and polygon rendering with OpenStreetMap tiles.
+- `PlacesGateway` remains disabled until a connected-search provider is approved.
 - `geolocator` for foreground device location.
 
 ### Domain DTOs
@@ -54,7 +54,7 @@ Valid/invalid/self-crossing/contained polygons, area fixtures, GPS denied/approx
 
 ### Selected topology
 
-Flutter calls authenticated Supabase Edge Function `weather-proxy` by `parcelId`. The function validates JWT/owner, obtains the parcel centroid server-side and queries WeatherAPI. It is not an open coordinate proxy.
+Flutter calls authenticated Supabase Edge Function `weather-proxy` by `parcelId`. The function validates JWT/owner, obtains a coordinate from the authorized parcel geometry when available and queries Open-Meteo. If geometry has not been captured yet, it uses the deployment's configured fallback coordinate. It is not an open coordinate proxy and never accepts arbitrary client coordinates.
 
 ### Normalized response
 
@@ -74,16 +74,19 @@ Raw provider JSON is not returned or stored. Cache is parcel/location scoped and
 
 The calculator receives a `WeatherInputSnapshot` explicitly. It persists only the normalized variables actually used, provenance and limitation code. If current weather is absent, deterministic local calculation may proceed only when its required local inputs exist and must record `weather_unavailable`.
 
-### Contractual policy (T002 approved 2026-08-28)
+### Contractual policy (Open-Meteo approved 2026-09-03)
 
-- WeatherAPI is the initial provider and is accessed only from the authenticated Edge Function.
-- The provider key is an Edge Function secret. It is absent from Dart, Android resources, client configuration, fixtures and logs.
+- Open-Meteo is the active provider and is accessed only from the authenticated Edge Function.
+- The supplied forecast URL is an endpoint, not an API key. No weather credential is embedded in Dart, Android resources, client configuration, fixtures or logs. A future commercial customer key and endpoint, if contracted, remain Edge Function configuration.
 - Current-conditions cache expires after 60 minutes; forecast cache expires after 24 hours. Expired responses and normalized weather fields are deleted rather than shown as current.
-- An irrigation estimate stores only its numeric weather adjustment, provider code, observation time and contract version; it never retains the WeatherAPI response or normalized condition/forecast fields beyond their cache expiry.
-- The UI credits WeatherAPI.com by name or brand treatment and presents the approved informational/probabilistic disclaimer in `master.md`.
+- An irrigation estimate stores only its numeric weather adjustment, provider code, observation time and contract version; it never retains the Open-Meteo response or normalized condition/forecast fields beyond their cache expiry.
+- The UI credits and links Open-Meteo as required and presents the approved informational/probabilistic disclaimer in `master.md`.
+- Forecast values are not represented as official alerts. `alerts[]` remains empty until an authoritative alert source is separately approved and connected.
 - Weather is auxiliary: provider failure, quota, timeout or stale cache never blocks local records or a valid local-only calculation.
 
-Before production, verify the active WeatherAPI plan and terms again. Failure requires swapping
+Before commercial production, verify the active Open-Meteo plan and terms again. The public
+endpoint is suitable only under its published non-commercial/evaluation conditions; commercial
+traffic requires the applicable customer endpoint. A provider change remains behind
 `WeatherGateway`; it does not allow omitting FR-065 or inventing a visual treatment.
 
 ### Failures
@@ -204,7 +207,7 @@ Tests cover cross-owner RLS, expired signed URL, upload interruption, duplicate 
 |---|---:|---|
 | Supabase publishable key | yes | build environment, not treated as authorization |
 | User access/refresh tokens | runtime only | Android Keystore-backed secure storage |
-| Google Maps Android key | yes, restricted | environment-specific Android resource/build config |
+| OpenStreetMap API key | no | not applicable; public tile endpoint uses identifiable user agent and attribution |
 | Firebase client configuration | yes | generated Android config |
 | Weather provider key | no | Edge Function secret |
 | Gemini authorization/API key | no | Edge Function secret/service account |

@@ -1,0 +1,14 @@
+.git/
+.dart_tool/
+.pub-cache/
+build/
+coverage/
+node_modules/
+graphify-out/
+.agents/
+.specify/
+.env
+.env.*
+*.log*
+Dockerfile*
+.dockerignore

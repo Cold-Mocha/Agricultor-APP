@@ -27,7 +27,8 @@ final class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final session = ref.watch(sessionControllerProvider);
-    final loading = session.status == SessionStatus.checking;
+    final loading = session.status == SessionStatus.restoring;
+    final locked = session.status == SessionStatus.locked;
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -62,6 +63,22 @@ final class _LoginPageState extends ConsumerState<LoginPage> {
                       ),
                     ],
                     const SizedBox(height: AgroSpacing.lg),
+                    if (locked) ...[
+                      FilledButton.icon(
+                        onPressed: loading
+                            ? null
+                            : () => ref
+                                  .read(sessionControllerProvider.notifier)
+                                  .unlockWithBiometrics(),
+                        icon: const Icon(Icons.fingerprint),
+                        label: const Text('Desbloquear con biometría'),
+                      ),
+                      const SizedBox(height: AgroSpacing.sm),
+                      const Text(
+                        'También puedes ingresar nuevamente con tu correo y contraseña.',
+                      ),
+                      const SizedBox(height: AgroSpacing.lg),
+                    ],
                     TextFormField(
                       controller: _email,
                       keyboardType: TextInputType.emailAddress,

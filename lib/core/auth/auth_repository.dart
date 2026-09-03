@@ -9,12 +9,25 @@ final class AuthenticatedOwner {
   final String email;
 }
 
+final class RestoredAuthSession {
+  const RestoredAuthSession({
+    required this.ownerId,
+    required this.biometricEnabled,
+    required this.offline,
+  });
+
+  final String ownerId;
+  final bool biometricEnabled;
+  final bool offline;
+}
+
 abstract interface class AuthRepository {
-  Future<String?> restoreLocalOwnerId();
+  Future<RestoredAuthSession?> restoreSession();
   Future<AuthenticatedOwner> signIn({
     required String email,
     required String password,
   });
+  Future<void> setBiometricEnabled(bool enabled);
   Future<void> signOut();
 }
 
@@ -22,10 +35,48 @@ final class SupabaseAuthRepository implements AuthRepository {
   const SupabaseAuthRepository({required this.client, required this.store});
 
   final SupabaseClient? client;
-  final SecureSessionStore store;
+  final SessionStore store;
 
   @override
-  Future<String?> restoreLocalOwnerId() => store.readOwnerId();
+  Future<RestoredAuthSession?> restoreSession() async {
+    final local = await store.read();
+    if (local == null) return null;
+    final authClient = client;
+    if (authClient == null) {
+      return RestoredAuthSession(
+        ownerId: local.ownerId,
+        biometricEnabled: local.biometricEnabled,
+        offline: true,
+      );
+    }
+    try {
+      final response = await authClient.auth.setSession(local.refreshToken);
+      final session = response.session;
+      final user = response.user;
+      if (session == null || user == null || user.id != local.ownerId) {
+        await store.clear();
+        return null;
+      }
+      final refreshToken = session.refreshToken;
+      if (refreshToken != null && refreshToken.isNotEmpty) {
+        await store.persist(ownerId: user.id, refreshToken: refreshToken);
+      }
+      return RestoredAuthSession(
+        ownerId: user.id,
+        biometricEnabled: local.biometricEnabled,
+        offline: false,
+      );
+    } on AuthException {
+      await store.clear();
+      return null;
+    } on Object {
+      return RestoredAuthSession(
+        ownerId: local.ownerId,
+        biometricEnabled: local.biometricEnabled,
+        offline: true,
+      );
+    }
+  }
 
   @override
   Future<AuthenticatedOwner> signIn({
@@ -63,8 +114,15 @@ final class SupabaseAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> setBiometricEnabled(bool enabled) =>
+      store.setBiometricEnabled(enabled);
+
+  @override
   Future<void> signOut() async {
-    await client?.auth.signOut();
-    await store.clearTokensPreservingOwner();
+    try {
+      await client?.auth.signOut();
+    } finally {
+      await store.clear();
+    }
   }
 }
