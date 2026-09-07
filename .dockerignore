@@ -1,8 +1,15 @@
 .git/
 .dart_tool/
+**/.dart_tool/
 .pub-cache/
 build/
+**/build/
 coverage/
+**/coverage/
+**/.flutter-plugins-dependencies
+**/.gradle/
+backend/supabase/.temp/
+backend/supabase/.branches/
 node_modules/
 graphify-out/
 .agents/

@@ -1,0 +1,2122 @@
+[
+  {
+    "from": "lib/app/agro_campo_app.dart",
+    "to": "frontend/lib/app/agro_campo_app.dart",
+    "sha256": "606ee76181905a811b97f4a6b2c96fbe7eb0bf1cf4756929831349de9162e1ab"
+  },
+  {
+    "from": "lib/app/bootstrap/app_bootstrap.dart",
+    "to": "frontend/lib/app/bootstrap/app_bootstrap.dart",
+    "sha256": "7ed974997b148f9113705764993ee4c769c5567934364f64e50a6854a26d7392"
+  },
+  {
+    "from": "lib/app/bootstrap/app_environment.dart",
+    "to": "backend/lib/core/config/app_environment.dart",
+    "sha256": "7d539ebb2ea09e80ba2a3f27ba8d506143cba5f9fb8403b8bbd76adc480ef9aa"
+  },
+  {
+    "from": "lib/app/providers.dart",
+    "to": "backend/lib/core/config/backend_providers.dart",
+    "sha256": "9d3d8eb11812b4a748c27419d82389f7aab89b93b6a4d038beb7681d792c4756"
+  },
+  {
+    "from": "lib/app/routing/app_router.dart",
+    "to": "frontend/lib/app/routing/app_router.dart",
+    "sha256": "190cf176068cc56c785c03e5d0ba0f49f0f701907767415c7db972c6292eda55"
+  },
+  {
+    "from": "lib/app/routing/app_routes.dart",
+    "to": "backend/lib/shared/contracts/app_routes.dart",
+    "sha256": "5466617a932b6e1e8a0b4c8a95fe2b57d2ec8aa8e4fb28c7af357291bd2b2393"
+  },
+  {
+    "from": "lib/app/shell/agro_app_shell.dart",
+    "to": "frontend/lib/app/shell/agro_app_shell.dart",
+    "sha256": "1cf5b0696c6c7736fdfdbc5846b3db8028f179ba34b237ec96c6c694030849bd"
+  },
+  {
+    "from": "lib/app/shell/agro_global_sync_status.dart",
+    "to": "frontend/lib/app/shell/agro_global_sync_status.dart",
+    "sha256": "6740ab27f5c4f98eb04ffc1c087714a8fec701138d4c02ee6fba24429903a5ed"
+  },
+  {
+    "from": "lib/app/theme/agro_theme.dart",
+    "to": "frontend/lib/app/theme/agro_theme.dart",
+    "sha256": "b09dee0a10e190bf08e705d9292f62e635c406020ed80c4fb83437a484eee055"
+  },
+  {
+    "from": "lib/app/theme/agro_tokens.dart",
+    "to": "frontend/lib/app/theme/agro_tokens.dart",
+    "sha256": "76d6ebb0d0016e318dce24df001f1d5aa6e8b113c4692541ea49d751ba29e9d7"
+  },
+  {
+    "from": "lib/app/theme/asset_catalog.dart",
+    "to": "frontend/lib/app/theme/asset_catalog.dart",
+    "sha256": "f005a29639e83db042141880760ddd921d6d2ea68099d9e5489cefd5db16c9bc"
+  },
+  {
+    "from": "lib/core/auth/auth_repository.dart",
+    "to": "backend/lib/core/auth/auth_repository.dart",
+    "sha256": "7f9eb0e406ca138d0d96787bb9df902e0321bddfd041936d7888651292b59849"
+  },
+  {
+    "from": "lib/core/auth/biometric_unlock_gateway.dart",
+    "to": "backend/lib/core/auth/biometric_unlock_gateway.dart",
+    "sha256": "6c5ffc00103b0298b477aeb12474547b07346960b91ea816c467c4b2b97bf290"
+  },
+  {
+    "from": "lib/core/auth/secure_session_store.dart",
+    "to": "backend/lib/core/auth/secure_session_store.dart",
+    "sha256": "846d8b76f7710549090048a623175b1f7030f9c018ad5b50657305796520bf46"
+  },
+  {
+    "from": "lib/core/database/app_database.dart",
+    "to": "backend/lib/core/database/app_database.dart",
+    "sha256": "a4ddb9f98f1d15f26e7fbc91ad3d15f8d450bb6e18f11fd497ef03867de89359"
+  },
+  {
+    "from": "lib/core/database/app_database.g.dart",
+    "to": "backend/lib/core/database/app_database.g.dart",
+    "sha256": "0c9fc062dc5c4a383e24e98964de3b490e84a54424f18502a89a5b92b4ce56ce"
+  },
+  {
+    "from": "lib/core/database/daos/app_preferences_dao.dart",
+    "to": "backend/lib/core/database/daos/app_preferences_dao.dart",
+    "sha256": "cd299aa4b7b10be4d21335dbb8b627cb67b24351b0adb6858e7610c4e616347d"
+  },
+  {
+    "from": "lib/core/database/daos/conflict_dao.dart",
+    "to": "backend/lib/core/database/daos/conflict_dao.dart",
+    "sha256": "c156eb916030fef7bda8f073ecf43c90433dfe0ea60da5896ce3068bc3c66a06"
+  },
+  {
+    "from": "lib/core/database/daos/conflict_dao.g.dart",
+    "to": "backend/lib/core/database/daos/conflict_dao.g.dart",
+    "sha256": "b088dac71fa636a390dc810b043ccf2f06c3580718eefbfe34594850385780b1"
+  },
+  {
+    "from": "lib/core/database/daos/form_draft_dao.dart",
+    "to": "backend/lib/core/database/daos/form_draft_dao.dart",
+    "sha256": "4ed1ea3c3652c8ab919aa4732a400d7290af4dff353d88965feb0f8e90dac0ba"
+  },
+  {
+    "from": "lib/core/database/daos/form_draft_dao.g.dart",
+    "to": "backend/lib/core/database/daos/form_draft_dao.g.dart",
+    "sha256": "aa5fa5c0106869c159f1749368cb37234ea3835b68c83078d26fe1821c72f720"
+  },
+  {
+    "from": "lib/core/database/daos/sync_cursor_dao.dart",
+    "to": "backend/lib/core/database/daos/sync_cursor_dao.dart",
+    "sha256": "0a47cbd9ba653162ba2c2eaffe1ad30b4a24f6b39395ce5722df23f83f491777"
+  },
+  {
+    "from": "lib/core/database/daos/sync_cursor_dao.g.dart",
+    "to": "backend/lib/core/database/daos/sync_cursor_dao.g.dart",
+    "sha256": "5386bb331fa89ae55294b6d4d2b1459174484ba21e98523525751dc0f988e345"
+  },
+  {
+    "from": "lib/core/database/daos/sync_outbox_dao.dart",
+    "to": "backend/lib/core/database/daos/sync_outbox_dao.dart",
+    "sha256": "c11c4151a0b1a681d92a929b71269a74f3913b1d83d5997fa04484ae9f1d48a1"
+  },
+  {
+    "from": "lib/core/database/daos/sync_outbox_dao.g.dart",
+    "to": "backend/lib/core/database/daos/sync_outbox_dao.g.dart",
+    "sha256": "6fe3a25e7a048adb1644d76d27e94670405182dfcce1aca74e32cbf031691f12"
+  },
+  {
+    "from": "lib/core/database/migrations/functional_core_v10.dart",
+    "to": "backend/lib/core/database/migrations/functional_core_v10.dart",
+    "sha256": "7dd31ea292f12e2c6cda29b06c7de875ecc1fb0ccffaebc96bcb858a42688b39"
+  },
+  {
+    "from": "lib/core/database/migrations/migration_policy.dart",
+    "to": "backend/lib/core/database/migrations/migration_policy.dart",
+    "sha256": "c13a0091827cbdd0a22bc10833f1e3bf9c4376ce14a1230f90f4c5835c1d4499"
+  },
+  {
+    "from": "lib/core/database/tables/apiary_inspection_table.dart",
+    "to": "backend/lib/core/database/tables/apiary_inspection_table.dart",
+    "sha256": "d05fd56f389543e6b697f359975eed51975996d67889e208103f6e14375df1a4"
+  },
+  {
+    "from": "lib/core/database/tables/crop_irrigation_rule_table.dart",
+    "to": "backend/lib/core/database/tables/crop_irrigation_rule_table.dart",
+    "sha256": "18f481cefcfead66f84565b5f4bd9248629aa5836f661fb2c49ca1b0d118b52f"
+  },
+  {
+    "from": "lib/core/database/tables/external_service_tables.dart",
+    "to": "backend/lib/core/database/tables/external_service_tables.dart",
+    "sha256": "a83dc91d9f3ace5a8328ef736027851322291186a06dea007008c61cfbae49d9"
+  },
+  {
+    "from": "lib/core/database/tables/irrigation_estimate_table.dart",
+    "to": "backend/lib/core/database/tables/irrigation_estimate_table.dart",
+    "sha256": "00dee412c8e391436d3fcb0529a82faae2ecf2af3e9007e86c56263417e6ab7f"
+  },
+  {
+    "from": "lib/core/database/tables/labor_tables.dart",
+    "to": "backend/lib/core/database/tables/labor_tables.dart",
+    "sha256": "2f3aa93f7aa24a2a95b2f0df331101cb6af6b9819ddd658df88371ec1c06a47a"
+  },
+  {
+    "from": "lib/core/database/tables/media_reminder_tables.dart",
+    "to": "backend/lib/core/database/tables/media_reminder_tables.dart",
+    "sha256": "44c959b5690bf14bcd313365b5f95596a032916527cbf447c722878e93134649"
+  },
+  {
+    "from": "lib/core/database/tables/parcel_table.dart",
+    "to": "backend/lib/core/database/tables/parcel_table.dart",
+    "sha256": "eb11afe6372ea63f0a095591b79236a6d18eee9a6929ee3a10628f5618583859"
+  },
+  {
+    "from": "lib/core/database/tables/production_table.dart",
+    "to": "backend/lib/core/database/tables/production_table.dart",
+    "sha256": "5b0d7e8786e04d8cd58e8cae4d5f1d7b927a768f9c13bca7c8038d4e2ca1fabb"
+  },
+  {
+    "from": "lib/core/database/tables/technical_tables.dart",
+    "to": "backend/lib/core/database/tables/technical_tables.dart",
+    "sha256": "395f2d6ac620d025a40f953e4475cddcafda5cb5fb89f1d966d41d8440a82d26"
+  },
+  {
+    "from": "lib/core/database/tables/territory_tables.dart",
+    "to": "backend/lib/core/database/tables/territory_tables.dart",
+    "sha256": "953a26c651a622b048a9edaf4d07815c47554eebf19284d1ca96e49c901f2657"
+  },
+  {
+    "from": "lib/core/errors/app_failure.dart",
+    "to": "backend/lib/core/errors/app_failure.dart",
+    "sha256": "17569fd15e7d2987f133f53b766073ad2ce5860fb6d2f5bc8d4d1edb0706dd07"
+  },
+  {
+    "from": "lib/core/export/android_saf_exporter.dart",
+    "to": "backend/lib/core/export/android_saf_exporter.dart",
+    "sha256": "4a26624b14d0b0b5df72d35d55295c007c6a2c4d4c97c88b33246cefd63946e9"
+  },
+  {
+    "from": "lib/core/export/export_snapshot.dart",
+    "to": "backend/lib/core/export/export_snapshot.dart",
+    "sha256": "f926fb9c9eede12dd0bd91167c67ba5a5d692bbb46888d9c485b012c198e6dc7"
+  },
+  {
+    "from": "lib/core/export/xlsx_exporter.dart",
+    "to": "backend/lib/core/export/xlsx_exporter.dart",
+    "sha256": "2dbda2a9a8329b645160e58dfe87c737060ef1994d6e654eb9d502e0c3da591f"
+  },
+  {
+    "from": "lib/core/files/private_file_store.dart",
+    "to": "backend/lib/core/files/private_file_store.dart",
+    "sha256": "60cba1cdc819f7b0cf2c6970c175f068dfad1542028c1ad4cb91f60d743013ae"
+  },
+  {
+    "from": "lib/core/geometry/geo_point.dart",
+    "to": "backend/lib/core/geometry/geo_point.dart",
+    "sha256": "566429b955c3d8ae3d23ea93af8a80a67d795f381eb3ff26c9ee236eb62a83f4"
+  },
+  {
+    "from": "lib/core/geometry/polygon_geometry.dart",
+    "to": "backend/lib/core/geometry/polygon_geometry.dart",
+    "sha256": "d98cb27ecfdd30671b3fc6a361e2aee287ddeadbddc9594c19d33d4e98336662"
+  },
+  {
+    "from": "lib/core/network/connectivity_service.dart",
+    "to": "backend/lib/core/network/connectivity_service.dart",
+    "sha256": "0a32c8fbf5d206f7c34f45f95158f63956125166976d48c63492484ce2ed45bd"
+  },
+  {
+    "from": "lib/core/network/runtime_config.dart",
+    "to": "backend/lib/core/network/runtime_config.dart",
+    "sha256": "e80858798dc29e17cf5390bb8f442af565068ac377f8dba5589ef0b7c676a9d8"
+  },
+  {
+    "from": "lib/core/notifications/fcm_gateway.dart",
+    "to": "backend/lib/core/notifications/fcm_gateway.dart",
+    "sha256": "170603129cde4f29c7991f4f2ec125f758bb3d10c73ffe4c0f32c01ccf2c2b23"
+  },
+  {
+    "from": "lib/core/notifications/local_notification_scheduler.dart",
+    "to": "backend/lib/core/notifications/local_notification_scheduler.dart",
+    "sha256": "8478821ffce49a90dfd20b91a88bf9b0f1fdb9d43f9fd8e5e59975b0599591ed"
+  },
+  {
+    "from": "lib/core/notifications/reminder_reconciler.dart",
+    "to": "backend/lib/core/notifications/reminder_reconciler.dart",
+    "sha256": "5c35838a65ea8bf16bd6dee6f0e28768d19ac6bbab5da03b49ff679fd8058240"
+  },
+  {
+    "from": "lib/core/observability/safe_logger.dart",
+    "to": "backend/lib/core/observability/safe_logger.dart",
+    "sha256": "df18e57772fdaba129cbef431ddb7be4c921ea480c36debcfe072de772baba04"
+  },
+  {
+    "from": "lib/core/sync/conflicts/conflict_resolver.dart",
+    "to": "backend/lib/core/sync/conflicts/conflict_resolver.dart",
+    "sha256": "c221d08fb47a0bbd556a2c4247923e3717cf37f1795a04a58a95de304fbd6f72"
+  },
+  {
+    "from": "lib/core/sync/protocol/aggregate_sync_codec.dart",
+    "to": "backend/lib/core/sync/protocol/aggregate_sync_codec.dart",
+    "sha256": "c1442dde0f38b738a35b5d743cc87bf52bc8eb7266d34236c7d08197c7d78c0d"
+  },
+  {
+    "from": "lib/core/sync/protocol/aggregate_sync_registry.dart",
+    "to": "backend/lib/core/sync/protocol/aggregate_sync_registry.dart",
+    "sha256": "e8c531f9f1abe94baa5aa8368425aff83f4d156d2dbe737bf6e0f8e9282c3d4c"
+  },
+  {
+    "from": "lib/core/sync/protocol/agricultural_season_sync_codec.dart",
+    "to": "backend/lib/core/sync/protocol/agricultural_season_sync_codec.dart",
+    "sha256": "7983da34fdf152348b97935f07b76952ac8fb9f6b3fd3135280ebd46d00b00a6"
+  },
+  {
+    "from": "lib/core/sync/protocol/custom_crop_sync_codec.dart",
+    "to": "backend/lib/core/sync/protocol/custom_crop_sync_codec.dart",
+    "sha256": "e823c3d28635b184ba3a7865166cfd944eebc82e1793a6fd458a0b2134c098c8"
+  },
+  {
+    "from": "lib/core/sync/protocol/irrigation_sync_codec.dart",
+    "to": "backend/lib/core/sync/protocol/irrigation_sync_codec.dart",
+    "sha256": "fcf0a7aa50656908e1429ed69ef66e3f003c29bcfea05831438c3b9ed7ff7112"
+  },
+  {
+    "from": "lib/core/sync/protocol/labor_sync_codec.dart",
+    "to": "backend/lib/core/sync/protocol/labor_sync_codec.dart",
+    "sha256": "21bd8e747bd02ba694de8ee3cdf88d825e231deeafc1a811e7e03116a9fd2869"
+  },
+  {
+    "from": "lib/core/sync/protocol/parcel_sync_codec.dart",
+    "to": "backend/lib/core/sync/protocol/parcel_sync_codec.dart",
+    "sha256": "4e30684d136d7d66624e5e0caed5b89e014e14ba6fa1831df434e94be705552f"
+  },
+  {
+    "from": "lib/core/sync/protocol/reminder_sync_codec.dart",
+    "to": "backend/lib/core/sync/protocol/reminder_sync_codec.dart",
+    "sha256": "26aa9fed68791b4913a146a5c6178f7db576983f8917df8690ec2ee97a8e989a"
+  },
+  {
+    "from": "lib/core/sync/protocol/sector_crop_assignment_sync_codec.dart",
+    "to": "backend/lib/core/sync/protocol/sector_crop_assignment_sync_codec.dart",
+    "sha256": "a85931f3b8471c387b2df562392a90c0451c8327158ee4e85d0eeb6a9f78f55d"
+  },
+  {
+    "from": "lib/core/sync/protocol/sector_sync_codec.dart",
+    "to": "backend/lib/core/sync/protocol/sector_sync_codec.dart",
+    "sha256": "c08359a37f1eaff7617bc78f1599f8bf78323695720fe75d6ef1f103000a2b19"
+  },
+  {
+    "from": "lib/core/sync/protocol/supabase_sync_gateway.dart",
+    "to": "backend/lib/core/sync/protocol/supabase_sync_gateway.dart",
+    "sha256": "337e9481541f87d805c40bf343f18748e75b5d6ecede8022a3249e1841f5e3f9"
+  },
+  {
+    "from": "lib/core/sync/protocol/sync_contract.dart",
+    "to": "backend/lib/core/sync/protocol/sync_contract.dart",
+    "sha256": "0273c9b52a00d51fdeca371020ec17446d25c9b8811e438d0c8d1ece910e9380"
+  },
+  {
+    "from": "lib/core/sync/protocol/sync_pull_response_parser.dart",
+    "to": "backend/lib/core/sync/protocol/sync_pull_response_parser.dart",
+    "sha256": "b84dd5298097faa63e4e1b9be7589d20a07f859e4e536092b16c0e0f14559a7c"
+  },
+  {
+    "from": "lib/core/sync/protocol/sync_push_response_parser.dart",
+    "to": "backend/lib/core/sync/protocol/sync_push_response_parser.dart",
+    "sha256": "adac84ea4e5391b2c993ff8886938fe438aa0fa22395da76c4f748b3cdd9a6b7"
+  },
+  {
+    "from": "lib/core/sync/sync_coordinator.dart",
+    "to": "backend/lib/core/sync/sync_coordinator.dart",
+    "sha256": "7c6930c8af2a995d4c91a4bd19a663ad7dcc6cc4433e0f60e9d49eb99b5791ef"
+  },
+  {
+    "from": "lib/core/sync/sync_gateway.dart",
+    "to": "backend/lib/core/sync/sync_gateway.dart",
+    "sha256": "ff03bfcc032ae5c611183011937f9fa25e4647b3253bbf3b9ba55b06249b04c9"
+  },
+  {
+    "from": "lib/core/sync/sync_request_hash.dart",
+    "to": "backend/lib/core/sync/sync_request_hash.dart",
+    "sha256": "eadd2943f43c03c6ca67bd98925afdc3cce6575d5323553dd03e7e9e6792411c"
+  },
+  {
+    "from": "lib/core/sync/sync_retry_policy.dart",
+    "to": "backend/lib/core/sync/sync_retry_policy.dart",
+    "sha256": "3c1db82cf600457b8f747e2a2731941be331968e32cf04435108f90b6981a2a5"
+  },
+  {
+    "from": "lib/core/sync/sync_scheduler.dart",
+    "to": "backend/lib/core/sync/sync_scheduler.dart",
+    "sha256": "15e9d5cb35132846c63d9574e3676019886376217e30846f8e736c2f5e669f0d"
+  },
+  {
+    "from": "lib/core/sync/sync_state.dart",
+    "to": "backend/lib/core/sync/sync_state.dart",
+    "sha256": "ae305f126c3fa4221e86bf394c3f2d2a4d2d94c1165d2d7fa65ad930c30a9489"
+  },
+  {
+    "from": "lib/core/sync/sync_trigger_coordinator.dart",
+    "to": "backend/lib/core/sync/sync_trigger_coordinator.dart",
+    "sha256": "ccfe6f698d2da2d72bb3d30a244b6a49441ad40db46caceb28fea7420c162170"
+  },
+  {
+    "from": "lib/features/agro_ai/data/agro_ai_gateway.dart",
+    "to": "backend/lib/features/agro_ai/repositories/agro_ai_gateway.dart",
+    "sha256": "c36d88ef376bbd2327d76073a29faf3448c8ce0ee5b49468e45ce23344508a8e"
+  },
+  {
+    "from": "lib/features/agro_ai/data/agro_ai_repository.dart",
+    "to": "backend/lib/features/agro_ai/repositories/agro_ai_repository.dart",
+    "sha256": "e48e0f69d1ae981ee44fc91c53be95cf63e9f61a305bfb262039548672a358f7"
+  },
+  {
+    "from": "lib/features/agro_ai/domain/agro_ai_message.dart",
+    "to": "backend/lib/features/agro_ai/domain/agro_ai_message.dart",
+    "sha256": "46a8d111e66d4a34de8f184e137634999507189df196b3afef9b6b1997d08d42"
+  },
+  {
+    "from": "lib/features/agro_ai/presentation/agro_ai_page.dart",
+    "to": "frontend/lib/features/agro_ai/presentation/agro_ai_page.dart",
+    "sha256": "b10ac46a72181512508a0234f4fb49b17a87add4c5723d0735d53b134233506f"
+  },
+  {
+    "from": "lib/features/apiary/data/apiary_repository.dart",
+    "to": "backend/lib/features/apiary/repositories/apiary_repository.dart",
+    "sha256": "ec9f349aae302ee8f113ac8b16e93c8d018d527366c073125a7903bc765d6652"
+  },
+  {
+    "from": "lib/features/apiary/domain/apiary_inspection_input.dart",
+    "to": "backend/lib/features/apiary/domain/apiary_inspection_input.dart",
+    "sha256": "f6ed30052d5d36c37ae81565899a455d293e512d8618e535330b25124bfede5d"
+  },
+  {
+    "from": "lib/features/apiary/presentation/apiary_inspection_page.dart",
+    "to": "frontend/lib/features/apiary/presentation/apiary_inspection_page.dart",
+    "sha256": "351033623f1aed879fca9aa3ce51ed54540f781c151583d62a0efd757d4222e7"
+  },
+  {
+    "from": "lib/features/auth/domain/session_state.dart",
+    "to": "backend/lib/features/auth/domain/session_state.dart",
+    "sha256": "e1c9e25068f78bdc29fd3190e027cacfff58d9398e1b7d671f9a1ed2d4681a52"
+  },
+  {
+    "from": "lib/features/auth/presentation/login_page.dart",
+    "to": "frontend/lib/features/auth/presentation/login_page.dart",
+    "sha256": "6883807937e35488c1cfb60743e16f597fd018aebed21875b986bad5b3d2df94"
+  },
+  {
+    "from": "lib/features/auth/presentation/session_controller.dart",
+    "to": "backend/lib/features/auth/controllers/session_controller.dart",
+    "sha256": "5a960488a10639eec2c85ea4ec80df771f79bb6257595932931c16a5d19cedd5"
+  },
+  {
+    "from": "lib/features/context/domain/agricultural_context.dart",
+    "to": "backend/lib/features/context/domain/agricultural_context.dart",
+    "sha256": "381a5531077c6da17961e295eb28e58cb073cc7a06fcbe2a1e5c72936142e63c"
+  },
+  {
+    "from": "lib/features/context/presentation/agricultural_context_controller.dart",
+    "to": "backend/lib/features/context/controllers/agricultural_context_controller.dart",
+    "sha256": "ae4299a1c6a4e34f3ff7a07d980287a8bbe3c48d678990ba857ba9cbb09738cc"
+  },
+  {
+    "from": "lib/features/crops/data/agricultural_season_repository.dart",
+    "to": "backend/lib/features/crops/repositories/agricultural_season_repository.dart",
+    "sha256": "57a31408fa991f59debdf3ca01abb1e5d389691efa772d3a7b690e09742ef54f"
+  },
+  {
+    "from": "lib/features/crops/data/crop_assignment_reconciler.dart",
+    "to": "backend/lib/features/crops/repositories/crop_assignment_reconciler.dart",
+    "sha256": "23b89c78c9c935e31bbdddacc2aa387fa84942ea3bf155e782722faea02128df"
+  },
+  {
+    "from": "lib/features/crops/data/crop_exchange_repository.dart",
+    "to": "backend/lib/features/crops/repositories/crop_exchange_repository.dart",
+    "sha256": "e3f758a94c8b71eb93d46c2fa994dd1eba91d549f25d0ea1611706a707c044fb"
+  },
+  {
+    "from": "lib/features/crops/data/crop_repository.dart",
+    "to": "backend/lib/features/crops/repositories/crop_repository.dart",
+    "sha256": "e43837e9871a5cba8b6b1ab23ff926d4565399762b1143f29f5f34c214dc142c"
+  },
+  {
+    "from": "lib/features/crops/data/crop_seed_loader.dart",
+    "to": "backend/lib/features/crops/repositories/crop_seed_loader.dart",
+    "sha256": "37e12fd5b2062cac016c0a88f71d0925b25aee25c383cfc8b3b16aa8d83fec68"
+  },
+  {
+    "from": "lib/features/crops/data/sector_crop_assignment_repository.dart",
+    "to": "backend/lib/features/crops/repositories/sector_crop_assignment_repository.dart",
+    "sha256": "370d7e80894b15d490acb2f7a733210b9466e14f4a19ddee7e76d1090f37958e"
+  },
+  {
+    "from": "lib/features/crops/domain/agricultural_season.dart",
+    "to": "backend/lib/features/crops/domain/agricultural_season.dart",
+    "sha256": "9aa570932c7e93544fe869c2345e26e0ec9eb2464882703c8488974416adb20c"
+  },
+  {
+    "from": "lib/features/crops/domain/crop_ref.dart",
+    "to": "backend/lib/features/crops/domain/crop_ref.dart",
+    "sha256": "327b4132ed03109be0aae9e9d832c5a004c7637aebb532ebcf29b448ca6e32af"
+  },
+  {
+    "from": "lib/features/crops/domain/crop_rotation.dart",
+    "to": "backend/lib/features/crops/domain/crop_rotation.dart",
+    "sha256": "d8b92308c5cbf5657acfff7c500a1459e4c6603a5adf25972e05528d705f9e42"
+  },
+  {
+    "from": "lib/features/crops/domain/sector_crop_assignment.dart",
+    "to": "backend/lib/features/crops/domain/sector_crop_assignment.dart",
+    "sha256": "090b1cd319540ae47cc14aa09f7496e12ea4188cd86f01d452fefaac8dfd09da"
+  },
+  {
+    "from": "lib/features/crops/presentation/agricultural_seasons_page.dart",
+    "to": "frontend/lib/features/crops/presentation/agricultural_seasons_page.dart",
+    "sha256": "7c2da0b6296bb620eac1127bf84d41d54a1044c29e2e319656fce626e7d6b87c"
+  },
+  {
+    "from": "lib/features/crops/presentation/agricultural_season_form_page.dart",
+    "to": "frontend/lib/features/crops/presentation/agricultural_season_form_page.dart",
+    "sha256": "bbfee23d1a23a947fe2ab41df8aa00e551b35162d2ff809f8b2d4a1bbb3d8a9f"
+  },
+  {
+    "from": "lib/features/crops/presentation/crop_catalog_page.dart",
+    "to": "frontend/lib/features/crops/presentation/crop_catalog_page.dart",
+    "sha256": "77771c3aa5a41d5fb8b5be8683259dda79737c05a6bbb3ded20b7dd0f40c5fea"
+  },
+  {
+    "from": "lib/features/crops/presentation/rotation_page.dart",
+    "to": "frontend/lib/features/crops/presentation/rotation_page.dart",
+    "sha256": "8f23f4b5f94695c0f388917dda269804adf8c8c35f22d00b894f3f77e7a2dd4c"
+  },
+  {
+    "from": "lib/features/export/data/export_repository.dart",
+    "to": "backend/lib/features/export/repositories/export_repository.dart",
+    "sha256": "232a47b2c960d493875022231fa5eea79dd4e042774c824bbd0d1bbdd254f7c6"
+  },
+  {
+    "from": "lib/features/export/presentation/export_page.dart",
+    "to": "frontend/lib/features/export/presentation/export_page.dart",
+    "sha256": "fa72b49efb8bb1a907fd71dbeca2ad2ed07f38cf7fab53a5f9a278a8d751ba1e"
+  },
+  {
+    "from": "lib/features/history/data/history_repository.dart",
+    "to": "backend/lib/features/history/repositories/history_repository.dart",
+    "sha256": "f06b48934e5f9033bae951aeb5273550fade12b6ddbc27223cfe5e8f4fcd9c23"
+  },
+  {
+    "from": "lib/features/history/data/sector_history_dao.dart",
+    "to": "backend/lib/features/history/repositories/sector_history_dao.dart",
+    "sha256": "9ebae29a7ef88ceeb372edabc6d062b4cdba1b637439dd158fb5a554660f76a8"
+  },
+  {
+    "from": "lib/features/history/domain/history_event.dart",
+    "to": "backend/lib/features/history/domain/history_event.dart",
+    "sha256": "f0840611e7f24953fc14448388136276b2cfc0a1333f00d65752c98e3dfc5139"
+  },
+  {
+    "from": "lib/features/history/presentation/history_page.dart",
+    "to": "frontend/lib/features/history/presentation/history_page.dart",
+    "sha256": "50ac55cbdacd9b114c3db72c31308b8c27741f2c17c38306a82aab43720ea295"
+  },
+  {
+    "from": "lib/features/home/presentation/home_page.dart",
+    "to": "frontend/lib/features/home/presentation/home_page.dart",
+    "sha256": "88a0dba49ab8a1f93b93c73fae921bfdd659a9c0846645e515ca3b058a95328b"
+  },
+  {
+    "from": "lib/features/irrigation/data/irrigation_estimate_repository.dart",
+    "to": "backend/lib/features/irrigation/repositories/irrigation_estimate_repository.dart",
+    "sha256": "ada1a660420d1d9087984e40256f865d4a427629cdf5ed6e91907eb83693d201"
+  },
+  {
+    "from": "lib/features/irrigation/data/irrigation_repository.dart",
+    "to": "backend/lib/features/irrigation/repositories/irrigation_repository.dart",
+    "sha256": "b4fb773fefc6cedceae53758ae0cf904f9f796cfaa9982b4d971927a83da121c"
+  },
+  {
+    "from": "lib/features/irrigation/data/sector_irrigation_config_repository.dart",
+    "to": "backend/lib/features/irrigation/repositories/sector_irrigation_config_repository.dart",
+    "sha256": "d95561bca5240861e0c4a380b702ffda0b4bbb72b02603fc45b5c62f75532ed6"
+  },
+  {
+    "from": "lib/features/irrigation/domain/irrigation_calculator.dart",
+    "to": "backend/lib/features/irrigation/domain/irrigation_calculator.dart",
+    "sha256": "49c79b1864c97eb069cf08e9acb861b057972da66478009d68ccee135837793e"
+  },
+  {
+    "from": "lib/features/irrigation/domain/irrigation_explanation.dart",
+    "to": "backend/lib/features/irrigation/domain/irrigation_explanation.dart",
+    "sha256": "c7dd7c4874827d570eb7e732c34e9825e1fa10887495cd595db39ff73332f8d1"
+  },
+  {
+    "from": "lib/features/irrigation/domain/irrigation_record.dart",
+    "to": "backend/lib/features/irrigation/domain/irrigation_record.dart",
+    "sha256": "ee54acb626b69a12e23d77aeb9cf6da0e76074f28fb210833f31af196cd8d42a"
+  },
+  {
+    "from": "lib/features/irrigation/domain/irrigation_rule_set.dart",
+    "to": "backend/lib/features/irrigation/domain/irrigation_rule_set.dart",
+    "sha256": "0dc2b5aff5b8e5bd4e40f3f34486cb8dd1f15d88b629861ddbb06bc63b64933b"
+  },
+  {
+    "from": "lib/features/irrigation/domain/sector_irrigation_config.dart",
+    "to": "backend/lib/features/irrigation/domain/sector_irrigation_config.dart",
+    "sha256": "2bfe39f904aafc4c8ea84e26fff95f1e90bded5a4dc8cc67e2abc548dfddbf4c"
+  },
+  {
+    "from": "lib/features/irrigation/presentation/drip_configuration_page.dart",
+    "to": "frontend/lib/features/irrigation/presentation/drip_configuration_page.dart",
+    "sha256": "f25d919f9af2816163822e0e28af0fecf4e2ef5d107763c7d6d0d130199fa8a3"
+  },
+  {
+    "from": "lib/features/irrigation/presentation/irrigation_record_page.dart",
+    "to": "frontend/lib/features/irrigation/presentation/irrigation_record_page.dart",
+    "sha256": "44f026e2d966b455dcd0d1e86a3f9c16de5af7d295c246030986742cee86fffd"
+  },
+  {
+    "from": "lib/features/labors/data/labor_repository.dart",
+    "to": "backend/lib/features/labors/repositories/labor_repository.dart",
+    "sha256": "2257b77f1c5557ce5a4b169c9c4b24b16fa5034732c84128423d24040fe30bb8"
+  },
+  {
+    "from": "lib/features/labors/domain/fertilization_details.dart",
+    "to": "backend/lib/features/labors/domain/fertilization_details.dart",
+    "sha256": "c7b24fc0e413cec3d7d80823d247ed0105afc8757b82009d2e79a179159eb5b1"
+  },
+  {
+    "from": "lib/features/labors/domain/harvest_details.dart",
+    "to": "backend/lib/features/labors/domain/harvest_details.dart",
+    "sha256": "9841023612e3b253d1b1c8697478356f65201ad9aa5568fc90c667374da0131c"
+  },
+  {
+    "from": "lib/features/labors/domain/irrigation_labor_details.dart",
+    "to": "backend/lib/features/labors/domain/irrigation_labor_details.dart",
+    "sha256": "c75fae3963ac80010e3a26fbdc6b888078660cb2dc536296fb437f7ac1426b7a"
+  },
+  {
+    "from": "lib/features/labors/domain/labor_details.dart",
+    "to": "backend/lib/features/labors/domain/labor_details.dart",
+    "sha256": "27d2d02ce3fc81a0fc3f811b877b5df8418be8d8d786fff97d43d9d64e63a576"
+  },
+  {
+    "from": "lib/features/labors/domain/labor_type.dart",
+    "to": "backend/lib/features/labors/domain/labor_type.dart",
+    "sha256": "7c02219f38a5940feded5a9c0f89426176b3a2673d0c0c1fe32b8023ced0b160"
+  },
+  {
+    "from": "lib/features/labors/domain/other_labor_details.dart",
+    "to": "backend/lib/features/labors/domain/other_labor_details.dart",
+    "sha256": "e003c360ff1ef64500ccc1b470d86849e3cbd8a33954aa33ce39988d38cd6cc0"
+  },
+  {
+    "from": "lib/features/labors/domain/phytosanitary_details.dart",
+    "to": "backend/lib/features/labors/domain/phytosanitary_details.dart",
+    "sha256": "bcb596d698f533e65a137428eb0dbb15f817a737f87ee240285e670a09ec1481"
+  },
+  {
+    "from": "lib/features/labors/domain/pruning_details.dart",
+    "to": "backend/lib/features/labors/domain/pruning_details.dart",
+    "sha256": "2d82a921a24d75329c153eb026a1b09f01f2dcdc28ea427762d5009988a3f7f3"
+  },
+  {
+    "from": "lib/features/labors/domain/sowing_details.dart",
+    "to": "backend/lib/features/labors/domain/sowing_details.dart",
+    "sha256": "d38e915853db7b6be601ba888276bfe247277a7b032b8f9add9e8fb985b6cf05"
+  },
+  {
+    "from": "lib/features/labors/presentation/labor_form_page.dart",
+    "to": "frontend/lib/features/labors/presentation/labor_form_page.dart",
+    "sha256": "99e1029883209ec5bdff80d83f70eed32c700743c0a3d86bbbed2211718fc575"
+  },
+  {
+    "from": "lib/features/map/data/location_gateway.dart",
+    "to": "backend/lib/features/map/repositories/location_gateway.dart",
+    "sha256": "8e606cd6008fb3508e8e15c807b84a9f41acd79d11aad068e6bf68d51be892a5"
+  },
+  {
+    "from": "lib/features/map/data/places_gateway.dart",
+    "to": "backend/lib/features/map/repositories/places_gateway.dart",
+    "sha256": "1894bb0779549667ccca5c22d847c8515e79908961911f02be40b5399859ff1e"
+  },
+  {
+    "from": "lib/features/map/domain/sector_geometry_draft.dart",
+    "to": "backend/lib/features/map/domain/sector_geometry_draft.dart",
+    "sha256": "234a77895e9014bca903c4b74d1bc4e7c1e6fa30880bab92b6661c058dfa4a7f"
+  },
+  {
+    "from": "lib/features/map/presentation/territory_map_page.dart",
+    "to": "frontend/lib/features/map/presentation/territory_map_page.dart",
+    "sha256": "674a65efa391fede3ae24d47041e1f46ae0c69009d1c8e246b7d541a80b14ca2"
+  },
+  {
+    "from": "lib/features/more/presentation/more_page.dart",
+    "to": "frontend/lib/features/more/presentation/more_page.dart",
+    "sha256": "bf04c3ffdb37b30c53ad69fafd6b3b4dee28b3d7889cb5716d6c3c01537290cb"
+  },
+  {
+    "from": "lib/features/parcels/data/parcel_repository.dart",
+    "to": "backend/lib/features/parcels/repositories/parcel_repository.dart",
+    "sha256": "c0dd812b46a1ff2a0b03a5db87bccbb306dcf3baeb292a6d29da27dd2c42523a"
+  },
+  {
+    "from": "lib/features/parcels/domain/parcel.dart",
+    "to": "backend/lib/features/parcels/domain/parcel.dart",
+    "sha256": "9c9fae4a5609d9ec4ce4746335be111c194052dadef4098b44cf72d70b8d03d8"
+  },
+  {
+    "from": "lib/features/parcels/presentation/parcel_form_page.dart",
+    "to": "frontend/lib/features/parcels/presentation/parcel_form_page.dart",
+    "sha256": "41735d84d35fd039f0b31473707fcb9d9bb0ccbac8b00c02819af39326cd8d71"
+  },
+  {
+    "from": "lib/features/parcels/presentation/parcel_list_page.dart",
+    "to": "frontend/lib/features/parcels/presentation/parcel_list_page.dart",
+    "sha256": "4823838d4a889c2cb80ea2d45b34b82ca4e33dd02e7b9af253b0568de46d0763"
+  },
+  {
+    "from": "lib/features/photos/data/photo_repository.dart",
+    "to": "backend/lib/features/photos/repositories/photo_repository.dart",
+    "sha256": "5c699e09e8d5595ff925b7363efde25bc82382db97f8d39a6511b460d3a8801d"
+  },
+  {
+    "from": "lib/features/photos/data/supabase_photo_gateway.dart",
+    "to": "backend/lib/features/photos/repositories/supabase_photo_gateway.dart",
+    "sha256": "ac5748fa52ceffb65dfc242afd819295f1caa752c3d5abd9e4529f60ef237d51"
+  },
+  {
+    "from": "lib/features/photos/domain/photo_attachment.dart",
+    "to": "backend/lib/features/photos/domain/photo_attachment.dart",
+    "sha256": "27a8d9d63a3f9608d8ab2fbf950c3fc34c7952a820277567e1dc95f84a7b866c"
+  },
+  {
+    "from": "lib/features/photos/presentation/photo_attachment_page.dart",
+    "to": "frontend/lib/features/photos/presentation/photo_attachment_page.dart",
+    "sha256": "9dadc65958f5b6227b2e97ca51281351c6e8f43bc50111704948e9dc8b7cbbe9"
+  },
+  {
+    "from": "lib/features/production/data/production_repository.dart",
+    "to": "backend/lib/features/production/repositories/production_repository.dart",
+    "sha256": "c6b925e53a48d9a0dba31c709673d51586230aacdecb474f79af9083ce05ca94"
+  },
+  {
+    "from": "lib/features/production/domain/harvest_input.dart",
+    "to": "backend/lib/features/production/domain/harvest_input.dart",
+    "sha256": "a6d2ad78784a293f0cda93d6cb180cf55d6f9e9704fc93d86ec9c8050fd232bd"
+  },
+  {
+    "from": "lib/features/production/presentation/production_page.dart",
+    "to": "frontend/lib/features/production/presentation/production_page.dart",
+    "sha256": "4bcea1ee9c7b69eaced811e746215b70af3fef84dff97f8705d020be9b15dc2b"
+  },
+  {
+    "from": "lib/features/profile/presentation/profile_page.dart",
+    "to": "frontend/lib/features/profile/presentation/profile_page.dart",
+    "sha256": "c043d2c4534e7fc49dc7ebe14ea7f5422729217d2ccb7932e4197be22dd27af2"
+  },
+  {
+    "from": "lib/features/profile/presentation/profile_settings_pages.dart",
+    "to": "frontend/lib/features/profile/presentation/profile_settings_pages.dart",
+    "sha256": "fd17faaa30de295d97171c1fa99db69631f594af8b1b2ca86f9865265a848f07"
+  },
+  {
+    "from": "lib/features/reminders/data/reminder_repository.dart",
+    "to": "backend/lib/features/reminders/repositories/reminder_repository.dart",
+    "sha256": "348f2cc4fa16cfdf0bc9e8a65b5051523b292766edce025b848a905260e132b7"
+  },
+  {
+    "from": "lib/features/reminders/domain/reminder.dart",
+    "to": "backend/lib/features/reminders/domain/reminder.dart",
+    "sha256": "69969b1a3b8ec17ff1a4c2c67ca570b36b697f91f8768025dafaa1dd39cb7e00"
+  },
+  {
+    "from": "lib/features/reminders/presentation/reminders_page.dart",
+    "to": "frontend/lib/features/reminders/presentation/reminders_page.dart",
+    "sha256": "8a9e324949d0d4a824fa850db6a66db9790b3011de0ee387f80c382343f2a515"
+  },
+  {
+    "from": "lib/features/sectors/data/sector_repository.dart",
+    "to": "backend/lib/features/sectors/repositories/sector_repository.dart",
+    "sha256": "ae94e0f0d86cd6543b2c42c46ca5fd5aeba77fe2f604a59067e97024ab535d0c"
+  },
+  {
+    "from": "lib/features/sectors/data/sector_summary_repository.dart",
+    "to": "backend/lib/features/sectors/repositories/sector_summary_repository.dart",
+    "sha256": "7fccc8c62c1b66c8c8cadeae8b60fd3a7e104d84dd58513d597c116e29196784"
+  },
+  {
+    "from": "lib/features/sectors/domain/sector.dart",
+    "to": "backend/lib/features/sectors/domain/sector.dart",
+    "sha256": "053dc265a5b76337ca64751eac35671fef00ca056715c49429a1a5290e16ab90"
+  },
+  {
+    "from": "lib/features/sectors/presentation/quadrant_map_preview.dart",
+    "to": "frontend/lib/features/sectors/widgets/quadrant_map_preview.dart",
+    "sha256": "450f428f672f62c9dec624a4ffea48594604e89b7f17edc4d64e84a00f380614"
+  },
+  {
+    "from": "lib/features/sectors/presentation/sector_detail_page.dart",
+    "to": "frontend/lib/features/sectors/pages/sector_detail_page.dart",
+    "sha256": "6a188a70775d2bd05336cdab4616de16617257f298e00c7d65a3cb8421ad9dc7"
+  },
+  {
+    "from": "lib/features/sectors/presentation/sector_list_page.dart",
+    "to": "frontend/lib/features/sectors/pages/sector_list_page.dart",
+    "sha256": "e28dcb72789fa541c983000ba80fcf634dd7d45087deae0d310fb10604abb65e"
+  },
+  {
+    "from": "lib/features/sectors/presentation/sector_summary_card.dart",
+    "to": "frontend/lib/features/sectors/widgets/sector_summary_card.dart",
+    "sha256": "06dc0114025e0f448f3bc260f6ce22e38cb6a467f6e05af544ca3c0802baad58"
+  },
+  {
+    "from": "lib/features/soil/data/soil_repository.dart",
+    "to": "backend/lib/features/soil/repositories/soil_repository.dart",
+    "sha256": "4773ae81c967d9b75e1a243d54cf2a508187049f0a5dc4ab03d37a028685e3b2"
+  },
+  {
+    "from": "lib/features/soil/domain/soil_measurement.dart",
+    "to": "backend/lib/features/soil/domain/soil_measurement.dart",
+    "sha256": "1776293443e2a7669feb6a5b16896305bb1e2ba1e6f2bf76ab2c0f4b288ea7ff"
+  },
+  {
+    "from": "lib/features/soil/presentation/soil_measurement_page.dart",
+    "to": "frontend/lib/features/soil/presentation/soil_measurement_page.dart",
+    "sha256": "6004367184ecb458ad08c7d9c0d85abae9186e61afd029ae0ea3bd7de70e5a87"
+  },
+  {
+    "from": "lib/features/sync_status/presentation/conflict_resolution_page.dart",
+    "to": "frontend/lib/features/sync_status/presentation/conflict_resolution_page.dart",
+    "sha256": "1594837121917606e993d8b0caac63122328c38874ed746ff01676ed52b82d55"
+  },
+  {
+    "from": "lib/features/sync_status/presentation/sync_status_page.dart",
+    "to": "frontend/lib/features/sync_status/presentation/sync_status_page.dart",
+    "sha256": "dace4f232486facc1f17bb19b131a00312399ea45cde60acfea582a1748d29e6"
+  },
+  {
+    "from": "lib/features/weather/data/weather_alert_service.dart",
+    "to": "backend/lib/features/weather/repositories/weather_alert_service.dart",
+    "sha256": "337acc16dbdfeddfe5d6bd0c28da4226da58ff5d6e229746b1ab88a51f925c82"
+  },
+  {
+    "from": "lib/features/weather/data/weather_gateway.dart",
+    "to": "backend/lib/features/weather/repositories/weather_gateway.dart",
+    "sha256": "4adfb578e74e75c573e8ce6c66afbddf330e8c3c50a983f7152843ea683c5e19"
+  },
+  {
+    "from": "lib/features/weather/data/weather_repository.dart",
+    "to": "backend/lib/features/weather/repositories/weather_repository.dart",
+    "sha256": "c53b585a4ffaa4de8bcb2a1f139b13e076ec0e5abc5564f20a1415c495dd6141"
+  },
+  {
+    "from": "lib/features/weather/domain/weather_snapshot.dart",
+    "to": "backend/lib/features/weather/domain/weather_snapshot.dart",
+    "sha256": "728320d55a9bfdae8d882a5d7816dec994deca4ef6ccfa32de8929592151e05c"
+  },
+  {
+    "from": "lib/features/weather/presentation/weather_summary_card.dart",
+    "to": "frontend/lib/features/weather/presentation/weather_summary_card.dart",
+    "sha256": "b5e4b01c03b289df1f1565191f67a2b7838a7247c53228e54af2b39534ae43c4"
+  },
+  {
+    "from": "lib/main.dart",
+    "to": "frontend/lib/main.dart",
+    "sha256": "546ed6adc1b9c58b0c3770af995b691809136a70eba17d3dd6514b7dcb960548"
+  },
+  {
+    "from": "lib/shared/domain/clock.dart",
+    "to": "backend/lib/shared/domain/clock.dart",
+    "sha256": "c5c1f1ef4d42fee6ec0449527f4fa82cf3091cf169c69123d094479b24d0fce9"
+  },
+  {
+    "from": "lib/shared/domain/entity_id.dart",
+    "to": "backend/lib/shared/domain/entity_id.dart",
+    "sha256": "2f4c016a45fe6b3493882840f58474ec1b2a8b62fb6ce60a2f5c85e60d22ea2a"
+  },
+  {
+    "from": "lib/shared/presentation/components/agricultural_context_selector.dart",
+    "to": "frontend/lib/shared/presentation/components/agricultural_context_selector.dart",
+    "sha256": "96c99267cf92e86ce84f9d7ae6b2e1c04f4fba330ec1dc7cb05c7a96d6021cc4"
+  },
+  {
+    "from": "lib/shared/presentation/components/agro_action_tile.dart",
+    "to": "frontend/lib/shared/presentation/components/agro_action_tile.dart",
+    "sha256": "da9829f222cc99cc7eae483207bd02ac3d33f7c97b7407cf345958bd8346beb2"
+  },
+  {
+    "from": "lib/shared/presentation/components/agro_empty_state.dart",
+    "to": "frontend/lib/shared/presentation/components/agro_empty_state.dart",
+    "sha256": "fc0aaf25d8ebdacdbe1baf7d4d1f61939978bdb804f50cd68fc8389ca760eb06"
+  },
+  {
+    "from": "lib/shared/presentation/components/agro_metric_card.dart",
+    "to": "frontend/lib/shared/presentation/components/agro_metric_card.dart",
+    "sha256": "ae58416d33a6be9a097e5aa4d62ef7442f08d68f69d72f21cc4a77285cc91181"
+  },
+  {
+    "from": "lib/shared/presentation/components/agro_navigation_card.dart",
+    "to": "frontend/lib/shared/presentation/components/agro_navigation_card.dart",
+    "sha256": "5afc440654970d123eae173e68ffa347541c943cb44503c011aab69456ab2497"
+  },
+  {
+    "from": "lib/shared/presentation/components/agro_page.dart",
+    "to": "frontend/lib/shared/presentation/components/agro_page.dart",
+    "sha256": "fa09423a04f0b2006350b48f7f15720fde9750432b4b30a891c7edbf16dcca2b"
+  },
+  {
+    "from": "lib/shared/presentation/components/agro_section_header.dart",
+    "to": "frontend/lib/shared/presentation/components/agro_section_header.dart",
+    "sha256": "9cebe141588670a106764e4ad8c05d5e5d8e3aaa92ebe9d7de85555643da19d8"
+  },
+  {
+    "from": "lib/shared/presentation/components/agro_settings_group.dart",
+    "to": "frontend/lib/shared/presentation/components/agro_settings_group.dart",
+    "sha256": "f37895d5d9e47f14de8849a749306760f5b27caee0e94f6104062f6602b7b217"
+  },
+  {
+    "from": "lib/shared/presentation/components/agro_status_banner.dart",
+    "to": "frontend/lib/shared/presentation/components/agro_status_banner.dart",
+    "sha256": "5d6e69182c602ba8b7fb408e89c6beeda003c100a8326e6416aa0c9e2163de6f"
+  },
+  {
+    "from": "lib/shared/presentation/components/bound_agricultural_context_card.dart",
+    "to": "frontend/lib/shared/presentation/components/bound_agricultural_context_card.dart",
+    "sha256": "b1e02a2aa5048eb44a4ca17f4a3c721d32ae06244d954e6590d5be13b3f6e054"
+  },
+  {
+    "from": "lib/shared/presentation/components/crop_pictogram.dart",
+    "to": "frontend/lib/shared/presentation/components/crop_pictogram.dart",
+    "sha256": "3b5f2eae69f96acc99c0e72762fe23f38237b4c4a1433fcdddcae1f52493b0fb"
+  },
+  {
+    "from": "lib/shared/presentation/components/foundation_placeholder_page.dart",
+    "to": "frontend/lib/shared/presentation/components/foundation_placeholder_page.dart",
+    "sha256": "df754bc9ab98949899bf5f98854ebaff5d946cd058b9079ea5f3b70dd5eed4ff"
+  },
+  {
+    "from": "lib/shared/presentation/semantics/agro_semantics.dart",
+    "to": "frontend/lib/shared/presentation/semantics/agro_semantics.dart",
+    "sha256": "b2a77c40c38288e34aa3926eaf6b0ff7ccf8b45aa76dc05ca2d9d370da4f8369"
+  },
+  {
+    "from": "backend/lib/features/sectors/controllers/controllers/sector_detail_controller.dart",
+    "to": "backend/lib/features/sectors/controllers/sector_detail_controller.dart",
+    "sha256": "1c134ef41c64d0e402cbe47a106aa4dbfe709e72890f0b06e3e876ecdf7c46ae"
+  },
+  {
+    "from": "backend/lib/features/sectors/controllers/controllers/sector_list_controller.dart",
+    "to": "backend/lib/features/sectors/controllers/sector_list_controller.dart",
+    "sha256": "b450c3bfdc4165ff3f1d2c82df6a5ecb2a42cce569aeae2e82f528660fb6a893"
+  },
+  {
+    "from": "backend/lib/features/sectors/controllers/controllers/sector_ui_mapper.dart",
+    "to": "backend/lib/features/sectors/services/sector_ui_mapper.dart",
+    "sha256": "d6054a0e4720f1c224dc193709e0039c27cf903fd25210ecaedc1ba30c2fe846"
+  },
+  {
+    "from": "backend/lib/features/sectors/controllers/controllers/sector_ui_state.dart",
+    "to": "backend/lib/features/sectors/dto/sector_ui_state.dart",
+    "sha256": "9d7f31e4f8563cfa96aae00e2db5aa09b8df2087dbde35d2421eef82243c9075"
+  },
+  {
+    "from": "test/app/agro_global_sync_status_test.dart",
+    "to": "frontend/test/app/agro_global_sync_status_test.dart",
+    "sha256": "e4157290407a516f250ff4a429dfc2b4c81f9a92a9d8276a3116842c5aa2134f"
+  },
+  {
+    "from": "test/app/app_routes_test.dart",
+    "to": "frontend/test/app/app_routes_test.dart",
+    "sha256": "ac2ffe3a17fdf1924b11a39c99e8319080a59aacbb7aaeb6fe8c71077bf5e2c9"
+  },
+  {
+    "from": "test/app/router_test.dart",
+    "to": "frontend/test/app/router_test.dart",
+    "sha256": "25715c160f398b64f8554477254d9282aa1dd413b9b34975184a5c185d94fee7"
+  },
+  {
+    "from": "test/app/theme_test.dart",
+    "to": "frontend/test/app/theme_test.dart",
+    "sha256": "f4ff8eb199514704cd0e809ea8930b682cfeb5c7861789f225e313509a483505"
+  },
+  {
+    "from": "test/core/auth/biometric_unlock_gateway_test.dart",
+    "to": "backend/test/core/auth/biometric_unlock_gateway_test.dart",
+    "sha256": "8364ec06f4a6f843f2da9dbd7deb4e2dad64ab09bfde61b1d2c8424d7fb36b63"
+  },
+  {
+    "from": "test/core/auth/secure_session_store_test.dart",
+    "to": "backend/test/core/auth/secure_session_store_test.dart",
+    "sha256": "f82b22ec9defe67c9d07cd0709e6e87b66addba837b90fefe2d63d406592e618"
+  },
+  {
+    "from": "test/core/database/app_database_test.dart",
+    "to": "backend/test/core/database/app_database_test.dart",
+    "sha256": "a6aa33ba2b9a88b3c8494b53e4b13fe25eb7c6273f9f15c3818a2e3ebc6546f8"
+  },
+  {
+    "from": "test/core/database/file_backed_database_test.dart",
+    "to": "backend/test/core/database/file_backed_database_test.dart",
+    "sha256": "0e615270905ec5ad47857038dd257d37ac598998aeaa9a095aaf19a3ce72c70d"
+  },
+  {
+    "from": "test/core/database/migrations/functional_core_v10_test.dart",
+    "to": "backend/test/core/database/migrations/functional_core_v10_test.dart",
+    "sha256": "55362cceaac4f5fa63588e3fd5b84b3eba4ddd79018a24be9b1d4fb82279e0a9"
+  },
+  {
+    "from": "test/core/database/owner_isolation_test.dart",
+    "to": "backend/test/core/database/owner_isolation_test.dart",
+    "sha256": "1c77445ccb41dcdadefda35c9313537f0e17b2b3f46f48ee766b651256179100"
+  },
+  {
+    "from": "test/core/database/sync_outbox_dao_test.dart",
+    "to": "backend/test/core/database/sync_outbox_dao_test.dart",
+    "sha256": "ba08c16ef1c079c5eb6a9b81e231fe3d95e7e5a8b72b51451dff3c39dcc0000a"
+  },
+  {
+    "from": "test/core/geometry/polygon_geometry_test.dart",
+    "to": "backend/test/core/geometry/polygon_geometry_test.dart",
+    "sha256": "ea007f8ba1a7f9f819eb5c125ad6effb1d89113e5f86f00a52b8c036756619a6"
+  },
+  {
+    "from": "test/core/network/runtime_config_test.dart",
+    "to": "frontend/test/core/network/runtime_config_test.dart",
+    "sha256": "8027e49085c95583cc1dcaad3976e0a7adc6ef10f8dd8343cd1cbf10a56e4015"
+  },
+  {
+    "from": "test/core/notifications/local_notification_scheduler_test.dart",
+    "to": "backend/test/core/notifications/local_notification_scheduler_test.dart",
+    "sha256": "c4a1fe6bfc02466faab2acc2d1898d0ee59796081b075dc9e25fadb5b95e45c9"
+  },
+  {
+    "from": "test/core/observability/safe_logger_test.dart",
+    "to": "backend/test/core/observability/safe_logger_test.dart",
+    "sha256": "eddbbb4ee0fb088962b36b88edb172b0fefb12aaaf1dd2ff2d9930359464a7a7"
+  },
+  {
+    "from": "test/core/sync/conflict_resolver_test.dart",
+    "to": "backend/test/core/sync/conflict_resolver_test.dart",
+    "sha256": "dd190d6849dc4d4dc574fe665c6feb00273a2640324b3e16e54ae16a83c590b1"
+  },
+  {
+    "from": "test/core/sync/irrigation_sync_codec_test.dart",
+    "to": "backend/test/core/sync/irrigation_sync_codec_test.dart",
+    "sha256": "268d8ebb89ebc45151972a0bdc1bfe50aedb785fb516cb6dff6cc42b9a647bc1"
+  },
+  {
+    "from": "test/core/sync/labors_production_v2_local_e2e_test.dart",
+    "to": "backend/test/core/sync/labors_production_v2_local_e2e_test.dart",
+    "sha256": "d753a36f3888c8950a46ac6bb2c594f0c628ecbb766857ed5d831a1a0e340938"
+  },
+  {
+    "from": "test/core/sync/labor_sync_codec_test.dart",
+    "to": "backend/test/core/sync/labor_sync_codec_test.dart",
+    "sha256": "637b3f4a042426caea2a757ceef434020e5d938fffa600349d3f78037f6597b4"
+  },
+  {
+    "from": "test/core/sync/parcel_sync_v2_local_e2e_test.dart",
+    "to": "backend/test/core/sync/parcel_sync_v2_local_e2e_test.dart",
+    "sha256": "6e0cc646c3b3f9f21600913d9307425304c8fda165b3411b66a1bea886b30598"
+  },
+  {
+    "from": "test/core/sync/seasons_crops_sync_codec_test.dart",
+    "to": "backend/test/core/sync/seasons_crops_sync_codec_test.dart",
+    "sha256": "059ae364371f658b1fefed8d3bee94589b2dd7241723ba8ab76192dc9eec777c"
+  },
+  {
+    "from": "test/core/sync/seasons_crops_v2_local_e2e_test.dart",
+    "to": "backend/test/core/sync/seasons_crops_v2_local_e2e_test.dart",
+    "sha256": "05f31b6073af527787a82027d56a31f935630e4bdbc5280a76e17475dc8913ea"
+  },
+  {
+    "from": "test/core/sync/supabase_sync_gateway_test.dart",
+    "to": "backend/test/core/sync/supabase_sync_gateway_test.dart",
+    "sha256": "4beb77b28dd94c20e45472d1e4112af6f99559a25faf290220a33b06bf76b300"
+  },
+  {
+    "from": "test/core/sync/sync_contract_test.dart",
+    "to": "backend/test/core/sync/sync_contract_test.dart",
+    "sha256": "7eb7246269cfecb25aee241566ff85f5d6655c6f976eaa43cf0c4ab7e4b423eb"
+  },
+  {
+    "from": "test/core/sync/sync_retry_policy_test.dart",
+    "to": "backend/test/core/sync/sync_retry_policy_test.dart",
+    "sha256": "48216595ab69c98f71aaeaae8e671d5d0073f32f205469e4817499a9510ca9c7"
+  },
+  {
+    "from": "test/core/sync/sync_trigger_coordinator_test.dart",
+    "to": "backend/test/core/sync/sync_trigger_coordinator_test.dart",
+    "sha256": "caacef64838dcbe7866ac06824c123f1b81ee857f8d0e8221cf3daaaaa0abd1c"
+  },
+  {
+    "from": "test/core/sync/territory_sync_codec_test.dart",
+    "to": "backend/test/core/sync/territory_sync_codec_test.dart",
+    "sha256": "11b774040ba38529ef34fbce1c75c03e05fe9f13ea0707cb01e9b7b5a5902d21"
+  },
+  {
+    "from": "test/core/sync/territory_sync_v2_local_e2e_test.dart",
+    "to": "backend/test/core/sync/territory_sync_v2_local_e2e_test.dart",
+    "sha256": "194d991f9e7085eb76fcf24e53786d36995a8596df2e8306212aa31775eb19cd"
+  },
+  {
+    "from": "test/features/agro_ai/agro_ai_repository_test.dart",
+    "to": "backend/test/features/agro_ai/agro_ai_repository_test.dart",
+    "sha256": "85d20d269193c2853ec5bef83fb4b6234418e448dca96f6a8d1f6560f572bdf7"
+  },
+  {
+    "from": "test/features/apiary/apiary_repository_test.dart",
+    "to": "backend/test/features/apiary/apiary_repository_test.dart",
+    "sha256": "eb501a5b793adf3d9f818c0f8bf815b15a79f656722eab358a03c2df195ac3c7"
+  },
+  {
+    "from": "test/features/auth/session_controller_test.dart",
+    "to": "backend/test/features/auth/session_controller_test.dart",
+    "sha256": "f5cb066dd15d42f063d1ff487ccc4f3d89cd24b0374b287d3686271d90e9a93d"
+  },
+  {
+    "from": "test/features/context/agricultural_context_controller_test.dart",
+    "to": "backend/test/features/context/agricultural_context_controller_test.dart",
+    "sha256": "4b467ccac51ce78ea5441a2bdaeff84410c7fef816df2b6040d9f31461395c75"
+  },
+  {
+    "from": "test/features/context/bound_agricultural_context_test.dart",
+    "to": "backend/test/features/context/bound_agricultural_context_test.dart",
+    "sha256": "44f64bb3cc5182d810d01f6163b23fa3dcb91ef42faff9427783d0982509c787"
+  },
+  {
+    "from": "test/features/crops/agricultural_season_test.dart",
+    "to": "backend/test/features/crops/agricultural_season_test.dart",
+    "sha256": "779e1d41e88014d66d4a363e1ef04867cd3ed2b34004e045c004d9f4dd0bc6b8"
+  },
+  {
+    "from": "test/features/crops/crop_catalog_page_test.dart",
+    "to": "frontend/test/features/crops/crop_catalog_page_test.dart",
+    "sha256": "1377433cd772470e1a0e873d02a7aaa1671e1d5d4b9cbf38a047b51a3d242f84"
+  },
+  {
+    "from": "test/features/crops/crop_repository_test.dart",
+    "to": "backend/test/features/crops/crop_repository_test.dart",
+    "sha256": "66c235e5dce556e0306f467a081bca530edbc3e4d52ea5b5c6d12f3aa5dddc79"
+  },
+  {
+    "from": "test/features/crops/crop_rotation_test.dart",
+    "to": "backend/test/features/crops/crop_rotation_test.dart",
+    "sha256": "1f5ed210c968617b18dc9dc6880531a6485ce35c70cc1de318fccecff91bbcf5"
+  },
+  {
+    "from": "test/features/crops/crop_seed_loader_test.dart",
+    "to": "backend/test/features/crops/crop_seed_loader_test.dart",
+    "sha256": "a7223f6a4aa483c63d118b3ddeb9533644685abac4a18599b8fd7a088c4166a8"
+  },
+  {
+    "from": "test/features/export/xlsx_contract_test.dart",
+    "to": "backend/test/features/export/xlsx_contract_test.dart",
+    "sha256": "8db89d8c34c4b2097f18561805a3bec1bb358ff31c2b3d6ba9ec7ad6e5093c4d"
+  },
+  {
+    "from": "test/features/history/history_event_test.dart",
+    "to": "backend/test/features/history/history_event_test.dart",
+    "sha256": "39d1b081847c84be512c29197b2a69f6bb04d9cf9b9d2ecbf78a265e82c99eee"
+  },
+  {
+    "from": "test/features/history/history_page_test.dart",
+    "to": "frontend/test/features/history/history_page_test.dart",
+    "sha256": "ddc275be6d3457e5388375198fb726e003d5a015e4f83727215b134061f0abb9"
+  },
+  {
+    "from": "test/features/history/history_repository_test.dart",
+    "to": "backend/test/features/history/history_repository_test.dart",
+    "sha256": "aa5787d930036b38227e244d2a220a8324999ccd5be1acf026e497fdea86e73f"
+  },
+  {
+    "from": "test/features/home/home_page_test.dart",
+    "to": "frontend/test/features/home/home_page_test.dart",
+    "sha256": "d62e7e93d39aa1615464a0f7172294b7b7366fb5489207f1c8e4f3f960495daf"
+  },
+  {
+    "from": "test/features/irrigation/basic_record_test.dart",
+    "to": "backend/test/features/irrigation/basic_record_test.dart",
+    "sha256": "c6194330a5724d7628837f4736678e0c4f66dddd2f222056e3359946084f5497"
+  },
+  {
+    "from": "test/features/irrigation/irrigation_calculator_test.dart",
+    "to": "backend/test/features/irrigation/irrigation_calculator_test.dart",
+    "sha256": "22c205fbed48cbb7d961b65ff30c9642f69cc4f2fcb0c9ebe28084dbc9c773de"
+  },
+  {
+    "from": "test/features/irrigation/irrigation_estimate_repository_test.dart",
+    "to": "backend/test/features/irrigation/irrigation_estimate_repository_test.dart",
+    "sha256": "0d686e44a7f328c66c44ec75ba91d3cc99f3dce3dc849d5ab076e3f505f6816e"
+  },
+  {
+    "from": "test/features/irrigation/irrigation_explanation_test.dart",
+    "to": "backend/test/features/irrigation/irrigation_explanation_test.dart",
+    "sha256": "723eeb4392d22947340c156f2bc70509f7564f435de9846083806c7ee51acf7f"
+  },
+  {
+    "from": "test/features/irrigation/irrigation_record_page_test.dart",
+    "to": "frontend/test/features/irrigation/irrigation_record_page_test.dart",
+    "sha256": "e38d9c9da2d60d3d586ae3549de3b0af3389af6c9e9762252be1699e993c5dc8"
+  },
+  {
+    "from": "test/features/irrigation/irrigation_rule_approval_test.dart",
+    "to": "backend/test/features/irrigation/irrigation_rule_approval_test.dart",
+    "sha256": "ecfa472ae65b310b01ec8896e2b85dd588a331dcbec2298c66fee4a9391671f0"
+  },
+  {
+    "from": "test/features/irrigation/irrigation_snapshot_persistence_test.dart",
+    "to": "backend/test/features/irrigation/irrigation_snapshot_persistence_test.dart",
+    "sha256": "ee6f26747260eafffe757d7a344957a9b34581b575ffc60ded453cd28721c184"
+  },
+  {
+    "from": "test/features/irrigation/sector_irrigation_config_test.dart",
+    "to": "backend/test/features/irrigation/sector_irrigation_config_test.dart",
+    "sha256": "7684590706f791dcd5d308914dffb96c24b2c488449186b500751ec0232787bd"
+  },
+  {
+    "from": "test/features/labors/agrochemical_details_test.dart",
+    "to": "backend/test/features/labors/agrochemical_details_test.dart",
+    "sha256": "1668cee680f98d4104238d60644e45326b649293e56bf01a25a409704dfe6c0b"
+  },
+  {
+    "from": "test/features/labors/cultural_labor_details_test.dart",
+    "to": "backend/test/features/labors/cultural_labor_details_test.dart",
+    "sha256": "94a93cf88545af5a3c9b59497f4b4d02b0daeb2602c54809194810b7c2880f78"
+  },
+  {
+    "from": "test/features/labors/labor_details_test.dart",
+    "to": "backend/test/features/labors/labor_details_test.dart",
+    "sha256": "b8c03df504d3ce7cd50080e88b3f12d17e488bd1870d90174183c20d64ee4ade"
+  },
+  {
+    "from": "test/features/labors/labor_form_page_test.dart",
+    "to": "frontend/test/features/labors/labor_form_page_test.dart",
+    "sha256": "51cdd66c615345f3675ccccb965295f7cdb6c4784c810020d71b4098bc6430d8"
+  },
+  {
+    "from": "test/features/labors/labor_repository_test.dart",
+    "to": "backend/test/features/labors/labor_repository_test.dart",
+    "sha256": "5f4925f18634c329fbab4e531b91aa05e9c8ee652fe9ae01856695469a24c8e8"
+  },
+  {
+    "from": "test/features/map/location_gateway_test.dart",
+    "to": "backend/test/features/map/location_gateway_test.dart",
+    "sha256": "ef87409173d5e7694526e883799c5bd6ce497189bfe728a95dcaee0929d2c651"
+  },
+  {
+    "from": "test/features/map/territory_map_page_test.dart",
+    "to": "frontend/test/features/map/territory_map_page_test.dart",
+    "sha256": "fe8747e64a04cc0b0d1a0d79fea561b3d8c27bd19914bc8ccfddce9f70fde5ca"
+  },
+  {
+    "from": "test/features/map/territory_persistence_flow_test.dart",
+    "to": "backend/test/features/map/territory_persistence_flow_test.dart",
+    "sha256": "0e014092cccf9b4f6b569b0998a8d8b7e0549de07194da9b43b48d731de1c90e"
+  },
+  {
+    "from": "test/features/more/more_page_test.dart",
+    "to": "frontend/test/features/more/more_page_test.dart",
+    "sha256": "ed5128c33d06de715da2ab859717f4adcad74ef1b837b1c9471b799b57bbcc46"
+  },
+  {
+    "from": "test/features/parcels/parcel_repository_test.dart",
+    "to": "backend/test/features/parcels/parcel_repository_test.dart",
+    "sha256": "e115be28963e4231bc1bae95774ad723c2b6d4990019c999f02221b1a067b6bd"
+  },
+  {
+    "from": "test/features/photos/photo_repository_test.dart",
+    "to": "backend/test/features/photos/photo_repository_test.dart",
+    "sha256": "a763d6540bad48df44b50c6acd4867677e9340e512a51ce11f46116aee32e24c"
+  },
+  {
+    "from": "test/features/production/production_repository_test.dart",
+    "to": "backend/test/features/production/production_repository_test.dart",
+    "sha256": "e599111e918a95e089ceff70b843e7885b95655c3e4203224f21d1d2e67c4538"
+  },
+  {
+    "from": "test/features/profile/profile_page_test.dart",
+    "to": "frontend/test/features/profile/profile_page_test.dart",
+    "sha256": "a07f704aebabb48f9620cffeeca1883f14bb7a3ecacce0e574402f6d617f30d5"
+  },
+  {
+    "from": "test/features/reminders/reminder_repository_test.dart",
+    "to": "backend/test/features/reminders/reminder_repository_test.dart",
+    "sha256": "9f74266e577c63c69ad7579f5e0fb755f6973e0cea67ed7c803b47e59b438ff3"
+  },
+  {
+    "from": "test/features/sectors/sector_list_page_test.dart",
+    "to": "frontend/test/features/sectors/sector_list_page_test.dart",
+    "sha256": "012e4baa5588f1a2718719ff8d8c5254feece66ae846dde117e8788f69c2fdac"
+  },
+  {
+    "from": "test/features/sectors/sector_repository_test.dart",
+    "to": "backend/test/features/sectors/sector_repository_test.dart",
+    "sha256": "410c5efa27590d113536264fe5e21fdbe04bb1dd6ef5edd26705c92dd3b88545"
+  },
+  {
+    "from": "test/features/sectors/sector_summary_repository_test.dart",
+    "to": "backend/test/features/sectors/sector_summary_repository_test.dart",
+    "sha256": "f06f8b07b1eb44854049fb7a594d82472ff632cd35132ebbb14e4ce0459e4204"
+  },
+  {
+    "from": "test/features/sectors/sector_ui_state_test.dart",
+    "to": "backend/test/features/sectors/sector_ui_state_test.dart",
+    "sha256": "0ecd9bbcca0e1e4c8673d6b8d1b896bc309a77555c29c164bb3954dd9a72aea9"
+  },
+  {
+    "from": "test/features/soil/soil_repository_test.dart",
+    "to": "backend/test/features/soil/soil_repository_test.dart",
+    "sha256": "d29db1027d032ccbf21ac887abf9f572f917b4d6c0a9f39d7291a946ba9e6150"
+  },
+  {
+    "from": "test/features/sync_status/sync_status_page_test.dart",
+    "to": "frontend/test/features/sync_status/sync_status_page_test.dart",
+    "sha256": "90f2cca8e02b1f9a7536cb961161c9735a309aa0c98abb84c7218d6b65b2e5b1"
+  },
+  {
+    "from": "test/features/weather/weather_gateway_contract_test.dart",
+    "to": "backend/test/features/weather/weather_gateway_contract_test.dart",
+    "sha256": "d177d6dddeb1a047f4859e2f50d4b2769db9194f317678b4798a3c3bb8641366"
+  },
+  {
+    "from": "test/features/weather/weather_summary_card_test.dart",
+    "to": "frontend/test/features/weather/weather_summary_card_test.dart",
+    "sha256": "209d9cfe025d5436be6f1b7cc7c56e3326d35ab60131f3efc5529fec0f41ac98"
+  },
+  {
+    "from": "test/fixtures/database/functional_core_v9.dart",
+    "to": "backend/test/fixtures/database/functional_core_v9.dart",
+    "sha256": "ab3410b6eec17c5f2d32fd50ea39a2b54c59b2a38887c149e7991f3a1eaae465"
+  },
+  {
+    "from": "test/fixtures/export/README.md",
+    "to": "backend/test/fixtures/export/README.md",
+    "sha256": "405ace659b425c7c635f3900931299c5493b569ee8f424720ddd0ba900ba391b"
+  },
+  {
+    "from": "test/fixtures/irrigation/README.md",
+    "to": "backend/test/fixtures/irrigation/README.md",
+    "sha256": "af1d8054a4174e8fbd92eec16e218fdf86bed50cd5a50913c66acf9eed51cdcc"
+  },
+  {
+    "from": "test/generated/migrations/schema.dart",
+    "to": "backend/test/generated/migrations/schema.dart",
+    "sha256": "8f14591a9507ce66c911ca66f6b4120e93c843764adbcb83d2700eaaa9c060a7"
+  },
+  {
+    "from": "test/generated/migrations/schema_v10.dart",
+    "to": "backend/test/generated/migrations/schema_v10.dart",
+    "sha256": "ab56d07599e781668c7541bd7c302a794527eaa8c2d51ee7b3c509c6048f2673"
+  },
+  {
+    "from": "test/generated/migrations/schema_v9.dart",
+    "to": "backend/test/generated/migrations/schema_v9.dart",
+    "sha256": "b88d7e4dea66948cca3cb8c1aa7582e31b170911686b906f6bf7d2cfd7022983"
+  },
+  {
+    "from": "test/golden/us1/crop_catalog.png",
+    "to": "frontend/test/golden/us1/crop_catalog.png",
+    "sha256": "6f63c0b4e9b60ccec894369c39208957fa0ab2f89b2acd936191160655c1daca"
+  },
+  {
+    "from": "test/golden/us1/crop_catalog_golden_test.dart",
+    "to": "frontend/test/golden/us1/crop_catalog_golden_test.dart",
+    "sha256": "5ce1b87818d8fcb98102b7c8bee0de40d00df8774ef5a72ae946299295867ca9"
+  },
+  {
+    "from": "test/golden/us1/failures/crop_catalog_isolatedDiff.png",
+    "to": "frontend/test/golden/us1/failures/crop_catalog_isolatedDiff.png",
+    "sha256": "9a07bffafe31e3bd2bbeecfbea941cdb254c3709ff6513a4b558549bfb92b970"
+  },
+  {
+    "from": "test/golden/us1/failures/crop_catalog_maskedDiff.png",
+    "to": "frontend/test/golden/us1/failures/crop_catalog_maskedDiff.png",
+    "sha256": "98aa0360c891004eb4fc0fd724025509538b42d98fe27768d9dc736ff41b156f"
+  },
+  {
+    "from": "test/golden/us1/failures/crop_catalog_masterImage.png",
+    "to": "frontend/test/golden/us1/failures/crop_catalog_masterImage.png",
+    "sha256": "66235af4fb495d680d0c4e1f07a7a2826fbc3e633751d20882a43c9e1dbb3e87"
+  },
+  {
+    "from": "test/golden/us1/failures/crop_catalog_testImage.png",
+    "to": "frontend/test/golden/us1/failures/crop_catalog_testImage.png",
+    "sha256": "6f63c0b4e9b60ccec894369c39208957fa0ab2f89b2acd936191160655c1daca"
+  },
+  {
+    "from": "test/golden/us2/failures/labor_form_isolatedDiff.png",
+    "to": "frontend/test/golden/us2/failures/labor_form_isolatedDiff.png",
+    "sha256": "6e60b0af9585f0c4a330ce82bd57270ce1f4b6093704ff8c8474f3039611eab6"
+  },
+  {
+    "from": "test/golden/us2/failures/labor_form_maskedDiff.png",
+    "to": "frontend/test/golden/us2/failures/labor_form_maskedDiff.png",
+    "sha256": "4e84ceee4be00e3a864b4fcce793a0e28e7adf0d2b6b3ddb34c5340eb165a648"
+  },
+  {
+    "from": "test/golden/us2/failures/labor_form_masterImage.png",
+    "to": "frontend/test/golden/us2/failures/labor_form_masterImage.png",
+    "sha256": "8d3daa9d51fc603bfe445d4230384fc54900565de34f56c753ef28779bb249b4"
+  },
+  {
+    "from": "test/golden/us2/failures/labor_form_testImage.png",
+    "to": "frontend/test/golden/us2/failures/labor_form_testImage.png",
+    "sha256": "5e84b218e0726efcaf1e0f289b04167de97af477f2ec49d7ca2c5ddf9b5eebec"
+  },
+  {
+    "from": "test/golden/us2/labor_form.png",
+    "to": "frontend/test/golden/us2/labor_form.png",
+    "sha256": "5e84b218e0726efcaf1e0f289b04167de97af477f2ec49d7ca2c5ddf9b5eebec"
+  },
+  {
+    "from": "test/golden/us2/labor_form_golden_test.dart",
+    "to": "frontend/test/golden/us2/labor_form_golden_test.dart",
+    "sha256": "dd289b11e944c1db40a0591a45c31263cd3cec8d601f17faecc5017db8960050"
+  },
+  {
+    "from": "test/golden/us3/failures/sync_status_isolatedDiff.png",
+    "to": "frontend/test/golden/us3/failures/sync_status_isolatedDiff.png",
+    "sha256": "1acb91f9be4a4519aafd9bd92abbedc1b1fccd301238e1c9f79df4f3c08b3edc"
+  },
+  {
+    "from": "test/golden/us3/failures/sync_status_maskedDiff.png",
+    "to": "frontend/test/golden/us3/failures/sync_status_maskedDiff.png",
+    "sha256": "cef722b9c19d4adf4f26d2c4fdcfe35a4b17ed1ba0397386100f6abc536d560c"
+  },
+  {
+    "from": "test/golden/us3/failures/sync_status_masterImage.png",
+    "to": "frontend/test/golden/us3/failures/sync_status_masterImage.png",
+    "sha256": "33119a14be3934851253e97b8e833b6a1042397a248a506d0e760bf61fbe4e30"
+  },
+  {
+    "from": "test/golden/us3/failures/sync_status_testImage.png",
+    "to": "frontend/test/golden/us3/failures/sync_status_testImage.png",
+    "sha256": "6ff099af69bf0e24167555c3eb1bab3b23a6660bc7ed0f7e88d641336a9d2a0f"
+  },
+  {
+    "from": "test/golden/us3/sync_status.png",
+    "to": "frontend/test/golden/us3/sync_status.png",
+    "sha256": "6ff099af69bf0e24167555c3eb1bab3b23a6660bc7ed0f7e88d641336a9d2a0f"
+  },
+  {
+    "from": "test/golden/us3/sync_status_golden_test.dart",
+    "to": "frontend/test/golden/us3/sync_status_golden_test.dart",
+    "sha256": "82edcb1550bc274d097fa5e76d748d12bb47b6978642afc1b52e073395a7e2fb"
+  },
+  {
+    "from": "test/golden/us4/failures/irrigation_unavailable_isolatedDiff.png",
+    "to": "frontend/test/golden/us4/failures/irrigation_unavailable_isolatedDiff.png",
+    "sha256": "bd5ab26fad35cbfd5bddb3d3db04da0900bfd0c0fdb34ef9d413a25e2ff469f8"
+  },
+  {
+    "from": "test/golden/us4/failures/irrigation_unavailable_maskedDiff.png",
+    "to": "frontend/test/golden/us4/failures/irrigation_unavailable_maskedDiff.png",
+    "sha256": "dc419d2bf694e30d8b0c50fb68af9abdd8703ecf15486e29116c600d9c7b33f9"
+  },
+  {
+    "from": "test/golden/us4/failures/irrigation_unavailable_masterImage.png",
+    "to": "frontend/test/golden/us4/failures/irrigation_unavailable_masterImage.png",
+    "sha256": "be361bafc3772bf2874672c6836163c0b342413a448e6560f38f765328f1dfd6"
+  },
+  {
+    "from": "test/golden/us4/failures/irrigation_unavailable_testImage.png",
+    "to": "frontend/test/golden/us4/failures/irrigation_unavailable_testImage.png",
+    "sha256": "55ec6c5073ea3a85a43f40c48a6cb839f5c8116499bb4be26acd5d186e301fcc"
+  },
+  {
+    "from": "test/golden/us4/irrigation_unavailable.png",
+    "to": "frontend/test/golden/us4/irrigation_unavailable.png",
+    "sha256": "55ec6c5073ea3a85a43f40c48a6cb839f5c8116499bb4be26acd5d186e301fcc"
+  },
+  {
+    "from": "test/golden/us4/irrigation_unavailable_golden_test.dart",
+    "to": "frontend/test/golden/us4/irrigation_unavailable_golden_test.dart",
+    "sha256": "b72abe009a1c6603dbc8f87a60a8a27fb38ba826fb1c8a97ac34675920e740c2"
+  },
+  {
+    "from": "test/golden/us5/failures/production_isolatedDiff.png",
+    "to": "frontend/test/golden/us5/failures/production_isolatedDiff.png",
+    "sha256": "682880242ee7c8e4ef434d826a30d050b60c525a0119e1cd75b06e782ee00c22"
+  },
+  {
+    "from": "test/golden/us5/failures/production_maskedDiff.png",
+    "to": "frontend/test/golden/us5/failures/production_maskedDiff.png",
+    "sha256": "136f724e9ef9f400ec20ba5b80a0a0e14eda58b664f7b4b0e4bd4ca0cbf08022"
+  },
+  {
+    "from": "test/golden/us5/failures/production_masterImage.png",
+    "to": "frontend/test/golden/us5/failures/production_masterImage.png",
+    "sha256": "1c9a978894f433068cd4532d9d76a238b52790243cfe4889cd4ba6117bdc37f0"
+  },
+  {
+    "from": "test/golden/us5/failures/production_testImage.png",
+    "to": "frontend/test/golden/us5/failures/production_testImage.png",
+    "sha256": "9595801687c5c6afe8f817c9b7c117ba9ff405c4daa7ae8fceb5cdbc8260a22e"
+  },
+  {
+    "from": "test/golden/us5/production.png",
+    "to": "frontend/test/golden/us5/production.png",
+    "sha256": "9595801687c5c6afe8f817c9b7c117ba9ff405c4daa7ae8fceb5cdbc8260a22e"
+  },
+  {
+    "from": "test/golden/us5/production_golden_test.dart",
+    "to": "frontend/test/golden/us5/production_golden_test.dart",
+    "sha256": "0abf473eea7a07b8665f2c0c69751cbfd1ea2a35509391ba6fe58505fd40b699"
+  },
+  {
+    "from": "test/golden/us6/failures/photo_attachment_isolatedDiff.png",
+    "to": "frontend/test/golden/us6/failures/photo_attachment_isolatedDiff.png",
+    "sha256": "556bbee5f0b225034e5c200e1a157f0c5ed9cd7eb63c460e6f6ccb83e58804f7"
+  },
+  {
+    "from": "test/golden/us6/failures/photo_attachment_maskedDiff.png",
+    "to": "frontend/test/golden/us6/failures/photo_attachment_maskedDiff.png",
+    "sha256": "3d44eed8b045f6ba4a16841a6b29c1062d0e2e64e4007a820328d0e612f1a08b"
+  },
+  {
+    "from": "test/golden/us6/failures/photo_attachment_masterImage.png",
+    "to": "frontend/test/golden/us6/failures/photo_attachment_masterImage.png",
+    "sha256": "4739eb467fcc1fc3a46beee1663b077d6a5fd8d70d5c7cf79f182e1bd4f132e3"
+  },
+  {
+    "from": "test/golden/us6/failures/photo_attachment_testImage.png",
+    "to": "frontend/test/golden/us6/failures/photo_attachment_testImage.png",
+    "sha256": "aaba74a197c19864bd33d15127e9aeb711aa7ec8693ac463dab3de036df818e9"
+  },
+  {
+    "from": "test/golden/us6/photo_attachment.png",
+    "to": "frontend/test/golden/us6/photo_attachment.png",
+    "sha256": "aaba74a197c19864bd33d15127e9aeb711aa7ec8693ac463dab3de036df818e9"
+  },
+  {
+    "from": "test/golden/us6/photo_attachment_golden_test.dart",
+    "to": "frontend/test/golden/us6/photo_attachment_golden_test.dart",
+    "sha256": "fb843dc090a79c633edcfe08fa48e9c74338238b925c6d5765f60c5300b74832"
+  },
+  {
+    "from": "test/golden/us7/apiary.png",
+    "to": "frontend/test/golden/us7/apiary.png",
+    "sha256": "ea8a5ecd5eac147b3fa8ffbdcac2c77f48ff9ff4eed0de861ec863ee107135c2"
+  },
+  {
+    "from": "test/golden/us7/apiary_golden_test.dart",
+    "to": "frontend/test/golden/us7/apiary_golden_test.dart",
+    "sha256": "069d7266e73cf171e37141fe24e16fe35b55a1e9f383badb3b05736b467fd2fc"
+  },
+  {
+    "from": "test/golden/us7/failures/apiary_isolatedDiff.png",
+    "to": "frontend/test/golden/us7/failures/apiary_isolatedDiff.png",
+    "sha256": "c359958335ce4fc60796d794fcccb90c4e8e237f1e5f640a0570c54c844d67a0"
+  },
+  {
+    "from": "test/golden/us7/failures/apiary_maskedDiff.png",
+    "to": "frontend/test/golden/us7/failures/apiary_maskedDiff.png",
+    "sha256": "c8ba1e13c934965893dc8a07ce0685095022f2e9c5be64e0a3f2a51cc3aec1c4"
+  },
+  {
+    "from": "test/golden/us7/failures/apiary_masterImage.png",
+    "to": "frontend/test/golden/us7/failures/apiary_masterImage.png",
+    "sha256": "0cd8ebb3f7bc6fc6fb58df3296535077da1472fafb9f46d0ce14351888fd401e"
+  },
+  {
+    "from": "test/golden/us7/failures/apiary_testImage.png",
+    "to": "frontend/test/golden/us7/failures/apiary_testImage.png",
+    "sha256": "ea8a5ecd5eac147b3fa8ffbdcac2c77f48ff9ff4eed0de861ec863ee107135c2"
+  },
+  {
+    "from": "test/golden/us8/export.png",
+    "to": "frontend/test/golden/us8/export.png",
+    "sha256": "ca06de568568ead6d74f28bd44974aa02f0bad49996915590376a1845a70a39e"
+  },
+  {
+    "from": "test/golden/us8/export_golden_test.dart",
+    "to": "frontend/test/golden/us8/export_golden_test.dart",
+    "sha256": "a91a45c7eec6efc665bdac8ea74907b1e59f17661f06e15b16a868ac731b1d30"
+  },
+  {
+    "from": "test/golden/us8/failures/export_isolatedDiff.png",
+    "to": "frontend/test/golden/us8/failures/export_isolatedDiff.png",
+    "sha256": "185bc59d2a081440e718c2241e468697f607c639eb5086d2ae24093019cd01b9"
+  },
+  {
+    "from": "test/golden/us8/failures/export_maskedDiff.png",
+    "to": "frontend/test/golden/us8/failures/export_maskedDiff.png",
+    "sha256": "988a2d17ed600bfbdbea49a773f0eb96deed3e3501b36b7387af2b0d8396f05e"
+  },
+  {
+    "from": "test/golden/us8/failures/export_masterImage.png",
+    "to": "frontend/test/golden/us8/failures/export_masterImage.png",
+    "sha256": "066fae8f17565780a676dc2dbe790e26740e33ab586039307b277e3209f67c3b"
+  },
+  {
+    "from": "test/golden/us8/failures/export_testImage.png",
+    "to": "frontend/test/golden/us8/failures/export_testImage.png",
+    "sha256": "ca06de568568ead6d74f28bd44974aa02f0bad49996915590376a1845a70a39e"
+  },
+  {
+    "from": "test/helpers/file_backed_database.dart",
+    "to": "backend/test/helpers/file_backed_database.dart",
+    "sha256": "d8565f30fd4fb089c02daea158c68982b36c5c1965e0b21ba1b8bdbfd7119288"
+  },
+  {
+    "from": "test/helpers/in_memory_database.dart",
+    "to": "backend/test/helpers/in_memory_database.dart",
+    "sha256": "a6c656c3fb7bba99756795e89b9d5688016548015b8a617110c7061c911d8452"
+  },
+  {
+    "from": "test/helpers/signed_in_widget_scope.dart",
+    "to": "backend/test/helpers/signed_in_widget_scope.dart",
+    "sha256": "aff4af8fe3c941f7c5a226c6c1b5c3ed6903603b49f4ea1272638cda55b3dfec"
+  },
+  {
+    "from": "test/helpers/territory_fixture.dart",
+    "to": "backend/test/helpers/territory_fixture.dart",
+    "sha256": "ba841312339a43f227ae0c10ce3c820a96e28aa9667bfdcd6c4464bbada2e1d0"
+  },
+  {
+    "from": "test/integration/agro_ai_privacy_scenario.dart",
+    "to": "backend/test/integration/agro_ai_privacy_scenario.dart",
+    "sha256": "77ccffd0d775356211afa0ba998c6ef22683094adc1d289ff9f9337987335e6a"
+  },
+  {
+    "from": "test/integration/compatibility_001_scenario.dart",
+    "to": "backend/test/integration/compatibility_001_scenario.dart",
+    "sha256": "839bbbf5950be42524018f037fa26bf35f00ffef16979e6328c4cefcc499003f"
+  },
+  {
+    "from": "test/integration/functional_core_offline_restart_scenario.dart",
+    "to": "backend/test/integration/functional_core_offline_restart_scenario.dart",
+    "sha256": "f1be023aac08b376167588bd27f93ef0b3c664fa7d9abe7d0b25b893f2975dc2"
+  },
+  {
+    "from": "test/integration/multi_context_scenario.dart",
+    "to": "backend/test/integration/multi_context_scenario.dart",
+    "sha256": "608558f4795466c1f4f8147a585505a8a978940462693975099cb0dba2d9bf28"
+  },
+  {
+    "from": "test/integration/reminder_restart_scenario.dart",
+    "to": "backend/test/integration/reminder_restart_scenario.dart",
+    "sha256": "5c3fbb1ef7dea49355ce541d791b31624c2dce0a5732e689825a9739aec6f4c5"
+  },
+  {
+    "from": "test/integration/session_persistence_scenario.dart",
+    "to": "backend/test/integration/session_persistence_scenario.dart",
+    "sha256": "bcaa43446ad5960a3896a72e34ba39706c736074ac1ad84281d40733e0c663c1"
+  },
+  {
+    "from": "test/integration/session_sync_isolation_scenario.dart",
+    "to": "backend/test/integration/session_sync_isolation_scenario.dart",
+    "sha256": "30515c81fa70a544c064f13e9a9b7a0573287317ea87312126d93ecac7caa100"
+  },
+  {
+    "from": "test/integration/sync_conflict_tombstone_scenario.dart",
+    "to": "backend/test/integration/sync_conflict_tombstone_scenario.dart",
+    "sha256": "ff16fc26fa3a1ce0c75ae7f3fc1f5160b0461e3789ba988e63cc55f5a0a0586b"
+  },
+  {
+    "from": "test/integration/weather_alert_scenario.dart",
+    "to": "backend/test/integration/weather_alert_scenario.dart",
+    "sha256": "22859e7e622d470c8ddb621324a3d43b812256182898278fad5b0c3a9aa437f6"
+  },
+  {
+    "from": "test/performance/functional_core_performance_test.dart",
+    "to": "backend/test/performance/functional_core_performance_test.dart",
+    "sha256": "a097255ae54bc5dae559c5e6ca7161ca88e4a933b5705fbfbd8b88e82ec86db9"
+  },
+  {
+    "from": "test/performance/xlsx_performance_test.dart",
+    "to": "backend/test/performance/xlsx_performance_test.dart",
+    "sha256": "cf45d451258943be986ae7f97ad6a048890c7b30922de90d452842de40e33712"
+  },
+  {
+    "from": "test/shared/agricultural_context_selector_test.dart",
+    "to": "frontend/test/shared/agricultural_context_selector_test.dart",
+    "sha256": "c0859569e9504a5c869441f488e9e6dbf03a4d0bcf9fc9c691612cb57e47ab44"
+  },
+  {
+    "from": "test/shared/component_semantics_test.dart",
+    "to": "frontend/test/shared/component_semantics_test.dart",
+    "sha256": "0c2d320deb18f761b5d83953e60dff875c6619d9ca5513493e43b9da9969f1bb"
+  },
+  {
+    "from": "test/shared/design_policy_test.dart",
+    "to": "frontend/test/shared/design_policy_test.dart",
+    "sha256": "a31f712ec487809acc0c0b3e41893c3622ffc665bce48f08a4782e32f39387af"
+  },
+  {
+    "from": "test/shared/screen_inventory_test.dart",
+    "to": "frontend/test/shared/screen_inventory_test.dart",
+    "sha256": "f43e9fb6f9d091ffd5fb97cca0475b588a4ecd77cec9fcfe696bc2dc6ac9bb9f"
+  },
+  {
+    "from": "test/widget_test.dart",
+    "to": "frontend/test/widget_test.dart",
+    "sha256": "8328adb8dc4aeea3a5cceb1997d93323476fd2fda81dd45fbefd05265b3aa454"
+  },
+  {
+    "from": "integration_test/001_compatibility_regression_test.dart",
+    "to": "frontend/integration_test/001_compatibility_regression_test.dart",
+    "sha256": "acae4be6c709411e280112f46de9146aa41f5cdc0b322a11a586a474dad4d182"
+  },
+  {
+    "from": "integration_test/agricultural_context_selector_android_test.dart",
+    "to": "frontend/integration_test/agricultural_context_selector_android_test.dart",
+    "sha256": "69d0799dc94b2ed91763ecc247c2afe4ad3bde818b107a7f94ae6a664c463fb4"
+  },
+  {
+    "from": "integration_test/agro_ai_privacy_flow_test.dart",
+    "to": "frontend/integration_test/agro_ai_privacy_flow_test.dart",
+    "sha256": "d993b019ee03aaae11ed3d174789b9bc1dd8c3c4dd003d4d50bf4663bdc05d47"
+  },
+  {
+    "from": "integration_test/android_map_device_test.dart",
+    "to": "frontend/integration_test/android_map_device_test.dart",
+    "sha256": "d3c7118ac96184b42f1f2ea7d694c724fe3aa08d90030683371044018db032e3"
+  },
+  {
+    "from": "integration_test/android_platform_flow_test.dart",
+    "to": "frontend/integration_test/android_platform_flow_test.dart",
+    "sha256": "daec378076725877563839f6a991317c1a52dfdb5e60c37a1ebd49d1acab64a1"
+  },
+  {
+    "from": "integration_test/apiary_flow_test.dart",
+    "to": "frontend/integration_test/apiary_flow_test.dart",
+    "sha256": "52df7803d0a51eff46b6dde2734e7d38f1333c1830c8a5a382330875f17c48dc"
+  },
+  {
+    "from": "integration_test/critical_offline_flows_test.dart",
+    "to": "frontend/integration_test/critical_offline_flows_test.dart",
+    "sha256": "78bd6cc8f075fe6a87adf9de773edb03e0c4085fc68f16f112c2675e854385fb"
+  },
+  {
+    "from": "integration_test/foundation_smoke_test.dart",
+    "to": "frontend/integration_test/foundation_smoke_test.dart",
+    "sha256": "106e7f6cf9687e7182cf8ba89d965623d0524d10c727d970f6227804769740f1"
+  },
+  {
+    "from": "integration_test/functional_core_offline_restart_test.dart",
+    "to": "frontend/integration_test/functional_core_offline_restart_test.dart",
+    "sha256": "4331cc7f8f5f82a31e171b78cc2ab6cc2b0ed8c7961575889266800c9d12041c"
+  },
+  {
+    "from": "integration_test/history_production_flow_test.dart",
+    "to": "frontend/integration_test/history_production_flow_test.dart",
+    "sha256": "3a5cddf478ed2962009431023547dec6fa0844835e978bed32a75bb0667795d8"
+  },
+  {
+    "from": "integration_test/irrigation_calculation_flow_test.dart",
+    "to": "frontend/integration_test/irrigation_calculation_flow_test.dart",
+    "sha256": "3a5cddf478ed2962009431023547dec6fa0844835e978bed32a75bb0667795d8"
+  },
+  {
+    "from": "integration_test/labors_production_flow_test.dart",
+    "to": "frontend/integration_test/labors_production_flow_test.dart",
+    "sha256": "3a5cddf478ed2962009431023547dec6fa0844835e978bed32a75bb0667795d8"
+  },
+  {
+    "from": "integration_test/multi_context_e2e_test.dart",
+    "to": "frontend/integration_test/multi_context_e2e_test.dart",
+    "sha256": "c32be76bc08562e4fd2ab62e0a5623fc5996f01a56fd50248000188d83f843ed"
+  },
+  {
+    "from": "integration_test/parcel_sync_v2_e2e_test.dart",
+    "to": "frontend/integration_test/parcel_sync_v2_e2e_test.dart",
+    "sha256": "a34845d76a5c6104860c3bf518234d4b3cc1aaac4fb023f91a0cb97e1059c818"
+  },
+  {
+    "from": "integration_test/photos_reminders_flow_test.dart",
+    "to": "frontend/integration_test/photos_reminders_flow_test.dart",
+    "sha256": "69d348a88dcf1306b1bf10b48ae322d5d0583be93710dbd187768fa5419fe513"
+  },
+  {
+    "from": "integration_test/reminder_restart_flow_test.dart",
+    "to": "frontend/integration_test/reminder_restart_flow_test.dart",
+    "sha256": "bd47d8eca9ee0aaf0f99cff6f50d3c211c6c55215b8cdff2d1b597099a1ac96c"
+  },
+  {
+    "from": "integration_test/resilience_upgrade_test.dart",
+    "to": "frontend/integration_test/resilience_upgrade_test.dart",
+    "sha256": "53dc81ee0764bb48beb24df908ca0af8221c5e6200155d581236dc89d3a8c289"
+  },
+  {
+    "from": "integration_test/seasons_crops_flow_test.dart",
+    "to": "frontend/integration_test/seasons_crops_flow_test.dart",
+    "sha256": "aed3774711e1d7ebe0fde497615895ae06573c7742e70a39381ab66f23fbc87b"
+  },
+  {
+    "from": "integration_test/session_persistence_flow_test.dart",
+    "to": "frontend/integration_test/session_persistence_flow_test.dart",
+    "sha256": "d57178445f5c54870523f0b9d0582b0e204ce7d400b18b59dab318658aff4676"
+  },
+  {
+    "from": "integration_test/session_sync_isolation_e2e_test.dart",
+    "to": "frontend/integration_test/session_sync_isolation_e2e_test.dart",
+    "sha256": "0f44c548ae96b9241040c5601906ba18676914fa2fcec9062c324b4192423f2d"
+  },
+  {
+    "from": "integration_test/synchronization_test.dart",
+    "to": "frontend/integration_test/synchronization_test.dart",
+    "sha256": "793929bf41ae9e9b41c0141b1bc1ab09ba39741ef93ead25ee3222fe3bfa58d3"
+  },
+  {
+    "from": "integration_test/sync_conflict_tombstone_e2e_test.dart",
+    "to": "frontend/integration_test/sync_conflict_tombstone_e2e_test.dart",
+    "sha256": "e069e4704de33f0a80e25b930ae4204e406e5fcb176c50e3016f3d650edda4cf"
+  },
+  {
+    "from": "integration_test/territory_flow_test.dart",
+    "to": "frontend/integration_test/territory_flow_test.dart",
+    "sha256": "69afc477814436484813aadefe4f1164b46094bba49d05dbf9b20a8561d393e9"
+  },
+  {
+    "from": "integration_test/weather_ai_export_flow_test.dart",
+    "to": "frontend/integration_test/weather_ai_export_flow_test.dart",
+    "sha256": "c2fe2eaf09b5b2d1b9255a83380b36fc9550d86f285aabba92c75f9d7468fea5"
+  },
+  {
+    "from": "integration_test/weather_alert_flow_test.dart",
+    "to": "frontend/integration_test/weather_alert_flow_test.dart",
+    "sha256": "24faff76acea55bcb326cbeb457aa83574e6df7599fd391bce69969094850b50"
+  },
+  {
+    "from": "assets/data/crop_catalog_v1.json",
+    "to": "backend/assets/data/crop_catalog_v1.json",
+    "sha256": "a6965d46166d37f77d1c1e8feed69b640a6b9ebfd09d504aaaeb0948f14bdb1b"
+  },
+  {
+    "from": "assets/fonts/inter/.gitkeep",
+    "to": "frontend/assets/fonts/inter/.gitkeep",
+    "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+  },
+  {
+    "from": "assets/fonts/inter/Inter-Variable.ttf",
+    "to": "frontend/assets/fonts/inter/Inter-Variable.ttf",
+    "sha256": "29160a80ff49ddcab2c97711247e08b1fab27a484a329ce8b813d820dc559031"
+  },
+  {
+    "from": "assets/icons/berries.svg",
+    "to": "frontend/assets/icons/berries.svg",
+    "sha256": "afd1614f2a648f6e3fd6274b5ad598a3fe7b70b1a48417f859ee761587cb8b21"
+  },
+  {
+    "from": "assets/icons/corn.svg",
+    "to": "frontend/assets/icons/corn.svg",
+    "sha256": "64d27d7a661c3d7c3eaaca9f29eae644bd06095ae20b31bf14f91deabc25e203"
+  },
+  {
+    "from": "assets/icons/crops/apiary.svg",
+    "to": "frontend/assets/icons/crops/apiary.svg",
+    "sha256": "cf60cdcbcecdf1a0b896602f9da76a2b4842ac844ff297504da1b62d69746841"
+  },
+  {
+    "from": "assets/icons/crops/custom-crop.svg",
+    "to": "frontend/assets/icons/crops/custom-crop.svg",
+    "sha256": "a8ed5a2373e4bfd599aa7c9e29e89b5c421b32c8989008ac60548163d0acb857"
+  },
+  {
+    "from": "assets/icons/crops/physalis.svg",
+    "to": "frontend/assets/icons/crops/physalis.svg",
+    "sha256": "ee8e9bbebd558587a529b21caa663ee1e1c3baa42572f96ccf27dd4924794704"
+  },
+  {
+    "from": "assets/icons/melon.svg",
+    "to": "frontend/assets/icons/melon.svg",
+    "sha256": "be03074bbee79b2a6d19fb7d3d0d91742539b34495f278dfd558859e43cd74e1"
+  },
+  {
+    "from": "assets/icons/raspberry.svg",
+    "to": "frontend/assets/icons/raspberry.svg",
+    "sha256": "56f9c7f78fd36310b6734d8ae00fc7c32347eb3fc8135f7b297f1145ac97dcde"
+  },
+  {
+    "from": "assets/icons/root.svg",
+    "to": "frontend/assets/icons/root.svg",
+    "sha256": "7fc6a0398ba7877ac8b2c4228fc17de762c3279fc3785fcd6b4e8c7643c0fbd3"
+  },
+  {
+    "from": "assets/icons/strawberry.svg",
+    "to": "frontend/assets/icons/strawberry.svg",
+    "sha256": "ba82c0bccb2b0fea8959e68344d6acf30d80e6046cebd9426dfd4e012b5e34a9"
+  },
+  {
+    "from": "assets/icons/watermelon.svg",
+    "to": "frontend/assets/icons/watermelon.svg",
+    "sha256": "7e48daef167915b8585cc2950461a3187df61165a09a9ac0df5933ee9ddba811"
+  },
+  {
+    "from": "supabase/supabase/.branches/_current_branch",
+    "to": "backend/supabase/.branches/_current_branch",
+    "sha256": "0d6e4079e36703ebd37c00722f5891d28b0e2811dc114b129215123adcce3605"
+  },
+  {
+    "from": "supabase/supabase/.temp/cli-latest",
+    "to": "backend/supabase/.temp/cli-latest",
+    "sha256": "777fd6d651101226cf5d67775d803518c5e94912772c3f936a458353b58ec9d1"
+  },
+  {
+    "from": "supabase/supabase/.temp/linked-project.json",
+    "to": "backend/supabase/.temp/linked-project.json",
+    "sha256": "33de128b07d430b74d9c4338f9fbbfe9e4d6ba279983340def56011525e61c77"
+  },
+  {
+    "from": "supabase/supabase/.temp/start-secrets/supabase_edge_runtime_agrocampo-local/env/docker.env",
+    "to": "backend/supabase/.temp/start-secrets/supabase_edge_runtime_agrocampo-local/env/docker.env",
+    "sha256": "3c1559120176211b869c0ee7d92b424cd70118c8795c0eee5a007f0a3d83d68d"
+  },
+  {
+    "from": "supabase/supabase/config.toml",
+    "to": "backend/supabase/config.toml",
+    "sha256": "8a1d221f572f0a265b703252513022471c155781a2ccf9fa082593ba20964511"
+  },
+  {
+    "from": "supabase/supabase/functions/agro-ai/index.ts",
+    "to": "backend/supabase/functions/agro-ai/index.ts",
+    "sha256": "a7b41d5c685c033b9f9874738b75bac5f7eaadadf2d1b4fd0c884db4819117d0"
+  },
+  {
+    "from": "supabase/supabase/functions/agro-ai/prompt.ts",
+    "to": "backend/supabase/functions/agro-ai/prompt.ts",
+    "sha256": "754bcf658420233c130fca856a0b2bb388a4078f1249945df3dd71df29cc3a59"
+  },
+  {
+    "from": "supabase/supabase/functions/agro-ai/tests/prompt_eval_test.ts",
+    "to": "backend/supabase/functions/agro-ai/tests/prompt_eval_test.ts",
+    "sha256": "d68f55ecd9c833d7c2533b9f95bb9acd9f18eab5ebc6a04aad7cf1f481e9307c"
+  },
+  {
+    "from": "supabase/supabase/functions/notification-dispatch/index.ts",
+    "to": "backend/supabase/functions/notification-dispatch/index.ts",
+    "sha256": "554e45f56e9433e5034280bd3bc9f4e27a81d9f84ae89c7b79c4fc0d1e334345"
+  },
+  {
+    "from": "supabase/supabase/functions/weather-proxy/index.ts",
+    "to": "backend/supabase/functions/weather-proxy/index.ts",
+    "sha256": "0facf49995bf1ba1695d8c47f8a33cbde7e6de94b8530f1551f6a7f14441d6a8"
+  },
+  {
+    "from": "supabase/supabase/functions/weather-proxy/tests/weather_contract_test.ts",
+    "to": "backend/supabase/functions/weather-proxy/tests/weather_contract_test.ts",
+    "sha256": "bd0b1504ea5aaab2a9b13df5d4b7de1de40e814ce9fb2bec7efddaac3395cbd7"
+  },
+  {
+    "from": "supabase/supabase/migrations/0001_auth_profile_rls.sql",
+    "to": "backend/supabase/migrations/0001_auth_profile_rls.sql",
+    "sha256": "d5bbecda7eeb14c75ad65dacb5961ec3171d593f27ced3ffca034fec90fe66dc"
+  },
+  {
+    "from": "supabase/supabase/migrations/0002_parcel_sync_slice.sql",
+    "to": "backend/supabase/migrations/0002_parcel_sync_slice.sql",
+    "sha256": "7f28ba8c08d8c2cc5179175da1cc1c815157702ce2607a8c8fe93ae729c5c2fd"
+  },
+  {
+    "from": "supabase/supabase/migrations/0003_sync_protocol.sql",
+    "to": "backend/supabase/migrations/0003_sync_protocol.sql",
+    "sha256": "cd4b792832a18db71e42937e8a0378f985a6d3ee4ec0cc558b5dc851073af204"
+  },
+  {
+    "from": "supabase/supabase/migrations/0004_territory.sql",
+    "to": "backend/supabase/migrations/0004_territory.sql",
+    "sha256": "8008a0d85db10e1fdb2a947ca6e23382c785c481c7bff9faaa7246aa9b51559e"
+  },
+  {
+    "from": "supabase/supabase/migrations/0005_labors_soil_irrigation.sql",
+    "to": "backend/supabase/migrations/0005_labors_soil_irrigation.sql",
+    "sha256": "69b63a339d1d90c0afc27293e40b651c057db2538e7ec3a1d5c99d95b9ab21ab"
+  },
+  {
+    "from": "supabase/supabase/migrations/0006_irrigation_rules.sql",
+    "to": "backend/supabase/migrations/0006_irrigation_rules.sql",
+    "sha256": "f734fd63f90a2f54011b27a7a518d6e853f925d96cb54ca78966c018f1b63285"
+  },
+  {
+    "from": "supabase/supabase/migrations/0007_production_history.sql",
+    "to": "backend/supabase/migrations/0007_production_history.sql",
+    "sha256": "e3b5611fd6d803b50ba6b6d5ef042d27b4b84cdbcb762ddc25a8eeb4a81f5262"
+  },
+  {
+    "from": "supabase/supabase/migrations/0008_photos_storage.sql",
+    "to": "backend/supabase/migrations/0008_photos_storage.sql",
+    "sha256": "b1cb2692217219f9cb87290e955f226aaf21b86b4909c56bcdd98a664f4c6c89"
+  },
+  {
+    "from": "supabase/supabase/migrations/0009_reminders.sql",
+    "to": "backend/supabase/migrations/0009_reminders.sql",
+    "sha256": "aeb9c69e03311ea4cf7ca361e37494df9a1083a273a2962a1d700c4d56cccb4c"
+  },
+  {
+    "from": "supabase/supabase/migrations/0010_device_installations.sql",
+    "to": "backend/supabase/migrations/0010_device_installations.sql",
+    "sha256": "95278797d79de79103d6fc7531fdc610047b52edd5f9183184d602e6c88016d5"
+  },
+  {
+    "from": "supabase/supabase/migrations/0011_apiary.sql",
+    "to": "backend/supabase/migrations/0011_apiary.sql",
+    "sha256": "70694e9456ca32ad3f38a89ba2134dd640f38301e4c82d42ffdd99add7e33cf1"
+  },
+  {
+    "from": "supabase/supabase/migrations/0012_functional_core_schema.sql",
+    "to": "backend/supabase/migrations/0012_functional_core_schema.sql",
+    "sha256": "f6c14a6a6f691db005e1daa9afc03d7297a8101a32027479a3a77c4f22f97fc3"
+  },
+  {
+    "from": "supabase/supabase/migrations/0013_sync_protocol_v2.sql",
+    "to": "backend/supabase/migrations/0013_sync_protocol_v2.sql",
+    "sha256": "f86a1e7967f5c1fd85d7cc2c973438ec3873d6dfa06cb483fa9c2ef88766f2b7"
+  },
+  {
+    "from": "supabase/supabase/migrations/0014_sync_territory_handlers.sql",
+    "to": "backend/supabase/migrations/0014_sync_territory_handlers.sql",
+    "sha256": "7d4f142c8d5eea86675268bf8ac9c21b5eeb57970eb47407ac309aa98c81d4be"
+  },
+  {
+    "from": "supabase/supabase/migrations/0015_sync_seasons_crops_handlers.sql",
+    "to": "backend/supabase/migrations/0015_sync_seasons_crops_handlers.sql",
+    "sha256": "f72969582ea9f76b4940d80364fc76f3b4f4c307e7da4a25730fa65dbf580cb1"
+  },
+  {
+    "from": "supabase/supabase/migrations/0016_sync_labor_handlers.sql",
+    "to": "backend/supabase/migrations/0016_sync_labor_handlers.sql",
+    "sha256": "47c59e2156921b51623fef37d4495758ebbbe6df593b9593f7bd880dc16fdaf9"
+  },
+  {
+    "from": "supabase/supabase/migrations/0017_sync_irrigation_handlers.sql",
+    "to": "backend/supabase/migrations/0017_sync_irrigation_handlers.sql",
+    "sha256": "6caafe91d75779c2878b8400f26233aab65a4e2dad98b5e9ac65e5c7519d3624"
+  },
+  {
+    "from": "supabase/supabase/migrations/0018_sync_reminder_handler.sql",
+    "to": "backend/supabase/migrations/0018_sync_reminder_handler.sql",
+    "sha256": "d8fc732e6e09c4ee16f604512339b4e45ced7e75d09909afdd30a2191a9fd234"
+  },
+  {
+    "from": "supabase/supabase/migrations/0019_irrigation_rule_release_gate.sql",
+    "to": "backend/supabase/migrations/0019_irrigation_rule_release_gate.sql",
+    "sha256": "0f796fc4c8ad6b9a111895824d64fe416ee5545762bc1823c22028ba2dc9493c"
+  },
+  {
+    "from": "supabase/supabase/seed.sql",
+    "to": "backend/supabase/seed.sql",
+    "sha256": "7a084aaebcc494a19b4869f0e8e56261e06f42a0958841fe338fbc4a599c09e4"
+  },
+  {
+    "from": "supabase/supabase/tests/database/apiary_rls_test.sql",
+    "to": "backend/supabase/tests/database/apiary_rls_test.sql",
+    "sha256": "c1715427d6b6d9088ad2a83fae8a1bf476df5cb4ecc1818d1139a9d3350df265"
+  },
+  {
+    "from": "supabase/supabase/tests/database/auth_rls_test.sql",
+    "to": "backend/supabase/tests/database/auth_rls_test.sql",
+    "sha256": "6b57a460192cfe547c59809c1b21429b027b85e40df767b67530896bc968dd91"
+  },
+  {
+    "from": "supabase/supabase/tests/database/device_installations_rls_test.sql",
+    "to": "backend/supabase/tests/database/device_installations_rls_test.sql",
+    "sha256": "056a5fe0687cde6e3977c1847c7ca1f5cacf9811f55acb53f71369da571b4c5c"
+  },
+  {
+    "from": "supabase/supabase/tests/database/functional_core_schema_test.sql",
+    "to": "backend/supabase/tests/database/functional_core_schema_test.sql",
+    "sha256": "492d3c31274f13cb8f465a19b6b9866429c0e8add618d9994d9cc9b8d3bf94df"
+  },
+  {
+    "from": "supabase/supabase/tests/database/irrigation_rule_release_gate_test.sql",
+    "to": "backend/supabase/tests/database/irrigation_rule_release_gate_test.sql",
+    "sha256": "1b9198181a536849b1c3fc813918be4f9be1d2d3466661d56a6eaacd80c37714"
+  },
+  {
+    "from": "supabase/supabase/tests/database/irrigation_sync_v2_test.sql",
+    "to": "backend/supabase/tests/database/irrigation_sync_v2_test.sql",
+    "sha256": "36bbe0b0ebf2468c1aa564faa85d293a331d863bd8591d7b60a97875c1f532c7"
+  },
+  {
+    "from": "supabase/supabase/tests/database/labor_sync_v2_test.sql",
+    "to": "backend/supabase/tests/database/labor_sync_v2_test.sql",
+    "sha256": "3635662bcb96b9768c4b6d8e6835d4a8e817e0ca9f332c46747696dc95c325bf"
+  },
+  {
+    "from": "supabase/supabase/tests/database/photo_storage_rls_test.sql",
+    "to": "backend/supabase/tests/database/photo_storage_rls_test.sql",
+    "sha256": "8b2042442f5c2b8a3d4b5309416b78498ae86cb32a5cdd30525ef82b13a15387"
+  },
+  {
+    "from": "supabase/supabase/tests/database/reminder_sync_v2_test.sql",
+    "to": "backend/supabase/tests/database/reminder_sync_v2_test.sql",
+    "sha256": "0f965b7504d7efc31805df880f8ef400c11694d20919c75213a297c2a8536b9a"
+  },
+  {
+    "from": "supabase/supabase/tests/database/rls_coverage_test.sql",
+    "to": "backend/supabase/tests/database/rls_coverage_test.sql",
+    "sha256": "cd02341393db8139f83d6f762b47ec2f272b23a2c2c98bcaf79509acfd961ce9"
+  },
+  {
+    "from": "supabase/supabase/tests/database/seasons_crops_sync_v2_test.sql",
+    "to": "backend/supabase/tests/database/seasons_crops_sync_v2_test.sql",
+    "sha256": "020f272782bb0c61ed197939548ef1a0768422d9217d000431ca999dddef4d04"
+  },
+  {
+    "from": "supabase/supabase/tests/database/sync_protocol_test.sql",
+    "to": "backend/supabase/tests/database/sync_protocol_test.sql",
+    "sha256": "70ab719aafd8366363a31834f3909549212c701a6a7604df0e07ff29cf589370"
+  },
+  {
+    "from": "supabase/supabase/tests/database/sync_protocol_v2_test.sql",
+    "to": "backend/supabase/tests/database/sync_protocol_v2_test.sql",
+    "sha256": "56b61b16badc063651bc2e7058893313e04ac88b084d6fbf04ad672d7d64bfed"
+  },
+  {
+    "from": "supabase/supabase/tests/database/territory_rls_test.sql",
+    "to": "backend/supabase/tests/database/territory_rls_test.sql",
+    "sha256": "e87b9420554c2b1fee452827e10b770dae351d845ce7d5c772e7e4ae4e899b9c"
+  },
+  {
+    "from": "supabase/supabase/tests/database/territory_sync_v2_test.sql",
+    "to": "backend/supabase/tests/database/territory_sync_v2_test.sql",
+    "sha256": "9bd25c53e27e655d3c50d4a1bf19d9de12bbb5da14b53f274776d9a9b597a641"
+  },
+  {
+    "from": "drift_schemas/drift_schemas/.gitkeep",
+    "to": "backend/drift_schemas/.gitkeep",
+    "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+  },
+  {
+    "from": "drift_schemas/drift_schemas/drift_schema_v10.json",
+    "to": "backend/drift_schemas/drift_schema_v10.json",
+    "sha256": "0a52f6e5f6c2043bf0c1bb04ba1c73555d69a805662f5b2ae86526b7d1d92bc0"
+  },
+  {
+    "from": "drift_schemas/drift_schemas/drift_schema_v9.json",
+    "to": "backend/drift_schemas/drift_schema_v9.json",
+    "sha256": "b8fb5071e7917d57eb3eefe3c063ad99cdf3388d2c45c4a229461bcfe288b592"
+  },
+  {
+    "from": "pubspec.yaml",
+    "to": "frontend/pubspec.yaml",
+    "sha256": "87adab229d097c1c1171baac32a3aca1e6dcc0730dfa4e645779befb341bef7c"
+  },
+  {
+    "from": "pubspec.lock",
+    "to": "frontend/pubspec.lock",
+    "sha256": "a1c96c8dc74e8a8e71eee12989c0f9ca79ef2f16f0b34b775a8e03da73266b56"
+  },
+  {
+    "from": "analysis_options.yaml",
+    "to": "frontend/analysis_options.yaml",
+    "sha256": "1a4a7232f36ae4ef9beecfa0b86cdfe80476521f0f8c7c6a1c19b2fabe59b879"
+  },
+  {
+    "from": ".metadata",
+    "to": "frontend/.metadata",
+    "sha256": "4c3021f6e1f7dc78f657650498c6abc5010e8c7d3040eff721e416d91c4c4647"
+  },
+  {
+    "from": "agrocampo.iml",
+    "to": "frontend/agrocampo.iml",
+    "sha256": "d2052ef022de364483e3823043cb6a5be1c3f33217cae65c1a40b48b17669199"
+  },
+  {
+    "from": "build.yaml",
+    "to": "backend/build.yaml",
+    "sha256": "54eafc415cff1fdb0e2922ba1cfaca65656a9f237248f35dc7e440eee5b0d540"
+  }
+]

@@ -2,6 +2,11 @@
 
 This guide defines the implementation/verification order for 002. It does not authorize scope beyond [spec.md](./spec.md) or replace the Módulo 001 quickstart for unaffected capabilities.
 
+The approved physical layout uses `frontend/` for the Android application and `backend/` for its
+local Flutter package and Supabase. Commands below start at repository root unless stated
+otherwise. Historical test paths in the matrix use the
+[path mapping](../../docs/architecture/frontend-backend-boundary.md#lectura-de-rutas-históricas).
+
 ## 1. Required Toolchain
 
 - Flutter 3.47.0 / Dart 3.13.x.
@@ -70,9 +75,11 @@ Implementation must make these tests pass before enabling another sync entity.
 Recommended commands after migration code exists:
 
 ```powershell
-dart run build_runner build --delete-conflicting-outputs
+cd backend
+dart run build_runner build
 flutter test test/core/database
 flutter test test/core/database/migrations
+cd ..
 ```
 
 The current custom `drift_schema_v9.json` table manifest is not sufficient evidence by itself.
@@ -82,10 +89,12 @@ The current custom `drift_schema_v9.json` table manifest is not sufficient evide
 Start/reset the local stack only after reviewing that reset targets the local development instance:
 
 ```powershell
-supabase start
-supabase db reset
-supabase test db
+supabase --workdir backend start
+supabase --workdir backend db reset
+supabase --workdir backend test db
 ```
+
+From `backend/supabase/`, the equivalent prefix is `supabase --workdir ..`.
 
 Required pgTAP behaviors:
 
@@ -204,20 +213,28 @@ reemplaza las afirmaciones de cero pérdida, outbox durable y ausencia de falso 
 After implementation, run targeted tests during each phase, then the full suite:
 
 ```powershell
+cd backend
 flutter pub get
-dart run build_runner build --delete-conflicting-outputs
+dart run build_runner build
+dart format --output=none --set-exit-if-changed lib test
+flutter analyze --no-pub
+flutter test
+cd ../frontend
+flutter pub get
 dart format --output=none --set-exit-if-changed lib test integration_test
 flutter analyze --no-pub
 flutter test
 flutter test integration_test
+flutter build apk --debug
+cd ..
 ```
 
 Run Supabase tests separately:
 
 ```powershell
-supabase test db
-deno test supabase/functions/weather-proxy/tests
-deno test supabase/functions/agro-ai/tests
+supabase --workdir backend test db
+deno test --allow-env backend/supabase/functions/weather-proxy/tests
+deno test --allow-env backend/supabase/functions/agro-ai/tests
 ```
 
 Run Android integration on configured emulator/device as defined by the project runner. Native/platform-view checks must include real device evidence where emulator behavior is insufficient.

@@ -1,0 +1,43 @@
+name: agrocampo
+description: Aplicación Android AgroCampo.
+publish_to: none
+version: 1.0.0+1
+environment:
+  sdk: ^3.13.0
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  agrocampo_backend:
+    path: ../backend
+  flutter_map: 8.3.2
+  flutter_riverpod: 3.4.2
+  flutter_svg: 2.3.0
+  go_router: 18.0.0
+  latlong2: 0.10.1
+  url_launcher: 6.3.2
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  drift: 2.34.3
+  supabase_flutter: 2.17.2
+  path_provider: 2.1.5
+  geolocator: 14.0.3
+  local_auth: 3.0.2
+  mocktail: 1.0.4
+  flutter_lints: ^6.0.0
+  flutter_local_notifications: any
+dependency_overrides:
+  path_provider_android: 2.2.23
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icons/
+    - assets/icons/crops/
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/inter/Inter-Variable.ttf

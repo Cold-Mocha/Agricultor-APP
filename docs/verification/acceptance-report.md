@@ -1,5 +1,10 @@
 # Informe de aceptación
 
+> Evidencia anterior a la separación física Frontend/Backend: se conserva sin atribuir sus
+> resultados a la migración actual. Las rutas antiguas se resuelven con el
+> [mapeo de arquitectura](../architecture/frontend-backend-boundary.md#lectura-de-rutas-históricas).
+> La verificación de la nueva estructura requiere analizar y probar ambos paquetes por separado.
+
 La implementación cubre T003–T084 y los requisitos funcionales trazados en `tasks.md`. La suite valida repositorios locales, reglas, contratos externos, outbox idempotente, exportación OpenXML y políticas visuales. Los flujos de integración cubren territorio, labores/suelo/riego, sincronización, cálculo, historial/producción, fotos/recordatorios, apicultura y clima/IA/exportación.
 
 ## Gates

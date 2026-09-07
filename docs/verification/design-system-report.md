@@ -1,5 +1,10 @@
 # Verificación de diseño y accesibilidad
 
+> Evidencia anterior a la separación física Frontend/Backend: se conserva sin atribuir sus
+> resultados a la migración actual. Las rutas antiguas se resuelven con el
+> [mapeo de arquitectura](../architecture/frontend-backend-boundary.md#lectura-de-rutas-históricas).
+> La verificación de la nueva estructura requiere analizar y probar ambos paquetes por separado.
+
 Fecha: 2026-08-28. Referencia: `master.md`.
 
 ## Resultado

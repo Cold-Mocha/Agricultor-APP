@@ -105,62 +105,76 @@ specs/002-agrocampo-functional-core/
 
 ### Source Code (repository root)
 
+La separación física aprobada se documenta en [frontend-backend-boundary.md](../../docs/architecture/frontend-backend-boundary.md).
+
 ```text
-lib/
-├── app/
-│   ├── bootstrap/                  # Instancia/configuración de servicios
-│   ├── providers.dart              # DI de cliente, DB, contexto y gateways
-│   └── routing/                    # Rutas visibles existentes
-├── core/
-│   ├── auth/                       # Supabase, sesión segura, biometría
-│   ├── database/
-│   │   ├── app_database.dart       # Drift v10 y migración preservadora
-│   │   ├── daos/                   # Consultas/outbox/cursor/conflictos
-│   │   └── tables/                 # 24 actuales + 2 nuevas
-│   ├── geometry/                   # Validación de polígonos
-│   ├── notifications/              # Scheduler y reconciliación local
-│   └── sync/
-│       ├── protocol/               # DTO/codec/resultados por operación
-│       ├── conflicts/              # Mantener local/remoto por entidad
-│       └── sync_coordinator.dart    # Máquina outbox/push/pull durable
-├── features/
-│   ├── auth/                       # Login, bloqueo y biometría
-│   ├── parcels/                    # Parcelas y activa
-│   ├── sectors/                    # Lista/detalle y contexto
-│   ├── map/                        # Dibujo/edición explícita/fallback
-│   ├── crops/                      # Temporadas, asignaciones y catálogo
-│   ├── labors/                     # Formularios estructurados
-│   ├── production/                 # Especialización de cosecha
-│   ├── irrigation/                 # Configuración, cálculo y registro
-│   ├── history/                    # Timeline local filtrable
-│   ├── reminders/                  # CRUD y avisos offline
-│   ├── weather/                    # Pronóstico/alertas degradables
-│   ├── agro_ai/                    # Chat general sin contexto privado
-│   ├── apiary/                     # Modelo especializado conservado
-│   └── sync_status/                # Estado, reintento y conflictos
-└── shared/                         # Componentes/tokens ya existentes
+frontend/                           # Aplicación Flutter agrocampo
+├── pubspec.yaml                    # agrocampo_backend: path ../backend
+├── pubspec.lock
+├── analysis_options.yaml
+├── android/                        # Host APK; integraciones nativas compartidas
+├── assets/                         # Inter, SVG e imágenes según master.md
+├── lib/
+│   ├── main.dart
+│   ├── app/                        # Routing, shell, tema y presentación
+│   ├── features/
+│   │   ├── sectors/pages/          # Lista y detalle
+│   │   ├── sectors/widgets/        # Tarjetas y preview
+│   │   └── <feature>/presentation/ # Resto de pantallas y widgets
+│   └── shared/presentation/
+├── test/                           # Widgets, golden, semántica y frontera
+└── integration_test/               # Flujos completos y plataforma Android
 
-supabase/
-├── migrations/
-│   └── 0012_functional_core.sql    # Aditiva; nombre final según secuencia
-├── functions/
-│   ├── agro-ai/
-│   └── weather-proxy/
-└── tests/database/                 # pgTAP de RLS y protocolo real
-
-test/                               # Dominio, Drift, widgets y contratos
-integration_test/                   # Flujos con almacenamiento persistente
-android/                            # Biometría/permisos/notificaciones
+backend/                            # Paquete Flutter sin UI agrocampo_backend
+├── pubspec.yaml
+├── pubspec.lock
+├── analysis_options.yaml
+├── build.yaml                      # Generación Drift
+├── assets/data/                    # Catálogo local
+├── lib/
+│   ├── agrocampo_backend.dart      # Única entrada pública para frontend/lib
+│   ├── core/                       # DB, sync, auth, geometría y plugins
+│   ├── features/
+│   │   ├── sectors/
+│   │   │   ├── controllers/
+│   │   │   ├── dto/
+│   │   │   ├── domain/
+│   │   │   ├── repositories/
+│   │   │   └── services/
+│   │   └── <feature>/              # Controllers, dominio y repositorios
+│   └── shared/                     # Contratos y tipos sin UI
+├── test/                           # Lógica, persistencia y contratos
+├── drift_schemas/                  # Snapshots de migración
+└── supabase/
+    ├── config.toml
+    ├── migrations/
+    ├── functions/
+    ├── tests/database/
+    └── seed.sql
 ```
 
-**Structure Decision**: conservar la raíz Flutter y los módulos actuales. Los archivos nuevos se ubican dentro de la feature o capacidad transversal que ya posee la responsabilidad; no se crea `mobile/`, backend propio, paquete compartido ni segunda arquitectura.
+Se mantiene la dirección lógica `presentation -> domain <- data`. Las páginas/widgets viven
+en Frontend; controllers, contratos, dominio y repositorios viven en Backend. Las antiguas
+carpetas `data/` pasan a `repositories/`. No existe un `lib/` productivo en la raíz.
 
+Frontend importa Backend sólo por `package:agrocampo_backend/agrocampo_backend.dart` y consume
+controllers/DTOs/inputs/estados públicos; no conoce Drift, DAOs, Supabase, outbox ni payloads de
+sincronización. Backend no importa `package:agrocampo/` ni contiene UI. Drift sigue dentro del
+APK y continúa siendo la autoridad operativa offline. `frontend/android/` permanece con la
+aplicación, incluso cuando una integración nativa sea responsabilidad del desarrollador Backend.
+
+Las rutas de tareas y evidencias previas se resuelven con el
+[mapeo de rutas históricas](../../docs/architecture/frontend-backend-boundary.md#lectura-de-rutas-históricas).
+Esta decisión reemplaza únicamente la ubicación original de los archivos y la restricción anterior
+de no crear un paquete local; conserva los requisitos, la pila y las reglas de negocio.
 ## Architecture
 
 ### Flujo operativo
 
 ```text
-UI / Controller Riverpod
+Frontend UI
+        ↓ contrato público
+Backend Controller Riverpod
         ↓ comando validado
 Repository / domain rule
         ↓ una transacción
@@ -175,11 +189,11 @@ Drift ACK/version/sync state
 UI observa estado actualizado
 ```
 
-- Los controllers de pantalla coordinan formularios, permisos y navegación, pero no hablan directamente con Supabase ni plugins.
+- Los controllers Backend coordinan inputs, estados y permisos mediante sus gateways; Frontend representa formularios y realiza la navegación. Las pantallas no hablan directamente con Supabase ni plugins.
 - Las reglas críticas permanecen puras: polígonos, rangos temporales, rotación/intercambio y cálculo de riego.
-- Los CRUD simples pueden llamar directamente al contrato de repositorio existente; no se crean casos de uso vacíos.
+- Los controllers Backend pueden reutilizar directamente contratos de repositorios para CRUD simples; Frontend usa sólo la API pública y no se crean casos de uso vacíos.
 - El `AgriculturalContextController` resuelve y persiste la selección válida; las rutas pueden fijar un contexto para evitar que un cambio global redirija un formulario abierto silenciosamente.
-- La UI observa Drift incluso después del sync. Pull nunca se convierte en una fuente paralela de pantalla.
+- La UI observa estados públicos derivados de Drift incluso después del sync. El acceso a Drift queda en Backend; pull nunca se convierte en una fuente paralela de pantalla.
 
 ### Sesión y acceso local
 

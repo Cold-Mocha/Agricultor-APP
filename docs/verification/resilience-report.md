@@ -1,5 +1,10 @@
 # Informe de migración y resiliencia
 
+> Evidencia anterior a la separación física Frontend/Backend: se conserva sin atribuir sus
+> resultados a la migración actual. Las rutas antiguas se resuelven con el
+> [mapeo de arquitectura](../architecture/frontend-backend-boundary.md#lectura-de-rutas-históricas).
+> La verificación de la nueva estructura requiere analizar y probar ambos paquetes por separado.
+
 La base local está en esquema 9 y conserva una cadena incremental 1→9. Cada versión crea exclusivamente las tablas de su fase; `PRAGMA foreign_keys = ON` se activa al crear y abrir.
 
 Los writes de negocio y outbox son atómicos. Las pruebas cubren rollback forzado, pérdida de ACK con 100 reintentos idempotentes, continuidad offline, recuperación tras interrupción y separación de fallos de clima/AgroIA respecto del núcleo local.

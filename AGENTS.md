@@ -2,9 +2,11 @@
 
 ## Project Structure & Module Organization
 
-This repository contains the canonical AgroCampo Android MVP documentation, an initial Flutter
-scaffold at repository root and two static prototypes used only as evidence. The only functional
-source of truth is `specs/001-agrocampo-android-mvp/`; the only visual source is `master.md`.
+This repository contains the canonical AgroCampo Android MVP documentation, the executable Flutter
+Android application in `frontend/`, a local Flutter backend package plus Supabase in `backend/`,
+and two static prototypes used only as evidence. Functional requirements remain in
+`specs/001-agrocampo-android-mvp/` and its approved `specs/002-agrocampo-functional-core/` extension;
+the only visual source is `master.md`.
 `index.html` is the GitHub Pages prototype, `agrocampo-highfi.html` is an audited visual/flow
 reference, and `agrocampo-acceptance.test.js` validates the deployed prototype. Neither HTML file
 defines production architecture or adds product scope.
@@ -12,8 +14,11 @@ defines production architecture or adds product scope.
 ## Build, Test, and Development Commands
 
 For documentation-only changes, use the validation procedures in the canonical `quickstart.md` and
-run the Spec Kit consistency checks. The Flutter scaffold has `pubspec.yaml`; implementation commands
-and version gates are defined in `specs/001-agrocampo-android-mvp/quickstart.md`.
+run the Spec Kit consistency checks. Run Flutter commands inside `frontend/` or `backend/`, each
+with its own `pubspec.yaml`. Run Drift generation inside `backend/`; run APK builds and Android
+integration tests inside `frontend/`. Use `supabase --workdir backend ...` from repository root.
+Commands and ownership are documented in `docs/architecture/frontend-backend-boundary.md` and
+version gates remain in `specs/001-agrocampo-android-mvp/quickstart.md`.
 
 Open `index.html` or `agrocampo-highfi.html` directly to inspect the static prototypes.
 
@@ -33,6 +38,14 @@ JavaScript, hash routes and existing helpers. For the Android product, follow th
 Flutter/Dart, feature-first `presentation -> domain <- data`, Riverpod, go_router, Drift and
 Supabase. Do not infer Flutter behavior from prototype mock state.
 
+The approved physical boundary is `frontend/` (pages, widgets, navigation and theme) to
+`backend/` (controllers, contracts, domain, repositories and infrastructure). Production frontend
+code may import only `package:agrocampo_backend/agrocampo_backend.dart` from the backend package.
+Never import backend implementation paths, Drift, DAOs, Supabase clients, outbox or sync payloads
+in `frontend/lib/`. Backend code must never import `package:agrocampo/` or contain visual UI.
+Keep Drift offline-first; this separation does not introduce another server or functional module.
+`frontend/android/` stays with the executable app; backend owners may edit its native integrations.
+
 ## Testing Guidelines
 
 Update `agrocampo-acceptance.test.js` when a requested behavior changes the required copy, routes, selectors, or safety checks. Keep assertions specific and user-facing. Test names are not framework-based; add clear assertion messages that describe the expected behavior. Always run the acceptance test after editing `agrocampo-highfi.html`.
@@ -44,6 +57,7 @@ The current Git history has only one short commit (`Innit`), so no detailed conv
 ## Agent-Specific Instructions
 
 Follow `AGENTES.md` for prototype edits and the canonical `tasks.md` for Android implementation.
-Every UI task must cite `master.md`. Do not introduce any excluded functionality or a second
-functional module. Backend/APIs/frameworks remain forbidden in the static prototype, while the
+Every UI task must cite `master.md`. Do not introduce functionality outside the approved specs.
+The frontend/backend split is explicitly approved and does not expand product scope.
+Backend/APIs/frameworks remain forbidden in the static prototype, while the
 Android implementation uses only the stack explicitly approved by the canonical plan.

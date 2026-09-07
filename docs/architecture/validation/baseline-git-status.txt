@@ -1,0 +1,60 @@
+ D drift_schemas/.gitkeep
+ D drift_schemas/drift_schema_v10.json
+ D drift_schemas/drift_schema_v9.json
+ M integration_test/critical_offline_flows_test.dart
+ M lib/features/sectors/data/sector_repository.dart
+ M lib/features/sectors/presentation/quadrant_map_preview.dart
+ M lib/features/sectors/presentation/sector_detail_page.dart
+ M lib/features/sectors/presentation/sector_list_page.dart
+ M lib/features/sectors/presentation/sector_summary_card.dart
+ M pubspec.lock
+ M pubspec.yaml
+ D supabase/config.toml
+ D supabase/functions/agro-ai/index.ts
+ D supabase/functions/agro-ai/prompt.ts
+ D supabase/functions/agro-ai/tests/prompt_eval_test.ts
+ D supabase/functions/notification-dispatch/index.ts
+ D supabase/functions/weather-proxy/index.ts
+ D supabase/functions/weather-proxy/tests/weather_contract_test.ts
+ D supabase/migrations/0001_auth_profile_rls.sql
+ D supabase/migrations/0002_parcel_sync_slice.sql
+ D supabase/migrations/0003_sync_protocol.sql
+ D supabase/migrations/0004_territory.sql
+ D supabase/migrations/0005_labors_soil_irrigation.sql
+ D supabase/migrations/0006_irrigation_rules.sql
+ D supabase/migrations/0007_production_history.sql
+ D supabase/migrations/0008_photos_storage.sql
+ D supabase/migrations/0009_reminders.sql
+ D supabase/migrations/0010_device_installations.sql
+ D supabase/migrations/0011_apiary.sql
+ D supabase/migrations/0012_functional_core_schema.sql
+ D supabase/migrations/0013_sync_protocol_v2.sql
+ D supabase/migrations/0014_sync_territory_handlers.sql
+ D supabase/migrations/0015_sync_seasons_crops_handlers.sql
+ D supabase/migrations/0016_sync_labor_handlers.sql
+ D supabase/migrations/0017_sync_irrigation_handlers.sql
+ D supabase/migrations/0018_sync_reminder_handler.sql
+ D supabase/migrations/0019_irrigation_rule_release_gate.sql
+ D supabase/seed.sql
+ D supabase/tests/database/apiary_rls_test.sql
+ D supabase/tests/database/auth_rls_test.sql
+ D supabase/tests/database/device_installations_rls_test.sql
+ D supabase/tests/database/functional_core_schema_test.sql
+ D supabase/tests/database/irrigation_rule_release_gate_test.sql
+ D supabase/tests/database/irrigation_sync_v2_test.sql
+ D supabase/tests/database/labor_sync_v2_test.sql
+ D supabase/tests/database/photo_storage_rls_test.sql
+ D supabase/tests/database/reminder_sync_v2_test.sql
+ D supabase/tests/database/rls_coverage_test.sql
+ D supabase/tests/database/seasons_crops_sync_v2_test.sql
+ D supabase/tests/database/sync_protocol_test.sql
+ D supabase/tests/database/sync_protocol_v2_test.sql
+ D supabase/tests/database/territory_rls_test.sql
+ D supabase/tests/database/territory_sync_v2_test.sql
+ M test/shared/agricultural_context_selector_test.dart
+?? backend/
+?? drift_schemas/drift_schemas/
+?? integration_test/agricultural_context_selector_android_test.dart
+?? "jerarqu\303\255a 01.md"
+?? supabase/supabase/
+?? test/features/sectors/sector_ui_state_test.dart

@@ -1,5 +1,10 @@
 # Phase 0 Research: AgroCampo Android MVP - Módulo 001
 
+> Actualización de ubicación aprobada: la aplicación está en `frontend/` y la lógica/datos/Supabase
+> en `backend/`. Las rutas de tareas y evidencias previas se conservan para trazabilidad y se
+> resuelven mediante el [mapeo de arquitectura](../../docs/architecture/frontend-backend-boundary.md#lectura-de-rutas-históricas).
+> Esta nota no cambia requisitos, estados de tareas ni resultados históricos.
+
 **Fecha de consolidación**: 2026-08-30
 **Estado**: decisiones técnicas cerradas; quedan únicamente gates de aprobación agronómica y
 verificación contractual externa, ambos ubicados antes de su implementación.  

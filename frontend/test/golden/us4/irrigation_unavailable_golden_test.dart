@@ -1,0 +1,38 @@
+import 'package:agrocampo/app/theme/agro_theme.dart';
+import 'package:agrocampo/features/irrigation/presentation/irrigation_record_page.dart';
+import 'package:agrocampo_backend/core/config/backend_providers.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import '../../../../backend/test/helpers/in_memory_database.dart';
+
+void main() {
+  testWidgets('irrigation clearly exposes unavailable rule state', (
+    tester,
+  ) async {
+    final database = createInMemoryDatabase();
+    addTearDown(database.close);
+    await tester.binding.setSurfaceSize(const Size(412, 915));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(database)],
+        child: MaterialApp(
+          theme: AgroTheme.light,
+          home: const IrrigationRecordPage(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.textContaining('Regla agronómica no disponible'),
+      findsOneWidget,
+    );
+    await expectLater(
+      find.byType(IrrigationRecordPage),
+      matchesGoldenFile('irrigation_unavailable.png'),
+    );
+  });
+}

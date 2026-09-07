@@ -38,12 +38,12 @@ ni análisis fotográfico.
 
 | Tema | Decisión única vinculante |
 |---|---|
-| Cliente | Una aplicación Android Flutter 3.47.0 estable / Dart 3.13.0 en la raíz del repositorio. |
+| Cliente | Una aplicación Android Flutter 3.47.0 estable / Dart 3.13.0 en `frontend/`, con paquete local Flutter `agrocampo_backend` en `backend/`. |
 | Estado e inyección | Riverpod exclusivamente; no Provider, ChangeNotifier ni BLoC paralelos. |
 | Navegación | `go_router` con `StatefulShellRoute.indexedStack` y cinco ramas gobernadas por `master.md`. |
-| Estructura | Feature-first en `lib/features/**` con `presentation -> domain <- data`; infraestructura compartida en `lib/core/**`. |
+| Estructura | Feature-first entre `frontend/lib/features/**` (UI) y `backend/lib/features/**` (lógica/datos); infraestructura en `backend/lib/core/**`. |
 | Fuente operativa | Drift/SQLite local; la UI nunca lee Supabase directamente. |
-| Backend | Supabase Auth/PostgreSQL/Storage/Edge Functions con RLS por `owner_id`. |
+| Backend | Paquete local Flutter en `backend/` y Supabase Auth/PostgreSQL/Storage/Edge Functions en `backend/supabase/`, con RLS por `owner_id`. |
 | Sincronización | Outbox transaccional, RPC idempotente, pull por cursor monotónico y conflictos explícitos. |
 | Entidades | Nombres de [data-model.md](./data-model.md); `Sector` es dominio y “Cuadrante” sólo copy visual autorizado. |
 | Cultivos | Seed oficial inmutable más fichas `custom` aisladas por propietario; asignaciones `planned|active|ended|cancelled`. |
@@ -93,122 +93,80 @@ specs/001-agrocampo-android-mvp/
 
 ### Source Code (repository root)
 
+La separación física aprobada se documenta en [frontend-backend-boundary.md](../../docs/architecture/frontend-backend-boundary.md).
+
 ```text
-android/
-├── app/src/main/
-│   ├── AndroidManifest.xml
-│   └── res/                         # Recursos Android mínimos
-└── app/build.gradle.kts             # SDK, desugaring y plugins Android
+frontend/                           # Aplicación Flutter agrocampo
+├── pubspec.yaml                    # agrocampo_backend: path ../backend
+├── pubspec.lock
+├── analysis_options.yaml
+├── android/                        # Host APK; integraciones nativas compartidas
+├── assets/                         # Inter, SVG e imágenes según master.md
+├── lib/
+│   ├── main.dart
+│   ├── app/                        # Routing, shell, tema y presentación
+│   ├── features/
+│   │   ├── sectors/pages/          # Lista y detalle
+│   │   ├── sectors/widgets/        # Tarjetas y preview
+│   │   └── <feature>/presentation/ # Resto de pantallas y widgets
+│   └── shared/presentation/
+├── test/                           # Widgets, golden, semántica y frontera
+└── integration_test/               # Flujos completos y plataforma Android
 
-assets/
-├── fonts/inter/                     # Pesos locales autorizados por master.md
-├── icons/crops/                     # Pictogramas SVG locales
-└── images/                          # Activos aprobados, sin dependencias remotas
-
-lib/
-├── main.dart                        # Entrada mínima; delega en bootstrap
-├── app/
-│   ├── bootstrap/                   # Inicialización ordenada y composición raíz
-│   ├── routing/                     # go_router, guards, ramas y restauración
-│   └── theme/
-│       ├── agro_theme.dart          # ThemeData Material 3
-│       ├── color_scheme.dart        # Mapeo autorizado desde master.md
-│       ├── semantic_colors.dart     # ThemeExtension de estados
-│       ├── typography.dart
-│       ├── spacing.dart
-│       ├── radii.dart
-│       ├── elevation.dart
-│       ├── iconography.dart
-│       ├── motion.dart
-│       └── component_themes.dart
-├── core/
-│   ├── auth/                        # Sesión, propietario y aislamiento local
-│   ├── database/
-│   │   ├── app_database.dart
-│   │   ├── tables/
-│   │   ├── daos/
-│   │   └── migrations/
-│   ├── sync/                        # Outbox, pull cursor, conflictos y scheduler
-│   ├── network/                     # Cliente, timeout y clasificación de errores
-│   ├── geometry/                    # WGS84, validación y superficie determinista
-│   ├── permissions/                 # GPS, cámara y notificaciones
-│   ├── files/                       # Archivos privados y hash
-│   ├── notifications/               # Programación local y recepción FCM
-│   ├── export/                      # Construcción y guardado de XLSX
-│   ├── errors/                      # Fallos tipados y recuperación
-│   └── observability/               # Logs sin datos sensibles
-├── features/
-│   ├── auth/
-│   ├── home/
-│   ├── parcels/
-│   ├── map/
-│   ├── sectors/
-│   ├── crops/
-│   ├── labors/
-│   ├── soil/
-│   ├── irrigation/
-│   ├── history/
-│   ├── production/
-│   ├── apiary/
-│   ├── photos/
-│   ├── reminders/
-│   ├── weather/
-│   ├── agro_ai/
-│   ├── export/
-│   ├── profile/
-│   ├── settings/
-│   └── sync_status/
-│
-│   # Cada feature se divide de forma consistente en:
-│   # ├── domain/                    # Entidades, repositorios, casos de uso
-│   # ├── data/                      # Fuentes local/remota y repositorio concreto
-│   # └── presentation/              # Controllers Riverpod, páginas y widgets
-└── shared/
-    ├── domain/                      # Unidades, fechas, ID y estados comunes
-    ├── formatting/                  # Formato agrícola y español
-    └── presentation/
-        ├── components/              # Biblioteca derivada de master.md
-        └── semantics/               # Etiquetas y anunciadores accesibles
-
-supabase/
-├── migrations/                     # Tablas, constraints, índices, RLS y RPC
-├── functions/
-│   ├── weather-proxy/
-│   ├── agro-ai/
-│   └── notification-dispatch/
-├── seed.sql                         # Catálogo aprobado y fixtures locales
-└── tests/database/                  # pgTAP para integridad, RLS y sincronización
-
-drift_schemas/                       # Snapshots versionados de migración
-
-test/
-├── app/
-├── core/
-├── features/
-├── shared/
-├── golden/
-└── helpers/
-
-integration_test/
-├── critical_offline_flows_test.dart
-├── synchronization_test.dart
-└── android_integrations_test.dart
+backend/                            # Paquete Flutter sin UI agrocampo_backend
+├── pubspec.yaml
+├── pubspec.lock
+├── analysis_options.yaml
+├── build.yaml                      # Generación Drift
+├── assets/data/                    # Catálogo local
+├── lib/
+│   ├── agrocampo_backend.dart      # Única entrada pública para frontend/lib
+│   ├── core/                       # DB, sync, auth, geometría y plugins
+│   ├── features/
+│   │   ├── sectors/
+│   │   │   ├── controllers/
+│   │   │   ├── dto/
+│   │   │   ├── domain/
+│   │   │   ├── repositories/
+│   │   │   └── services/
+│   │   └── <feature>/              # Controllers, dominio y repositorios
+│   └── shared/                     # Contratos y tipos sin UI
+├── test/                           # Lógica, persistencia y contratos
+├── drift_schemas/                  # Snapshots de migración
+└── supabase/
+    ├── config.toml
+    ├── migrations/
+    ├── functions/
+    ├── tests/database/
+    └── seed.sql
 ```
 
-Cada feature mantiene la misma dirección de dependencias: `presentation -> domain <- data`. `core` ofrece capacidades técnicas transversales, pero no contiene reglas de una feature. Los widgets no dependen de Drift, Supabase, Firebase ni clientes HTTP. En features CRUD simples se permite omitir clases de caso de uso triviales; las reglas críticas siempre permanecen en dominio.
+Se mantiene la dirección lógica `presentation -> domain <- data`. Las páginas/widgets viven
+en Frontend; controllers, contratos, dominio y repositorios viven en Backend. Las antiguas
+carpetas `data/` pasan a `repositories/`. No existe un `lib/` productivo en la raíz.
 
+Frontend importa Backend sólo por `package:agrocampo_backend/agrocampo_backend.dart` y consume
+controllers/DTOs/inputs/estados públicos; no conoce Drift, DAOs, Supabase, outbox ni payloads de
+sincronización. Backend no importa `package:agrocampo/` ni contiene UI. Drift sigue dentro del
+APK y continúa siendo la autoridad operativa offline. `frontend/android/` permanece con la
+aplicación, incluso cuando una integración nativa sea responsabilidad del desarrollador Backend.
+
+Las rutas de tareas y evidencias previas se resuelven con el
+[mapeo de rutas históricas](../../docs/architecture/frontend-backend-boundary.md#lectura-de-rutas-históricas).
+Esta decisión reemplaza únicamente la ubicación original de los archivos y la restricción anterior
+de no crear un paquete local; conserva los requisitos, la pila y las reglas de negocio.
 ## Architecture
 
 ### Composición y flujo de datos
 
-1. `main.dart` inicializa binding, configuración no secreta y delega en `bootstrap`.
-2. `bootstrap` abre el espacio local del propietario, registra adaptadores y crea `ProviderScope`.
-3. La presentación observa estado Riverpod y streams de repositorio.
+1. `frontend/lib/main.dart` inicializa binding y delega en el bootstrap de la app, que consume el arranque público de Backend.
+2. Backend configura los servicios, el espacio local del propietario y los adaptadores; Frontend crea `ProviderScope` para la aplicación visual.
+3. La presentación observa los estados y contratos públicos de los controllers Backend mediante Riverpod.
 4. Un caso de uso valida una acción y la entrega al repositorio.
 5. El repositorio confirma en una sola transacción Drift tanto el cambio como su outbox.
 6. La UI reacciona de inmediato al registro local y presenta el estado semántico definido en `master.md`.
 7. El coordinador de sync procesa la outbox y después aplica páginas remotas en Drift.
-8. La UI nunca cambia de fuente: sólo recibe el nuevo estado desde Drift.
+8. La UI nunca cambia de fuente: recibe el nuevo estado derivado de Drift mediante los contratos públicos de Backend.
 
 Este flujo elimina la bifurcación entre “datos online” y “datos offline” en la presentación y evita que una respuesta tardía de red reemplace una edición local sin control.
 
@@ -249,9 +207,9 @@ El contrato exacto de rutas y precondiciones está en [contracts/navigation.md](
 - temas de componentes Material para inputs, botones, cards, navegación, banners, chips, diálogos y feedback.
 - Inter empaquetada localmente y activos SVG aprobados disponibles offline.
 
-Sólo los archivos dentro de `lib/app/theme/` pueden contener los valores visuales normativos extraídos de `master.md`. El resto de la aplicación obtiene esos valores mediante `Theme.of(context)`, extensiones del tema o propiedades temáticas de componentes. No se duplican valores en features ni en `shared`.
+Sólo los archivos dentro de `frontend/lib/app/theme/` pueden contener los valores visuales normativos extraídos de `master.md`. El resto de la aplicación obtiene esos valores mediante `Theme.of(context)`, extensiones del tema o propiedades temáticas de componentes. No se duplican valores en features ni en `shared`.
 
-El control automatizado rechazará en `lib/features/**` y `lib/shared/presentation/**` colores literales, `TextStyle` con medidas locales, paddings numéricos, radios, sombras, duraciones de animación o tamaños de icono no provenientes de tokens. Una necesidad no cubierta pausa la implementación visual y requiere actualizar `master.md` antes de añadir el token.
+El control automatizado rechazará en `frontend/lib/features/**` y `frontend/lib/shared/presentation/**` colores literales, `TextStyle` con medidas locales, paddings numéricos, radios, sombras, duraciones de animación o tamaños de icono no provenientes de tokens. Una necesidad no cubierta pausa la implementación visual y requiere actualizar `master.md` antes de añadir el token.
 
 ### Componentes reutilizables
 

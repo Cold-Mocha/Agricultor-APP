@@ -5,6 +5,11 @@ description: "Tareas simplificadas y ordenadas para implementar AgroCampo Functi
 
 # Tasks: AgroCampo Functional Core - Módulo 002
 
+> Actualización de ubicación aprobada: la aplicación está en `frontend/` y la lógica/datos/Supabase
+> en `backend/`. Las rutas de tareas y evidencias previas se conservan para trazabilidad y se
+> resuelven mediante el [mapeo de arquitectura](../../docs/architecture/frontend-backend-boundary.md#lectura-de-rutas-históricas).
+> Esta nota no cambia requisitos, estados de tareas ni resultados históricos.
+
 **Fuentes**: `spec.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/`, Constitución 2.0.0, `master.md` y código actual del repositorio.
 
 **Criterio de simplificación**: cada tarea debe producir código funcional o una prueba crítica. Las variantes pequeñas que comparten flujo/archivo se agrupan; los resultados normales se informan en el chat de implementación y no generan reportes `evidence/*.md`.

@@ -1,5 +1,10 @@
 # Phase 0 Research: AgroCampo Functional Core - Módulo 002
 
+> Actualización de ubicación aprobada: la aplicación está en `frontend/` y la lógica/datos/Supabase
+> en `backend/`. Las rutas de tareas y evidencias previas se conservan para trazabilidad y se
+> resuelven mediante el [mapeo de arquitectura](../../docs/architecture/frontend-backend-boundary.md#lectura-de-rutas-históricas).
+> Esta nota no cambia requisitos, estados de tareas ni resultados históricos.
+
 **Date**: 2026-08-29  
 **Inputs**: Constitution 2.0.0, [spec.md](./spec.md), Módulo 001, `master.md`, Flutter/Drift/Supabase source and test audit.
 

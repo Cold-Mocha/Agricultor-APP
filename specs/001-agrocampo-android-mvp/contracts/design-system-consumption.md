@@ -15,7 +15,7 @@ If a required visual role, component variant, legal attribution or accessible be
 
 ## 2. Token ownership
 
-Only `lib/app/theme/**` may contain normative visual values transcribed from `master.md`:
+Only `frontend/lib/app/theme/**` may contain normative visual values transcribed from `master.md`:
 
 - Material `ColorScheme` roles;
 - semantic state colors through a `ThemeExtension`;
@@ -27,7 +27,7 @@ Every value includes a traceable comment/reference to its section in `master.md`
 
 ## 3. Consumption boundary
 
-Files under `lib/features/**` and `lib/shared/presentation/**`:
+Files under `frontend/lib/features/**` and `frontend/lib/shared/presentation/**`:
 
 - obtain visual roles from `Theme.of(context)`, component themes or approved theme extensions;
 - may compose tokens, but never restate their raw values;

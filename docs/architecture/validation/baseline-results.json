@@ -1,0 +1,8 @@
+{
+  "analyzeLog": "baseline-analyze-retry.log",
+  "build": 1,
+  "analyzeIssues": 72,
+  "reason": "Imports de controladores Sectores apuntaban a rutas inexistentes antes de la migración.",
+  "analyze": 1,
+  "test": 1
+}

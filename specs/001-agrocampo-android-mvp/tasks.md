@@ -1,5 +1,10 @@
 # Tasks: AgroCampo Android MVP — Módulo funcional único
 
+> Actualización de ubicación aprobada: la aplicación está en `frontend/` y la lógica/datos/Supabase
+> en `backend/`. Las rutas de tareas y evidencias previas se conservan para trazabilidad y se
+> resuelven mediante el [mapeo de arquitectura](../../docs/architecture/frontend-backend-boundary.md#lectura-de-rutas-históricas).
+> Esta nota no cambia requisitos, estados de tareas ni resultados históricos.
+
 **Feature canónica**: `specs/001-agrocampo-android-mvp/`  
 **Autoridad funcional**: [spec.md](./spec.md)  
 **Autoridad técnica**: [plan.md](./plan.md), [research.md](./research.md), [data-model.md](./data-model.md) y [contracts/](./contracts/)  

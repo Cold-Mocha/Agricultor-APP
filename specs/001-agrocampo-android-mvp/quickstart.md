@@ -3,9 +3,13 @@
 This guide defines the reproducible setup and verification sequence for implementing the canonical
 `001-agrocampo-android-mvp`. It does not replace `plan.md`, `spec.md`, `master.md` or provider setup documentation.
 
+The approved repository layout is `frontend/` (Android app) and `backend/` (local Flutter package
+plus Supabase). Commands below start at repository root unless stated otherwise. See the
+[boundary and historical path mapping](../../docs/architecture/frontend-backend-boundary.md).
+
 ## 1. Required toolchain
 
-- Flutter 3.47.0 stable with Dart 3.13.0; `pubspec.lock` pins the compatible dependency set.
+- Flutter 3.47.0 stable with Dart 3.13.0; `frontend/pubspec.lock` and `backend/pubspec.lock` pin the compatible dependency set.
 - Android Studio/SDK with API 36 and an Android API 24+ emulator/device.
 - Java version required by the selected Flutter/Android Gradle toolchain.
 - Node.js for the existing static-prototype acceptance checks.
@@ -49,9 +53,9 @@ Do not store server secrets in Dart constants, `.env` bundled as an asset, Gradl
 Implement in this dependency order:
 
 1. Complete T001 irrigation approval and T002 Weather contractual gate; no affected code starts first.
-2. Pin Flutter/Android identity, SDK and dependencies; commit `pubspec.lock`.
+2. Pin Flutter/Android identity, SDK and dependencies; commit both package lockfiles.
 3. Create modular directories and bootstrap failure handling.
-4. Transcribe approved `master.md` values into `lib/app/theme/**` and add the literal-policy test.
+4. Transcribe approved `master.md` values into `frontend/lib/app/theme/**` and add the literal-policy test.
 5. Register local Inter/SVG assets and shared components.
 6. Create the five-branch router and restoration IDs.
 7. Add Drift technical schema, secure session and owner-scoped local database.
@@ -66,9 +70,14 @@ At no point should a screen read Supabase directly or introduce a visual literal
 After selecting the compatible versions documented in `research.md`:
 
 ```powershell
+cd backend
 flutter pub get
-dart run build_runner build --delete-conflicting-outputs
+dart run build_runner build
 flutter analyze
+cd ../frontend
+flutter pub get
+flutter analyze
+cd ..
 ```
 
 Reject the dependency set if Android API 24 no longer builds, if a package requires a prerelease chain, or if two packages provide competing state/database/navigation systems.
@@ -78,11 +87,14 @@ Reject the dependency set if Android API 24 no longer builds, if a package requi
 The local stack must reproduce production migrations and RLS:
 
 ```powershell
-supabase start
-supabase db reset
-supabase test db
-supabase functions serve
+supabase --workdir backend start
+supabase --workdir backend db reset
+supabase --workdir backend test db
+supabase --workdir backend functions serve
 ```
+
+From `backend/supabase/`, use `supabase --workdir ..` with the same subcommands. The workdir is
+the parent containing `supabase/config.toml`; migrations and functions remain under that config.
 
 Required local personas/scenarios:
 
@@ -175,18 +187,28 @@ If a value or variant is missing, update and approve `master.md` first. Do not s
 Flutter gates:
 
 ```powershell
-dart run build_runner build --delete-conflicting-outputs
+cd backend
+flutter pub get
+dart run build_runner build
+dart format --output=none --set-exit-if-changed lib test
+flutter analyze
+flutter test
+cd ../frontend
+flutter pub get
 dart format --output=none --set-exit-if-changed lib test integration_test
 flutter analyze
 flutter test
 flutter test integration_test
 flutter build apk --debug
+cd ..
 ```
 
-Release-candidate gates add:
+Release-candidate gates add, from repository root:
 
 ```powershell
+cd frontend
 flutter build appbundle --release
+cd ..
 ```
 
 The integration suite runs on emulator and on at least one physical Android device. Camera, native permission dialogs, GPS/map behavior with real connectivity, FCM delivery and OEM background restrictions require the physical-device matrix even when automated tests pass.
