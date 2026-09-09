@@ -1,6 +1,6 @@
-import 'package:agrocampo_backend/features/agro_ai/domain/agro_ai_message.dart';
-import 'package:agrocampo_backend/features/agro_ai/repositories/agro_ai_gateway.dart';
-import 'package:agrocampo_backend/features/agro_ai/repositories/agro_ai_repository.dart';
+import 'package:agrocampo_backend/src/modules/agro_ai/domain/entities/agro_ai_message.dart';
+import 'package:agrocampo_backend/src/modules/agro_ai/infrastructure/persistence/agro_ai_gateway.dart';
+import 'package:agrocampo_backend/src/modules/agro_ai/infrastructure/persistence/agro_ai_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/file_backed_database.dart';

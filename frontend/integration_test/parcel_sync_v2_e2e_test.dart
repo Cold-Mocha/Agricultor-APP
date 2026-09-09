@@ -1,11 +1,12 @@
 import 'dart:io';
 
-import 'package:agrocampo_backend/core/database/app_database.dart';
-import 'package:agrocampo_backend/core/sync/protocol/supabase_sync_gateway.dart';
-import 'package:agrocampo_backend/core/sync/protocol/sync_contract.dart';
-import 'package:agrocampo_backend/core/sync/sync_coordinator.dart';
-import 'package:agrocampo_backend/core/sync/sync_gateway.dart';
-import 'package:agrocampo_backend/features/parcels/repositories/parcel_repository.dart';
+import 'package:agrocampo_backend/src/composition/sync_codec_composition.dart';
+import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
+import 'package:agrocampo_backend/src/platform/database/app_database.dart';
+import 'package:agrocampo_backend/src/platform/sync/protocol/supabase_sync_gateway.dart';
+import 'package:agrocampo_backend/src/platform/sync/protocol/sync_contract.dart';
+import 'package:agrocampo_backend/src/platform/sync/sync_coordinator.dart';
+import 'package:agrocampo_backend/src/platform/sync/sync_gateway.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -59,7 +60,11 @@ void main() {
     final realGateway = SupabaseSyncGateway(client);
     final lostAckGateway = _LoseFirstAckGateway(realGateway);
     await expectLater(
-      SyncCoordinator(firstDb, lostAckGateway).synchronize(ownerId),
+      SyncCoordinator(
+        firstDb,
+        lostAckGateway,
+        registry: createAgroCampoSyncRegistry(),
+      ).synchronize(ownerId),
       throwsA(
         isA<StateError>().having(
           (error) => error.message,
@@ -77,7 +82,11 @@ void main() {
       'pending',
     );
 
-    await SyncCoordinator(firstDb, lostAckGateway).synchronize(ownerId);
+    await SyncCoordinator(
+      firstDb,
+      lostAckGateway,
+      registry: createAgroCampoSyncRegistry(),
+    ).synchronize(ownerId);
     expect(
       await client.from('parcels').select('id').eq('id', parcelId),
       hasLength(1),
@@ -102,7 +111,11 @@ void main() {
       await secondDb.close();
       await secondDirectory.delete(recursive: true);
     });
-    await SyncCoordinator(secondDb, realGateway).synchronize(ownerId);
+    await SyncCoordinator(
+      secondDb,
+      realGateway,
+      registry: createAgroCampoSyncRegistry(),
+    ).synchronize(ownerId);
     final downloaded = await secondDb.select(secondDb.parcels).getSingle();
     expect(downloaded.id, parcelId);
     expect(downloaded.name, 'Parcela ACK perdido');

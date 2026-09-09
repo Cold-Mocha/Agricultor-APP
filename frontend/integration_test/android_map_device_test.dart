@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:agrocampo/features/map/presentation/territory_map_page.dart';
-import 'package:agrocampo_backend/core/config/backend_providers.dart';
-import 'package:agrocampo_backend/core/database/app_database.dart';
-import 'package:agrocampo_backend/core/database/daos/app_preferences_dao.dart';
-import 'package:agrocampo_backend/core/geometry/geo_point.dart';
-import 'package:agrocampo_backend/features/auth/controllers/session_controller.dart';
-import 'package:agrocampo_backend/features/map/repositories/location_gateway.dart';
-import 'package:agrocampo_backend/features/parcels/repositories/parcel_repository.dart';
-import 'package:agrocampo_backend/features/sectors/repositories/sector_repository.dart';
+import 'package:agrocampo/src/modules/auth/auth_ui.dart';
+import 'package:agrocampo/src/modules/territory/presentation/pages/territory_map_page.dart';
+import 'package:agrocampo_backend/src/composition/backend_providers.dart';
+import 'package:agrocampo_backend/src/modules/agricultural_context/infrastructure/persistence/daos/app_preferences_dao.dart';
+import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo_point.dart';
+import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/location_gateway.dart';
+import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
+import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
+import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

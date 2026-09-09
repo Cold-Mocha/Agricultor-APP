@@ -16,14 +16,14 @@ Los prototipos, `CONTEXTO.md` y `REPORTE_FUTURO.md` son evidencia histórica/no 
 el MVP ni sustituyen la especificación canónica. El orden de implementación está en
 [`tasks.md`](./specs/001-agrocampo-android-mvp/tasks.md).
 
-## Trabajo en paralelo
+## Monorepo modular
 
 El mismo repositorio Git contiene dos áreas de desarrollo:
 
 | Directorio | Responsable | Contenido |
 |---|---|---|
-| [`frontend/`](./frontend/) | Frontend / UX | Aplicación Flutter Android ejecutable: pantallas, widgets, navegación, tema, assets y pruebas visuales. |
-| [`backend/`](./backend/) | Lógica / Datos / Backend | Paquete Flutter local sin UI: controllers, contratos, reglas, Drift, sincronización, plugins y Supabase remoto. |
+| [`frontend/`](./frontend/) | Frontend / UX | Aplicación Flutter Android: páginas, widgets, navegación, estado de presentación, tema, assets y pruebas visuales. |
+| [`backend/`](./backend/) | Lógica / Datos / Backend | Paquete Flutter local sin UI: contratos, facades, dominio, Drift, sincronización, integraciones y Supabase remoto. |
 
 ```text
 AgroCampo/
@@ -32,11 +32,15 @@ AgroCampo/
 ├── specs/                # Requisitos y contratos funcionales
 ├── docs/                 # Arquitectura y evidencia
 ├── master.md             # Autoridad visual
+├── pubspec.yaml          # Pub Workspace: frontend + backend
+├── pubspec.lock          # Único lockfile canónico
 ├── README.md
 └── .github/              # CI global; prototipos HTML conservados en raíz
 ```
 
-`frontend/pubspec.yaml` consume `agrocampo_backend` mediante `path: ../backend`.
+El `pubspec.yaml` raíz declara exactamente `frontend/` y `backend/` como miembros. Los dos
+pubspecs usan `resolution: workspace`; `frontend/pubspec.yaml` consume `agrocampo_backend`
+mediante `path: ../backend`.
 El flujo sigue siendo **Frontend → Backend local → Drift → Outbox → Supabase**.
 El backend local se compila dentro del APK y conserva el funcionamiento offline.
 
@@ -49,8 +53,10 @@ públicos, responsabilidades, ubicación de tests y la excepción de integracion
 Requiere Flutter 3.47, Dart 3.13, Android SDK 36 y Java 17.
 
 ```powershell
-cd backend
 flutter pub get
+dart pub workspace list
+dart run tool/check_architecture.dart
+cd backend
 dart run build_runner build
 flutter analyze
 flutter test
@@ -61,7 +67,6 @@ Aplicación Android, desde la raíz:
 
 ```powershell
 cd frontend
-flutter pub get
 flutter analyze
 flutter test
 flutter build apk --debug

@@ -1,9 +1,10 @@
 import 'dart:io';
 
-import 'package:agrocampo_backend/core/auth/biometric_unlock_gateway.dart';
-import 'package:agrocampo_backend/core/notifications/local_notification_scheduler.dart';
-import 'package:agrocampo_backend/core/sync/sync_scheduler.dart';
-import 'package:agrocampo_backend/features/map/repositories/location_gateway.dart';
+import 'package:agrocampo_backend/agrocampo_backend.dart';
+import 'package:agrocampo_backend/src/composition/sync_scheduler.dart';
+import 'package:agrocampo_backend/src/modules/auth/infrastructure/biometric_unlock_gateway.dart';
+import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/location_gateway.dart';
+import 'package:agrocampo_backend/src/platform/notifications/local_notification_scheduler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolocator/geolocator.dart';

@@ -1,178 +1,157 @@
 # Frontera Frontend ↔ Backend
 
-La separación física está aprobada: `frontend/` y `backend/` pertenecen al mismo repositorio Git.
-La aplicación ejecutable se llama `agrocampo`; consume el paquete Flutter `agrocampo_backend`
-mediante `path: ../backend`. No hay código productivo en un `lib/` de la raíz.
+AgroCampo es un monorepo modular con un único Pub Workspace. La raíz declara solamente los
+miembros `frontend/` y `backend/`, y `pubspec.lock` en la raíz es el lockfile canónico. El
+Frontend ejecutable consume el paquete local Backend mediante `path: ../backend`; esto no crea
+un servidor adicional ni cambia el flujo offline-first.
 
 ## Responsabilidades
 
-| Área | Responsable | Contenido |
-|---|---|---|
-| `frontend/` | Frontend / UX | Pages, widgets, formularios visuales, navegación con go_router, shell, tema, accesibilidad, assets, feedback y estados visuales. |
-| `backend/` | Lógica / Datos / Backend | Controllers, providers con lógica, DTOs, FormInput, comandos, entidades, validaciones, repositorios, Drift, outbox, sync, sesión, biometría, geometría, GPS lógico, fotos, notificaciones y exportación. |
-| `backend/supabase/` | Lógica / Datos / Backend | Configuración, migraciones, RLS, RPC, funciones, Storage, seed y pruebas remotas. |
-| `frontend/android/` | App Android; coordinación con Backend | Host nativo, Gradle, manifest, permisos y canales Android. Backend mantiene aquí biometría, WorkManager, notificaciones y exportación cuando corresponda. |
-| `specs/`, `docs/`, `master.md`, `.github/` | Compartido | Requisitos, contratos, diseño, evidencia y herramientas del repositorio. |
+| Área | Ownership |
+|---|---|
+| `frontend/lib/src/app/` | Bootstrap visual, router, shell, tema y composición de la aplicación. |
+| `frontend/lib/src/modules/<feature>/` | Páginas, widgets, navegación local, controllers/Notifiers, estado y formateo para UI. |
+| `frontend/lib/src/shared/` | Componentes y semántica visual transversal sin lógica funcional. |
+| `backend/lib/src/modules/<feature>/` | Contratos públicos, coordinación de aplicación, dominio, persistencia e integraciones propias de la capacidad. |
+| `backend/lib/src/composition/` | Ensamblaje de providers, codecs, bootstrap e integraciones. |
+| `backend/lib/src/platform/` | Base Drift única, motor de sync, red, archivos, notificaciones y observabilidad transversales. |
+| `backend/lib/src/shared/` | Kernel y contratos estables sin owner funcional natural ni dependencia de infraestructura. |
+| `backend/supabase/` | Migraciones, RLS, RPC, Storage, Edge Functions y pruebas remotas existentes. |
 
-El host Android permanece físicamente en `frontend/android/` porque genera el APK. La propiedad
-de una integración nativa puede ser del desarrollador Backend sin mover el host a su paquete.
+Frontend posee todo estado específico de presentación: loading de pantalla, formularios,
+selección visual, errores mostrables y transformación de contratos para widgets. Backend no
+conoce páginas, widgets, navegación ni estado de una pantalla. Backend conserva reglas de
+negocio, validaciones, transacciones, persistencia, sincronización e integraciones.
 
-Toda UI se implementa con los tokens, componentes y estados de [`master.md`](../../master.md).
-Las reglas agrícolas y funcionales permanecen en los specs aprobados; la separación no amplía su alcance.
+Toda UI sigue [`master.md`](../../master.md). La reorganización no agrega comportamiento y no
+modifica los requisitos aprobados de `001-agrocampo-android-mvp` ni
+`002-agrocampo-functional-core`.
 
-## Dependencias permitidas
+## Frontera pública
 
-```text
-frontend/lib/ (widgets, navegación, tema)
-     ↓ controllers / estado / inputs públicos
-backend/lib/agrocampo_backend.dart
-     ↓ lógica local y repositorios
-Drift + outbox durables dentro del APK
-     ↓ sincronización oportunista
-backend/supabase/ (PostgreSQL, RLS, RPC, Edge Functions)
-```
-
-En `frontend/lib/`, el único import del paquete Backend permitido es:
+El único import Backend permitido en código productivo Frontend es:
 
 ```dart
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 ```
 
-La API pública expone controllers, estados consumibles por la UI, DTOs, inputs, comandos, IDs y
-enums. Frontend solicita acciones y representa su resultado; no construye filas Drift, payloads
-Supabase ni operaciones de sincronización. La fuente operativa sigue siendo Drift y la UI recibe
-sus cambios a través de los contratos locales incluso cuando no existe conexión.
+`backend/lib/agrocampo_backend.dart` es una allowlist que reexporta los `<feature>_api.dart`.
+Esas APIs pueden exponer facades, contratos de lectura, inputs, entidades y value objects
+estables. No exponen `AppDatabase`, tablas o companions Drift, DAOs, repositorios concretos,
+`SupabaseClient`, gateways, codecs, outbox, cursores ni plugins.
 
-Queda prohibido en `frontend/lib/` importar o acceder a `AppDatabase`, Drift, SQL, DAOs,
-`SupabaseClient`, RPC, outbox, colas de sync, PostgreSQL, RLS, Edge Functions o almacenamiento
-interno. Tampoco se permiten imports a rutas internas `package:agrocampo_backend/core/...`,
-`features/...`, `shared/...` ni rutas relativas que atraviesen `backend/lib/`.
+Frontend no importa `backend/lib/src` ni una ruta `package:agrocampo_backend/src/**`. Backend no
+importa `package:agrocampo/`, Flutter visual ni `go_router`. Los tests pueden usar internals para
+fixtures de persistencia o drivers nativos; esa excepción no se extiende a `frontend/lib/`.
 
-Backend no importa `package:agrocampo/`, páginas, widgets, go_router ni el tema de Frontend.
-Puede depender de Flutter/Riverpod y de los plugins existentes que necesita para ejecutarse
-dentro del APK. Las dependencias de SDK no convierten el paquete en una aplicación visual.
+`AppRoutes` pertenece a `frontend/lib/src/app/routing/`. Para conservar el deep link de los
+recordatorios sin introducir navegación en Backend, el bootstrap Frontend inyecta únicamente una
+función que transforma el ID del recordatorio en el payload que recibe el scheduler nativo.
 
-Los tests de Backend pueden importar sus implementaciones para comprobar persistencia y reglas.
-Los tests de integración del host pueden usar infraestructura del paquete para preparar fixtures
-y verificar el flujo completo; esa excepción de pruebas no se aplica a `frontend/lib/`.
+## Organización por funcionalidad
 
-## Organización por feature
-
-Sectores conserva una sola implementación, con las páginas y widgets separados de sus contratos:
+Primero se identifica el owner funcional y luego la capa técnica:
 
 ```text
-frontend/lib/features/sectors/
-├── pages/
-│   ├── sector_list_page.dart
-│   └── sector_detail_page.dart
-└── widgets/
-    ├── sector_summary_card.dart
-    └── quadrant_map_preview.dart
+frontend/lib/
+├── main.dart
+└── src/
+    ├── app/
+    ├── modules/
+    │   └── <feature>/
+    │       ├── <feature>_ui.dart
+    │       └── presentation/
+    │           ├── pages/
+    │           ├── widgets/
+    │           ├── controllers/
+    │           ├── state/
+    │           └── formatters/
+    └── shared/
 
-backend/lib/features/sectors/
-├── controllers/
-├── dto/                  # sector_ui_state.dart y contratos consumibles
-├── domain/
-├── repositories/
-└── services/             # sector_ui_mapper.dart
+backend/lib/
+├── agrocampo_backend.dart
+└── src/
+    ├── composition/
+    ├── modules/
+    │   └── <feature>/
+    │       ├── <feature>_api.dart
+    │       ├── contracts/
+    │       ├── application/
+    │       ├── domain/
+    │       └── infrastructure/
+    ├── platform/
+    └── shared/
 ```
 
-Las demás features mantienen sus páginas/widgets en `frontend/lib/features/<feature>/presentation/`.
-Sus entidades viven en `backend/lib/features/<feature>/domain/`; las antiguas carpetas `data/`
-se trasladan a `repositories/`. Controllers y providers con lógica pertenecen al paquete Backend.
-Las capacidades transversales viven en `backend/lib/core/`; UI compartida, en
-`frontend/lib/shared/presentation/`. Sólo se crean carpetas con una responsabilidad real.
+Sólo existen las carpetas que contienen código real. No se crean `utils/`, `services/` o `types/`
+genéricos. Los módulos Frontend se consumen entre sí mediante `<feature>_ui.dart`; los módulos
+Backend coordinan otra capacidad mediante su `<feature>_api.dart`, nunca mediante su
+infraestructura o facade interna.
 
-La composición de servicios y providers vive en `backend/lib/core/config/backend_bootstrap.dart`
-y `backend_providers.dart`; `frontend/lib/app/bootstrap/app_bootstrap.dart` adapta el arranque de
-la aplicación a esa API. Los nombres de rutas compartidos son contratos en
-`backend/lib/shared/contracts/app_routes.dart`; el router y la navegación continúan en Frontend.
-El catálogo local de datos pertenece a `backend/assets/data/`; Inter, SVG y otros assets visuales
-pertenecen a `frontend/assets/`.
+Dependencias públicas destacadas:
 
-## Comandos de desarrollo
+- `irrigation` y `production` consumen `LaborContextReader`, contrato público de `labors`.
+- `agricultural_context` expone la coordinación del owner y sus selecciones agrícolas sin estado
+  de widget; el Notifier seleccionado vive en Frontend.
+- `history` mantiene una proyección de lectura propia y no usa repositorios concretos ajenos.
+- `home` existe sólo en Frontend y compone contratos/estados de las capacidades visibles.
 
-Cada bloque siguiente comienza en la raíz del repositorio y regresa a ella.
+`domain/` es Dart puro: puede depender de Dart y de dominio propio, pero no de Flutter,
+Riverpod, Drift, Supabase, navegación ni plugins.
 
-Backend local (Flutter sin UI, incluyendo generación Drift):
+## Drift y sincronización
+
+Existe una sola base física: `backend/lib/src/platform/database/app_database.dart`. Conserva el
+schema completo, versión, migraciones, nombres, IDs, outbox, atomicidad y aislamiento por owner.
+Las declaraciones de tablas de negocio viven con su owner en
+`modules/<feature>/infrastructure/persistence/tables/`.
+
+La única excepción deliberada `platform → modules` permite que `app_database.dart` declare
+`part` exclusivamente sobre esas tablas para componer el schema. Ningún otro archivo de
+`platform/` puede depender de módulos. `tool/check_architecture.dart` valida la ruta exacta de
+esta excepción, incluidos directives relativos.
+
+El motor de sincronización, outbox, cursores y resolución transversal viven en `platform/sync/`.
+Cada codec agregado pertenece a `modules/<owner>/infrastructure/sync/`; el registro se ensambla
+en `composition/sync_codec_composition.dart`. `sync_status` sólo representa la capacidad visible
+al usuario y su estado de presentación permanece en Frontend.
+
+## Guardas y comandos
+
+`implementation_imports` está activo en ambos paquetes. Desde la raíz:
+
+```powershell
+flutter pub get
+dart pub workspace list
+dart run tool/check_architecture.dart
+```
+
+Después se validan los miembros sin resolver dependencias por separado:
 
 ```powershell
 cd backend
-flutter pub get
 dart run build_runner build
 flutter analyze
 flutter test
-cd ..
-```
-
-Frontend Android:
-
-```powershell
-cd frontend
-flutter pub get
+cd ../frontend
 flutter analyze
 flutter test
 flutter build apk --debug
 cd ..
 ```
 
-Las pruebas instrumentadas se ejecutan con `flutter test integration_test` dentro de `frontend/`
-sobre Android configurado. El APK debug queda en
-`frontend/build/app/outputs/flutter-apk/app-debug.apk`.
+Las pruebas instrumentadas se ejecutan desde `frontend/` con `flutter test integration_test` en
+un emulador o dispositivo Android. Supabase se opera desde la raíz con
+`supabase --workdir backend ...`.
 
-Supabase desde la raíz:
+`tool/check_architecture.dart` rechaza imports privados entre paquetes, dependencias internas
+entre features, ciclos de módulos, dominio acoplado a frameworks, `shared` acoplado a features o
+infraestructura, carpetas genéricas, entrypoints productivos inesperados y exportación accidental
+de infraestructura.
 
-```powershell
-supabase --workdir backend start
-supabase --workdir backend db reset
-supabase --workdir backend test db
-supabase --workdir backend functions serve
-deno test --allow-env backend/supabase/functions/weather-proxy/tests
-deno test --allow-env backend/supabase/functions/agro-ai/tests
-```
+## Evidencia histórica
 
-`db reset` se usa sobre el entorno local de desarrollo. Desde el directorio de Supabase:
-
-```powershell
-cd backend/supabase
-supabase --workdir .. start
-supabase --workdir .. test db
-supabase --workdir .. functions serve
-cd ../..
-```
-
-El `--workdir` apunta a `backend/`, que contiene `supabase/config.toml`. El movimiento conserva
-las migraciones y contratos remotos; no autoriza un reset remoto ni un redeploy funcional.
-
-## Lectura de rutas históricas
-
-Los backlogs ya ejecutados, investigaciones y reportes anteriores conservan su evidencia original.
-Sus rutas anteriores se interpretan con este mapeo; no indican copias productivas en la raíz:
-
-| Ruta anterior | Ubicación actual |
-|---|---|
-| `pubspec.yaml`, `pubspec.lock`, `analysis_options.yaml` | Archivo correspondiente de `frontend/`; Backend tiene su propia configuración de paquete. |
-| `lib/main.dart`, `lib/app/routing/`, `lib/app/theme/`, shell y presentación de app | `frontend/lib/` con el mismo sufijo. |
-| `lib/core/`, dominio compartido | `backend/lib/` bajo su capacidad correspondiente. |
-| `lib/app/providers.dart`, lógica de bootstrap | `backend/lib/core/config/backend_providers.dart` y `backend_bootstrap.dart`; el arranque visual queda en `frontend/lib/app/bootstrap/`. |
-| `lib/features/<feature>/presentation/` | Páginas/widgets en Frontend; controllers/estados/mappers en Backend. Sectores usa `pages/`, `widgets/`, `controllers/`, `dto/` y `services/`. |
-| `lib/features/<feature>/domain/` | `backend/lib/features/<feature>/domain/`. |
-| `lib/features/<feature>/data/` | `backend/lib/features/<feature>/repositories/`. |
-| `lib/shared/presentation/` | `frontend/lib/shared/presentation/`. |
-| `android/`, assets visuales | `frontend/android/`, `frontend/assets/`. |
-| `assets/data/` | `backend/assets/data/`. |
-| `supabase/`, `drift_schemas/`, `build.yaml` | `backend/supabase/`, `backend/drift_schemas/`, `backend/build.yaml`. |
-| `test/core/`, tests de dominio/repositorios/contratos/performance | `backend/test/` con el mismo sufijo. |
-| Tests de páginas/widgets, `test/golden/`, políticas visuales | `frontend/test/` con el mismo sufijo. |
-| `integration_test/` | `frontend/integration_test/`. |
-
-El [manifiesto de migración](./migration-manifest.json) registra rutas originales, destinos y hashes
-previos al ajuste de imports. Los escenarios de integración que no necesitan un dispositivo están
-en `backend/test/integration/`; los fixtures y helpers de infraestructura están en `backend/test/`.
-
-Los resultados anteriores de análisis, tests y builds no certifican esta migración. Su verificación
-debe ejecutar ambos paquetes y el APK desde sus ubicaciones nuevas.
-
-Los prototipos HTML y `master.md` siguen en la raíz. GitHub Pages copia `frontend/assets/` a
-`_site/assets/` para conservar las URLs públicas de los recursos; los prototipos continúan siendo
-evidencia visual/funcional y no definen la arquitectura Flutter.
+`migration-manifest.json`, `migration-files.md`, `migration-report.md` y
+`verify-migration.cjs` documentan la separación histórica desde el paquete raíz hacia
+`frontend/` y `backend/`. Sus destinos intermedios son evidencia de ese cambio anterior, no el
+mapa de la arquitectura vigente. Para validar la estructura actual se usa el checker Dart.

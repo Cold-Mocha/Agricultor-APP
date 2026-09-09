@@ -1,4 +1,4 @@
-import 'package:agrocampo_backend/core/database/app_database.dart';
+import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';

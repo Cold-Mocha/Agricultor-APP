@@ -1,7 +1,7 @@
-import 'package:agrocampo_backend/core/geometry/geo_point.dart';
-import 'package:agrocampo_backend/features/map/domain/sector_geometry_draft.dart';
-import 'package:agrocampo_backend/features/parcels/repositories/parcel_repository.dart';
-import 'package:agrocampo_backend/features/sectors/repositories/sector_repository.dart';
+import 'package:agrocampo_backend/src/modules/territory/domain/entities/sector_geometry_draft.dart';
+import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo_point.dart';
+import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
+import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 

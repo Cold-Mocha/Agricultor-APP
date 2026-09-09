@@ -1,6 +1,6 @@
-import 'package:agrocampo/app/agro_campo_app.dart';
-import 'package:agrocampo_backend/core/auth/auth_repository.dart';
-import 'package:agrocampo_backend/features/auth/controllers/session_controller.dart';
+import 'package:agrocampo/src/app/agro_campo_app.dart';
+import 'package:agrocampo_backend/src/modules/auth/application/facades/auth_session_facade.dart';
+import 'package:agrocampo_backend/src/modules/auth/infrastructure/auth_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

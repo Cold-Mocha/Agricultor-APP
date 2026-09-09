@@ -9,7 +9,7 @@ plus Supabase). Commands below start at repository root unless stated otherwise.
 
 ## 1. Required toolchain
 
-- Flutter 3.47.0 stable with Dart 3.13.0; `frontend/pubspec.lock` and `backend/pubspec.lock` pin the compatible dependency set.
+- Flutter 3.47.0 stable with Dart 3.13.0; the root `pubspec.lock` pins the compatible dependency set for the `frontend` + `backend` Pub Workspace.
 - Android Studio/SDK with API 36 and an Android API 24+ emulator/device.
 - Java version required by the selected Flutter/Android Gradle toolchain.
 - Node.js for the existing static-prototype acceptance checks.
@@ -53,7 +53,7 @@ Do not store server secrets in Dart constants, `.env` bundled as an asset, Gradl
 Implement in this dependency order:
 
 1. Complete T001 irrigation approval and T002 Weather contractual gate; no affected code starts first.
-2. Pin Flutter/Android identity, SDK and dependencies; commit both package lockfiles.
+2. Pin Flutter/Android identity, SDK and dependencies; commit the canonical workspace lockfile.
 3. Create modular directories and bootstrap failure handling.
 4. Transcribe approved `master.md` values into `frontend/lib/app/theme/**` and add the literal-policy test.
 5. Register local Inter/SVG assets and shared components.
@@ -70,12 +70,13 @@ At no point should a screen read Supabase directly or introduce a visual literal
 After selecting the compatible versions documented in `research.md`:
 
 ```powershell
-cd backend
 flutter pub get
+dart pub workspace list
+dart run tool/check_architecture.dart
+cd backend
 dart run build_runner build
 flutter analyze
 cd ../frontend
-flutter pub get
 flutter analyze
 cd ..
 ```

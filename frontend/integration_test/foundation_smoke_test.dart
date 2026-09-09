@@ -1,5 +1,5 @@
-import 'package:agrocampo/app/theme/agro_theme.dart';
-import 'package:agrocampo/shared/presentation/components/foundation_placeholder_page.dart';
+import 'package:agrocampo/src/app/theme/agro_theme.dart';
+import 'package:agrocampo/src/shared/design_system/components/foundation_placeholder_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';

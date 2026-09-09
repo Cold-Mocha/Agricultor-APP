@@ -1,5 +1,5 @@
-import 'package:agrocampo_backend/core/export/export_snapshot.dart';
-import 'package:agrocampo_backend/core/export/xlsx_exporter.dart';
+import 'package:agrocampo_backend/src/modules/export/infrastructure/export_snapshot.dart';
+import 'package:agrocampo_backend/src/modules/export/infrastructure/xlsx_exporter.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

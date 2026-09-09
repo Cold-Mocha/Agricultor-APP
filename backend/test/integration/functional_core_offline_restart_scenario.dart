@@ -1,4 +1,4 @@
-import 'package:agrocampo_backend/features/parcels/repositories/parcel_repository.dart';
+import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/file_backed_database.dart';

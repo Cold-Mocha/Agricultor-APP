@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:agrocampo/app/shell/agro_global_sync_status.dart';
-import 'package:agrocampo/app/theme/agro_theme.dart';
-import 'package:agrocampo_backend/core/config/backend_providers.dart';
-import 'package:agrocampo_backend/core/network/connectivity_service.dart';
+import 'package:agrocampo/src/app/shell/agro_global_sync_status.dart';
+import 'package:agrocampo/src/app/theme/agro_theme.dart';
+import 'package:agrocampo_backend/src/composition/backend_providers.dart';
+import 'package:agrocampo_backend/src/platform/network/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

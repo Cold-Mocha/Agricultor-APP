@@ -5,7 +5,7 @@ visual, compilado dentro del APK. Drift sigue siendo la fuente operativa offline
 outbox y sincronización conservan sus transacciones. Supabase remoto vive en `supabase/`.
 
 ```powershell
-flutter pub get
+# En la raíz: flutter pub get
 dart run build_runner build
 flutter analyze
 flutter test
@@ -19,6 +19,7 @@ Los tests de lógica, persistencia y contratos están en `test/`. pgTAP necesita
 local activo. Los tests E2E contra Supabase además necesitan las variables documentadas en
 [`quickstart.md`](../specs/002-agrocampo-functional-core/quickstart.md).
 
-La API de presentación está en `lib/agrocampo_backend.dart`. No exportes repositorios, DAOs,
-filas Drift, clientes SDK ni gateways; agrega DTOs y controllers dentro de la feature.
+La allowlist pública está en `lib/agrocampo_backend.dart`. No exportes repositorios, DAOs,
+filas Drift, clientes SDK ni gateways. Cada capacidad delimita sus contratos mediante
+`lib/src/modules/<feature>/<feature>_api.dart`; los controllers y estados de UI viven en Frontend.
 Consulta la [frontera](../docs/architecture/frontend-backend-boundary.md).

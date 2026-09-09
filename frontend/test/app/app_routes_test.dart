@@ -1,8 +1,8 @@
-import 'package:agrocampo/app/routing/app_router.dart';
-import 'package:agrocampo/app/routing/app_routes.dart';
-import 'package:agrocampo_backend/features/auth/controllers/session_controller.dart';
-import 'package:agrocampo_backend/features/auth/domain/session_state.dart';
-import 'package:agrocampo_backend/features/labors/domain/labor_type.dart';
+import 'package:agrocampo/src/app/routing/app_router.dart';
+import 'package:agrocampo/src/app/routing/app_routes.dart';
+import 'package:agrocampo/src/modules/auth/auth_ui.dart';
+import 'package:agrocampo_backend/src/modules/auth/domain/entities/session_state.dart';
+import 'package:agrocampo_backend/src/modules/labors/domain/entities/labor_type.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -14,7 +14,10 @@ void main() {
     );
     expect(AppRoutes.sector('sector 1'), '/sectores/sector%201');
     expect(
-      AppRoutes.labor(LaborType.diseaseAndPestControl, sectorId: 'sector 1'),
+      AppRoutes.labor(
+        LaborType.diseaseAndPestControl.name,
+        sectorId: 'sector 1',
+      ),
       '/registrar/labor/diseaseAndPestControl?sectorId=sector+1',
     );
     expect(
@@ -49,7 +52,7 @@ void main() {
         AppRoutes.sector('sector-1'),
         AppRoutes.sectorRotation('sector-1'),
         AppRoutes.sectorHistory('sector-1'),
-        AppRoutes.labor(LaborType.fertilization, sectorId: 'sector-1'),
+        AppRoutes.labor(LaborType.fertilization.name, sectorId: 'sector-1'),
         AppRoutes.soilFor(sectorId: 'sector-1'),
         AppRoutes.irrigationFor(sectorId: 'sector-1'),
         AppRoutes.irrigationConfigurationFor(sectorId: 'sector-1'),

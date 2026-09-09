@@ -1,6 +1,6 @@
-import 'package:agrocampo_backend/core/database/app_database.dart';
-import 'package:agrocampo_backend/features/history/domain/history_event.dart';
-import 'package:agrocampo_backend/features/history/repositories/history_repository.dart';
+import 'package:agrocampo_backend/src/modules/history/domain/entities/history_event.dart';
+import 'package:agrocampo_backend/src/modules/history/infrastructure/persistence/history_repository.dart';
+import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_test/flutter_test.dart';
 

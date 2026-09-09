@@ -4,8 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('all MVP screens have an implemented route or shell destination', () {
-    final router = File('lib/app/routing/app_router.dart').readAsStringSync();
-    final routes = File('../backend/lib/shared/contracts/app_routes.dart')
+    final router = File('lib/src/app/routing/app_router.dart')
+        .readAsStringSync();
+    final routes = File('lib/src/app/routing/app_routes.dart')
         .readAsStringSync();
     for (final route in [
       '/inicio',

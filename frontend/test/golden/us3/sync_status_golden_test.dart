@@ -1,7 +1,7 @@
-import 'package:agrocampo/app/theme/agro_theme.dart';
-import 'package:agrocampo/features/sync_status/presentation/sync_status_page.dart';
-import 'package:agrocampo_backend/core/config/backend_providers.dart';
-import 'package:agrocampo_backend/core/database/app_database.dart';
+import 'package:agrocampo/src/app/theme/agro_theme.dart';
+import 'package:agrocampo/src/modules/sync_status/presentation/pages/sync_status_page.dart';
+import 'package:agrocampo_backend/src/composition/backend_providers.dart';
+import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

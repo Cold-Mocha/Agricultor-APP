@@ -1,5 +1,5 @@
 import 'package:agrocampo_backend/agrocampo_backend.dart';
-import 'package:agrocampo_backend/core/config/backend_providers.dart';
+import 'package:agrocampo_backend/src/composition/backend_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -16,7 +16,7 @@ void main() {
       overrides: [appDatabaseProvider.overrideWithValue(database)],
     );
     final id = await container
-        .read(parcelControllerProvider)
+        .read(parcelFacadeProvider)
         .save(
           const ParcelFormInput(
             ownerId: 'owner-1',
@@ -32,8 +32,8 @@ void main() {
     final restored = ProviderContainer(
       overrides: [appDatabaseProvider.overrideWithValue(reopened)],
     );
-    final view = await restored.read(parcelControllerProvider).load(id);
-    expect(view, isA<ParcelView>());
+    final view = await restored.read(parcelFacadeProvider).load(id);
+    expect(view, isA<ParcelSummary>());
     expect(view!.name, 'Parcela offline');
     expect(view.locality, 'Chillán');
     final pending = await (reopened.select(
@@ -55,7 +55,7 @@ void main() {
         overrides: [appDatabaseProvider.overrideWithValue(database)],
       );
       addTearDown(container.dispose);
-      final controller = container.read(contextOptionsControllerProvider);
+      final controller = container.read(contextOptionsQueriesProvider);
       final options = await controller
           .watchSectors('owner-1', 'parcel-1')
           .first;

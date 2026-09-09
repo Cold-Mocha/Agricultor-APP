@@ -1,0 +1,29 @@
+final class LaborContext {
+  const LaborContext({
+    required this.parcelId,
+    required this.sectorId,
+    required this.seasonId,
+    required this.assignmentId,
+    required this.cropId,
+    required this.isCustomCrop,
+  });
+
+  final String parcelId;
+  final String sectorId;
+  final String seasonId;
+  final String assignmentId;
+  final String cropId;
+  final bool isCustomCrop;
+}
+
+abstract interface class LaborContextReader {
+  Future<LaborContext> resolveContext({
+    required String ownerId,
+    required String parcelId,
+    required String sectorId,
+    required DateTime occurredAt,
+    String? seasonId,
+    String? cropAssignmentId,
+    bool correction = false,
+  });
+}

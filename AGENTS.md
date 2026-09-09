@@ -14,8 +14,8 @@ defines production architecture or adds product scope.
 ## Build, Test, and Development Commands
 
 For documentation-only changes, use the validation procedures in the canonical `quickstart.md` and
-run the Spec Kit consistency checks. Run Flutter commands inside `frontend/` or `backend/`, each
-with its own `pubspec.yaml`. Run Drift generation inside `backend/`; run APK builds and Android
+run the Spec Kit consistency checks. Resolve dependencies once from the root Pub Workspace, then
+run Flutter analysis/tests inside `frontend/` or `backend/`. Run Drift generation inside `backend/`; run APK builds and Android
 integration tests inside `frontend/`. Use `supabase --workdir backend ...` from repository root.
 Commands and ownership are documented in `docs/architecture/frontend-backend-boundary.md` and
 version gates remain in `specs/001-agrocampo-android-mvp/quickstart.md`.
@@ -38,8 +38,9 @@ JavaScript, hash routes and existing helpers. For the Android product, follow th
 Flutter/Dart, feature-first `presentation -> domain <- data`, Riverpod, go_router, Drift and
 Supabase. Do not infer Flutter behavior from prototype mock state.
 
-The approved physical boundary is `frontend/` (pages, widgets, navigation and theme) to
-`backend/` (controllers, contracts, domain, repositories and infrastructure). Production frontend
+The approved physical boundary is `frontend/` (pages, widgets, navigation, theme and presentation
+controllers/state) to `backend/` (contracts, application facades, domain, repositories and
+infrastructure). Production frontend
 code may import only `package:agrocampo_backend/agrocampo_backend.dart` from the backend package.
 Never import backend implementation paths, Drift, DAOs, Supabase clients, outbox or sync payloads
 in `frontend/lib/`. Backend code must never import `package:agrocampo/` or contain visual UI.

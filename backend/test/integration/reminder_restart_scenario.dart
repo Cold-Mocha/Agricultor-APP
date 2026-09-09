@@ -1,10 +1,11 @@
-import 'package:agrocampo_backend/core/notifications/local_notification_scheduler.dart';
-import 'package:agrocampo_backend/core/notifications/reminder_reconciler.dart';
-import 'package:agrocampo_backend/features/reminders/domain/reminder.dart';
-import 'package:agrocampo_backend/features/reminders/repositories/reminder_repository.dart';
+import 'package:agrocampo_backend/src/modules/reminders/domain/entities/reminder.dart';
+import 'package:agrocampo_backend/src/modules/reminders/infrastructure/persistence/reminder_repository.dart';
+import 'package:agrocampo_backend/src/platform/notifications/local_notification_scheduler.dart';
+import 'package:agrocampo_backend/src/platform/notifications/reminder_reconciler.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/file_backed_database.dart';
+import '../helpers/reminder_test_payload.dart';
 
 final class _Scheduler implements LocalNotificationScheduler {
   _Scheduler({this.permissionGranted = true, this.failSchedule = false});
@@ -44,14 +45,21 @@ void main() {
           : index < 20
           ? _Scheduler(failSchedule: true)
           : _Scheduler();
-      final reminderId = await ReminderRepository(database, scheduler).save(
-        ownerId: 'owner-1',
-        id: 'reminder-$index',
-        input: ReminderInput(
-          title: 'Labor programada $index',
-          scheduledAt: DateTime.now().add(Duration(days: 2, minutes: index)),
-        ),
-      );
+      final reminderId =
+          await ReminderRepository(
+            database,
+            scheduler,
+            reminderTestPayload,
+          ).save(
+            ownerId: 'owner-1',
+            id: 'reminder-$index',
+            input: ReminderInput(
+              title: 'Labor programada $index',
+              scheduledAt: DateTime.now().add(
+                Duration(days: 2, minutes: index),
+              ),
+            ),
+          );
       reminderIds.add(reminderId);
     }
     expect(await database.select(database.reminders).get(), hasLength(30));
@@ -76,6 +84,7 @@ void main() {
       await ReminderReconciler(
         database,
         recoveredScheduler,
+        reminderTestPayload,
       ).reconcile('owner-1');
       final recovered = await database.select(database.reminders).get();
       expect(recovered, hasLength(30));
@@ -89,7 +98,11 @@ void main() {
     }
 
     final stateScheduler = _Scheduler();
-    final repository = ReminderRepository(database, stateScheduler);
+    final repository = ReminderRepository(
+      database,
+      stateScheduler,
+      reminderTestPayload,
+    );
     for (final id in reminderIds.take(10)) {
       await repository.complete('owner-1', id);
     }
@@ -100,7 +113,11 @@ void main() {
     await database.close();
     database = fixture.open();
     final finalScheduler = _Scheduler();
-    await ReminderReconciler(database, finalScheduler).reconcile('owner-1');
+    await ReminderReconciler(
+      database,
+      finalScheduler,
+      reminderTestPayload,
+    ).reconcile('owner-1');
     final finalRows = await database.select(database.reminders).get();
     expect(finalRows, hasLength(30));
     expect(finalRows.where((row) => row.status == 'completed'), hasLength(10));

@@ -1,8 +1,8 @@
-import 'package:agrocampo/app/theme/agro_tokens.dart';
-import 'package:agrocampo/shared/presentation/components/agricultural_context_selector.dart';
-import 'package:agrocampo_backend/core/config/backend_providers.dart';
-import 'package:agrocampo_backend/features/auth/controllers/session_controller.dart';
-import 'package:agrocampo_backend/features/parcels/repositories/parcel_repository.dart';
+import 'package:agrocampo/src/app/theme/agro_tokens.dart';
+import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
+import 'package:agrocampo/src/modules/auth/auth_ui.dart';
+import 'package:agrocampo_backend/src/composition/backend_providers.dart';
+import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
