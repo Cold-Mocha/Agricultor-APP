@@ -91,11 +91,20 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    if (tester.testTextInput.isRegistered) tester.testTextInput.hide();
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
     await tester.scrollUntilVisible(
       find.text('Guardar actividad'),
       300,
       scrollable: find.byType(Scrollable).first,
     );
+    await tester.ensureVisible(find.text('Guardar actividad'));
+    await tester.drag(
+      find.byType(ListView).first,
+      const Offset(0, -300),
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Guardar actividad'));
     await tester.pumpAndSettle();
 

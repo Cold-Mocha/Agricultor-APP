@@ -50,8 +50,9 @@ Evidencia disponible en el corte:
 - Persistencia: escenario file-backed **PASS — 100 mutaciones y migración v9→v11**.
 - Prototipo: `node agrocampo-acceptance.test.js` y sintaxis JavaScript embebida **PASS**.
 - Alcance: no existe `modules/003` y la búsqueda de funcionalidades prohibidas no encontró hits.
-- El emulador Pixel 8 API 37.1 (`emulator-5554`) está conectado por ADB, pero no hay APK nuevo
-  porque `assembleDebug`/`flutter build apk --debug --no-pub` se atasca.
+- El emulador Pixel 8 API 37.1 (`emulator-5554`) está conectado por ADB y ya se generó/instaló un
+  APK debug nuevo. El procedimiento reproducible, permisos y GPS están documentados en
+  [`android-pixel8-build-plan.md`](android-pixel8-build-plan.md).
 
 ## Las 23 tareas que faltan
 
@@ -62,25 +63,25 @@ define la evidencia que debe quedar en la matriz antes de marcar `[X]`.
 |---|---|---|---|
 | **T013** | Backend | Regenerar Drift y snapshots v11; ejecutar la migración generada y comparar `g.dart`, `drift_schema_v11.json` y schemas de test. | Requiere que `build_runner` termine; hoy se queda colgado. Bloquea T026, T068, T105 y T123. |
 | **T026** | Integración | Ejecutar paridad Dart/PostgreSQL para creación explícita, `kind` inmutable y rechazo sin filas/outbox remotos. | T017–T025 y Supabase/SQL local disponible; CLI/Docker no están instalados. |
-| **T030** | Integración | Ejecutar widget + integration + dispositivo del mapa: crear/editar/confirmar/cancelar, reapertura, GPS denegado y mapa remoto degradado. | T029 y APK compilable en Pixel 8; el build Android actual se atasca. |
+| **T030** | Integración | Ejecutar widget + integration + dispositivo del mapa: crear/editar/confirmar/cancelar, reapertura, GPS denegado y mapa remoto degradado. | T029 y APK compilable en Pixel 8; build y ADB ya están disponibles, falta la matriz completa. |
 | **T050** | Integración | Ejecutar Registrar→detalle→historial→reapertura para labor general, Suelo y Cosecha, verificando una fila/evento y datos completos. | T047/T049 y flujo de historial T100; falta ejecutar el integration test. |
 | **T057** `[P]` | Frontend | Mostrar contexto, fecha efectiva y estados reales de rotación; bloquear activación anticipada y ocultar rotación en `apiary`. | Contrato/backend US3 congelado (T051–T056). Puede hacerse en paralelo con T111/T113/T114. |
 | **T058** | Integración | Probar navegación, planificación, cancelación, activación temporal y reapertura sin tocar historia ni categoría. | T057 + backend T054–T056; requiere integración Flutter estable. |
 | **T068** | Backend | Probar push/pull de riego, duplicate/hash, fallo de especialización y preservación de caudal, duración y presión. | T067 y Supabase SQL; también depende de T013 para el esquema generado. |
-| **T080** | Integración | Probar Manual/Foliar/Fertirriego desde UI hasta detalle/reapertura, sin dosis inventada y rechazando `apiary`. | T079 y backend T076–T078; requiere APK o harness Flutter completo. |
-| **T094** | Integración | Probar todas las familias apícolas, foto, restart, historia única y cruces inválidos crop↔apiary. | T093 y T086–T092; requiere integración Android/file-backed. |
+| **T080** | Integración | Probar Manual/Foliar/Fertirriego desde UI hasta detalle/reapertura, sin dosis inventada y rechazando `apiary`. | T079 y backend T076–T078; APK/harness ya disponible, falta la ejecución completa. |
+| **T094** | Integración | Probar todas las familias apícolas, foto, restart, historia única y cruces inválidos crop↔apiary. | T093 y T086–T092; APK/harness ya disponible, falta la matriz Android/file-backed. |
 | **T105** | Integración | Ejecutar 0001–0020, handlers compound, matriz de categoría, RLS anonymous/owner A/owner B y bypass directo. | Supabase CLI + Docker + pgTAP; no disponibles actualmente. T013 también es prerrequisito. |
-| **T110** | Integración | Probar historial por sus tres entradas, restart, respaldo, ACK perdido y conflicto sin duplicados. | T106/T109 y APK compilable; falta el ciclo Android completo. |
+| **T110** | Integración | Probar historial por sus tres entradas, restart, respaldo, ACK perdido y conflicto sin duplicados. | T106/T109 y APK compilable; build disponible, falta el ciclo Android completo. |
 | **T111** `[P]` | Backend | Reforzar regresiones de weather-proxy/AgroIA: timeout, caché/vigencia, payload mínimo y cero mutaciones/cálculos críticos. | Suites Dart/TypeScript; Edge Functions necesitan Deno/Supabase. Paralela e independiente de T057. |
 | **T113** `[P]` | Frontend | Probar estados degradados, reintento explícito y navegación preservada para clima, AgroIA y exportación. | Contratos existentes; puede ejecutarse en paralelo con T057/T111/T114 si Flutter compila. |
 | **T114** `[P]` | Integración | Ejecutar sólo la regresión mínima de Perfil/Notificaciones/Seguridad demostrada por T001 y registrar PASS/N/A. | No cierra T016/T096/T115/T118 de 002. Paralela si la evidencia de T001 sigue aplicable. |
-| **T115** | Integración | Inyectar fallas independientes de mapa/GPS/clima/AgroIA/Supabase y demostrar continuidad local e aislamiento de sesión. | Pixel 8 + APK actual; el build Android está bloqueado. |
+| **T115** | Integración | Inyectar fallas independientes de mapa/GPS/clima/AgroIA/Supabase y demostrar continuidad local e aislamiento de sesión. | Pixel 8 + APK actual disponibles; falta ejecutar la matriz de fallas. |
 | **T116** | Integración | Verificar privacidad, ausencia de Google Maps, ausencia de cálculos/escrituras autoritativas externas y arquitectura. | Requiere que `flutter analyze` y `check_architecture.dart` produzcan resultado; ambos cuelgan. |
-| **T117** | Integración | Completar E2E representativo SC-004/SC-014 desde navegación pública hasta detalle/historial/reapertura para labor, Suelo, riego, fertilización y apiary. | US1–US7 y APK instalable; es una consolidación, no un sustituto de T030/T050/T080/T094. |
+| **T117** | Integración | Completar E2E representativo SC-004/SC-014 desde navegación pública hasta detalle/historial/reapertura para labor, Suelo, riego, fertilización y apiary. | US1–US7 y APK instalable disponibles; la suite representativa 7/7 pasa, pero falta verificar navegación pública y criterios completos. |
 | **T118** | Integración | Ejecutar PF-01..PF-30 contra `jerarquía 01.md`, `master.md` y ambos prototipos; exigir implementación+prueba para cada PF “Completado por 003”. | T117 y suites previas. Los 30 PF ya están clasificados, pero falta la ejecución final. |
 | **T119** | Backend | Ejecutar format, analyze y suite backend completa de G0–G10/G12 y registrar comandos/salidas reproducibles. | `dart format --set-exit-if-changed` no converge por fin de línea/SDK; `flutter analyze` no entrega salida. |
-| **T120** | Frontend | Ejecutar format, analyze, widgets, goldens e integration completos y registrar resultados. | Build Gradle/APK bloqueado; format/analyze presentan los mismos bloqueos del entorno. |
-| **T121** | Integración | Ejecutar pgTAP/RLS/RPC, Deno de Edge Functions y Android API 24+ en stacks desechables configurados por `quickstart.md`. | Faltan Supabase, Docker, Deno y build Android; no se debe simular PASS. |
+| **T120** | Frontend | Ejecutar format, analyze, widgets, goldens e integration completos y registrar resultados. | APK ya compilable; format/analyze siguen sin salida reproducible y falta la suite completa. |
+| **T121** | Integración | Ejecutar pgTAP/RLS/RPC, Deno de Edge Functions y Android API 24+ en stacks desechables configurados por `quickstart.md`. | Faltan Supabase, Docker y Deno; API 24+ todavía no se ha ejecutado. |
 | **T123** | Integración | Actualizar de forma append-only el manifest/reporte de Drift v11 y Supabase 0020 y ejecutar `verify-migration.cjs`. | El verificador detecta mismatch histórico en `backend/supabase/config.toml` (hash esperado ≠ bytes actuales). Resolver con evidencia, no sobrescribir historia a ciegas. |
 | **T124** | Integración | Ejecutar Constitution Check, arquitectura, scope guard y gates FR/SC/PF; confirmar US1–US7 completos sin placeholders ni alcance prohibido. | Último paso: depende de T013, T026, T030, T050, T058, T068, T080, T094, T105, T110 y T117–T123. |
 
@@ -98,7 +99,8 @@ define la evidencia que debe quedar en la matriz antes de marcar `[X]`.
 5. **Flujos verticales:** T030, T050, T058, T080 y T094, cada uno después de su backend verde;
    ejecutar widget primero, luego integration/device y registrar la evidencia inmediatamente.
 6. **Durabilidad y resiliencia:** T110 y T115, incluyendo restart, ACK perdido, conflicto y
-   aislamiento de fallas. No reutilizar el APK fechado 2026-09-06 como evidencia de 003.
+   aislamiento de fallas. Usar el APK recién generado y el procedimiento de
+   [`android-pixel8-build-plan.md`](android-pixel8-build-plan.md), no el artefacto fechado 2026-09-06.
 7. **Cierre de calidad:** T116, T119, T120, T121 y T123 pueden correr en paralelo sólo cuando
    sus herramientas estén disponibles y no compartan un artefacto mutable; T123 debe conservar
    el historial del manifest.
@@ -124,7 +126,8 @@ define la evidencia que debe quedar en la matriz antes de marcar `[X]`.
 - **Widget/golden:** T057, T080, T113 y las partes widget de T030/T050/T094 deben comprobar
   contexto visible, errores accionables, borrador preservado, estados degradados y campos reales.
 - **Integration/device:** T030, T050, T058, T080, T094, T110, T115 y T117 deben ejecutarse en el
-  AVD Pixel 8 con APK recién generado; verificar reapertura, historial y confirmación/cancelación.
+  AVD Pixel 8 con APK recién generado; el build/instalación ya está resuelto. Verificar reapertura,
+  historial y confirmación/cancelación en cada suite.
 - **Gate final:** T120 consolida `flutter test`, goldens, format y analyze. Una ejecución atascada
   no cuenta como PASS.
 
@@ -143,8 +146,10 @@ define la evidencia que debe quedar en la matriz antes de marcar `[X]`.
    abierta y no se debe editar manualmente el generado para simular la salida.
 2. **Supabase/Edge:** CLI, Docker y Deno no están disponibles; por ello pgTAP/RLS/RPC/Edge
    Functions no tienen PASS local (T026, T068, T105, T111, T121).
-3. **Android:** ADB ve `emulator-5554`, pero Gradle/`assembleDebug` no entrega un APK actualizado;
-   las pruebas de dispositivo no pueden certificarse con el artefacto viejo.
+3. **Android (resuelto parcialmente):** el SDK Flutter escribible/elevado permite generar e
+   instalar un APK nuevo y las suites representativas del Pixel 8 pasan. Permanecen pendientes
+   las matrices específicas T030/T050/T058/T080/T094/T110/T115/T117 y los gates T120/T121; no se
+   debe declarar PASS por extrapolación.
 4. **Análisis:** `flutter analyze` y `dart run tool/check_architecture.dart` quedan sin salida;
    T116/T119/T120/T124 deben permanecer abiertas.
 5. **Formato:** el SDK vuelve a reportar cambios de formato/fin de línea en cada pasada de

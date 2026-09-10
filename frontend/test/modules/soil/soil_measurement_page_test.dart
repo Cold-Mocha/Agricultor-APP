@@ -27,12 +27,17 @@ void main() {
     final fields = find.byType(TextField);
     await tester.enterText(fields.at(0), '40');
     await tester.enterText(fields.at(1), '6.8');
-    await tester.drag(find.byType(ListView), const Offset(0, -1000));
+    if (tester.testTextInput.isRegistered) tester.testTextInput.hide();
+    FocusManager.instance.primaryFocus?.unfocus();
     await tester.pumpAndSettle();
-    final saveButton = find.ancestor(
-      of: find.text('Guardar medición'),
-      matching: find.byType(FilledButton),
+    await tester.scrollUntilVisible(
+      find.text('Guardar medición'),
+      500,
+      scrollable: find.byType(Scrollable).first,
     );
+    await tester.ensureVisible(find.text('Guardar medición'));
+    await tester.pumpAndSettle();
+    final saveButton = find.widgetWithText(FilledButton, 'Guardar medición');
     await tester.tap(saveButton);
     await tester.pumpAndSettle();
 

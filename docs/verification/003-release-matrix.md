@@ -3,6 +3,9 @@
 El plan detallado de cierre, distribución por carril y dependencias de las 23 tareas abiertas está
 en [`003-remaining-plan.md`](003-remaining-plan.md).
 
+La configuración y el procedimiento reproducible del AVD están en
+[`android-pixel8-build-plan.md`](android-pixel8-build-plan.md).
+
 Estado de la ejecución: `parcial`, salvo G0 documentado en
 [`003-baseline.md`](003-baseline.md). Cada fila debe enlazar una tarea y una suite concreta antes
 de marcarse como completada.
@@ -41,7 +44,7 @@ avanzadas permanecen fuera de alcance.
 | Contratos y especializaciones | PASS — dominio, sectores, labores, riego, apicultura, historial y media | T003–T012, T019–T025, T031–T036, T051–T056, T059–T066, T073–T078, T081–T092 |
 | Reapertura/offline file-backed | PASS — 100 mutaciones y migración v9→v11 | T014, T106 (T013 codegen pendiente) |
 | Prototipo y JavaScript | PASS — `node agrocampo-acceptance.test.js` y sintaxis embebida | G0 (PF regresión completa pendiente) |
-| Pixel 8 API 37.1 (`emulator-5554`) | ADB operativo; `assembleDebug` y dos reintentos de build (incluido `flutter build apk --debug --no-pub`) detenidos sin APK actualizado (el artefacto existente es del 2026-09-06) | T030, T110, T115, T120, T121 |
+| Pixel 8 API 37.1 (`emulator-5554`) | PASS — APK debug nuevo generado e instalado; `android_platform_flow_test.dart` 4/4; `functional_refinement_e2e_test.dart` 7/7; permisos y GPS preparados por ADB | T030, T110, T115, T117, T120, T121 |
 
 ## Bloqueos reproducibles
 
@@ -51,5 +54,6 @@ avanzadas permanecen fuera de alcance.
 - `node docs/architecture/verify-migration.cjs` detecta que el hash histórico de `backend/supabase/config.toml` ya no coincide con el manifiesto; T123 queda pendiente para una actualización append-only.
 
 Las filas PF-01..PF-30 conservan su clasificación en `tasks.md`; las rutas de implementación y
-prueba están presentes para los flujos completados por 003, pero T117/T118 aún requieren ejecución
-E2E en Android y por ello no se declara 003 listo ni se marcan US1–US7 como completas.
+prueba están presentes para los flujos completados por 003. Las suites Android representativas
+están verdes, pero T030/T050/T058/T080/T094/T110/T115/T117/T118 aún requieren sus criterios
+completos y por ello no se declara 003 listo ni se marcan US1–US7 como completas.

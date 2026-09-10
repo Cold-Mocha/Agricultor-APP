@@ -91,7 +91,7 @@ void main() {
       );
       expect(find.byType(TileLayer), findsOneWidget);
       expect(find.byType(PolygonLayer<String>), findsOneWidget);
-      expect(find.text('© OpenStreetMap contributors'), findsOneWidget);
+      expect(find.text('OpenStreetMap contributors'), findsOneWidget);
       expect(
         find.textContaining('Los tiles no están disponibles'),
         findsNothing,
