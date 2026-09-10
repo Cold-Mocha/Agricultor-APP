@@ -1,10 +1,11 @@
 import 'package:agrocampo_backend/agrocampo_backend.dart';
-import 'package:agrocampo_backend/core/config/backend_providers.dart';
-import 'package:agrocampo_backend/core/notifications/local_notification_scheduler.dart';
+import 'package:agrocampo_backend/src/composition/backend_providers.dart';
+import 'package:agrocampo_backend/src/platform/notifications/local_notification_scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/in_memory_database.dart';
+import '../helpers/reminder_test_payload.dart';
 import '../helpers/territory_fixture.dart';
 
 final class _DeniedNotifications implements LocalNotificationScheduler {
@@ -36,7 +37,7 @@ void main() {
       addTearDown(container.dispose);
       await seedAgriculturalContextFixture(database);
 
-      final crops = container.read(cropsControllerProvider);
+      final crops = container.read(cropCyclesFacadeProvider);
       final season = await crops.loadSeason(ownerId: 'owner-1', id: 'season-1');
       expect(season?.status, AgriculturalSeasonStatus.active);
       expect(season?.startsOn, DateTime.utc(2025));
@@ -51,7 +52,7 @@ void main() {
       expect(options?.season.id, 'season-1');
       expect(options?.crops.map((crop) => crop.label), contains('Trigo'));
 
-      final map = container.read(territoryMapControllerProvider);
+      final map = container.read(territoryMapFacadeProvider);
       expect(
         (await map.watchSectors(ownerId: 'owner-1', parcelId: 'parcel-1').first)
             .single
@@ -76,7 +77,7 @@ void main() {
       );
       addTearDown(database.close);
       addTearDown(container.dispose);
-      final ai = container.read(agroAiControllerProvider);
+      final ai = container.read(agroAiFacadeProvider);
 
       await expectLater(
         ai.ask(ownerId: 'owner-1', question: 'Cómo cuidar el cultivo'),
@@ -106,11 +107,14 @@ void main() {
           localNotificationSchedulerProvider.overrideWithValue(
             _DeniedNotifications(),
           ),
+          reminderNotificationPayloadBuilderProvider.overrideWithValue(
+            reminderTestPayload,
+          ),
         ],
       );
       addTearDown(database.close);
       addTearDown(container.dispose);
-      final reminders = container.read(remindersControllerProvider);
+      final reminders = container.read(remindersFacadeProvider);
 
       final id = await reminders.save(
         ownerId: 'owner-1',

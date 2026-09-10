@@ -1,12 +1,13 @@
 import 'dart:io';
 
-import 'package:agrocampo_backend/core/database/app_database.dart';
-import 'package:agrocampo_backend/core/files/private_file_store.dart';
-import 'package:agrocampo_backend/core/notifications/local_notification_scheduler.dart';
-import 'package:agrocampo_backend/features/photos/domain/photo_attachment.dart';
-import 'package:agrocampo_backend/features/photos/repositories/photo_repository.dart';
-import 'package:agrocampo_backend/features/reminders/domain/reminder.dart';
-import 'package:agrocampo_backend/features/reminders/repositories/reminder_repository.dart';
+import 'package:agrocampo/src/app/routing/app_routes.dart';
+import 'package:agrocampo_backend/src/modules/media/domain/entities/photo_attachment.dart';
+import 'package:agrocampo_backend/src/modules/media/infrastructure/persistence/photo_repository.dart';
+import 'package:agrocampo_backend/src/modules/reminders/domain/entities/reminder.dart';
+import 'package:agrocampo_backend/src/modules/reminders/infrastructure/persistence/reminder_repository.dart';
+import 'package:agrocampo_backend/src/platform/database/app_database.dart';
+import 'package:agrocampo_backend/src/platform/files/private_file_store.dart';
+import 'package:agrocampo_backend/src/platform/notifications/local_notification_scheduler.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -63,7 +64,7 @@ void main() {
       ),
     );
     final scheduler = _Scheduler();
-    await ReminderRepository(database, scheduler).save(
+    await ReminderRepository(database, scheduler, AppRoutes.reminder).save(
       ownerId: 'owner-1',
       input: ReminderInput(
         title: 'Revisar riego',

@@ -1,6 +1,6 @@
-import 'package:agrocampo/app/theme/agro_theme.dart';
-import 'package:agrocampo/features/photos/presentation/photo_attachment_page.dart';
-import 'package:agrocampo_backend/core/config/backend_providers.dart';
+import 'package:agrocampo/src/app/theme/agro_theme.dart';
+import 'package:agrocampo/src/modules/media/presentation/pages/photo_attachment_page.dart';
+import 'package:agrocampo_backend/src/composition/backend_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

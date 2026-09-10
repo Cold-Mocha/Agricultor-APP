@@ -48,7 +48,6 @@ void main() {
       'path_provider',
       'workmanager',
       'flutter_local_notifications',
-      'image_picker',
       'geolocator',
       'firebase_core',
       'firebase_messaging',

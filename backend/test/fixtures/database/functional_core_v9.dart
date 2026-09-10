@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:agrocampo_backend/core/database/app_database.dart';
+import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 

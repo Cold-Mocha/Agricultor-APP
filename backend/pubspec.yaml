@@ -4,6 +4,7 @@ publish_to: none
 version: 1.0.0
 environment:
   sdk: ^3.13.0
+resolution: workspace
 dependencies:
   flutter:
     sdk: flutter
@@ -18,7 +19,6 @@ dependencies:
   flutter_riverpod: 3.4.2
   flutter_secure_storage: 10.3.1
   geolocator: 14.0.3
-  image_picker: 1.2.3
   local_auth: 3.0.2
   path: 1.9.1
   path_provider: 2.1.5
@@ -34,8 +34,6 @@ dev_dependencies:
   drift_dev: 2.34.5
   mocktail: 1.0.4
   flutter_lints: ^6.0.0
-dependency_overrides:
-  path_provider_android: 2.2.23
 flutter:
   assets:
     - assets/data/

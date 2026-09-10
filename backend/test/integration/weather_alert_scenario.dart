@@ -1,7 +1,7 @@
-import 'package:agrocampo_backend/features/weather/domain/weather_snapshot.dart';
-import 'package:agrocampo_backend/features/weather/repositories/weather_alert_service.dart';
-import 'package:agrocampo_backend/features/weather/repositories/weather_gateway.dart';
-import 'package:agrocampo_backend/features/weather/repositories/weather_repository.dart';
+import 'package:agrocampo_backend/src/modules/weather/domain/entities/weather_snapshot.dart';
+import 'package:agrocampo_backend/src/modules/weather/infrastructure/persistence/weather_alert_service.dart';
+import 'package:agrocampo_backend/src/modules/weather/infrastructure/persistence/weather_gateway.dart';
+import 'package:agrocampo_backend/src/modules/weather/infrastructure/persistence/weather_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/file_backed_database.dart';
