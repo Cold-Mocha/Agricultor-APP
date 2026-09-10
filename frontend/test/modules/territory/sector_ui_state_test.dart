@@ -44,4 +44,19 @@ void main() {
     expect(state.type, SectorHistoryType.labor);
     expect(state.cropLabel, 'Trigo');
   });
+
+  test('category comes from the stored kind, never from a label', () {
+    final summary = SectorSummary(
+      id: 'sector-2',
+      parcelId: 'parcel-1',
+      number: 2,
+      kind: 'crop',
+      areaSquareMeters: 100,
+      polygonJson: '[]',
+      syncState: 'pending',
+      cropLabel: 'Apicultura',
+      assignmentStatus: null,
+    );
+    expect(SectorUiMapper.fromSummary(summary).isApiary, isFalse);
+  });
 }

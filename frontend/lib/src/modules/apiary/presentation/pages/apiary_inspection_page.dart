@@ -1,10 +1,12 @@
 import 'package:agrocampo/src/app/layout/agro_page.dart';
+import 'package:agrocampo/src/app/routing/app_routes.dart';
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
 import 'package:agrocampo/src/modules/apiary/presentation/controllers/apiary_inspection_controller.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 final class ApiaryInspectionPage extends ConsumerStatefulWidget {
   const ApiaryInspectionPage({this.sectorId, super.key});
@@ -27,6 +29,16 @@ final class _ApiaryInspectionPageState
   final _observations = TextEditingController();
   ApiaryTaskType _task = ApiaryTaskType.inspection;
   bool _superInstalled = false;
+  BoundAgriculturalContext? _bound;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _bound ??= BoundAgriculturalContext.from(
+      ref.read(agriculturalContextControllerProvider),
+      sectorId: widget.sectorId,
+    );
+  }
 
   @override
   void dispose() {
@@ -47,10 +59,23 @@ final class _ApiaryInspectionPageState
 
   @override
   Widget build(BuildContext context) => AgroPage(
-    title: 'Revisión apícola',
-    subtitle: 'El apicultor es un dato descriptivo, no una cuenta',
-    child: ListView(
-      children: [
+      title: 'Revisión apícola',
+      subtitle: 'El apicultor es un dato descriptivo, no una cuenta',
+      child: ListView(
+        children: [
+        if (widget.sectorId != null) ...[
+          BoundAgriculturalContextCard(
+            bound: _bound!,
+            changed: _bound!.differsFrom(
+              ref.watch(agriculturalContextControllerProvider),
+            ),
+            onRebind: () => setState(
+              () => _bound = BoundAgriculturalContext.from(
+                ref.read(agriculturalContextControllerProvider),
+              ),
+            ),
+          ),
+        ],
         DropdownButtonFormField<ApiaryTaskType>(
           initialValue: _task,
           decoration: const InputDecoration(labelText: 'Tipo de tarea'),
@@ -73,6 +98,14 @@ final class _ApiaryInspectionPageState
           title: const Text('Alza instalada'),
         ),
         _field(_observations, 'Observaciones'),
+        if (widget.sectorId != null)
+          OutlinedButton.icon(
+            onPressed: () => context.push(
+              AppRoutes.photoFor(sectorId: _bound?.sectorId ?? widget.sectorId),
+            ),
+            icon: const Icon(Icons.add_a_photo_outlined),
+            label: const Text('Adjuntar fotografía'),
+          ),
         const SizedBox(height: AgroSpacing.md),
         FilledButton(onPressed: _save, child: const Text('Guardar revisión')),
       ],
@@ -86,6 +119,7 @@ final class _ApiaryInspectionPageState
   }) => Padding(
     padding: const EdgeInsets.only(top: AgroSpacing.sm),
     child: TextField(
+      key: ValueKey('apiary-$label'),
       controller: controller,
       keyboardType: number ? TextInputType.number : TextInputType.text,
       decoration: InputDecoration(labelText: label),
@@ -93,10 +127,16 @@ final class _ApiaryInspectionPageState
   );
 
   Future<void> _save() async {
-    final sectorId =
-        widget.sectorId ??
-        ref.read(agriculturalContextControllerProvider).sectorId;
+    final sectorId = _bound?.sectorId ?? widget.sectorId;
     if (sectorId == null) return;
+    if (_bound?.category != ProductiveCategory.apiary) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Selecciona una unidad apícola para esta operación.'),
+        ),
+      );
+      return;
+    }
     final saved = await ref
         .read(apiaryInspectionControllerProvider)
         .save(

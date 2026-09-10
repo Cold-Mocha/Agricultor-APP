@@ -17,6 +17,9 @@ final class ProductionPage extends ConsumerStatefulWidget {
 final class _ProductionPageState extends ConsumerState<ProductionPage> {
   final _quantity = TextEditingController();
   final _quality = TextEditingController();
+  final _destination = TextEditingController();
+  final _workShift = TextEditingController();
+  final _observations = TextEditingController();
   String _unit = 'kg';
   BoundAgriculturalContext? _bound;
   bool _saving = false;
@@ -34,6 +37,9 @@ final class _ProductionPageState extends ConsumerState<ProductionPage> {
   void dispose() {
     _quantity.dispose();
     _quality.dispose();
+    _destination.dispose();
+    _workShift.dispose();
+    _observations.dispose();
     super.dispose();
   }
 
@@ -83,6 +89,28 @@ final class _ProductionPageState extends ConsumerState<ProductionPage> {
           decoration: const InputDecoration(labelText: 'Cantidad cosechada'),
         ),
         const SizedBox(height: AgroSpacing.sm),
+        TextField(
+          key: const ValueKey('production-destination'),
+          controller: _destination,
+          decoration: const InputDecoration(labelText: 'Destino (opcional)'),
+        ),
+        const SizedBox(height: AgroSpacing.sm),
+        TextField(
+          key: const ValueKey('production-work-shift'),
+          controller: _workShift,
+          decoration: const InputDecoration(labelText: 'Jornada (opcional)'),
+        ),
+        const SizedBox(height: AgroSpacing.sm),
+        TextField(
+          key: const ValueKey('production-observations'),
+          controller: _observations,
+          minLines: 2,
+          maxLines: 4,
+          decoration: const InputDecoration(
+            labelText: 'Observaciones (opcional)',
+          ),
+        ),
+        const SizedBox(height: AgroSpacing.sm),
         DropdownButtonFormField<String>(
           initialValue: _unit,
           decoration: const InputDecoration(labelText: 'Unidad'),
@@ -95,6 +123,7 @@ final class _ProductionPageState extends ConsumerState<ProductionPage> {
         ),
         const SizedBox(height: AgroSpacing.sm),
         TextField(
+          key: const ValueKey('production-quality'),
           controller: _quality,
           decoration: const InputDecoration(
             labelText: 'Calidad u observaciones (opcional)',
@@ -128,6 +157,9 @@ final class _ProductionPageState extends ConsumerState<ProductionPage> {
               quantity: _quantity.text,
               unit: _unit,
               qualityNotes: _quality.text,
+              destination: _destination.text,
+              workShift: _workShift.text,
+              observations: _observations.text,
             ),
           );
       if (!mounted) return;

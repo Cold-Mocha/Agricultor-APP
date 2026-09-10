@@ -65,7 +65,11 @@ final class SectorRepository {
     required List<GeoPoint> polygon,
     String kind = 'crop',
     String? id,
+    int? expectedVersion,
   }) async {
+    if (kind != 'crop' && kind != 'apiary' && kind != 'legacyUnknown') {
+      throw ArgumentError.value(kind, 'kind', 'sector_kind_invalid');
+    }
     final normalizedPolygon = PolygonGeometry.normalize(polygon);
     final geometryError = PolygonGeometry.validationError(normalizedPolygon);
     if (geometryError != null) {
@@ -101,6 +105,14 @@ final class SectorRepository {
               ))
               .getSingleOrNull();
     if (id != null && existing == null) throw StateError('sector_not_found');
+    if (existing != null && existing.kind != kind) {
+      throw StateError('sector_kind_immutable');
+    }
+    if (existing != null &&
+        expectedVersion != null &&
+        existing.version != expectedVersion) {
+      throw StateError('sector_stale_version');
+    }
     final nextVersion = (existing?.version ?? 0) + 1;
     final polygonJson = jsonEncode(
       normalizedPolygon.map((point) => point.toJson()).toList(growable: false),
@@ -163,6 +175,28 @@ final class SectorRepository {
     );
     return sectorId;
   }
+
+  /// Explicit 003 command. New callers must supply the immutable category and
+  /// the version they edited; legacy `save` remains for 001/002 fixtures.
+  Future<String> saveConfirmed({
+    required String ownerId,
+    required String parcelId,
+    required int number,
+    required String name,
+    required String kind,
+    required List<GeoPoint> polygon,
+    String? id,
+    int? expectedVersion,
+  }) => save(
+    ownerId: ownerId,
+    parcelId: parcelId,
+    number: number,
+    name: name,
+    kind: kind,
+    polygon: polygon,
+    id: id,
+    expectedVersion: expectedVersion,
+  );
 
   Future<void> archive({required String ownerId, required String id}) async {
     final row =

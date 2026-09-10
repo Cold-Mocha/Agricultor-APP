@@ -5,6 +5,9 @@ final class HarvestInput {
     required this.unit,
     required this.harvestedAt,
     this.qualityNotes,
+    this.destination,
+    this.workShift,
+    this.observations,
   });
 
   final String cropId;
@@ -12,6 +15,9 @@ final class HarvestInput {
   final String unit;
   final DateTime harvestedAt;
   final String? qualityNotes;
+  final String? destination;
+  final String? workShift;
+  final String? observations;
 
   void validate() {
     if (cropId.isEmpty || quantity <= 0 || unit.trim().isEmpty) {

@@ -113,6 +113,7 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
                                         title: Text(event.title),
                                         subtitle: Text(
                                           [
+                                            event.category.code,
                                             if (event.cropLabel != null)
                                               event.cropLabel!,
                                             if (event.detail != null &&
@@ -122,7 +123,7 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
                                           ].join(' · '),
                                         ),
                                         trailing: Tooltip(
-                                          message: _syncLabel(event.syncState),
+                                          message: _syncLabel(event.syncState, event.backupState),
                                           child: Icon(
                                             event.syncState == 'synced'
                                                 ? Icons.cloud_done_outlined
@@ -161,9 +162,11 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
     HistoryEventType.soil => Icons.science_outlined,
   };
 
-  String _syncLabel(String state) => switch (state) {
-    'synced' => 'Sincronizado',
-    'conflict' => 'Conflicto pendiente',
+  String _syncLabel(String state, BackupState backup) => switch (backup) {
+    BackupState.backedUp => 'Respaldado',
+    BackupState.conflict => 'Conflicto pendiente',
+    BackupState.syncing => 'Sincronizando',
+    BackupState.error => 'Error de respaldo; reintento disponible',
     _ => 'Guardado localmente; pendiente de sincronizar',
   };
 

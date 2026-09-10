@@ -4,8 +4,14 @@ final class ProductionFormInput {
     required this.quantity,
     required this.unit,
     required this.qualityNotes,
+    this.destination,
+    this.workShift,
+    this.observations,
   });
   final String sectorId, quantity, unit, qualityNotes;
+  final String? destination;
+  final String? workShift;
+  final String? observations;
 }
 
 final class HarvestContextSummary {

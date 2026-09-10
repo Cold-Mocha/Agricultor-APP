@@ -8,6 +8,7 @@ final class PhytosanitaryDetails {
     required this.dose,
     required this.unit,
     this.safetyIntervalDays,
+    this.observations,
   });
 
   final String product;
@@ -15,6 +16,7 @@ final class PhytosanitaryDetails {
   final double dose;
   final String unit;
   final int? safetyIntervalDays;
+  final String? observations;
 
   LaborDetails toEnvelope() {
     if (product.trim().isEmpty ||
@@ -30,6 +32,8 @@ final class PhytosanitaryDetails {
       'dose': dose,
       'unit': unit.trim(),
       'safetyIntervalDays': safetyIntervalDays,
+      if (observations?.trim().isNotEmpty ?? false)
+        'observations': observations!.trim(),
     });
   }
 }

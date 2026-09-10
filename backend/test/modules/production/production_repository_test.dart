@@ -20,11 +20,17 @@ void main() {
         quantity: 1250,
         unit: 'kg',
         harvestedAt: DateTime.utc(2026, 2),
+        destination: 'Mercado local',
+        workShift: 'Mañana',
+        observations: 'Fruta seleccionada',
       ),
     );
     final row = await database.select(database.productionRecords).getSingle();
     expect(row.cropId, 'trigo');
     expect(row.quantity, 1250);
+    final labor = await database.select(database.labors).getSingle();
+    expect(labor.detailsJson, contains('Mercado local'));
+    expect(labor.detailsJson, contains('Mañana'));
     expect(await database.select(database.syncOutbox).get(), hasLength(1));
   });
 }

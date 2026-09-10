@@ -43,6 +43,7 @@ final class TerritoryMapFacade {
                     id: row.id,
                     parcelId: row.parcelId,
                     name: row.name,
+                    kind: row.kind,
                   ),
                 )
                 .toList(growable: false),
@@ -70,6 +71,7 @@ final class TerritoryMapFacade {
             id: row.id,
             parcelId: row.parcelId,
             name: row.name,
+            kind: row.kind,
           );
   }
 
@@ -124,14 +126,17 @@ final class TerritoryMapFacade {
       (value, row) => row.number > value ? row.number : value,
     );
     final row = matches.isEmpty ? null : matches.first;
-    return SectorRepository(_database).save(
+    final kind = row?.kind ?? input.kind;
+    if (kind == null) throw StateError('sector_kind_required');
+    return SectorRepository(_database).saveConfirmed(
       ownerId: ownerId,
       parcelId: input.parcelId,
       id: row?.id,
       number: row?.number ?? highest + 1,
       name: row?.name ?? 'Sector ${highest + 1}',
-      kind: row?.kind ?? 'crop',
+      kind: kind,
       polygon: input.polygon,
+      expectedVersion: input.expectedVersion ?? row?.version,
     );
   }
 

@@ -175,6 +175,7 @@ final class CropCyclesFacade {
                   row.deletedAt.isNull(),
             ))
             .getSingle();
+    if (sector.kind != 'crop') throw StateError('operation_requires_crop');
     final season =
         await (_database.select(_database.agriculturalSeasons)..where(
               (row) =>

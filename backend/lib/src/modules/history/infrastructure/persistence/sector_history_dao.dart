@@ -26,13 +26,11 @@ final class SectorHistoryDao {
     if (filter.to != null) {
       query.where((row) => row.occurredAt.isSmallerOrEqualValue(filter.to!));
     }
-    query
-      ..orderBy([
+    query.orderBy([
         (row) => OrderingTerm.desc(row.occurredAt),
         (row) => OrderingTerm.asc(row.type),
         (row) => OrderingTerm.asc(row.id),
-      ])
-      ..limit(filter.limit, offset: filter.offset);
+      ]);
     return query.get();
   }
 

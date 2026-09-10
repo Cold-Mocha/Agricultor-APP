@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:agrocampo_backend/src/modules/labors/contracts/labor_context.dart';
 import 'package:agrocampo_backend/src/modules/labors/domain/entities/labor_details.dart';
 import 'package:agrocampo_backend/src/modules/labors/domain/entities/labor_type.dart';
+import 'package:agrocampo_backend/src/modules/agricultural_context/domain/entities/productive_domain.dart';
+import 'package:agrocampo_backend/src/modules/agricultural_context/domain/services/domain_compatibility_policy.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:agrocampo_backend/src/platform/sync/sync_request_hash.dart';
 import 'package:agrocampo_backend/src/shared/kernel/entity_id.dart';
@@ -57,6 +59,45 @@ final class LaborRepository implements LaborContextReader {
       cropAssignmentId: cropAssignmentId,
       correction: supersedesLaborId != null,
     );
+    final sector = await (_database.select(_database.sectors)..where(
+          (row) => row.id.equals(sectorId) & row.ownerId.equals(ownerId),
+        ))
+        .getSingle();
+    final category = ProductiveCategory.fromCode(sector.kind);
+    final operation = switch (type) {
+      LaborType.soil => ProductiveOperation.soilMeasure,
+      LaborType.irrigation => ProductiveOperation.irrigationRecord,
+      LaborType.fertilization => ProductiveOperation.fertilizationRecord,
+      LaborType.diseaseAndPestControl => ProductiveOperation.phytosanitaryRecord,
+      LaborType.cultivation => ProductiveOperation.cultivationRecord,
+      LaborType.harvest => ProductiveOperation.vegetableHarvest,
+      LaborType.apiary => ProductiveOperation.apiaryInspection,
+      LaborType.sowing || LaborType.pruning || LaborType.other =>
+        ProductiveOperation.otherVegetableLabor,
+    };
+    final compatibility = const DomainCompatibilityPolicy().evaluate(
+      category: category,
+      operation: operation,
+      context: sectorId,
+    );
+    if (!compatibility.isAllowed) {
+      throw StateError((compatibility as CompatibilityRejected).code);
+    }
+    final linkedValue = effectiveDetails.data['irrigationLaborId'];
+    if (type == LaborType.fertilization &&
+        linkedValue is String &&
+        linkedValue.trim().isNotEmpty) {
+      final linkedId = linkedValue.trim();
+      final linked = await (_database.select(_database.labors)..where(
+            (row) =>
+                row.id.equals(linkedId as String) &
+                row.ownerId.equals(ownerId) &
+                row.sectorId.equals(sectorId) &
+                row.type.equals(LaborType.irrigation.name),
+          ))
+          .getSingleOrNull();
+      if (linked == null) throw StateError('irrigation_link_invalid');
+    }
     final laborId = id ?? EntityId.generate().value;
     final existing =
         await (_database.select(_database.labors)..where(
@@ -73,6 +114,7 @@ final class LaborRepository implements LaborContextReader {
       'agricultural_season_id': context.seasonId,
       'crop_assignment_id': context.assignmentId,
       'type': type.name,
+      'domain_category': category.code,
       'custom_name': customName?.trim(),
       'details': effectiveDetails.toJson(),
       'details_schema_version': effectiveDetails.schemaVersion,
@@ -90,9 +132,8 @@ final class LaborRepository implements LaborContextReader {
       context.assignmentId,
     );
     await _database.syncOutboxDao.transactionWithOutbox<void>(
-      writeAggregate: () => _database
-          .into(_database.labors)
-          .insert(
+      writeAggregate: () async {
+        await _database.into(_database.labors).insert(
             LaborsCompanion.insert(
               id: laborId,
               ownerId: ownerId,
@@ -112,7 +153,12 @@ final class LaborRepository implements LaborContextReader {
               syncState: const Value('pending'),
               updatedAt: now,
             ),
-          ),
+          );
+        await _database.customUpdate(
+          'UPDATE labors SET domain_category = ? WHERE id = ?',
+          variables: [Variable(category.code), Variable(laborId)],
+        );
+      },
       operation: _operation(
         ownerId: ownerId,
         aggregateId: laborId,
@@ -254,6 +300,7 @@ final class LaborRepository implements LaborContextReader {
       assignmentId: assignment.id,
       cropId: assignment.cropId,
       isCustomCrop: assignment.isCustomCrop,
+      category: ProductiveCategory.fromCode(sector.kind),
     );
   }
 

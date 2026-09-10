@@ -15,6 +15,23 @@ void main() {
     expect((result as IrrigationUnavailable).code, 'crop_rule_unavailable');
   });
 
+  test('basic drip volume uses deterministic half-up arithmetic only', () {
+    expect(
+      IrrigationCalculator.basicDripVolumeMl(
+        totalFlowMlPerMinute: 101,
+        durationSeconds: 30,
+      ),
+      51,
+    );
+    expect(
+      IrrigationCalculator.basicDripVolumeMl(
+        totalFlowMlPerMinute: 4000,
+        durationSeconds: 1800,
+      ),
+      120000,
+    );
+  });
+
   test('scaled integer engine is deterministic for a test-only rule', () {
     final rule = IrrigationRuleSet(
       id: 'synthetic-test-only',

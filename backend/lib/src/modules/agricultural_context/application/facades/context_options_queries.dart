@@ -1,5 +1,7 @@
 import 'package:agrocampo_backend/src/modules/agricultural_context/contracts/dto/context_options.dart';
 import 'package:agrocampo_backend/src/modules/agricultural_context/domain/entities/agricultural_context.dart';
+import 'package:agrocampo_backend/src/modules/agricultural_context/domain/entities/productive_domain.dart';
+import 'package:agrocampo_backend/src/modules/agricultural_context/domain/services/domain_compatibility_policy.dart';
 import 'package:agrocampo_backend/src/modules/territory/territory_api.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,7 +33,11 @@ final class ContextOptionsQueries {
           .map(
             (sectors) => sectors
                 .map(
-                  (sector) => ContextOption(id: sector.id, name: sector.name),
+                  (sector) => ContextOption(
+                    id: sector.id,
+                    name: sector.name,
+                    category: ProductiveCategory.fromCode(sector.kind),
+                  ),
                 )
                 .toList(growable: false),
           );
@@ -51,6 +57,14 @@ final class ContextOptionsQueries {
     return BoundContextSummary(
       parcelName: parcel?.name,
       sectorName: sector?.name,
+      category: sector == null
+          ? null
+          : ProductiveCategory.fromCode(sector.kind),
+      allowedOperations: sector == null
+          ? const []
+          : const DomainCompatibilityPolicy().allowedOperations(
+              ProductiveCategory.fromCode(sector.kind),
+            ),
     );
   }
 }

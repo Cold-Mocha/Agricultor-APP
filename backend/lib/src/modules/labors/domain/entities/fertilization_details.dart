@@ -7,12 +7,16 @@ final class FertilizationDetails {
     required this.amount,
     required this.unit,
     required this.applicationMethod,
+    this.observations,
+    this.irrigationLaborId,
   });
 
   final String product;
   final double amount;
   final String unit;
   final String applicationMethod;
+  final String? observations;
+  final String? irrigationLaborId;
 
   LaborDetails toEnvelope() {
     if (product.trim().isEmpty ||
@@ -26,6 +30,19 @@ final class FertilizationDetails {
       'amount': amount,
       'unit': unit.trim(),
       'applicationMethod': applicationMethod.trim(),
+      if (observations?.trim().isNotEmpty ?? false)
+        'observations': observations!.trim(),
+      if (irrigationLaborId?.trim().isNotEmpty ?? false)
+        'irrigationLaborId': irrigationLaborId!.trim(),
     });
   }
+}
+
+enum FertilizationMethod {
+  manual('manual'),
+  foliar('foliar'),
+  fertigation('fertigation');
+
+  const FertilizationMethod(this.code);
+  final String code;
 }

@@ -46,6 +46,9 @@ final class SectorCropAssignmentSyncCodec implements AggregateSyncCodec {
         sector.parcelId != season.parcelId) {
       throw const FormatException('crop_assignment_parent_missing');
     }
+    if (sector.kind != 'crop') {
+      throw const FormatException('operation_requires_crop');
+    }
     final isCustom = payload['is_custom_crop']! as bool;
     final cropId = payload['crop_id']! as String;
     final cropExists = isCustom

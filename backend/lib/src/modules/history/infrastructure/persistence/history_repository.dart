@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:agrocampo_backend/src/modules/history/domain/entities/history_event.dart';
+import 'package:agrocampo_backend/src/modules/agricultural_context/domain/entities/productive_domain.dart';
+import 'package:agrocampo_backend/src/modules/agricultural_context/contracts/dto/save_outcome.dart';
 import 'package:agrocampo_backend/src/modules/history/infrastructure/persistence/sector_history_dao.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:drift/drift.dart';
@@ -24,6 +28,10 @@ final class HistoryRepository {
         filter.ownerId,
         labors.map((row) => row.cropAssignmentId),
       );
+      final categories = await _sectorCategories(
+        filter.ownerId,
+        labors.map((row) => row.sectorId),
+      );
       for (final row in labors) {
         final production = productions[row.id];
         final irrigation = irrigations[row.id];
@@ -45,6 +53,9 @@ final class HistoryRepository {
                 : row.notes,
             status: row.status,
             syncState: row.syncState,
+            category: categories[row.sectorId] ?? ProductiveCategory.legacyUnknown,
+            backupState: _backupState(row.syncState),
+            details: _decodeDetails(row.detailsJson),
           ),
         );
       }
@@ -73,13 +84,30 @@ final class HistoryRepository {
                 : '${_date(row.startsOn)} – ${_date(row.endsOn!)}',
             status: row.status,
             syncState: row.syncState,
+            category: ProductiveCategory.crop,
+            backupState: _backupState(row.syncState),
           ),
         ),
       );
     }
     if (filter.type == null || filter.type == HistoryEventType.soil) {
+      final soilRows = await _dao.soil(filter);
+      final linkedSoilIds = soilRows.isEmpty
+          ? const <String>{}
+          : (await _database
+                .customSelect(
+                  'SELECT id FROM soil_measurements WHERE id IN (${List.filled(soilRows.length, '?').join(',')}) AND labor_id IS NOT NULL',
+                  variables: [for (final row in soilRows) Variable(row.id)],
+                )
+                .get())
+              .map((row) => row.read<String>('id'))
+              .toSet();
+      final soilCategories = await _sectorCategories(
+        filter.ownerId,
+        soilRows.map((row) => row.sectorId),
+      );
       events.addAll(
-        (await _dao.soil(filter)).map(
+        soilRows.where((row) => !linkedSoilIds.contains(row.id)).map(
           (row) => HistoryEvent(
             id: row.id,
             groupingKey: 'soil:${row.id}',
@@ -89,17 +117,59 @@ final class HistoryRepository {
             sectorId: row.sectorId,
             detail: row.notes,
             syncState: 'local',
+            category: soilCategories[row.sectorId] ?? ProductiveCategory.legacyUnknown,
+            backupState: BackupState.pending,
           ),
         ),
       );
     }
-    events.sort((left, right) {
+    final filtered = filter.category == null
+        ? events
+        : events.where((event) => event.category == filter.category).toList();
+    filtered.sort((left, right) {
       final date = right.occurredAt.compareTo(left.occurredAt);
       if (date != 0) return date;
       final type = left.type.index.compareTo(right.type.index);
       return type != 0 ? type : left.id.compareTo(right.id);
     });
-    return events.take(filter.limit).toList(growable: false);
+    final start = filter.offset.clamp(0, filtered.length);
+    final end = (start + filter.limit).clamp(start, filtered.length);
+    return filtered.sublist(start, end).toList(growable: false);
+  }
+
+  Future<Map<String, ProductiveCategory>> _sectorCategories(
+    String ownerId,
+    Iterable<String> ids,
+  ) async {
+    final values = ids.toSet();
+    if (values.isEmpty) return const {};
+    final rows = await (_database.select(_database.sectors)..where(
+          (row) => row.ownerId.equals(ownerId) & row.id.isIn(values),
+        ))
+        .get();
+    return {for (final row in rows) row.id: ProductiveCategory.fromCode(row.kind)};
+  }
+
+  BackupState _backupState(String state) => switch (state) {
+    'synced' || 'done' => BackupState.backedUp,
+    'conflict' => BackupState.conflict,
+    'error' => BackupState.error,
+    'syncing' || 'sending' => BackupState.syncing,
+    _ => BackupState.pending,
+  };
+
+  Map<String, Object?> _decodeDetails(String source) {
+    try {
+      final value = jsonDecode(source);
+      if (value is Map<String, Object?>) {
+        final data = value['data'];
+        if (data is Map<String, Object?>) return data;
+        return value;
+      }
+    } on Object {
+      // Legacy malformed rows remain visible with an empty typed detail.
+    }
+    return const {};
   }
 
   Future<Map<String?, String>> _seasonLabels(

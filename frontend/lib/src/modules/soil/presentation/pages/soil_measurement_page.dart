@@ -97,6 +97,15 @@ final class _SoilMeasurementPageState
             nitrogen: _number(4),
             phosphorus: _number(5),
             potassium: _number(6),
+            units: const {
+              'moisturePercent': '%',
+              'ph': 'pH',
+              'temperatureCelsius': '°C',
+              'conductivity': 'mS/cm',
+              'nitrogen': 'mg/kg',
+              'phosphorus': 'mg/kg',
+              'potassium': 'mg/kg',
+            },
           ),
         );
     if (!mounted || !saved) return;

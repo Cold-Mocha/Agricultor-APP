@@ -6,12 +6,37 @@ import 'package:agrocampo_backend/src/modules/labors/domain/entities/pruning_det
 import 'package:agrocampo_backend/src/modules/labors/infrastructure/persistence/labor_repository.dart';
 import 'package:agrocampo_backend/src/modules/production/domain/entities/harvest_input.dart';
 import 'package:agrocampo_backend/src/modules/production/infrastructure/persistence/production_repository.dart';
+import 'package:agrocampo_backend/src/modules/soil/domain/entities/soil_measurement.dart';
+import 'package:agrocampo_backend/src/modules/soil/infrastructure/persistence/soil_repository.dart';
+import 'package:agrocampo_backend/src/modules/agricultural_context/domain/entities/productive_domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/in_memory_database.dart';
 import '../../helpers/territory_fixture.dart';
 
 void main() {
+  test('category filter and details use the logical labor event once', () async {
+    final database = createInMemoryDatabase();
+    addTearDown(database.close);
+    await seedTerritoryFixture(database);
+    await SoilRepository(database).save(
+      ownerId: 'owner-1',
+      sectorId: 'sector-1',
+      input: const SoilMeasurementInput(moisturePercent: 40),
+    );
+    final events = await HistoryRepository(database).list(
+      const HistoryFilter(
+        ownerId: 'owner-1',
+        sectorId: 'sector-1',
+        category: ProductiveCategory.crop,
+      ),
+    );
+    expect(events, hasLength(1));
+    expect(events.single.category, ProductiveCategory.crop);
+    expect(events.single.details['moisturePercent'], 40);
+    expect(events.single.groupingKey, startsWith('labor:'));
+  });
+
   test('history filters events by parcel and orders newest first', () async {
     final database = createInMemoryDatabase();
     addTearDown(database.close);

@@ -9,6 +9,7 @@ void main() {
       amount: 12,
       unit: 'kg',
       applicationMethod: 'Banda',
+      observations: 'Aplicar al amanecer',
     ).toEnvelope();
     expect(envelope.data['amount'], 12);
     expect(
@@ -29,8 +30,10 @@ void main() {
       dose: 2,
       unit: 'ml/L',
       safetyIntervalDays: 1,
+      observations: 'Aplicación registrada',
     ).toEnvelope();
     expect(envelope.data['target'], 'Pulgón');
+    expect(envelope.data['observations'], 'Aplicación registrada');
     expect(
       () => const PhytosanitaryDetails(
         product: 'X',

@@ -75,6 +75,25 @@ final class IrrigationEstimateResult extends IrrigationCalculationResult {
 abstract final class IrrigationCalculator {
   static const algorithmVersion = 2;
 
+  /// Deterministic, non-agronomic drip arithmetic used by 003.
+  /// `totalFlowMlPerMinute` is already normalized from the submitted flow and
+  /// explicit scope/count. No crop, weather, stage or texture data enters it.
+  static int basicDripVolumeMl({
+    required int totalFlowMlPerMinute,
+    required int durationSeconds,
+  }) {
+    if (totalFlowMlPerMinute <= 0) {
+      throw ArgumentError('flow_ml_min_invalid');
+    }
+    if (durationSeconds <= 0) {
+      throw ArgumentError('duration_seconds_invalid');
+    }
+    return _roundHalfUp(
+      totalFlowMlPerMinute * durationSeconds,
+      60,
+    );
+  }
+
   static IrrigationCalculationResult calculate(
     IrrigationCalculationInput input, {
     IrrigationRuleSet? rule,
@@ -92,9 +111,9 @@ abstract final class IrrigationCalculator {
     if (errors.isNotEmpty) {
       return IrrigationUnavailable('invalid_input', fieldErrorCodes: errors);
     }
-    final applied = _roundHalfUp(
-      input.effectiveFlowMlMin * input.effectiveDurationSeconds,
-      60,
+    final applied = basicDripVolumeMl(
+      totalFlowMlPerMinute: input.effectiveFlowMlMin,
+      durationSeconds: input.effectiveDurationSeconds,
     );
     final base = input.plantCount * rule.baseMlPerPlant;
     final soilAdjustmentBp = rule.soilMultiplierPermille * 10 - 10000;

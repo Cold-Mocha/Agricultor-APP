@@ -52,6 +52,9 @@ final class ProductionRepository {
       quantity: input.quantity,
       unit: input.unit,
       qualityNotes: input.qualityNotes,
+      destination: input.destination,
+      workShift: input.workShift,
+      observations: input.observations,
     ).toEnvelope();
     final payload = <String, Object?>{
       'id': rootId,
@@ -78,6 +81,9 @@ final class ProductionRepository {
         'quantity': input.quantity,
         'unit': input.unit.trim(),
         'quality_notes': input.qualityNotes?.trim(),
+        'destination': input.destination?.trim(),
+        'work_shift': input.workShift?.trim(),
+        'observations': input.observations?.trim(),
         'harvested_at': input.harvestedAt.toUtc().toIso8601String(),
         'updated_at': now.toIso8601String(),
       },

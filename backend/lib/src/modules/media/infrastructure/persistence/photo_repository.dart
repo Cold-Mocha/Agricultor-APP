@@ -24,6 +24,17 @@ final class PhotoRepository {
   final FileStore _fileStore;
 
   Future<String> attach(PhotoAttachmentInput input) async {
+    if (input.aggregateType != 'sector' && input.aggregateType != 'labor') {
+      throw StateError('photo_target_not_allowed');
+    }
+    final target = input.aggregateType == 'sector'
+        ? await (_database.select(_database.sectors)..where(
+              (row) => row.id.equals(input.aggregateId) & row.ownerId.equals(input.ownerId),
+            )).getSingleOrNull()
+        : await (_database.select(_database.labors)..where(
+              (row) => row.id.equals(input.aggregateId) & row.ownerId.equals(input.ownerId),
+            )).getSingleOrNull();
+    if (target == null) throw StateError('photo_target_not_found');
     final bytes = await File(input.sourcePath).readAsBytes();
     final hash = sha256.convert(bytes).toString();
     final duplicate =

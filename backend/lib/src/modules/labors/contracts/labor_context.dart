@@ -1,3 +1,5 @@
+import 'package:agrocampo_backend/src/modules/agricultural_context/domain/entities/productive_domain.dart';
+
 final class LaborContext {
   const LaborContext({
     required this.parcelId,
@@ -6,6 +8,7 @@ final class LaborContext {
     required this.assignmentId,
     required this.cropId,
     required this.isCustomCrop,
+    this.category = ProductiveCategory.legacyUnknown,
   });
 
   final String parcelId;
@@ -14,6 +17,7 @@ final class LaborContext {
   final String assignmentId;
   final String cropId;
   final bool isCustomCrop;
+  final ProductiveCategory category;
 }
 
 abstract interface class LaborContextReader {

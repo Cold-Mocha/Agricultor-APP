@@ -339,6 +339,9 @@ final class SectorCropAssignmentRepository {
         season.parcelId != sector.parcelId) {
       throw StateError('assignment_context_invalid');
     }
+    if (sector.kind != 'crop') {
+      throw StateError('operation_requires_crop');
+    }
     if (season.status == 'closed') throw StateError('season_closed');
     if (effectiveFrom.isBefore(season.startsOn) ||
         (season.endsOn != null && effectiveFrom.isAfter(season.endsOn!)) ||

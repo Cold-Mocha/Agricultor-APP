@@ -26,7 +26,7 @@ final class LaborDetails {
     );
   }
 
-  static const currentSchemaVersion = 1;
+  static const currentSchemaVersion = 2;
 
   final LaborType type;
   final int schemaVersion;

@@ -6,6 +6,7 @@ import 'package:agrocampo_backend/src/platform/files/private_file_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/in_memory_database.dart';
+import '../../helpers/territory_fixture.dart';
 
 final class _TestFileStore implements FileStore {
   _TestFileStore(this.directory);
@@ -45,6 +46,7 @@ void main() {
     final directory = await Directory.systemTemp.createTemp('agrocampo-photo');
     addTearDown(database.close);
     addTearDown(() => directory.delete(recursive: true));
+    await seedTerritoryFixture(database);
     final source = File('${directory.path}/capture.jpg');
     await source.writeAsBytes([1, 2, 3, 4]);
     final repository = PhotoRepository(database, _TestFileStore(directory));

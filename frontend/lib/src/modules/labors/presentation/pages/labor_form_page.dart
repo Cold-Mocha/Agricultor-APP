@@ -30,6 +30,7 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
   final _notes = TextEditingController();
   BoundAgriculturalContext? _bound;
   bool _saving = false;
+  String _fertilizationMethod = 'manual';
 
   @override
   void initState() {
@@ -179,10 +180,29 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
     return Column(
       children: switch (_type) {
         LaborType.fertilization => [
+          Padding(
+            padding: const EdgeInsets.only(top: AgroSpacing.sm),
+            child: DropdownButtonFormField<String>(
+              key: const ValueKey('fertilization-method'),
+              initialValue: _fertilizationMethod,
+              decoration: const InputDecoration(labelText: 'Método'),
+              items: const [
+                DropdownMenuItem(value: 'manual', child: Text('Manual')),
+                DropdownMenuItem(value: 'foliar', child: Text('Foliar')),
+                DropdownMenuItem(
+                  value: 'fertigation',
+                  child: Text('Fertirriego'),
+                ),
+              ],
+              onChanged: (value) => setState(
+                () => _fertilizationMethod = value ?? _fertilizationMethod,
+              ),
+            ),
+          ),
           field('product', _primary, 'Producto o fertilizante'),
           field('amount', _amount, 'Cantidad', keyboardType: number),
           field('unit', _unit, 'Unidad (kg, L)'),
-          field('method', _secondary, 'Método de aplicación'),
+          field('method', _secondary, 'Detalle del método (opcional)'),
         ],
         LaborType.diseaseAndPestControl => [
           field('product', _primary, 'Producto'),
@@ -205,6 +225,11 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
             'Distancia entre plantas en cm (opcional)',
             keyboardType: number,
           ),
+        ],
+        LaborType.cultivation => [
+          field('performed-work', _primary, 'Labor realizada'),
+          field('observed-state', _secondary, 'Estado observado'),
+          field('variety', _extra, 'Variedad (opcional)'),
         ],
         LaborType.pruning => [
           field('method', _primary, 'Método de poda'),
@@ -277,15 +302,19 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
     if (sectorId == null) return;
     setState(() => _saving = true);
     try {
-      final status = await ref
+      final outcome = await ref
           .read(laborFormControllerProvider)
-          .save(
+          .saveTyped(
             LaborFormInput(
               sectorId: sectorId,
               type: _type,
               occurredAt: _occurredAt,
               primary: _primary.text,
-              secondary: _secondary.text,
+              secondary:
+                  _type == LaborType.fertilization &&
+                      _secondary.text.trim().isEmpty
+                  ? _fertilizationMethod
+                  : _secondary.text,
               amount: _amount.text,
               unit: _unit.text,
               extra: _extra.text,
@@ -293,16 +322,18 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
               notes: _notes.text,
             ),
           );
-      if (!mounted || status == LaborSaveStatus.noSession) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            status == LaborSaveStatus.saved
-                ? 'Actividad guardada localmente · pendiente de sincronizar'
-                : 'Revisa los datos; el borrador se conservó.',
-          ),
-        ),
-      );
+      if (!mounted || outcome == null) return;
+      final message = switch (outcome) {
+        SavedLocal<LaborFormInput>() =>
+          'Actividad guardada localmente · pendiente de sincronizar',
+        ValidationFailed<LaborFormInput>() ||
+        DomainRejected<LaborFormInput>() =>
+          'Revisa los datos; el borrador se conservó.',
+        StorageFailed<LaborFormInput>() || StaleVersion<LaborFormInput>() =>
+          'No se pudo guardar; el comando y el borrador se conservaron.',
+      };
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
     } finally {
       if (mounted) setState(() => _saving = false);
     }

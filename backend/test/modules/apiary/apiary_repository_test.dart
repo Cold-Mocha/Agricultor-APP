@@ -1,5 +1,7 @@
 import 'package:agrocampo_backend/src/modules/apiary/domain/entities/apiary_inspection_input.dart';
 import 'package:agrocampo_backend/src/modules/apiary/infrastructure/persistence/apiary_repository.dart';
+import 'package:agrocampo_backend/src/platform/database/app_database.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/in_memory_database.dart';
@@ -10,6 +12,9 @@ void main() {
     final database = createInMemoryDatabase();
     addTearDown(database.close);
     await seedTerritoryFixture(database);
+    await (database.update(database.sectors)
+          ..where((row) => row.id.equals('sector-1')))
+        .write(const SectorsCompanion(kind: Value('apiary')));
     await ApiaryRepository(database).save(
       ownerId: 'owner-1',
       sectorId: 'sector-1',
@@ -32,6 +37,14 @@ void main() {
     expect(inspection.taskType, 'health');
     expect(inspection.beekeeperName, 'Ana Pérez');
     expect(inspection.hiveCount, 12);
+    expect(
+      (await database.customSelect(
+        'SELECT labor_id FROM apiary_inspections WHERE id = ?',
+        variables: [Variable(inspection.id)],
+      ).getSingle()).read<String>('labor_id'),
+      isNotEmpty,
+    );
+    expect(await database.select(database.labors).get(), hasLength(1));
     expect(await database.select(database.syncOutbox).get(), hasLength(1));
   });
 

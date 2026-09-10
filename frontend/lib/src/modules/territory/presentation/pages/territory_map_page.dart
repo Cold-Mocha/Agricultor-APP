@@ -42,6 +42,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
 
   SectorGeometryDraft? _draft;
   String? _editingId;
+  String? _newKind;
   final MapController _controller = MapController();
   final GlobalKey _mapKey = GlobalKey();
   int? _draggingVertex;
@@ -465,7 +466,17 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                       ),
                       icon: const Icon(Icons.arrow_forward),
                     ),
+                ],
+              ),
+              if (_draft != null && _editingId == null)
+                DropdownButton<String>(
+                  value: _newKind,
+                  hint: const Text('Categoría obligatoria'),
+                  items: const [
+                    DropdownMenuItem(value: 'crop', child: Text('Vegetal')),
+                    DropdownMenuItem(value: 'apiary', child: Text('Apícola')),
                   ],
+                  onChanged: (value) => setState(() => _newKind = value),
                 ),
               Wrap(
                 alignment: WrapAlignment.center,
@@ -519,12 +530,12 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                     ),
                   ],
                   FilledButton(
-                    onPressed: _draft == null
+                      onPressed: _draft == null
                         ? () => setState(() {
                             _selectedVertex = null;
                             _draft = SectorGeometryDraft();
                           })
-                        : error == null
+                        : error == null && (_editingId != null || _newKind != null)
                         ? () => _save(sectors, ownerId, parcelId)
                         : null,
                     child: Text(
@@ -552,6 +563,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
           input: MapGeometryFormInput(
             parcelId: parcelId,
             sectorId: _editingId,
+            kind: _editingId == null ? _newKind : null,
             polygon: _draft!.confirm(),
           ),
         );
@@ -569,6 +581,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
     _draft?.cancel();
     _draft = null;
     _editingId = null;
+    _newKind = null;
     _draggingVertex = null;
     _selectedVertex = null;
     _draggedPoint = null;

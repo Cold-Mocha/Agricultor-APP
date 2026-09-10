@@ -4,6 +4,7 @@ class SoilMeasurements extends Table {
   TextColumn get id => text()();
   TextColumn get ownerId => text()();
   TextColumn get sectorId => text().references(Sectors, #id)();
+  TextColumn get laborId => text().nullable().references(Labors, #id)();
   RealColumn get moisturePercent => real().nullable()();
   RealColumn get ph => real().nullable()();
   RealColumn get temperatureCelsius => real().nullable()();

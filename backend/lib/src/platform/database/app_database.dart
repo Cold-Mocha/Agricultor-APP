@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:agrocampo_backend/src/platform/database/daos/form_draft_dao.dart';
 import 'package:agrocampo_backend/src/platform/sync/persistence/daos/conflict_dao.dart';
 import 'package:agrocampo_backend/src/platform/sync/persistence/daos/sync_cursor_dao.dart';
@@ -32,6 +34,7 @@ part '../sync/persistence/tables/sync_cursors.dart';
 part '../sync/persistence/tables/sync_outbox.dart';
 part 'app_database.g.dart';
 part 'migrations/functional_core_v10.dart';
+part 'migrations/functional_refinement_v11.dart';
 part 'tables/form_drafts.dart';
 
 @DriftDatabase(
@@ -71,7 +74,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -124,12 +127,19 @@ class AppDatabase extends _$AppDatabase {
       if (from < 10) {
         await transaction(() => _upgradeFunctionalCoreV10(this, migrator));
       }
+      if (from < 11) {
+        await transaction(() => _upgradeFunctionalRefinementV11(this, migrator));
+      }
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
       // Idempotent so v10 databases created by older 002 builds also receive
       // the query indexes without a destructive schema bump.
       for (final statement in _functionalCoreV10Indexes) {
+        await customStatement(statement);
+      }
+      await _ensureFunctionalRefinementV11Columns(this);
+      for (final statement in _functionalRefinementV11Indexes) {
         await customStatement(statement);
       }
     },

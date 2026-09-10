@@ -8,6 +8,7 @@ class Labors extends Table {
   TextColumn get seasonId => text().nullable()();
   TextColumn get cropAssignmentId => text().nullable()();
   TextColumn get type => text()();
+  TextColumn get domainCategory => text().nullable()();
   TextColumn get customName => text().nullable()();
   TextColumn get detailsJson => text().withDefault(const Constant('{}'))();
   IntColumn get detailsSchemaVersion =>

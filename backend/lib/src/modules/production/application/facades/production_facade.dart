@@ -84,6 +84,9 @@ final class ProductionFacade {
         quantity: double.tryParse(input.quantity.replaceAll(',', '.')) ?? 0,
         unit: input.unit,
         qualityNotes: input.qualityNotes,
+        destination: input.destination,
+        workShift: input.workShift,
+        observations: input.observations,
         harvestedAt: DateTime.now().toUtc(),
       ),
     );

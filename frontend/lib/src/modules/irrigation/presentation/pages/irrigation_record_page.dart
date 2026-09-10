@@ -24,8 +24,10 @@ final class _IrrigationRecordPageState
   SoilType _soil = SoilType.unknown;
   final _duration = TextEditingController();
   final _flow = TextEditingController();
+  final _pressure = TextEditingController();
   String _calculationMessage =
       'Regla agronómica no disponible para este cultivo y tipo de suelo.';
+  bool _hasCalculated = false;
   BoundAgriculturalContext? _bound;
   IrrigationCalculationUiState? _preview;
 
@@ -42,6 +44,7 @@ final class _IrrigationRecordPageState
   void dispose() {
     _duration.dispose();
     _flow.dispose();
+    _pressure.dispose();
     super.dispose();
   }
 
@@ -51,6 +54,7 @@ final class _IrrigationRecordPageState
     subtitle: 'Registro básico disponible sin conexión',
     child: ListView(
       children: [
+        const Text('Regla agronómica no disponible para este cultivo y tipo de suelo.'),
         const AgriculturalContextSelector(requireSector: true),
         BoundAgriculturalContextCard(
           bound: _bound!,
@@ -101,25 +105,37 @@ final class _IrrigationRecordPageState
           decoration: const InputDecoration(labelText: 'Duración (minutos)'),
         ),
         const SizedBox(height: AgroSpacing.sm),
-        if (_type != IrrigationType.drip) ...[
-          TextField(
-            controller: _flow,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: const InputDecoration(
-              labelText: 'Caudal (litros/hora, opcional)',
-            ),
+        TextField(
+          controller: _flow,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: const InputDecoration(
+            labelText: 'Caudal total (litros/hora, opcional)',
           ),
-          const SizedBox(height: AgroSpacing.md),
-        ],
+        ),
+        const SizedBox(height: AgroSpacing.sm),
+        TextField(
+          controller: _pressure,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(
+            labelText: 'Presión (kPa, opcional)',
+          ),
+        ),
         const SizedBox(height: AgroSpacing.sm),
         AgroStatusBanner(
-          message: _calculationMessage,
+          message: _hasCalculated
+              ? _calculationMessage
+              : 'Ingresa caudal y duración para estimar el volumen.',
           status: AgroStatus.warning,
         ),
         TextButton(
           onPressed: _calculate,
           child: const Text('Calcular de forma determinística'),
         ),
+        if (_preview?.basicVolumeLiters case final volume?)
+          Text(
+            'Volumen básico estimado: ${volume.toStringAsFixed(2)} L\n'
+            'Fórmula: ${_preview?.basicFormula}',
+          ),
         const Text(
           'El clima es auxiliar; si no está disponible, el registro offline sigue funcionando.',
         ),
@@ -136,6 +152,7 @@ final class _IrrigationRecordPageState
       soilType: _soil,
       duration: _duration.text,
       flow: _flow.text,
+      pressure: _pressure.text,
     );
   }
 
@@ -147,6 +164,7 @@ final class _IrrigationRecordPageState
     if (!mounted || calculation == null) return;
     setState(() {
       _calculationMessage = calculation.message;
+      _hasCalculated = true;
       if (_type == IrrigationType.drip) _preview = calculation;
     });
   }

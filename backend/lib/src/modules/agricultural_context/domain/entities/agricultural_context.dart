@@ -1,3 +1,21 @@
+import 'package:agrocampo_backend/src/modules/agricultural_context/domain/entities/productive_domain.dart';
+
+final class ContextLabels {
+  const ContextLabels({
+    this.parcel,
+    this.sector,
+    this.category,
+    this.season,
+    this.crop,
+  });
+
+  final String? parcel;
+  final String? sector;
+  final String? category;
+  final String? season;
+  final String? crop;
+}
+
 final class AgriculturalContext {
   const AgriculturalContext({
     this.ownerId,
@@ -7,6 +25,10 @@ final class AgriculturalContext {
     this.assignmentId,
     this.revision = 0,
     this.isRestoring = false,
+    this.category,
+    this.labels = const ContextLabels(),
+    this.allowedOperations = const <ProductiveOperation>[],
+    this.resolvedFor,
   });
 
   const AgriculturalContext.restoring(String ownerId)
@@ -19,6 +41,10 @@ final class AgriculturalContext {
   final String? assignmentId;
   final int revision;
   final bool isRestoring;
+  final ProductiveCategory? category;
+  final ContextLabels labels;
+  final List<ProductiveOperation> allowedOperations;
+  final DateTime? resolvedFor;
 
   AgriculturalContext copyWith({
     String? parcelId,
@@ -31,6 +57,10 @@ final class AgriculturalContext {
     bool clearAssignment = false,
     int? revision,
     bool? isRestoring,
+    ProductiveCategory? category,
+    ContextLabels? labels,
+    List<ProductiveOperation>? allowedOperations,
+    DateTime? resolvedFor,
   }) => AgriculturalContext(
     ownerId: ownerId,
     parcelId: clearParcel ? null : parcelId ?? this.parcelId,
@@ -39,6 +69,10 @@ final class AgriculturalContext {
     assignmentId: clearAssignment ? null : assignmentId ?? this.assignmentId,
     revision: revision ?? this.revision,
     isRestoring: isRestoring ?? this.isRestoring,
+    category: category ?? this.category,
+    labels: labels ?? this.labels,
+    allowedOperations: allowedOperations ?? this.allowedOperations,
+    resolvedFor: resolvedFor ?? this.resolvedFor,
   );
 }
 
@@ -50,6 +84,10 @@ final class BoundAgriculturalContext {
     required this.seasonId,
     required this.assignmentId,
     required this.revision,
+    this.category = ProductiveCategory.legacyUnknown,
+    this.labels = const ContextLabels(),
+    this.allowedOperations = const <ProductiveOperation>[],
+    this.resolvedFor,
   });
 
   factory BoundAgriculturalContext.from(
@@ -58,6 +96,10 @@ final class BoundAgriculturalContext {
     String? sectorId,
     String? seasonId,
     String? assignmentId,
+    ProductiveCategory? category,
+    ContextLabels? labels,
+    List<ProductiveOperation>? allowedOperations,
+    DateTime? resolvedFor,
   }) => BoundAgriculturalContext(
     ownerId: context.ownerId,
     parcelId: parcelId ?? context.parcelId,
@@ -65,6 +107,10 @@ final class BoundAgriculturalContext {
     seasonId: seasonId ?? context.seasonId,
     assignmentId: assignmentId ?? context.assignmentId,
     revision: context.revision,
+    category: category ?? context.category ?? ProductiveCategory.legacyUnknown,
+    labels: labels ?? context.labels,
+    allowedOperations: allowedOperations ?? context.allowedOperations,
+    resolvedFor: resolvedFor ?? context.resolvedFor,
   );
 
   final String? ownerId;
@@ -73,6 +119,10 @@ final class BoundAgriculturalContext {
   final String? seasonId;
   final String? assignmentId;
   final int revision;
+  final ProductiveCategory category;
+  final ContextLabels labels;
+  final List<ProductiveOperation> allowedOperations;
+  final DateTime? resolvedFor;
 
   bool differsFrom(AgriculturalContext current) =>
       ownerId != current.ownerId ||

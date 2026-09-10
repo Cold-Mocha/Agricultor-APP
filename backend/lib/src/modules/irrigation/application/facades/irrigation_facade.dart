@@ -21,11 +21,17 @@ final class IrrigationCalculation {
     required this.unavailableCode,
     required this.explanation,
     required this._preview,
+    this.basicVolumeLiters,
+    this.basicFormula,
+    this.previewFingerprint,
   });
 
   final String? unavailableCode;
   final String? explanation;
   final IrrigationPreview? _preview;
+  final double? basicVolumeLiters;
+  final String? basicFormula;
+  final String? previewFingerprint;
 }
 
 final class IrrigationFacade {
@@ -38,7 +44,7 @@ final class IrrigationFacade {
   }) async {
     if (input.type != IrrigationType.drip) {
       return const IrrigationCalculation._(
-        unavailableCode: 'drip_only',
+        unavailableCode: 'method_not_drip',
         explanation: null,
         preview: null,
       );
@@ -52,6 +58,23 @@ final class IrrigationFacade {
             ))
             .getSingleOrNull();
     if (sector == null) return null;
+    if (sector.kind != 'crop') {
+      return const IrrigationCalculation._(
+        unavailableCode: 'operation_not_valid_for_apiary',
+        explanation: null,
+        preview: null,
+      );
+    }
+    final durationMinutes = int.tryParse(input.duration.trim());
+    final flowLitersPerHour = double.tryParse(
+      input.flow.trim().replaceAll(',', '.'),
+    );
+    final basicVolumeLiters = durationMinutes != null &&
+            durationMinutes > 0 &&
+            flowLitersPerHour != null &&
+            flowLitersPerHour > 0
+        ? flowLitersPerHour * durationMinutes / 60
+        : null;
     final preview =
         await IrrigationEstimateRepository(
           database,
@@ -69,11 +92,21 @@ final class IrrigationFacade {
         unavailableCode: code,
         explanation: null,
         preview: preview,
+        basicVolumeLiters: basicVolumeLiters,
+        basicFormula: basicVolumeLiters == null
+            ? null
+            : 'total_flow_l_per_h*duration_min/60',
+        previewFingerprint: _fingerprint(input),
       ),
       final IrrigationEstimateResult result => IrrigationCalculation._(
         unavailableCode: null,
         explanation: IrrigationExplanation.short(result),
         preview: preview,
+        basicVolumeLiters: basicVolumeLiters,
+        basicFormula: basicVolumeLiters == null
+            ? null
+            : 'total_flow_l_per_h*duration_min/60',
+        previewFingerprint: _fingerprint(input),
       ),
     };
   }
@@ -92,6 +125,16 @@ final class IrrigationFacade {
             ))
             .getSingleOrNull();
     if (sector == null) return false;
+    if (sector.kind != 'crop') return false;
+    final durationMinutes = int.tryParse(input.duration.trim());
+    final flowLitersPerHour = double.tryParse(
+      input.flow.trim().replaceAll(',', '.'),
+    );
+    if (durationMinutes == null || durationMinutes <= 0) return false;
+    if (input.flow.trim().isNotEmpty &&
+        (flowLitersPerHour == null || flowLitersPerHour <= 0)) {
+      return false;
+    }
     var preview = calculation?._preview;
     if (input.type == IrrigationType.drip && preview == null) {
       preview =
@@ -119,12 +162,24 @@ final class IrrigationFacade {
       input: BasicIrrigationInput(
         type: input.type,
         soilType: input.soilType,
-        durationMinutes: int.tryParse(input.duration) ?? 0,
-        flowLitersPerHour: double.tryParse(input.flow.replaceAll(',', '.')),
+        durationMinutes: durationMinutes,
+        flowLitersPerHour: flowLitersPerHour,
+        pressureKpa: input.pressure == null || input.pressure!.trim().isEmpty
+            ? null
+            : int.tryParse(input.pressure!.trim()),
       ),
     );
     return true;
   }
+
+  static String _fingerprint(IrrigationFormInput input) => [
+    input.sectorId ?? '',
+    input.type.name,
+    input.soilType.name,
+    input.duration.trim(),
+    input.flow.trim(),
+    input.pressure?.trim() ?? '',
+  ].join('|');
 
   Future<String> configurationLabel(String ownerId, String? sectorId) async {
     if (sectorId == null) return 'Selecciona un sector.';

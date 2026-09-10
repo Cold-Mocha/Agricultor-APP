@@ -20,46 +20,58 @@ final class LaborSyncCodec implements AggregateSyncCodec {
     final decoded = jsonDecode(change.payloadJson);
     if (decoded is! Map<String, Object?> ||
         decoded['id'] != change.aggregateId ||
-        decoded['parcel_id'] is! String ||
         decoded['sector_id'] is! String ||
-        decoded['agricultural_season_id'] is! String ||
-        decoded['crop_assignment_id'] is! String ||
         decoded['type'] is! String ||
         decoded['details'] is! Map<String, Object?> ||
         decoded['occurred_at'] is! String ||
         decoded['updated_at'] is! String) {
       throw const FormatException('labor_payload_invalid');
     }
-    final parcelId = decoded['parcel_id']! as String;
+    final type = decoded['type']! as String;
+    final isApiary = type == 'apiary';
+    final parcelId = decoded['parcel_id'] as String?;
     final sectorId = decoded['sector_id']! as String;
-    final seasonId = decoded['agricultural_season_id']! as String;
-    final assignmentId = decoded['crop_assignment_id']! as String;
-    final parents = await Future.wait([
-      (database.select(database.sectors)..where(
+    final seasonId = decoded['agricultural_season_id'] as String?;
+    final assignmentId = decoded['crop_assignment_id'] as String?;
+    if (!isApiary &&
+        (parcelId == null || seasonId == null || assignmentId == null)) {
+      throw const FormatException('labor_parent_missing');
+    }
+    final sectorRow = await database.customSelect(
+      'SELECT parcel_id, kind FROM sectors WHERE id = ? AND owner_id = ?',
+      variables: [Variable<String>(sectorId), Variable<String>(ownerId)],
+    ).getSingleOrNull();
+    if (sectorRow == null) {
+      throw const FormatException('labor_parent_missing');
+    }
+    final sectorParcelId = sectorRow.read<String>('parcel_id');
+    final sectorKind = sectorRow.read<String>('kind');
+    if (isApiary && sectorKind != 'apiary') {
+      throw const FormatException('operation_not_valid_for_crop');
+    }
+    final category = decoded['domain_category'] as String? ?? sectorKind;
+    if (category != sectorKind) {
+      throw const FormatException('labor_category_mismatch');
+    }
+    if (!isApiary) {
+      final season = await (database.select(database.agriculturalSeasons)..where(
             (row) =>
-                row.id.equals(sectorId) &
+                row.id.equals(seasonId!) &
                 row.ownerId.equals(ownerId) &
-                row.parcelId.equals(parcelId),
+                row.parcelId.equals(parcelId!),
           ))
-          .getSingleOrNull(),
-      (database.select(database.agriculturalSeasons)..where(
+          .getSingleOrNull();
+      final assignment = await (database.select(database.cropSeasons)..where(
             (row) =>
-                row.id.equals(seasonId) &
-                row.ownerId.equals(ownerId) &
-                row.parcelId.equals(parcelId),
-          ))
-          .getSingleOrNull(),
-      (database.select(database.cropSeasons)..where(
-            (row) =>
-                row.id.equals(assignmentId) &
+                row.id.equals(assignmentId!) &
                 row.ownerId.equals(ownerId) &
                 row.sectorId.equals(sectorId) &
-                row.agriculturalSeasonId.equals(seasonId),
+                row.agriculturalSeasonId.equals(seasonId!),
           ))
-          .getSingleOrNull(),
-    ]);
-    if (parents.any((parent) => parent == null)) {
-      throw const FormatException('labor_parent_missing');
+          .getSingleOrNull();
+      if (season == null || assignment == null) {
+        throw const FormatException('labor_parent_missing');
+      }
     }
     final details = decoded['details']! as Map<String, Object?>;
     final detailsVersion =
@@ -74,11 +86,11 @@ final class LaborSyncCodec implements AggregateSyncCodec {
             LaborsCompanion.insert(
               id: change.aggregateId,
               ownerId: ownerId,
-              parcelId: parcelId,
+              parcelId: parcelId ?? sectorParcelId,
               sectorId: sectorId,
               seasonId: Value(seasonId),
               cropAssignmentId: Value(assignmentId),
-              type: decoded['type']! as String,
+              type: type,
               customName: Value(decoded['custom_name'] as String?),
               detailsJson: Value(jsonEncode(details)),
               detailsSchemaVersion: Value(detailsVersion),
@@ -96,6 +108,10 @@ final class LaborSyncCodec implements AggregateSyncCodec {
               updatedAt: updatedAt,
             ),
           );
+      await database.customUpdate(
+        'UPDATE labors SET domain_category = ? WHERE id = ?',
+        variables: [Variable<String>(category), Variable<String>(change.aggregateId)],
+      );
       final production = decoded['production'];
       if (production != null) {
         if (production is! Map<String, Object?> ||
@@ -112,7 +128,7 @@ final class LaborSyncCodec implements AggregateSyncCodec {
               ProductionRecordsCompanion.insert(
                 id: production['id']! as String,
                 ownerId: ownerId,
-                parcelId: parcelId,
+              parcelId: parcelId ?? sectorParcelId,
                 sectorId: sectorId,
                 laborId: Value(change.aggregateId),
                 seasonId: Value(seasonId),
@@ -217,6 +233,41 @@ final class LaborSyncCodec implements AggregateSyncCodec {
                 ),
               );
         }
+      }
+      final apiary = decoded['apiary'];
+      if (apiary != null) {
+        if (!isApiary || apiary is! Map<String, Object?> ||
+            apiary['id'] is! String || apiary['task_type'] is! String ||
+            apiary['beekeeper_name'] is! String || apiary['hive_count'] is! int ||
+            apiary['inspected_at'] is! String) {
+          throw const FormatException('labor_apiary_payload_invalid');
+        }
+        await database.into(database.apiaryInspections).insertOnConflictUpdate(
+          ApiaryInspectionsCompanion.insert(
+            id: apiary['id']! as String,
+            ownerId: ownerId,
+            sectorId: sectorId,
+            taskType: apiary['task_type']! as String,
+            beekeeperName: apiary['beekeeper_name']! as String,
+            hiveCount: apiary['hive_count']! as int,
+            queenStatus: apiary['queen_status'] as String? ?? '',
+            broodStatus: apiary['brood_status'] as String? ?? '',
+            feedingStatus: apiary['feeding_status'] as String? ?? '',
+            healthNotes: apiary['health_notes'] as String? ?? '',
+            pestNotes: apiary['pest_notes'] as String? ?? '',
+            superInstalled: apiary['super_installed'] as bool? ?? false,
+            observations: Value(apiary['observations'] as String?),
+            inspectedAt: DateTime.parse(apiary['inspected_at']! as String).toUtc(),
+            updatedAt: updatedAt,
+          ),
+        );
+        await database.customUpdate(
+          'UPDATE apiary_inspections SET labor_id = ? WHERE id = ?',
+          variables: [
+            Variable<String>(change.aggregateId),
+            Variable<String>(apiary['id']! as String),
+          ],
+        );
       }
     });
   }

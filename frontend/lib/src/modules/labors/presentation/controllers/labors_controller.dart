@@ -16,4 +16,14 @@ final class LaborFormController {
     if (ownerId == null) return Future.value(LaborSaveStatus.noSession);
     return _ref.read(laborsFacadeProvider).save(ownerId: ownerId, input: input);
   }
+
+  /// Typed boundary for the form. A null result means there is no unlocked
+  /// owner; all other outcomes preserve the submitted command for retry.
+  Future<SaveOutcome<LaborFormInput>?> saveTyped(LaborFormInput input) {
+    final ownerId = _ref.read(unlockedOwnerIdProvider);
+    if (ownerId == null) return Future.value(null);
+    return _ref
+        .read(laborsFacadeProvider)
+        .saveOutcome(ownerId: ownerId, input: input);
+  }
 }

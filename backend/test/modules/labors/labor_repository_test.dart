@@ -43,6 +43,40 @@ void main() {
       (await database.select(database.labors).getSingle()).customName,
       'Reparar cerco',
     );
+    // The aggregate snapshot is also present in the outbox payload; the
+    // nullable physical column is populated when v11 is available.
+    expect(
+      (await database.select(database.syncOutbox).getSingle()).payloadJson,
+      contains('domain_category'),
+    );
+  });
+
+  test('crop-only labor is rejected after a sector is confirmed apiary', () async {
+    final database = createInMemoryDatabase();
+    addTearDown(database.close);
+    await seedAgriculturalContextFixture(database);
+    await (database.update(database.sectors)
+          ..where((row) => row.id.equals('sector-1')))
+        .write(const SectorsCompanion(kind: Value('apiary')));
+    final repository = LaborRepository(database);
+    await expectLater(
+      repository.save(
+        ownerId: 'owner-1',
+        parcelId: 'parcel-1',
+        sectorId: 'sector-1',
+        type: LaborType.fertilization,
+        occurredAt: DateTime.utc(2026),
+        details: const FertilizationDetails(
+          product: 'Compost',
+          amount: 2,
+          unit: 'kg',
+          applicationMethod: 'Manual',
+        ).toEnvelope(),
+      ),
+      throwsA(isA<StateError>()),
+    );
+    expect(await database.select(database.labors).get(), isEmpty);
+    expect(await database.select(database.syncOutbox).get(), isEmpty);
   });
 
   test(

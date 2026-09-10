@@ -4,6 +4,7 @@ class ApiaryInspections extends Table {
   TextColumn get id => text()();
   TextColumn get ownerId => text()();
   TextColumn get sectorId => text()();
+  TextColumn get laborId => text().nullable().references(Labors, #id)();
   TextColumn get taskType => text()();
   TextColumn get beekeeperName => text()();
   IntColumn get hiveCount => integer()();

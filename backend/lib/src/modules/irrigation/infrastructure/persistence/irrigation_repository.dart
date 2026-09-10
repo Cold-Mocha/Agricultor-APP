@@ -26,6 +26,14 @@ final class IrrigationRepository {
   }) async {
     input.validate();
     final instant = occurredAt.toUtc();
+    final sectorKind = await _database.customSelect(
+      'SELECT kind FROM sectors WHERE id = ? AND owner_id = ?',
+      variables: [Variable<String>(sectorId), Variable<String>(ownerId)],
+    ).getSingleOrNull();
+    if (sectorKind == null) throw StateError('owner_mismatch');
+    if (sectorKind.read<String>('kind') != 'crop') {
+      throw StateError('operation_not_valid_for_apiary');
+    }
     final context =
         preview?.context ??
         await (_laborContextReader ??
@@ -58,12 +66,22 @@ final class IrrigationRepository {
             ? null
             : (input.flowLitersPerHour! * 1000 * input.durationMinutes / 60)
                   .round());
+    final usesBasicDripFormula =
+        input.type == IrrigationType.drip &&
+        input.flowLitersPerHour != null &&
+        appliedVolumeMl != null;
     final details = IrrigationLaborDetails(
       method: input.type.name,
       durationMinutes: input.durationMinutes,
       appliedVolumeLiters: appliedVolumeMl == null
           ? null
           : appliedVolumeMl / 1000,
+      flowLitersPerHour: input.flowLitersPerHour,
+      pressureKpa: input.pressureKpa,
+      calculationFormula: usesBasicDripFormula
+          ? 'total_flow_l_per_h*duration_min/60'
+          : null,
+      roundingMode: usesBasicDripFormula ? 'roundHalfUp' : null,
     ).toEnvelope();
     final now = DateTime.now().toUtc();
     final irrigationPayload = <String, Object?>{
@@ -76,9 +94,18 @@ final class IrrigationRepository {
       'config_version': config?.configVersion,
       'duration_seconds': durationSeconds,
       'applied_volume_ml': appliedVolumeMl,
+      'pressure_kpa': input.pressureKpa,
+      'formula': usesBasicDripFormula
+          ? 'total_flow_l_per_h*duration_min/60'
+          : null,
+      'rounding': usesBasicDripFormula ? 'roundHalfUp' : null,
       'performed_details': {
         'duration_seconds': durationSeconds,
         'applied_volume_ml': appliedVolumeMl,
+        'formula': usesBasicDripFormula
+            ? 'total_flow_l_per_h*duration_min/60'
+            : null,
+        'rounding': usesBasicDripFormula ? 'roundHalfUp' : null,
         'config_snapshot': config == null
             ? null
             : {
@@ -230,9 +257,7 @@ final class IrrigationRepository {
     input.validate();
     final id = EntityId.generate().value;
     final now = DateTime.now().toUtc();
-    final liters = input.flowLitersPerHour == null
-        ? null
-        : input.flowLitersPerHour! * input.durationMinutes / 60;
+    final liters = input.estimatedVolumeLiters;
     await _database.syncOutboxDao.transactionWithOutbox<void>(
       writeAggregate: () => _database
           .into(_database.irrigationRecords)
@@ -264,6 +289,7 @@ final class IrrigationRepository {
           'duration_minutes': input.durationMinutes,
           'flow_liters_per_hour': input.flowLitersPerHour,
           'estimated_liters': liters,
+          'pressure_kpa': input.pressureKpa,
         }),
         createdAt: now,
       ),

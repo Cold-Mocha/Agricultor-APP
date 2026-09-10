@@ -5,9 +5,10 @@ import 'package:agrocampo_backend/agrocampo_backend.dart';
 
 abstract final class SectorUiMapper {
   static SectorCardUiState fromSummary(SectorSummary summary) {
+    // Category is authoritative; presentation must never infer a domain from
+    // an icon, crop label or localized text.
     final isApiary =
-        summary.kind.toLowerCase() == 'apiary' ||
-        summary.cropLabel.toLowerCase() == 'apicultura';
+        ProductiveCategory.fromCode(summary.kind) == ProductiveCategory.apiary;
     final statusLabel =
         summary.syncState == 'conflict' || summary.syncState == 'error'
         ? 'Requiere revisar el respaldo'

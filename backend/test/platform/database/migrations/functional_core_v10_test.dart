@@ -16,14 +16,22 @@ void main() {
         .customSelect('PRAGMA user_version')
         .map((row) => row.read<int>('user_version'))
         .getSingle();
-    expect(version, 10);
+    // 003 advances the current database to v11; the assertions below remain
+    // the v10 preservation checks and do not close the 002 task.
+    expect(version, 11);
 
     for (final tableName in functionalCoreV9TableNames) {
       final count = await database
           .customSelect('SELECT COUNT(*) AS amount FROM $tableName')
           .map((row) => row.read<int>('amount'))
           .getSingle();
-      expect(count, 1, reason: '$tableName must be preserved');
+      // v11 may add the deterministic apiary labor root while preserving the
+      // original v9 labor row; all fixture rows must remain addressable.
+      if (tableName == 'labors') {
+        expect(count, greaterThanOrEqualTo(1), reason: '$tableName must be preserved');
+      } else {
+        expect(count, 1, reason: '$tableName must be preserved');
+      }
     }
     expect(
       await database.select(database.agriculturalSeasons).get(),

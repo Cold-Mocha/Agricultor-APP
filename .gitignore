@@ -56,6 +56,7 @@ app.*.map.json
 /frontend/android/app/profile
 /frontend/android/app/release
 /frontend/android/.gradle/
+/frontend/android/.kotlin/
 /frontend/android/build/
 /frontend/android/app/build/
 
@@ -65,7 +66,11 @@ app.*.map.json
 # Agent/tool config (not part of the app)
 .agents/
 .opencode/
-.specify/
+# Keep machine-local Spec Kit state ignored, but version the ratified constitution.
+.specify/*
+!.specify/memory/
+.specify/memory/*
+!.specify/memory/constitution.md
 graphify-out/
 
 # Local Supabase CLI state (may contain generated credentials)

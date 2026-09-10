@@ -123,6 +123,7 @@ final class RotationPage extends ConsumerWidget {
     WidgetRef ref,
     String ownerId,
   ) async {
+    if (!await _ensureCropContext(context, ref, ownerId)) return;
     final controller = ref.read(cropsControllerProvider);
     final options = await controller.planOptions(
       ownerId: ownerId,
@@ -206,6 +207,7 @@ final class RotationPage extends ConsumerWidget {
     WidgetRef ref,
     String ownerId,
   ) async {
+    if (!await _ensureCropContext(context, ref, ownerId)) return;
     final controller = ref.read(cropsControllerProvider);
     final alternatives = await controller.exchangeOptions(
       ownerId: ownerId,
@@ -281,6 +283,31 @@ final class RotationPage extends ConsumerWidget {
         effectiveAt: date,
       );
     }
+  }
+
+  Future<bool> _ensureCropContext(
+    BuildContext context,
+    WidgetRef ref,
+    String ownerId,
+  ) async {
+    final sector = await ref
+        .read(sectorDetailFacadeProvider(sectorId))
+        .watchSector(ownerId)
+        .first;
+    if (sector != null &&
+        ProductiveCategory.fromCode(sector.kind) == ProductiveCategory.crop) {
+      return true;
+    }
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'La rotación sólo está disponible en sectores vegetales.',
+          ),
+        ),
+      );
+    }
+    return false;
   }
 
   static String _status(SectorCropAssignment assignment) =>

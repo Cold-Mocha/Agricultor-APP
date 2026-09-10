@@ -7,6 +7,9 @@ final class IrrigationCalculationUiState {
 
   final String message;
   final IrrigationCalculation _calculation;
+  double? get basicVolumeLiters => _calculation.basicVolumeLiters;
+  String? get basicFormula => _calculation.basicFormula;
+  String? get previewFingerprint => _calculation.previewFingerprint;
 }
 
 final irrigationFormControllerProvider = Provider<IrrigationFormController>(
@@ -28,7 +31,8 @@ final class IrrigationFormController {
         .calculate(ownerId: ownerId, input: input);
     if (calculation == null) return null;
     final message = switch (calculation.unavailableCode) {
-      'drip_only' => '002 solo calcula recomendaciones para riego por goteo.',
+      'method_not_drip' => '002 solo calcula recomendaciones para riego por goteo.',
+      'operation_not_valid_for_apiary' => 'El riego no aplica a una unidad apícola.',
       'drip_config_unavailable' =>
         'Configura plantas, goteros y caudal del sector antes de calcular.',
       'crop_rule_unavailable' => 'Regla agronómica no disponible. Puedes guardar el riego básico sin recomendación.',

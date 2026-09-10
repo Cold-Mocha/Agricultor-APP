@@ -7,9 +7,11 @@ final class IrrigationFormInput {
     required this.soilType,
     required this.duration,
     required this.flow,
+    this.pressure,
   });
   final String? sectorId;
   final IrrigationType type;
   final SoilType soilType;
   final String duration, flow;
+  final String? pressure;
 }

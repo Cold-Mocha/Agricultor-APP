@@ -7,6 +7,7 @@ final class SoilMeasurementInput {
     this.nitrogen,
     this.phosphorus,
     this.potassium,
+    this.units = const <String, String>{},
   });
 
   final double? moisturePercent;
@@ -16,6 +17,7 @@ final class SoilMeasurementInput {
   final double? nitrogen;
   final double? phosphorus;
   final double? potassium;
+  final Map<String, String> units;
 
   void validate() {
     if ([

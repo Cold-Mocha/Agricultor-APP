@@ -20,6 +20,7 @@ final class MediaFacade {
     required String sectorId,
     required String sourcePath,
     required String mimeType,
+    String? laborId,
   }) async {
     final sector =
         await (_database.select(_database.sectors)..where(
@@ -30,8 +31,8 @@ final class MediaFacade {
     await PhotoRepository(_database, _fileStore).attach(
       PhotoAttachmentInput(
         ownerId: ownerId,
-        aggregateType: 'sector',
-        aggregateId: sector.id,
+        aggregateType: laborId == null ? 'sector' : 'labor',
+        aggregateId: laborId ?? sector.id,
         sourcePath: sourcePath,
         mimeType: mimeType,
       ),

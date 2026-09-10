@@ -27,6 +27,7 @@ final class SectorSyncCodec implements AggregateSyncCodec {
     final parcelId = decoded['parcel_id'];
     final name = decoded['name'];
     final number = decoded['number'];
+    final kind = decoded['kind'];
     final polygonValue = decoded['polygon'];
     final updatedAt = decoded['updated_at'];
     if (id is! String ||
@@ -34,6 +35,8 @@ final class SectorSyncCodec implements AggregateSyncCodec {
         parcelId is! String ||
         name is! String ||
         number is! int ||
+        kind is! String ||
+        (kind != 'crop' && kind != 'apiary' && kind != 'legacyUnknown') ||
         polygonValue is! List<Object?> ||
         updatedAt is! String) {
       throw const FormatException('sector_payload_invalid');
@@ -44,6 +47,13 @@ final class SectorSyncCodec implements AggregateSyncCodec {
             ))
             .getSingleOrNull();
     if (parcel == null) throw const FormatException('sector_parent_missing');
+    final local = await (database.select(database.sectors)..where(
+          (row) => row.id.equals(id) & row.ownerId.equals(ownerId),
+        ))
+        .getSingleOrNull();
+    if (local != null && local.kind != kind) {
+      throw const FormatException('sector_kind_immutable');
+    }
     final polygon = polygonValue
         .map((value) {
           if (value is! Map<String, Object?> ||
@@ -69,7 +79,7 @@ final class SectorSyncCodec implements AggregateSyncCodec {
             parcelId: parcelId,
             number: number,
             name: name,
-            kind: Value(decoded['kind'] as String? ?? 'crop'),
+            kind: Value(kind),
             polygonJson: jsonEncode(
               PolygonGeometry.normalize(polygon)
                   .map((point) => point.toJson())

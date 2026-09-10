@@ -1,3 +1,6 @@
+import 'package:agrocampo_backend/src/modules/agricultural_context/domain/entities/productive_domain.dart';
+import 'package:agrocampo_backend/src/modules/agricultural_context/contracts/dto/save_outcome.dart';
+
 enum HistoryEventType { labor, soil, cropAssignment }
 
 final class HistoryEvent {
@@ -9,6 +12,9 @@ final class HistoryEvent {
     required this.title,
     required this.sectorId,
     required this.syncState,
+    this.category = ProductiveCategory.legacyUnknown,
+    this.backupState = BackupState.pending,
+    this.details = const <String, Object?>{},
     this.seasonId,
     this.seasonLabel,
     this.cropLabel,
@@ -28,6 +34,9 @@ final class HistoryEvent {
   final String? detail;
   final String? status;
   final String syncState;
+  final ProductiveCategory category;
+  final BackupState backupState;
+  final Map<String, Object?> details;
 }
 
 final class HistoryFilter {
@@ -39,6 +48,7 @@ final class HistoryFilter {
     this.type,
     this.from,
     this.to,
+    this.category,
     this.limit = 100,
     this.offset = 0,
   });
@@ -50,6 +60,7 @@ final class HistoryFilter {
   final HistoryEventType? type;
   final DateTime? from;
   final DateTime? to;
+  final ProductiveCategory? category;
   final int limit;
   final int offset;
 }

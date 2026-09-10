@@ -22,11 +22,13 @@ final class TerritoryContextSector {
     required this.id,
     required this.parcelId,
     required this.name,
+    required this.kind,
   });
 
   final String id;
   final String parcelId;
   final String name;
+  final String kind;
 }
 
 final class MapGeometryFormInput {
@@ -34,9 +36,13 @@ final class MapGeometryFormInput {
     required this.parcelId,
     required this.polygon,
     this.sectorId,
+    this.kind,
+    this.expectedVersion,
   });
 
   final String parcelId;
   final String? sectorId;
   final List<GeoPoint> polygon;
+  final String? kind;
+  final int? expectedVersion;
 }

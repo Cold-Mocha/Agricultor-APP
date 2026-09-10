@@ -1,5 +1,7 @@
 import 'package:agrocampo_backend/src/composition/backend_providers.dart';
 import 'package:agrocampo_backend/src/modules/agricultural_context/domain/entities/agricultural_context.dart';
+import 'package:agrocampo_backend/src/modules/agricultural_context/domain/entities/productive_domain.dart';
+import 'package:agrocampo_backend/src/modules/agricultural_context/domain/services/domain_compatibility_policy.dart';
 import 'package:agrocampo_backend/src/modules/agricultural_context/infrastructure/persistence/daos/app_preferences_dao.dart';
 import 'package:agrocampo_backend/src/modules/crop_cycles/crop_cycles_api.dart';
 import 'package:agrocampo_backend/src/modules/territory/territory_api.dart';
@@ -90,6 +92,16 @@ final class AgriculturalContextFacade {
       assignmentId: assignmentId,
       revision:
           int.tryParse(values['agricultural_context_revision'] ?? '') ?? 0,
+      category: sectorId == null
+          ? null
+          : ProductiveCategory.fromCode(
+              (await _territory.loadContextSector(
+                ownerId: ownerId,
+                sectorId: sectorId,
+                parcelId: parcelId,
+              ))?.kind,
+            ),
+      resolvedFor: DateTime.now().toUtc(),
     );
     await _persist(context);
     return context;
@@ -137,6 +149,27 @@ final class AgriculturalContextFacade {
       clearSector: sectorId == null,
       clearAssignment: true,
       revision: current.revision + 1,
+      category: sectorId == null
+          ? ProductiveCategory.legacyUnknown
+          : ProductiveCategory.fromCode(
+              (await _territory.loadContextSector(
+                ownerId: current.ownerId!,
+                sectorId: sectorId,
+                parcelId: current.parcelId,
+              ))!.kind,
+            ),
+      allowedOperations: sectorId == null
+          ? const []
+          : const DomainCompatibilityPolicy().allowedOperations(
+              ProductiveCategory.fromCode(
+                (await _territory.loadContextSector(
+                  ownerId: current.ownerId!,
+                  sectorId: sectorId,
+                  parcelId: current.parcelId,
+                ))!.kind,
+              ),
+            ),
+      resolvedFor: DateTime.now().toUtc(),
     );
     await _persist(next);
     return next;

@@ -19,6 +19,7 @@ void main() {
   _checkFrontend(frontendFiles, violations);
   _checkBackend(backendFiles, violations);
   _checkPublicBackendApi(root, violations);
+  _checkNoParallel003Module(root, violations);
   _checkModuleCycles(
     frontendFiles,
     label: 'frontend',
@@ -44,6 +45,18 @@ void main() {
     return;
   }
   stdout.writeln('Architecture check passed.');
+}
+
+void _checkNoParallel003Module(Directory root, List<String> violations) {
+  final forbidden = <String>[
+    '${root.path}/frontend/lib/src/modules/003',
+    '${root.path}/backend/lib/src/modules/003',
+  ];
+  for (final path in forbidden) {
+    if (Directory(path).existsSync()) {
+      violations.add('${_normalized(path)}: parallel code module 003 is forbidden');
+    }
+  }
 }
 
 Directory _workspaceRoot() {
