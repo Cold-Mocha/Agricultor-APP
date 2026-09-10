@@ -15,6 +15,10 @@ no crea un módulo de código `003` y no sustituye los estados `[ ]` del `tasks.
 El `tasks.md` contiene **124 tareas**, de las cuales **101 están `[X]` y 23 permanecen `[ ]`**.
 El número exacto pendiente es 23, no 20. La distribución de las 23 tareas abiertas es:
 
+La ejecución de las 16 tareas del carril Integración sobre el Pixel 8 está documentada en
+[`003-integration-pixel8-report.md`](003-integration-pixel8-report.md). Sus suites locales verdes
+no sustituyen los criterios remotos, de navegación pública o de gates que cada tarea declara.
+
 | Carril | Abiertas | Observación |
 |---|---:|---|
 | Backend | 4 | Generación Drift, sync de riego, regresiones auxiliares y gate backend |
