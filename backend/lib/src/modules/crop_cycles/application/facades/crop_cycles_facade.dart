@@ -223,6 +223,7 @@ final class CropCyclesFacade {
               (row) =>
                   row.ownerId.equals(ownerId) &
                   row.parcelId.equals(sector.parcelId) &
+                  row.kind.equals('crop') &
                   row.id.equals(sectorId).not() &
                   row.deletedAt.isNull(),
             ))

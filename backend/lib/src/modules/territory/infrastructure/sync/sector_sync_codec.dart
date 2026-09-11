@@ -47,10 +47,10 @@ final class SectorSyncCodec implements AggregateSyncCodec {
             ))
             .getSingleOrNull();
     if (parcel == null) throw const FormatException('sector_parent_missing');
-    final local = await (database.select(database.sectors)..where(
-          (row) => row.id.equals(id) & row.ownerId.equals(ownerId),
-        ))
-        .getSingleOrNull();
+    final local =
+        await (database.select(database.sectors)
+              ..where((row) => row.id.equals(id) & row.ownerId.equals(ownerId)))
+            .getSingleOrNull();
     if (local != null && local.kind != kind) {
       throw const FormatException('sector_kind_immutable');
     }

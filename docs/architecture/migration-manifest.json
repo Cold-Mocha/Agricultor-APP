@@ -2118,5 +2118,15 @@
     "from": "build.yaml",
     "to": "backend/build.yaml",
     "sha256": "54eafc415cff1fdb0e2922ba1cfaca65656a9f237248f35dc7e440eee5b0d540"
+  },
+  {
+    "from": "drift_schemas/drift_schemas/drift_schema_v11.json",
+    "to": "backend/drift_schemas/drift_schema_v11.json",
+    "sha256": "560c0d3fec5ead5137584a9da08436db20845287cdc24dcabbf8f95515fecac8"
+  },
+  {
+    "from": "supabase/supabase/migrations/0020_functional_refinement_v11.sql",
+    "to": "backend/supabase/migrations/0020_functional_refinement_v11.sql",
+    "sha256": "a7247516b0e019a191756695369836355e78bd87ce928fc28d6b388aae776cff"
   }
 ]

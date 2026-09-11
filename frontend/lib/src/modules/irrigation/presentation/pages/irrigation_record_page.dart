@@ -54,7 +54,9 @@ final class _IrrigationRecordPageState
     subtitle: 'Registro básico disponible sin conexión',
     child: ListView(
       children: [
-        const Text('Regla agronómica no disponible para este cultivo y tipo de suelo.'),
+        const Text(
+          'Regla agronómica no disponible para este cultivo y tipo de suelo.',
+        ),
         const AgriculturalContextSelector(requireSector: true),
         BoundAgriculturalContextCard(
           bound: _bound!,

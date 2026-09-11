@@ -1,6 +1,7 @@
 {
-  "movedFiles": 424,
-  "preservedSupabaseAndSchemaFiles": 49,
+  "movedFiles": 426,
+  "preservedSupabaseAndSchemaFiles": 48,
+  "relocatedIntermediateFiles": 258,
   "rootLibAbsent": true,
   "localDependency": true
 }

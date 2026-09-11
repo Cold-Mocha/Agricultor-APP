@@ -1,5 +1,5 @@
+import 'package:agrocampo_backend/src/modules/agricultural_context/agricultural_context_api.dart';
 import 'package:agrocampo_backend/src/modules/labors/domain/entities/labor_type.dart';
-import 'package:agrocampo_backend/src/modules/agricultural_context/contracts/dto/save_outcome.dart';
 
 /// Text entered by the form, retained unchanged when a draft is needed.
 final class LaborFormInput {

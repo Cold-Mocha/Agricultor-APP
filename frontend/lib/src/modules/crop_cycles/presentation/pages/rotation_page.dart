@@ -8,113 +8,175 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-final class RotationPage extends ConsumerWidget {
+final class RotationPage extends ConsumerStatefulWidget {
   const RotationPage({required this.sectorId, super.key});
 
   final String sectorId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RotationPage> createState() => _RotationPageState();
+}
+
+final class _RotationPageState extends ConsumerState<RotationPage> {
+  String? _loadedOwnerId;
+  Future<Sector?>? _sectorFuture;
+
+  String get sectorId => widget.sectorId;
+
+  Future<Sector?> _loadSector(String ownerId) {
+    if (_loadedOwnerId != ownerId || _sectorFuture == null) {
+      _loadedOwnerId = ownerId;
+      _sectorFuture = ref
+          .read(sectorDetailFacadeProvider(sectorId))
+          .loadSector(ownerId);
+    }
+    return _sectorFuture!;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final ownerId = ref.watch(unlockedOwnerIdProvider);
     final controller = ref.watch(cropsControllerProvider);
-    return AgroPage(
-      title: 'Cultivos del sector',
-      subtitle: 'Planificar no cambia el cultivo vigente antes de la fecha.',
-      actions: [
-        IconButton(
-          tooltip: 'Intercambiar cultivos',
-          onPressed: ownerId == null
-              ? null
-              : () => _exchange(context, ref, ownerId),
-          icon: const Icon(Icons.swap_horiz),
+    if (ownerId == null) {
+      return const AgroPage(
+        title: 'Cultivos del sector',
+        subtitle: 'Planificar no cambia el cultivo vigente antes de la fecha.',
+        child: AgroEmptyState(
+          title: 'Sin sesión',
+          message: 'Inicia sesión para administrar cultivos.',
         ),
-        IconButton(
-          tooltip: 'Planificar cultivo',
-          onPressed: ownerId == null
-              ? null
-              : () => _plan(context, ref, ownerId),
-          icon: const Icon(Icons.add),
-        ),
-      ],
-      child: ownerId == null
-          ? const AgroEmptyState(
-              title: 'Sin sesión',
-              message: 'Inicia sesión para administrar cultivos.',
-            )
-          : FutureBuilder<void>(
-              future: controller.ensureCatalog(),
-              builder: (_, _) => StreamBuilder<List<SectorCropAssignment>>(
-                stream: controller.watchAssignments(
-                  ownerId: ownerId,
-                  sectorId: sectorId,
-                ),
-                builder: (context, snapshot) {
-                  final assignments = snapshot.data ?? const [];
-                  if (assignments.isEmpty) {
-                    return AgroEmptyState(
-                      title: 'Sin cultivos asignados',
-                      message: 'Crea o activa una temporada y planifica el primer cultivo.',
-                      action: FilledButton.icon(
-                        onPressed: () => context.push(AppRoutes.seasons),
-                        icon: const Icon(Icons.calendar_month_outlined),
-                        label: const Text('Administrar temporadas'),
+      );
+    }
+    final sectorFuture = _loadSector(ownerId);
+    return FutureBuilder<Sector?>(
+      future: sectorFuture,
+      builder: (context, sectorSnapshot) {
+        final sector = sectorSnapshot.data;
+        final available = isRotationAvailableForSector(sector?.kind);
+        return AgroPage(
+          title: 'Cultivos del sector',
+          subtitle:
+              'Planificar no cambia el cultivo vigente antes de la fecha.',
+          actions: available
+              ? [
+                  IconButton(
+                    tooltip: 'Intercambiar cultivos',
+                    onPressed: () => _exchange(context, ref, ownerId),
+                    icon: const Icon(Icons.swap_horiz),
+                  ),
+                  IconButton(
+                    tooltip: 'Planificar cultivo',
+                    onPressed: () => _plan(context, ref, ownerId),
+                    icon: const Icon(Icons.add),
+                  ),
+                ]
+              : const [],
+          child: sectorSnapshot.connectionState != ConnectionState.done
+              ? const Center(child: CircularProgressIndicator())
+              : sector == null
+              ? const AgroEmptyState(
+                  title: 'Sector no disponible',
+                  message: 'No se pudo cargar el contexto del sector.',
+                )
+              : !available
+              ? AgroEmptyState(
+                  title: 'Rotación no disponible',
+                  message:
+                      'La rotación de cultivos sólo está disponible en sectores vegetales. Este es un ${rotationContextLabel(sector.kind).toLowerCase()}.',
+                )
+              : StreamBuilder<List<SectorCropAssignment>>(
+                  stream: controller.watchAssignments(
+                    ownerId: ownerId,
+                    sectorId: sectorId,
+                  ),
+                  builder: (context, snapshot) {
+                    final assignments = snapshot.data ?? const [];
+                    final contextCard = Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.eco_outlined),
+                        title: Text('Contexto: ${sector.name}'),
+                        subtitle: Text(
+                          '${rotationContextLabel(sector.kind)} · fechas efectivas conservan el historial',
+                        ),
                       ),
                     );
-                  }
-                  return ListView(
-                    children: [
-                      for (final assignment in assignments)
-                        Card(
-                          child: ListTile(
-                            leading: Icon(
-                              assignment.status ==
-                                      SectorCropAssignmentStatus.active
-                                  ? Icons.eco
-                                  : Icons.event_outlined,
+                    if (assignments.isEmpty) {
+                      return ListView(
+                        children: [
+                          contextCard,
+                          AgroEmptyState(
+                            title: 'Sin cultivos asignados',
+                            message: 'Crea o activa una temporada y planifica el primer cultivo.',
+                            action: FilledButton.icon(
+                              onPressed: () => context.push(AppRoutes.seasons),
+                              icon: const Icon(Icons.calendar_month_outlined),
+                              label: const Text('Administrar temporadas'),
                             ),
-                            title: Text(assignment.crop.label),
-                            subtitle: Text(
-                              '${_status(assignment)} · desde ${_date(assignment.effectiveFrom)}${assignment.effectiveTo == null ? '' : ' hasta ${_date(assignment.effectiveTo!)}'} · ${assignment.syncState == 'synced' ? 'Sincronizado' : 'Local'}',
-                            ),
-                            trailing:
-                                assignment.status ==
-                                    SectorCropAssignmentStatus.planned
-                                ? PopupMenuButton<String>(
-                                    onSelected: (action) async {
-                                      if (action == 'activate') {
-                                        await controller.activate(
-                                          ownerId: ownerId,
-                                          assignmentId: assignment.id,
-                                          effectiveAt: assignment.effectiveFrom,
-                                        );
-                                      } else {
-                                        await controller.cancel(
-                                          ownerId: ownerId,
-                                          assignmentId: assignment.id,
-                                        );
-                                      }
-                                    },
-                                    itemBuilder: (_) => const [
-                                      PopupMenuItem(
-                                        value: 'activate',
-                                        child: Text(
-                                          'Activar en fecha planificada',
-                                        ),
-                                      ),
-                                      PopupMenuItem(
-                                        value: 'cancel',
-                                        child: Text('Cancelar planificación'),
-                                      ),
-                                    ],
-                                  )
-                                : null,
                           ),
-                        ),
-                    ],
-                  );
-                },
-              ),
-            ),
+                        ],
+                      );
+                    }
+                    return ListView(
+                      children: [
+                        contextCard,
+                        for (final assignment in assignments)
+                          Card(
+                            child: ListTile(
+                              leading: Icon(
+                                assignment.status ==
+                                        SectorCropAssignmentStatus.active
+                                    ? Icons.eco
+                                    : Icons.event_outlined,
+                              ),
+                              title: Text(assignment.crop.label),
+                              subtitle: Text(
+                                '${_status(assignment)} · desde ${_date(assignment.effectiveFrom)}${assignment.effectiveTo == null ? '' : ' hasta ${_date(assignment.effectiveTo!)}'} · ${assignment.syncState == 'synced' ? 'Sincronizado' : 'Local'}',
+                              ),
+                              trailing:
+                                  assignment.status ==
+                                      SectorCropAssignmentStatus.planned
+                                  ? PopupMenuButton<String>(
+                                      onSelected: (action) async {
+                                        if (action == 'activate' &&
+                                            isRotationActivationDue(
+                                              assignment,
+                                            )) {
+                                          await controller.activate(
+                                            ownerId: ownerId,
+                                            assignmentId: assignment.id,
+                                            effectiveAt:
+                                                assignment.effectiveFrom,
+                                          );
+                                        } else if (action == 'cancel') {
+                                          await controller.cancel(
+                                            ownerId: ownerId,
+                                            assignmentId: assignment.id,
+                                          );
+                                        }
+                                      },
+                                      itemBuilder: (_) => [
+                                        if (isRotationActivationDue(assignment))
+                                          const PopupMenuItem(
+                                            value: 'activate',
+                                            child: Text(
+                                              'Activar en fecha planificada',
+                                            ),
+                                          ),
+                                        const PopupMenuItem(
+                                          value: 'cancel',
+                                          child: Text('Cancelar planificación'),
+                                        ),
+                                      ],
+                                    )
+                                  : null,
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                ),
+        );
+      },
     );
   }
 

@@ -4,3 +4,7 @@ targets:
       drift_dev:
         options:
           store_date_time_values_as_text: true
+          databases:
+            agrocampo: lib/src/platform/database/app_database.dart
+          schema_dir: drift_schemas
+          test_dir: test/generated/migrations

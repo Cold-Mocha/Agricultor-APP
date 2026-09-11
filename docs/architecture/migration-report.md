@@ -124,3 +124,19 @@ se conservan en ese directorio y están ignorados por Git.
 
 Responsabilidades, imports permitidos y comandos de trabajo:
 [frontend-backend-boundary.md](./frontend-backend-boundary.md).
+
+## Addendum append-only — 11 de septiembre de 2026 (T013/T123)
+
+Se incorporaron al manifiesto, sin editar las migraciones `0001`–`0019`, los artefactos de esta
+entrega:
+
+- `backend/drift_schemas/drift_schema_v11.json` — SHA-256
+  `560c0d3fec5ead5137584a9da08436db20845287cdc24dcabbf8f95515fecac8`.
+- `backend/supabase/migrations/0020_functional_refinement_v11.sql` — SHA-256
+  `a7247516b0e019a191756695369836355e78bd87ce928fc28d6b388aae776cff`.
+
+El verificador actualizado conserva la integridad de Supabase/esquemas estables y reconoce como
+históricos los destinos intermedios reubicados posteriormente bajo `src/`; también excluye
+`.temp/` porque `cli-latest` es metadata operacional dependiente de la versión local de Supabase.
+`node docs/architecture/verify-migration.cjs` ejecutado el 2026-09-11: **PASS**, 426 entradas,
+48 archivos estables preservados y 258 destinos intermedios reubicados.

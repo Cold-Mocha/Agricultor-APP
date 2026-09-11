@@ -1,4 +1,4 @@
-import 'package:agrocampo_backend/src/modules/agricultural_context/domain/entities/productive_domain.dart';
+import '../../../../shared/contracts/productive_domain.dart';
 
 /// Single backend authority for the category × operation matrix.
 final class DomainCompatibilityPolicy {
@@ -6,8 +6,10 @@ final class DomainCompatibilityPolicy {
 
   List<ProductiveOperation> allowedOperations(ProductiveCategory category) =>
       ProductiveOperation.values
-          .where((operation) =>
-              evaluate(category: category, operation: operation).isAllowed)
+          .where(
+            (operation) =>
+                evaluate(category: category, operation: operation).isAllowed,
+          )
           .toList(growable: false);
 
   CompatibilityDecision evaluate({

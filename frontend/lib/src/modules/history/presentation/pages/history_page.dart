@@ -123,7 +123,10 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
                                           ].join(' · '),
                                         ),
                                         trailing: Tooltip(
-                                          message: _syncLabel(event.syncState, event.backupState),
+                                          message: _syncLabel(
+                                            event.syncState,
+                                            event.backupState,
+                                          ),
                                           child: Icon(
                                             event.syncState == 'synced'
                                                 ? Icons.cloud_done_outlined

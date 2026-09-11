@@ -61,3 +61,12 @@ por Docker/API24; T116 y T123 fallan por arquitectura y manifest; T124 depende d
 
 La matriz general y el orden de cierre permanecen en [`003-release-matrix.md`](003-release-matrix.md)
 y [`003-remaining-plan.md`](003-remaining-plan.md).
+
+## Addendum de cierre local 2026-09-11
+
+El reporte anterior conserva la evidencia histórica de la sesión Pixel 8 del 2026-09-10. En la
+sesión actual `emulator-5554` no está disponible, por lo que no se repitieron ni se extrapolaron
+sus pruebas Android. El backend y frontend sí se validaron localmente: Drift v11, rotación, clima,
+AgroIA, riego, format, analyze, 154 tests backend, 64 tests frontend, arquitectura y el verificador
+de migración pasan; T013, T057, T114, T116, T119 y T123 quedan cerradas. Las tareas con criterios remotos,
+Android o navegación pública siguen abiertas según la matriz actualizada.

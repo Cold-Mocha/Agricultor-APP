@@ -26,7 +26,8 @@ final class HarvestDetails {
       'quantity': quantity,
       'unit': unit.trim(),
       'qualityNotes': qualityNotes?.trim(),
-      if (destination?.trim().isNotEmpty ?? false) 'destination': destination!.trim(),
+      if (destination?.trim().isNotEmpty ?? false)
+        'destination': destination!.trim(),
       if (workShift?.trim().isNotEmpty ?? false) 'workShift': workShift!.trim(),
       if (observations?.trim().isNotEmpty ?? false)
         'observations': observations!.trim(),

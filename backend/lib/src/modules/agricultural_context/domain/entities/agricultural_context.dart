@@ -1,4 +1,4 @@
-import 'package:agrocampo_backend/src/modules/agricultural_context/domain/entities/productive_domain.dart';
+import 'package:agrocampo_backend/src/shared/contracts/productive_domain.dart';
 
 final class ContextLabels {
   const ContextLabels({

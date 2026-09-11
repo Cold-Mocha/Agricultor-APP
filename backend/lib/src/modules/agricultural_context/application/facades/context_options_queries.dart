@@ -1,8 +1,8 @@
 import 'package:agrocampo_backend/src/modules/agricultural_context/contracts/dto/context_options.dart';
 import 'package:agrocampo_backend/src/modules/agricultural_context/domain/entities/agricultural_context.dart';
-import 'package:agrocampo_backend/src/modules/agricultural_context/domain/entities/productive_domain.dart';
-import 'package:agrocampo_backend/src/modules/agricultural_context/domain/services/domain_compatibility_policy.dart';
+import 'package:agrocampo_backend/src/modules/agricultural_context/domain/policies/domain_compatibility_policy.dart';
 import 'package:agrocampo_backend/src/modules/territory/territory_api.dart';
+import 'package:agrocampo_backend/src/shared/contracts/productive_domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final contextOptionsQueriesProvider = Provider<ContextOptionsQueries>(

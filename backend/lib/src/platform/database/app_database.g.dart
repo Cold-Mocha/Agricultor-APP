@@ -9360,6 +9360,17 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _domainCategoryMeta = const VerificationMeta(
+    'domainCategory',
+  );
+  @override
+  late final GeneratedColumn<String> domainCategory = GeneratedColumn<String>(
+    'domain_category',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _customNameMeta = const VerificationMeta(
     'customName',
   );
@@ -9515,6 +9526,7 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
     seasonId,
     cropAssignmentId,
     type,
+    domainCategory,
     customName,
     detailsJson,
     detailsSchemaVersion,
@@ -9592,6 +9604,15 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
       );
     } else if (isInserting) {
       context.missing(_typeMeta);
+    }
+    if (data.containsKey('domain_category')) {
+      context.handle(
+        _domainCategoryMeta,
+        domainCategory.isAcceptableOrUnknown(
+          data['domain_category']!,
+          _domainCategoryMeta,
+        ),
+      );
     }
     if (data.containsKey('custom_name')) {
       context.handle(
@@ -9727,6 +9748,10 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
         DriftSqlType.string,
         data['${effectivePrefix}type'],
       )!,
+      domainCategory: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}domain_category'],
+      ),
       customName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}custom_name'],
@@ -9796,6 +9821,7 @@ class Labor extends DataClass implements Insertable<Labor> {
   final String? seasonId;
   final String? cropAssignmentId;
   final String type;
+  final String? domainCategory;
   final String? customName;
   final String detailsJson;
   final int detailsSchemaVersion;
@@ -9817,6 +9843,7 @@ class Labor extends DataClass implements Insertable<Labor> {
     this.seasonId,
     this.cropAssignmentId,
     required this.type,
+    this.domainCategory,
     this.customName,
     required this.detailsJson,
     required this.detailsSchemaVersion,
@@ -9845,6 +9872,9 @@ class Labor extends DataClass implements Insertable<Labor> {
       map['crop_assignment_id'] = Variable<String>(cropAssignmentId);
     }
     map['type'] = Variable<String>(type);
+    if (!nullToAbsent || domainCategory != null) {
+      map['domain_category'] = Variable<String>(domainCategory);
+    }
     if (!nullToAbsent || customName != null) {
       map['custom_name'] = Variable<String>(customName);
     }
@@ -9886,6 +9916,9 @@ class Labor extends DataClass implements Insertable<Labor> {
           ? const Value.absent()
           : Value(cropAssignmentId),
       type: Value(type),
+      domainCategory: domainCategory == null && nullToAbsent
+          ? const Value.absent()
+          : Value(domainCategory),
       customName: customName == null && nullToAbsent
           ? const Value.absent()
           : Value(customName),
@@ -9927,6 +9960,7 @@ class Labor extends DataClass implements Insertable<Labor> {
       seasonId: serializer.fromJson<String?>(json['seasonId']),
       cropAssignmentId: serializer.fromJson<String?>(json['cropAssignmentId']),
       type: serializer.fromJson<String>(json['type']),
+      domainCategory: serializer.fromJson<String?>(json['domainCategory']),
       customName: serializer.fromJson<String?>(json['customName']),
       detailsJson: serializer.fromJson<String>(json['detailsJson']),
       detailsSchemaVersion: serializer.fromJson<int>(
@@ -9959,6 +9993,7 @@ class Labor extends DataClass implements Insertable<Labor> {
       'seasonId': serializer.toJson<String?>(seasonId),
       'cropAssignmentId': serializer.toJson<String?>(cropAssignmentId),
       'type': serializer.toJson<String>(type),
+      'domainCategory': serializer.toJson<String?>(domainCategory),
       'customName': serializer.toJson<String?>(customName),
       'detailsJson': serializer.toJson<String>(detailsJson),
       'detailsSchemaVersion': serializer.toJson<int>(detailsSchemaVersion),
@@ -9983,6 +10018,7 @@ class Labor extends DataClass implements Insertable<Labor> {
     Value<String?> seasonId = const Value.absent(),
     Value<String?> cropAssignmentId = const Value.absent(),
     String? type,
+    Value<String?> domainCategory = const Value.absent(),
     Value<String?> customName = const Value.absent(),
     String? detailsJson,
     int? detailsSchemaVersion,
@@ -10006,6 +10042,9 @@ class Labor extends DataClass implements Insertable<Labor> {
         ? cropAssignmentId.value
         : this.cropAssignmentId,
     type: type ?? this.type,
+    domainCategory: domainCategory.present
+        ? domainCategory.value
+        : this.domainCategory,
     customName: customName.present ? customName.value : this.customName,
     detailsJson: detailsJson ?? this.detailsJson,
     detailsSchemaVersion: detailsSchemaVersion ?? this.detailsSchemaVersion,
@@ -10037,6 +10076,9 @@ class Labor extends DataClass implements Insertable<Labor> {
           ? data.cropAssignmentId.value
           : this.cropAssignmentId,
       type: data.type.present ? data.type.value : this.type,
+      domainCategory: data.domainCategory.present
+          ? data.domainCategory.value
+          : this.domainCategory,
       customName: data.customName.present
           ? data.customName.value
           : this.customName,
@@ -10077,6 +10119,7 @@ class Labor extends DataClass implements Insertable<Labor> {
           ..write('seasonId: $seasonId, ')
           ..write('cropAssignmentId: $cropAssignmentId, ')
           ..write('type: $type, ')
+          ..write('domainCategory: $domainCategory, ')
           ..write('customName: $customName, ')
           ..write('detailsJson: $detailsJson, ')
           ..write('detailsSchemaVersion: $detailsSchemaVersion, ')
@@ -10095,7 +10138,7 @@ class Labor extends DataClass implements Insertable<Labor> {
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     ownerId,
     parcelId,
@@ -10103,6 +10146,7 @@ class Labor extends DataClass implements Insertable<Labor> {
     seasonId,
     cropAssignmentId,
     type,
+    domainCategory,
     customName,
     detailsJson,
     detailsSchemaVersion,
@@ -10116,7 +10160,7 @@ class Labor extends DataClass implements Insertable<Labor> {
     lastSyncErrorCode,
     deletedAt,
     updatedAt,
-  );
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -10128,6 +10172,7 @@ class Labor extends DataClass implements Insertable<Labor> {
           other.seasonId == this.seasonId &&
           other.cropAssignmentId == this.cropAssignmentId &&
           other.type == this.type &&
+          other.domainCategory == this.domainCategory &&
           other.customName == this.customName &&
           other.detailsJson == this.detailsJson &&
           other.detailsSchemaVersion == this.detailsSchemaVersion &&
@@ -10151,6 +10196,7 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
   final Value<String?> seasonId;
   final Value<String?> cropAssignmentId;
   final Value<String> type;
+  final Value<String?> domainCategory;
   final Value<String?> customName;
   final Value<String> detailsJson;
   final Value<int> detailsSchemaVersion;
@@ -10173,6 +10219,7 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
     this.seasonId = const Value.absent(),
     this.cropAssignmentId = const Value.absent(),
     this.type = const Value.absent(),
+    this.domainCategory = const Value.absent(),
     this.customName = const Value.absent(),
     this.detailsJson = const Value.absent(),
     this.detailsSchemaVersion = const Value.absent(),
@@ -10196,6 +10243,7 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
     this.seasonId = const Value.absent(),
     this.cropAssignmentId = const Value.absent(),
     required String type,
+    this.domainCategory = const Value.absent(),
     this.customName = const Value.absent(),
     this.detailsJson = const Value.absent(),
     this.detailsSchemaVersion = const Value.absent(),
@@ -10225,6 +10273,7 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
     Expression<String>? seasonId,
     Expression<String>? cropAssignmentId,
     Expression<String>? type,
+    Expression<String>? domainCategory,
     Expression<String>? customName,
     Expression<String>? detailsJson,
     Expression<int>? detailsSchemaVersion,
@@ -10248,6 +10297,7 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
       if (seasonId != null) 'season_id': seasonId,
       if (cropAssignmentId != null) 'crop_assignment_id': cropAssignmentId,
       if (type != null) 'type': type,
+      if (domainCategory != null) 'domain_category': domainCategory,
       if (customName != null) 'custom_name': customName,
       if (detailsJson != null) 'details_json': detailsJson,
       if (detailsSchemaVersion != null)
@@ -10274,6 +10324,7 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
     Value<String?>? seasonId,
     Value<String?>? cropAssignmentId,
     Value<String>? type,
+    Value<String?>? domainCategory,
     Value<String?>? customName,
     Value<String>? detailsJson,
     Value<int>? detailsSchemaVersion,
@@ -10297,6 +10348,7 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
       seasonId: seasonId ?? this.seasonId,
       cropAssignmentId: cropAssignmentId ?? this.cropAssignmentId,
       type: type ?? this.type,
+      domainCategory: domainCategory ?? this.domainCategory,
       customName: customName ?? this.customName,
       detailsJson: detailsJson ?? this.detailsJson,
       detailsSchemaVersion: detailsSchemaVersion ?? this.detailsSchemaVersion,
@@ -10337,6 +10389,9 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
     }
     if (type.present) {
       map['type'] = Variable<String>(type.value);
+    }
+    if (domainCategory.present) {
+      map['domain_category'] = Variable<String>(domainCategory.value);
     }
     if (customName.present) {
       map['custom_name'] = Variable<String>(customName.value);
@@ -10393,6 +10448,7 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
           ..write('seasonId: $seasonId, ')
           ..write('cropAssignmentId: $cropAssignmentId, ')
           ..write('type: $type, ')
+          ..write('domainCategory: $domainCategory, ')
           ..write('customName: $customName, ')
           ..write('detailsJson: $detailsJson, ')
           ..write('detailsSchemaVersion: $detailsSchemaVersion, ')
@@ -10450,6 +10506,20 @@ class $SoilMeasurementsTable extends SoilMeasurements
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES sectors (id)',
+    ),
+  );
+  static const VerificationMeta _laborIdMeta = const VerificationMeta(
+    'laborId',
+  );
+  @override
+  late final GeneratedColumn<String> laborId = GeneratedColumn<String>(
+    'labor_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES labors (id)',
     ),
   );
   static const VerificationMeta _moisturePercentMeta = const VerificationMeta(
@@ -10563,6 +10633,7 @@ class $SoilMeasurementsTable extends SoilMeasurements
     id,
     ownerId,
     sectorId,
+    laborId,
     moisturePercent,
     ph,
     temperatureCelsius,
@@ -10606,6 +10677,12 @@ class $SoilMeasurementsTable extends SoilMeasurements
       );
     } else if (isInserting) {
       context.missing(_sectorIdMeta);
+    }
+    if (data.containsKey('labor_id')) {
+      context.handle(
+        _laborIdMeta,
+        laborId.isAcceptableOrUnknown(data['labor_id']!, _laborIdMeta),
+      );
     }
     if (data.containsKey('moisture_percent')) {
       context.handle(
@@ -10698,6 +10775,10 @@ class $SoilMeasurementsTable extends SoilMeasurements
         DriftSqlType.string,
         data['${effectivePrefix}sector_id'],
       )!,
+      laborId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}labor_id'],
+      ),
       moisturePercent: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}moisture_percent'],
@@ -10751,6 +10832,7 @@ class SoilMeasurement extends DataClass implements Insertable<SoilMeasurement> {
   final String id;
   final String ownerId;
   final String sectorId;
+  final String? laborId;
   final double? moisturePercent;
   final double? ph;
   final double? temperatureCelsius;
@@ -10765,6 +10847,7 @@ class SoilMeasurement extends DataClass implements Insertable<SoilMeasurement> {
     required this.id,
     required this.ownerId,
     required this.sectorId,
+    this.laborId,
     this.moisturePercent,
     this.ph,
     this.temperatureCelsius,
@@ -10782,6 +10865,9 @@ class SoilMeasurement extends DataClass implements Insertable<SoilMeasurement> {
     map['id'] = Variable<String>(id);
     map['owner_id'] = Variable<String>(ownerId);
     map['sector_id'] = Variable<String>(sectorId);
+    if (!nullToAbsent || laborId != null) {
+      map['labor_id'] = Variable<String>(laborId);
+    }
     if (!nullToAbsent || moisturePercent != null) {
       map['moisture_percent'] = Variable<double>(moisturePercent);
     }
@@ -10816,6 +10902,9 @@ class SoilMeasurement extends DataClass implements Insertable<SoilMeasurement> {
       id: Value(id),
       ownerId: Value(ownerId),
       sectorId: Value(sectorId),
+      laborId: laborId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(laborId),
       moisturePercent: moisturePercent == null && nullToAbsent
           ? const Value.absent()
           : Value(moisturePercent),
@@ -10852,6 +10941,7 @@ class SoilMeasurement extends DataClass implements Insertable<SoilMeasurement> {
       id: serializer.fromJson<String>(json['id']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
       sectorId: serializer.fromJson<String>(json['sectorId']),
+      laborId: serializer.fromJson<String?>(json['laborId']),
       moisturePercent: serializer.fromJson<double?>(json['moisturePercent']),
       ph: serializer.fromJson<double?>(json['ph']),
       temperatureCelsius: serializer.fromJson<double?>(
@@ -10873,6 +10963,7 @@ class SoilMeasurement extends DataClass implements Insertable<SoilMeasurement> {
       'id': serializer.toJson<String>(id),
       'ownerId': serializer.toJson<String>(ownerId),
       'sectorId': serializer.toJson<String>(sectorId),
+      'laborId': serializer.toJson<String?>(laborId),
       'moisturePercent': serializer.toJson<double?>(moisturePercent),
       'ph': serializer.toJson<double?>(ph),
       'temperatureCelsius': serializer.toJson<double?>(temperatureCelsius),
@@ -10890,6 +10981,7 @@ class SoilMeasurement extends DataClass implements Insertable<SoilMeasurement> {
     String? id,
     String? ownerId,
     String? sectorId,
+    Value<String?> laborId = const Value.absent(),
     Value<double?> moisturePercent = const Value.absent(),
     Value<double?> ph = const Value.absent(),
     Value<double?> temperatureCelsius = const Value.absent(),
@@ -10904,6 +10996,7 @@ class SoilMeasurement extends DataClass implements Insertable<SoilMeasurement> {
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
     sectorId: sectorId ?? this.sectorId,
+    laborId: laborId.present ? laborId.value : this.laborId,
     moisturePercent: moisturePercent.present
         ? moisturePercent.value
         : this.moisturePercent,
@@ -10924,6 +11017,7 @@ class SoilMeasurement extends DataClass implements Insertable<SoilMeasurement> {
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
       sectorId: data.sectorId.present ? data.sectorId.value : this.sectorId,
+      laborId: data.laborId.present ? data.laborId.value : this.laborId,
       moisturePercent: data.moisturePercent.present
           ? data.moisturePercent.value
           : this.moisturePercent,
@@ -10953,6 +11047,7 @@ class SoilMeasurement extends DataClass implements Insertable<SoilMeasurement> {
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('sectorId: $sectorId, ')
+          ..write('laborId: $laborId, ')
           ..write('moisturePercent: $moisturePercent, ')
           ..write('ph: $ph, ')
           ..write('temperatureCelsius: $temperatureCelsius, ')
@@ -10972,6 +11067,7 @@ class SoilMeasurement extends DataClass implements Insertable<SoilMeasurement> {
     id,
     ownerId,
     sectorId,
+    laborId,
     moisturePercent,
     ph,
     temperatureCelsius,
@@ -10990,6 +11086,7 @@ class SoilMeasurement extends DataClass implements Insertable<SoilMeasurement> {
           other.id == this.id &&
           other.ownerId == this.ownerId &&
           other.sectorId == this.sectorId &&
+          other.laborId == this.laborId &&
           other.moisturePercent == this.moisturePercent &&
           other.ph == this.ph &&
           other.temperatureCelsius == this.temperatureCelsius &&
@@ -11006,6 +11103,7 @@ class SoilMeasurementsCompanion extends UpdateCompanion<SoilMeasurement> {
   final Value<String> id;
   final Value<String> ownerId;
   final Value<String> sectorId;
+  final Value<String?> laborId;
   final Value<double?> moisturePercent;
   final Value<double?> ph;
   final Value<double?> temperatureCelsius;
@@ -11021,6 +11119,7 @@ class SoilMeasurementsCompanion extends UpdateCompanion<SoilMeasurement> {
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
     this.sectorId = const Value.absent(),
+    this.laborId = const Value.absent(),
     this.moisturePercent = const Value.absent(),
     this.ph = const Value.absent(),
     this.temperatureCelsius = const Value.absent(),
@@ -11037,6 +11136,7 @@ class SoilMeasurementsCompanion extends UpdateCompanion<SoilMeasurement> {
     required String id,
     required String ownerId,
     required String sectorId,
+    this.laborId = const Value.absent(),
     this.moisturePercent = const Value.absent(),
     this.ph = const Value.absent(),
     this.temperatureCelsius = const Value.absent(),
@@ -11057,6 +11157,7 @@ class SoilMeasurementsCompanion extends UpdateCompanion<SoilMeasurement> {
     Expression<String>? id,
     Expression<String>? ownerId,
     Expression<String>? sectorId,
+    Expression<String>? laborId,
     Expression<double>? moisturePercent,
     Expression<double>? ph,
     Expression<double>? temperatureCelsius,
@@ -11073,6 +11174,7 @@ class SoilMeasurementsCompanion extends UpdateCompanion<SoilMeasurement> {
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
       if (sectorId != null) 'sector_id': sectorId,
+      if (laborId != null) 'labor_id': laborId,
       if (moisturePercent != null) 'moisture_percent': moisturePercent,
       if (ph != null) 'ph': ph,
       if (temperatureCelsius != null) 'temperature_celsius': temperatureCelsius,
@@ -11091,6 +11193,7 @@ class SoilMeasurementsCompanion extends UpdateCompanion<SoilMeasurement> {
     Value<String>? id,
     Value<String>? ownerId,
     Value<String>? sectorId,
+    Value<String?>? laborId,
     Value<double?>? moisturePercent,
     Value<double?>? ph,
     Value<double?>? temperatureCelsius,
@@ -11107,6 +11210,7 @@ class SoilMeasurementsCompanion extends UpdateCompanion<SoilMeasurement> {
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
       sectorId: sectorId ?? this.sectorId,
+      laborId: laborId ?? this.laborId,
       moisturePercent: moisturePercent ?? this.moisturePercent,
       ph: ph ?? this.ph,
       temperatureCelsius: temperatureCelsius ?? this.temperatureCelsius,
@@ -11132,6 +11236,9 @@ class SoilMeasurementsCompanion extends UpdateCompanion<SoilMeasurement> {
     }
     if (sectorId.present) {
       map['sector_id'] = Variable<String>(sectorId.value);
+    }
+    if (laborId.present) {
+      map['labor_id'] = Variable<String>(laborId.value);
     }
     if (moisturePercent.present) {
       map['moisture_percent'] = Variable<double>(moisturePercent.value);
@@ -11175,6 +11282,7 @@ class SoilMeasurementsCompanion extends UpdateCompanion<SoilMeasurement> {
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('sectorId: $sectorId, ')
+          ..write('laborId: $laborId, ')
           ..write('moisturePercent: $moisturePercent, ')
           ..write('ph: $ph, ')
           ..write('temperatureCelsius: $temperatureCelsius, ')
@@ -17193,6 +17301,20 @@ class $ApiaryInspectionsTable extends ApiaryInspections
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _laborIdMeta = const VerificationMeta(
+    'laborId',
+  );
+  @override
+  late final GeneratedColumn<String> laborId = GeneratedColumn<String>(
+    'labor_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES labors (id)',
+    ),
+  );
   static const VerificationMeta _taskTypeMeta = const VerificationMeta(
     'taskType',
   );
@@ -17333,6 +17455,7 @@ class $ApiaryInspectionsTable extends ApiaryInspections
     id,
     ownerId,
     sectorId,
+    laborId,
     taskType,
     beekeeperName,
     hiveCount,
@@ -17378,6 +17501,12 @@ class $ApiaryInspectionsTable extends ApiaryInspections
       );
     } else if (isInserting) {
       context.missing(_sectorIdMeta);
+    }
+    if (data.containsKey('labor_id')) {
+      context.handle(
+        _laborIdMeta,
+        laborId.isAcceptableOrUnknown(data['labor_id']!, _laborIdMeta),
+      );
     }
     if (data.containsKey('task_type')) {
       context.handle(
@@ -17518,6 +17647,10 @@ class $ApiaryInspectionsTable extends ApiaryInspections
         DriftSqlType.string,
         data['${effectivePrefix}sector_id'],
       )!,
+      laborId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}labor_id'],
+      ),
       taskType: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}task_type'],
@@ -17580,6 +17713,7 @@ class ApiaryInspection extends DataClass
   final String id;
   final String ownerId;
   final String sectorId;
+  final String? laborId;
   final String taskType;
   final String beekeeperName;
   final int hiveCount;
@@ -17596,6 +17730,7 @@ class ApiaryInspection extends DataClass
     required this.id,
     required this.ownerId,
     required this.sectorId,
+    this.laborId,
     required this.taskType,
     required this.beekeeperName,
     required this.hiveCount,
@@ -17615,6 +17750,9 @@ class ApiaryInspection extends DataClass
     map['id'] = Variable<String>(id);
     map['owner_id'] = Variable<String>(ownerId);
     map['sector_id'] = Variable<String>(sectorId);
+    if (!nullToAbsent || laborId != null) {
+      map['labor_id'] = Variable<String>(laborId);
+    }
     map['task_type'] = Variable<String>(taskType);
     map['beekeeper_name'] = Variable<String>(beekeeperName);
     map['hive_count'] = Variable<int>(hiveCount);
@@ -17637,6 +17775,9 @@ class ApiaryInspection extends DataClass
       id: Value(id),
       ownerId: Value(ownerId),
       sectorId: Value(sectorId),
+      laborId: laborId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(laborId),
       taskType: Value(taskType),
       beekeeperName: Value(beekeeperName),
       hiveCount: Value(hiveCount),
@@ -17663,6 +17804,7 @@ class ApiaryInspection extends DataClass
       id: serializer.fromJson<String>(json['id']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
       sectorId: serializer.fromJson<String>(json['sectorId']),
+      laborId: serializer.fromJson<String?>(json['laborId']),
       taskType: serializer.fromJson<String>(json['taskType']),
       beekeeperName: serializer.fromJson<String>(json['beekeeperName']),
       hiveCount: serializer.fromJson<int>(json['hiveCount']),
@@ -17684,6 +17826,7 @@ class ApiaryInspection extends DataClass
       'id': serializer.toJson<String>(id),
       'ownerId': serializer.toJson<String>(ownerId),
       'sectorId': serializer.toJson<String>(sectorId),
+      'laborId': serializer.toJson<String?>(laborId),
       'taskType': serializer.toJson<String>(taskType),
       'beekeeperName': serializer.toJson<String>(beekeeperName),
       'hiveCount': serializer.toJson<int>(hiveCount),
@@ -17703,6 +17846,7 @@ class ApiaryInspection extends DataClass
     String? id,
     String? ownerId,
     String? sectorId,
+    Value<String?> laborId = const Value.absent(),
     String? taskType,
     String? beekeeperName,
     int? hiveCount,
@@ -17719,6 +17863,7 @@ class ApiaryInspection extends DataClass
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
     sectorId: sectorId ?? this.sectorId,
+    laborId: laborId.present ? laborId.value : this.laborId,
     taskType: taskType ?? this.taskType,
     beekeeperName: beekeeperName ?? this.beekeeperName,
     hiveCount: hiveCount ?? this.hiveCount,
@@ -17737,6 +17882,7 @@ class ApiaryInspection extends DataClass
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
       sectorId: data.sectorId.present ? data.sectorId.value : this.sectorId,
+      laborId: data.laborId.present ? data.laborId.value : this.laborId,
       taskType: data.taskType.present ? data.taskType.value : this.taskType,
       beekeeperName: data.beekeeperName.present
           ? data.beekeeperName.value
@@ -17774,6 +17920,7 @@ class ApiaryInspection extends DataClass
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('sectorId: $sectorId, ')
+          ..write('laborId: $laborId, ')
           ..write('taskType: $taskType, ')
           ..write('beekeeperName: $beekeeperName, ')
           ..write('hiveCount: $hiveCount, ')
@@ -17795,6 +17942,7 @@ class ApiaryInspection extends DataClass
     id,
     ownerId,
     sectorId,
+    laborId,
     taskType,
     beekeeperName,
     hiveCount,
@@ -17815,6 +17963,7 @@ class ApiaryInspection extends DataClass
           other.id == this.id &&
           other.ownerId == this.ownerId &&
           other.sectorId == this.sectorId &&
+          other.laborId == this.laborId &&
           other.taskType == this.taskType &&
           other.beekeeperName == this.beekeeperName &&
           other.hiveCount == this.hiveCount &&
@@ -17833,6 +17982,7 @@ class ApiaryInspectionsCompanion extends UpdateCompanion<ApiaryInspection> {
   final Value<String> id;
   final Value<String> ownerId;
   final Value<String> sectorId;
+  final Value<String?> laborId;
   final Value<String> taskType;
   final Value<String> beekeeperName;
   final Value<int> hiveCount;
@@ -17850,6 +18000,7 @@ class ApiaryInspectionsCompanion extends UpdateCompanion<ApiaryInspection> {
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
     this.sectorId = const Value.absent(),
+    this.laborId = const Value.absent(),
     this.taskType = const Value.absent(),
     this.beekeeperName = const Value.absent(),
     this.hiveCount = const Value.absent(),
@@ -17868,6 +18019,7 @@ class ApiaryInspectionsCompanion extends UpdateCompanion<ApiaryInspection> {
     required String id,
     required String ownerId,
     required String sectorId,
+    this.laborId = const Value.absent(),
     required String taskType,
     required String beekeeperName,
     required int hiveCount,
@@ -17899,6 +18051,7 @@ class ApiaryInspectionsCompanion extends UpdateCompanion<ApiaryInspection> {
     Expression<String>? id,
     Expression<String>? ownerId,
     Expression<String>? sectorId,
+    Expression<String>? laborId,
     Expression<String>? taskType,
     Expression<String>? beekeeperName,
     Expression<int>? hiveCount,
@@ -17917,6 +18070,7 @@ class ApiaryInspectionsCompanion extends UpdateCompanion<ApiaryInspection> {
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
       if (sectorId != null) 'sector_id': sectorId,
+      if (laborId != null) 'labor_id': laborId,
       if (taskType != null) 'task_type': taskType,
       if (beekeeperName != null) 'beekeeper_name': beekeeperName,
       if (hiveCount != null) 'hive_count': hiveCount,
@@ -17937,6 +18091,7 @@ class ApiaryInspectionsCompanion extends UpdateCompanion<ApiaryInspection> {
     Value<String>? id,
     Value<String>? ownerId,
     Value<String>? sectorId,
+    Value<String?>? laborId,
     Value<String>? taskType,
     Value<String>? beekeeperName,
     Value<int>? hiveCount,
@@ -17955,6 +18110,7 @@ class ApiaryInspectionsCompanion extends UpdateCompanion<ApiaryInspection> {
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
       sectorId: sectorId ?? this.sectorId,
+      laborId: laborId ?? this.laborId,
       taskType: taskType ?? this.taskType,
       beekeeperName: beekeeperName ?? this.beekeeperName,
       hiveCount: hiveCount ?? this.hiveCount,
@@ -17982,6 +18138,9 @@ class ApiaryInspectionsCompanion extends UpdateCompanion<ApiaryInspection> {
     }
     if (sectorId.present) {
       map['sector_id'] = Variable<String>(sectorId.value);
+    }
+    if (laborId.present) {
+      map['labor_id'] = Variable<String>(laborId.value);
     }
     if (taskType.present) {
       map['task_type'] = Variable<String>(taskType.value);
@@ -18031,6 +18190,7 @@ class ApiaryInspectionsCompanion extends UpdateCompanion<ApiaryInspection> {
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('sectorId: $sectorId, ')
+          ..write('laborId: $laborId, ')
           ..write('taskType: $taskType, ')
           ..write('beekeeperName: $beekeeperName, ')
           ..write('hiveCount: $hiveCount, ')
@@ -25492,6 +25652,7 @@ typedef $$LaborsTableCreateCompanionBuilder = LaborsCompanion Function({
   Value<String?> seasonId,
   Value<String?> cropAssignmentId,
   required String type,
+  Value<String?> domainCategory,
   Value<String?> customName,
   Value<String> detailsJson,
   Value<int> detailsSchemaVersion,
@@ -25515,6 +25676,7 @@ typedef $$LaborsTableUpdateCompanionBuilder = LaborsCompanion Function({
   Value<String?> seasonId,
   Value<String?> cropAssignmentId,
   Value<String> type,
+  Value<String?> domainCategory,
   Value<String?> customName,
   Value<String> detailsJson,
   Value<int> detailsSchemaVersion,
@@ -25549,6 +25711,47 @@ final class $$LaborsTableReferences
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$SoilMeasurementsTable, List<SoilMeasurement>>
+  _soilMeasurementsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.soilMeasurements,
+    aliasName: 'labors__id__soil_measurements__labor_id',
+  );
+
+  $$SoilMeasurementsTableProcessedTableManager get soilMeasurementsRefs {
+    final manager = $$SoilMeasurementsTableTableManager(
+      $_db,
+      $_db.soilMeasurements,
+    ).filter((f) => f.laborId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _soilMeasurementsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$ApiaryInspectionsTable, List<ApiaryInspection>>
+  _apiaryInspectionsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.apiaryInspections,
+        aliasName: 'labors__id__apiary_inspections__labor_id',
+      );
+
+  $$ApiaryInspectionsTableProcessedTableManager get apiaryInspectionsRefs {
+    final manager = $$ApiaryInspectionsTableTableManager(
+      $_db,
+      $_db.apiaryInspections,
+    ).filter((f) => f.laborId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _apiaryInspectionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
     );
   }
 }
@@ -25589,6 +25792,11 @@ class $$LaborsTableFilterComposer
 
   ColumnFilters<String> get type => $composableBuilder(
     column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get domainCategory => $composableBuilder(
+    column: $table.domainCategory,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -25679,6 +25887,56 @@ class $$LaborsTableFilterComposer
     );
     return composer;
   }
+
+  Expression<bool> soilMeasurementsRefs(
+    Expression<bool> Function($$SoilMeasurementsTableFilterComposer f) f,
+  ) {
+    final $$SoilMeasurementsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.soilMeasurements,
+      getReferencedColumn: (t) => t.laborId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SoilMeasurementsTableFilterComposer(
+            $db: $db,
+            $table: $db.soilMeasurements,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> apiaryInspectionsRefs(
+    Expression<bool> Function($$ApiaryInspectionsTableFilterComposer f) f,
+  ) {
+    final $$ApiaryInspectionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.apiaryInspections,
+      getReferencedColumn: (t) => t.laborId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ApiaryInspectionsTableFilterComposer(
+            $db: $db,
+            $table: $db.apiaryInspections,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$LaborsTableOrderingComposer
@@ -25717,6 +25975,11 @@ class $$LaborsTableOrderingComposer
 
   ColumnOrderings<String> get type => $composableBuilder(
     column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get domainCategory => $composableBuilder(
+    column: $table.domainCategory,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -25838,6 +26101,11 @@ class $$LaborsTableAnnotationComposer
   GeneratedColumn<String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
 
+  GeneratedColumn<String> get domainCategory => $composableBuilder(
+    column: $table.domainCategory,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get customName => $composableBuilder(
     column: $table.customName,
     builder: (column) => column,
@@ -25913,6 +26181,57 @@ class $$LaborsTableAnnotationComposer
     );
     return composer;
   }
+
+  Expression<T> soilMeasurementsRefs<T extends Object>(
+    Expression<T> Function($$SoilMeasurementsTableAnnotationComposer a) f,
+  ) {
+    final $$SoilMeasurementsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.soilMeasurements,
+      getReferencedColumn: (t) => t.laborId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SoilMeasurementsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.soilMeasurements,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> apiaryInspectionsRefs<T extends Object>(
+    Expression<T> Function($$ApiaryInspectionsTableAnnotationComposer a) f,
+  ) {
+    final $$ApiaryInspectionsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.apiaryInspections,
+          getReferencedColumn: (t) => t.laborId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ApiaryInspectionsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.apiaryInspections,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$LaborsTableTableManager
@@ -25928,7 +26247,11 @@ class $$LaborsTableTableManager
           $$LaborsTableUpdateCompanionBuilder,
           (Labor, $$LaborsTableReferences),
           Labor,
-          PrefetchHooks Function({bool sectorId})
+          PrefetchHooks Function({
+            bool sectorId,
+            bool soilMeasurementsRefs,
+            bool apiaryInspectionsRefs,
+          })
         > {
   $$LaborsTableTableManager(_$AppDatabase db, $LaborsTable table)
     : super(
@@ -25950,6 +26273,7 @@ class $$LaborsTableTableManager
                 Value<String?> seasonId = const Value.absent(),
                 Value<String?> cropAssignmentId = const Value.absent(),
                 Value<String> type = const Value.absent(),
+                Value<String?> domainCategory = const Value.absent(),
                 Value<String?> customName = const Value.absent(),
                 Value<String> detailsJson = const Value.absent(),
                 Value<int> detailsSchemaVersion = const Value.absent(),
@@ -25972,6 +26296,7 @@ class $$LaborsTableTableManager
                 seasonId: seasonId,
                 cropAssignmentId: cropAssignmentId,
                 type: type,
+                domainCategory: domainCategory,
                 customName: customName,
                 detailsJson: detailsJson,
                 detailsSchemaVersion: detailsSchemaVersion,
@@ -25996,6 +26321,7 @@ class $$LaborsTableTableManager
                 Value<String?> seasonId = const Value.absent(),
                 Value<String?> cropAssignmentId = const Value.absent(),
                 required String type,
+                Value<String?> domainCategory = const Value.absent(),
                 Value<String?> customName = const Value.absent(),
                 Value<String> detailsJson = const Value.absent(),
                 Value<int> detailsSchemaVersion = const Value.absent(),
@@ -26018,6 +26344,7 @@ class $$LaborsTableTableManager
                 seasonId: seasonId,
                 cropAssignmentId: cropAssignmentId,
                 type: type,
+                domainCategory: domainCategory,
                 customName: customName,
                 detailsJson: detailsJson,
                 detailsSchemaVersion: detailsSchemaVersion,
@@ -26039,46 +26366,96 @@ class $$LaborsTableTableManager
                     (e.readTable(table), $$LaborsTableReferences(db, table, e)),
               )
               .toList(),
-          prefetchHooksCallback: ({sectorId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (sectorId) {
-                      state = state.withJoin(
-                        currentTable: table,
-                        currentColumn: table.sectorId,
-                        referencedTable: $$LaborsTableReferences._sectorIdTable(
-                          db,
-                        ),
-                        referencedColumn: $$LaborsTableReferences
-                            ._sectorIdTable(db)
-                            .id,
-                      ) as T;
-                    }
+          prefetchHooksCallback:
+              ({
+                sectorId = false,
+                soilMeasurementsRefs = false,
+                apiaryInspectionsRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (soilMeasurementsRefs) db.soilMeasurements,
+                    if (apiaryInspectionsRefs) db.apiaryInspections,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (sectorId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.sectorId,
+                            referencedTable: $$LaborsTableReferences
+                                ._sectorIdTable(db),
+                            referencedColumn: $$LaborsTableReferences
+                                ._sectorIdTable(db)
+                                .id,
+                          ) as T;
+                        }
 
-                    return state;
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (soilMeasurementsRefs)
+                        await $_getPrefetchedData<
+                          Labor,
+                          $LaborsTable,
+                          SoilMeasurement
+                        >(
+                          currentTable: table,
+                          referencedTable: $$LaborsTableReferences
+                              ._soilMeasurementsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$LaborsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).soilMeasurementsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.laborId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (apiaryInspectionsRefs)
+                        await $_getPrefetchedData<
+                          Labor,
+                          $LaborsTable,
+                          ApiaryInspection
+                        >(
+                          currentTable: table,
+                          referencedTable: $$LaborsTableReferences
+                              ._apiaryInspectionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$LaborsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).apiaryInspectionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.laborId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
                   },
-              getPrefetchedDataCallback: (items) async {
-                return [];
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -26095,13 +26472,18 @@ typedef $$LaborsTableProcessedTableManager =
       $$LaborsTableUpdateCompanionBuilder,
       (Labor, $$LaborsTableReferences),
       Labor,
-      PrefetchHooks Function({bool sectorId})
+      PrefetchHooks Function({
+        bool sectorId,
+        bool soilMeasurementsRefs,
+        bool apiaryInspectionsRefs,
+      })
     >;
 typedef $$SoilMeasurementsTableCreateCompanionBuilder =
     SoilMeasurementsCompanion Function({
       required String id,
       required String ownerId,
       required String sectorId,
+      Value<String?> laborId,
       Value<double?> moisturePercent,
       Value<double?> ph,
       Value<double?> temperatureCelsius,
@@ -26119,6 +26501,7 @@ typedef $$SoilMeasurementsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> ownerId,
       Value<String> sectorId,
+      Value<String?> laborId,
       Value<double?> moisturePercent,
       Value<double?> ph,
       Value<double?> temperatureCelsius,
@@ -26152,6 +26535,23 @@ final class $$SoilMeasurementsTableReferences
       $_db.sectors,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_sectorIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $LaborsTable _laborIdTable(_$AppDatabase db) =>
+      db.labors.createAlias('soil_measurements__labor_id__labors__id');
+
+  $$LaborsTableProcessedTableManager? get laborId {
+    final $_column = $_itemColumn<String>('labor_id');
+    if ($_column == null) return null;
+    final manager = $$LaborsTableTableManager(
+      $_db,
+      $_db.labors,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_laborIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -26242,6 +26642,29 @@ class $$SoilMeasurementsTableFilterComposer
           }) => $$SectorsTableFilterComposer(
             $db: $db,
             $table: $db.sectors,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$LaborsTableFilterComposer get laborId {
+    final $$LaborsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.laborId,
+      referencedTable: $db.labors,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LaborsTableFilterComposer(
+            $db: $db,
+            $table: $db.labors,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -26343,6 +26766,29 @@ class $$SoilMeasurementsTableOrderingComposer
     );
     return composer;
   }
+
+  $$LaborsTableOrderingComposer get laborId {
+    final $$LaborsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.laborId,
+      referencedTable: $db.labors,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LaborsTableOrderingComposer(
+            $db: $db,
+            $table: $db.labors,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$SoilMeasurementsTableAnnotationComposer
@@ -26422,6 +26868,29 @@ class $$SoilMeasurementsTableAnnotationComposer
     );
     return composer;
   }
+
+  $$LaborsTableAnnotationComposer get laborId {
+    final $$LaborsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.laborId,
+      referencedTable: $db.labors,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LaborsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.labors,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$SoilMeasurementsTableTableManager
@@ -26437,7 +26906,7 @@ class $$SoilMeasurementsTableTableManager
           $$SoilMeasurementsTableUpdateCompanionBuilder,
           (SoilMeasurement, $$SoilMeasurementsTableReferences),
           SoilMeasurement,
-          PrefetchHooks Function({bool sectorId})
+          PrefetchHooks Function({bool sectorId, bool laborId})
         > {
   $$SoilMeasurementsTableTableManager(
     _$AppDatabase db,
@@ -26457,6 +26926,7 @@ class $$SoilMeasurementsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> ownerId = const Value.absent(),
                 Value<String> sectorId = const Value.absent(),
+                Value<String?> laborId = const Value.absent(),
                 Value<double?> moisturePercent = const Value.absent(),
                 Value<double?> ph = const Value.absent(),
                 Value<double?> temperatureCelsius = const Value.absent(),
@@ -26472,6 +26942,7 @@ class $$SoilMeasurementsTableTableManager
                 id: id,
                 ownerId: ownerId,
                 sectorId: sectorId,
+                laborId: laborId,
                 moisturePercent: moisturePercent,
                 ph: ph,
                 temperatureCelsius: temperatureCelsius,
@@ -26489,6 +26960,7 @@ class $$SoilMeasurementsTableTableManager
                 required String id,
                 required String ownerId,
                 required String sectorId,
+                Value<String?> laborId = const Value.absent(),
                 Value<double?> moisturePercent = const Value.absent(),
                 Value<double?> ph = const Value.absent(),
                 Value<double?> temperatureCelsius = const Value.absent(),
@@ -26504,6 +26976,7 @@ class $$SoilMeasurementsTableTableManager
                 id: id,
                 ownerId: ownerId,
                 sectorId: sectorId,
+                laborId: laborId,
                 moisturePercent: moisturePercent,
                 ph: ph,
                 temperatureCelsius: temperatureCelsius,
@@ -26524,7 +26997,7 @@ class $$SoilMeasurementsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({sectorId = false}) {
+          prefetchHooksCallback: ({sectorId = false, laborId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -26555,6 +27028,17 @@ class $$SoilMeasurementsTableTableManager
                             .id,
                       ) as T;
                     }
+                    if (laborId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.laborId,
+                        referencedTable: $$SoilMeasurementsTableReferences
+                            ._laborIdTable(db),
+                        referencedColumn: $$SoilMeasurementsTableReferences
+                            ._laborIdTable(db)
+                            .id,
+                      ) as T;
+                    }
 
                     return state;
                   },
@@ -26579,7 +27063,7 @@ typedef $$SoilMeasurementsTableProcessedTableManager =
       $$SoilMeasurementsTableUpdateCompanionBuilder,
       (SoilMeasurement, $$SoilMeasurementsTableReferences),
       SoilMeasurement,
-      PrefetchHooks Function({bool sectorId})
+      PrefetchHooks Function({bool sectorId, bool laborId})
     >;
 typedef $$IrrigationRecordsTableCreateCompanionBuilder =
     IrrigationRecordsCompanion Function({
@@ -29610,6 +30094,7 @@ typedef $$ApiaryInspectionsTableCreateCompanionBuilder =
       required String id,
       required String ownerId,
       required String sectorId,
+      Value<String?> laborId,
       required String taskType,
       required String beekeeperName,
       required int hiveCount,
@@ -29629,6 +30114,7 @@ typedef $$ApiaryInspectionsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> ownerId,
       Value<String> sectorId,
+      Value<String?> laborId,
       Value<String> taskType,
       Value<String> beekeeperName,
       Value<int> hiveCount,
@@ -29643,6 +30129,37 @@ typedef $$ApiaryInspectionsTableUpdateCompanionBuilder =
       Value<DateTime> updatedAt,
       Value<int> rowid,
     });
+
+final class $$ApiaryInspectionsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $ApiaryInspectionsTable,
+          ApiaryInspection
+        > {
+  $$ApiaryInspectionsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $LaborsTable _laborIdTable(_$AppDatabase db) =>
+      db.labors.createAlias('apiary_inspections__labor_id__labors__id');
+
+  $$LaborsTableProcessedTableManager? get laborId {
+    final $_column = $_itemColumn<String>('labor_id');
+    if ($_column == null) return null;
+    final manager = $$LaborsTableTableManager(
+      $_db,
+      $_db.labors,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_laborIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
 
 class $$ApiaryInspectionsTableFilterComposer
     extends Composer<_$AppDatabase, $ApiaryInspectionsTable> {
@@ -29727,6 +30244,29 @@ class $$ApiaryInspectionsTableFilterComposer
     column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  $$LaborsTableFilterComposer get laborId {
+    final $$LaborsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.laborId,
+      referencedTable: $db.labors,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LaborsTableFilterComposer(
+            $db: $db,
+            $table: $db.labors,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$ApiaryInspectionsTableOrderingComposer
@@ -29812,6 +30352,29 @@ class $$ApiaryInspectionsTableOrderingComposer
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  $$LaborsTableOrderingComposer get laborId {
+    final $$LaborsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.laborId,
+      referencedTable: $db.labors,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LaborsTableOrderingComposer(
+            $db: $db,
+            $table: $db.labors,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$ApiaryInspectionsTableAnnotationComposer
@@ -29883,6 +30446,29 @@ class $$ApiaryInspectionsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$LaborsTableAnnotationComposer get laborId {
+    final $$LaborsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.laborId,
+      referencedTable: $db.labors,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LaborsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.labors,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$ApiaryInspectionsTableTableManager
@@ -29896,16 +30482,9 @@ class $$ApiaryInspectionsTableTableManager
           $$ApiaryInspectionsTableAnnotationComposer,
           $$ApiaryInspectionsTableCreateCompanionBuilder,
           $$ApiaryInspectionsTableUpdateCompanionBuilder,
-          (
-            ApiaryInspection,
-            BaseReferences<
-              _$AppDatabase,
-              $ApiaryInspectionsTable,
-              ApiaryInspection
-            >,
-          ),
+          (ApiaryInspection, $$ApiaryInspectionsTableReferences),
           ApiaryInspection,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool laborId})
         > {
   $$ApiaryInspectionsTableTableManager(
     _$AppDatabase db,
@@ -29928,6 +30507,7 @@ class $$ApiaryInspectionsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> ownerId = const Value.absent(),
                 Value<String> sectorId = const Value.absent(),
+                Value<String?> laborId = const Value.absent(),
                 Value<String> taskType = const Value.absent(),
                 Value<String> beekeeperName = const Value.absent(),
                 Value<int> hiveCount = const Value.absent(),
@@ -29945,6 +30525,7 @@ class $$ApiaryInspectionsTableTableManager
                 id: id,
                 ownerId: ownerId,
                 sectorId: sectorId,
+                laborId: laborId,
                 taskType: taskType,
                 beekeeperName: beekeeperName,
                 hiveCount: hiveCount,
@@ -29964,6 +30545,7 @@ class $$ApiaryInspectionsTableTableManager
                 required String id,
                 required String ownerId,
                 required String sectorId,
+                Value<String?> laborId = const Value.absent(),
                 required String taskType,
                 required String beekeeperName,
                 required int hiveCount,
@@ -29981,6 +30563,7 @@ class $$ApiaryInspectionsTableTableManager
                 id: id,
                 ownerId: ownerId,
                 sectorId: sectorId,
+                laborId: laborId,
                 taskType: taskType,
                 beekeeperName: beekeeperName,
                 hiveCount: hiveCount,
@@ -29996,9 +30579,52 @@ class $$ApiaryInspectionsTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ApiaryInspectionsTableReferences(db, table, e),
+                ),
+              )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({laborId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (laborId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.laborId,
+                        referencedTable: $$ApiaryInspectionsTableReferences
+                            ._laborIdTable(db),
+                        referencedColumn: $$ApiaryInspectionsTableReferences
+                            ._laborIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
         ),
       );
 }
@@ -30013,16 +30639,9 @@ typedef $$ApiaryInspectionsTableProcessedTableManager =
       $$ApiaryInspectionsTableAnnotationComposer,
       $$ApiaryInspectionsTableCreateCompanionBuilder,
       $$ApiaryInspectionsTableUpdateCompanionBuilder,
-      (
-        ApiaryInspection,
-        BaseReferences<
-          _$AppDatabase,
-          $ApiaryInspectionsTable,
-          ApiaryInspection
-        >,
-      ),
+      (ApiaryInspection, $$ApiaryInspectionsTableReferences),
       ApiaryInspection,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool laborId})
     >;
 typedef $$WeatherCacheTableCreateCompanionBuilder =
     WeatherCacheCompanion Function({

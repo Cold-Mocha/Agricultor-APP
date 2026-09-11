@@ -466,8 +466,8 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                       ),
                       icon: const Icon(Icons.arrow_forward),
                     ),
-                ],
-              ),
+                  ],
+                ),
               if (_draft != null && _editingId == null)
                 DropdownButton<String>(
                   value: _newKind,
@@ -530,12 +530,13 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                     ),
                   ],
                   FilledButton(
-                      onPressed: _draft == null
+                    onPressed: _draft == null
                         ? () => setState(() {
                             _selectedVertex = null;
                             _draft = SectorGeometryDraft();
                           })
-                        : error == null && (_editingId != null || _newKind != null)
+                        : error == null &&
+                              (_editingId != null || _newKind != null)
                         ? () => _save(sectors, ownerId, parcelId)
                         : null,
                     child: Text(

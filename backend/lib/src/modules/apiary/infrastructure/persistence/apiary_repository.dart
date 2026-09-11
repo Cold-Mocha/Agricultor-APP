@@ -1,14 +1,12 @@
 import 'dart:convert';
 
+import 'package:agrocampo_backend/src/modules/agricultural_context/agricultural_context_api.dart';
 import 'package:agrocampo_backend/src/modules/apiary/domain/entities/apiary_inspection_input.dart';
 import 'package:agrocampo_backend/src/modules/apiary/domain/entities/apiary_operation_details.dart';
-import 'package:agrocampo_backend/src/modules/agricultural_context/domain/entities/productive_domain.dart';
-import 'package:agrocampo_backend/src/modules/agricultural_context/domain/services/domain_compatibility_policy.dart';
-import 'package:agrocampo_backend/src/modules/labors/domain/entities/labor_details.dart';
-import 'package:agrocampo_backend/src/modules/labors/domain/entities/labor_type.dart';
+import 'package:agrocampo_backend/src/modules/labors/labors_api.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
-import 'package:agrocampo_backend/src/shared/kernel/entity_id.dart';
 import 'package:agrocampo_backend/src/platform/sync/sync_request_hash.dart';
+import 'package:agrocampo_backend/src/shared/kernel/entity_id.dart';
 import 'package:drift/drift.dart';
 
 final class ApiaryRepository {
@@ -23,10 +21,11 @@ final class ApiaryRepository {
     input.validate();
     final typedDetails = ApiaryOperationDetails.fromInput(input);
     final detailsJson = typedDetails.toJson();
-    final sector = await (_database.select(_database.sectors)..where(
-          (row) => row.id.equals(sectorId) & row.ownerId.equals(ownerId),
-        ))
-        .getSingleOrNull();
+    final sector =
+        await (_database.select(_database.sectors)..where(
+              (row) => row.id.equals(sectorId) & row.ownerId.equals(ownerId),
+            ))
+            .getSingleOrNull();
     if (sector == null) throw StateError('owner_mismatch');
     final category = ProductiveCategory.fromCode(sector.kind);
     final compatibility = const DomainCompatibilityPolicy().evaluate(
@@ -36,7 +35,8 @@ final class ApiaryRepository {
         ApiaryTaskType.feeding => ProductiveOperation.apiaryFeeding,
         ApiaryTaskType.health => ProductiveOperation.apiaryHealth,
         ApiaryTaskType.harvest => ProductiveOperation.apiaryHarvest,
-        ApiaryTaskType.superPlacement => ProductiveOperation.apiarySuperPlacement,
+        ApiaryTaskType.superPlacement =>
+          ProductiveOperation.apiarySuperPlacement,
         ApiaryTaskType.other => ProductiveOperation.otherApiaryOperation,
       },
       context: sectorId,
@@ -81,42 +81,46 @@ final class ApiaryRepository {
     await _database.syncOutboxDao.transactionWithOutbox<void>(
       writeAggregate: () async {
         final details = LaborDetails.current(LaborType.apiary, detailsJson);
-        await _database.into(_database.labors).insert(
-          LaborsCompanion.insert(
-            id: laborId,
-            ownerId: ownerId,
-            parcelId: sector.parcelId,
-            sectorId: sectorId,
-            type: LaborType.apiary.name,
-            detailsJson: Value(details.encode()),
-            detailsSchemaVersion: Value(details.schemaVersion),
-            occurredAt: input.inspectedAt.toUtc(),
-            updatedAt: now,
-          ),
-        );
+        await _database
+            .into(_database.labors)
+            .insert(
+              LaborsCompanion.insert(
+                id: laborId,
+                ownerId: ownerId,
+                parcelId: sector.parcelId,
+                sectorId: sectorId,
+                type: LaborType.apiary.name,
+                detailsJson: Value(details.encode()),
+                detailsSchemaVersion: Value(details.schemaVersion),
+                occurredAt: input.inspectedAt.toUtc(),
+                updatedAt: now,
+              ),
+            );
         await _database.customUpdate(
           'UPDATE labors SET domain_category = ? WHERE id = ?',
           variables: [Variable(category.code), Variable(laborId)],
         );
-        await _database.into(_database.apiaryInspections).insert(
-            ApiaryInspectionsCompanion.insert(
-              id: id,
-              ownerId: ownerId,
-              sectorId: sectorId,
-              taskType: input.taskType.name,
-              beekeeperName: input.beekeeperName.trim(),
-              hiveCount: input.hiveCount,
-              queenStatus: input.queenStatus.trim(),
-              broodStatus: input.broodStatus.trim(),
-              feedingStatus: input.feedingStatus.trim(),
-              healthNotes: input.healthNotes.trim(),
-              pestNotes: input.pestNotes.trim(),
-              superInstalled: input.superInstalled,
-              observations: Value(input.observations?.trim()),
-              inspectedAt: input.inspectedAt.toUtc(),
-              updatedAt: now,
-            ),
-          );
+        await _database
+            .into(_database.apiaryInspections)
+            .insert(
+              ApiaryInspectionsCompanion.insert(
+                id: id,
+                ownerId: ownerId,
+                sectorId: sectorId,
+                taskType: input.taskType.name,
+                beekeeperName: input.beekeeperName.trim(),
+                hiveCount: input.hiveCount,
+                queenStatus: input.queenStatus.trim(),
+                broodStatus: input.broodStatus.trim(),
+                feedingStatus: input.feedingStatus.trim(),
+                healthNotes: input.healthNotes.trim(),
+                pestNotes: input.pestNotes.trim(),
+                superInstalled: input.superInstalled,
+                observations: Value(input.observations?.trim()),
+                inspectedAt: input.inspectedAt.toUtc(),
+                updatedAt: now,
+              ),
+            );
         await _database.customUpdate(
           'UPDATE apiary_inspections SET labor_id = ? WHERE id = ?',
           variables: [Variable(laborId), Variable(id)],

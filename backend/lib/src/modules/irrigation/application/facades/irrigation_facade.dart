@@ -69,7 +69,8 @@ final class IrrigationFacade {
     final flowLitersPerHour = double.tryParse(
       input.flow.trim().replaceAll(',', '.'),
     );
-    final basicVolumeLiters = durationMinutes != null &&
+    final basicVolumeLiters =
+        durationMinutes != null &&
             durationMinutes > 0 &&
             flowLitersPerHour != null &&
             flowLitersPerHour > 0

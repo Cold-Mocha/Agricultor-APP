@@ -141,3 +141,39 @@ T030/T050/T058/T080/T094/T110/T115/T117 dependen de sus respectivos backend y fi
 - [Reporte de las 16 integraciones en Pixel 8](003-integration-pixel8-report.md)
 - [Plan restante de 003](003-remaining-plan.md)
 - [Matriz de evidencia](003-release-matrix.md)
+
+## Actualización de ejecución 2026-09-11
+
+Se aplicó el orden backend → frontend del plan con las herramientas disponibles. T013 se resolvió
+mediante el snapshot local de `build_runner`; T057 tiene pruebas propias de contexto vegetal,
+fecha/planificación y ocultamiento apiary; T119 terminó con 154 tests backend, analyze y format;
+T123 terminó con manifiesto append-only para Drift v11/SQL 0020 y su verificador PASS. La guardia
+de arquitectura ahora pasa y, junto con la evidencia histórica de privacidad, T114/T116 quedan
+cerradas. También se añadieron regresiones locales de timeout/caché/privacidad.
+
+El Pixel 8/`emulator-5554` no está disponible en esta sesión. Supabase CLI/Docker/Podman, PostgreSQL
+local y Deno tampoco están disponibles; por eso T026, T068 remoto, T105, T111 Edge, T113 Android,
+T115, T117, T118, T120 integración, T121 y T124 no se declaran completos. El estado canónico de
+tareas y la decisión de release están en `tasks.md` y `003-release-matrix.md`.
+
+## Addendum definitivo host-only — 2026-09-11
+
+La investigación de infraestructura desbloqueó los carriles que no requieren Android. Supabase CLI
+2.117.0 y Deno 2.9.6 se instalaron en rutas temporales; Docker Engine 29.8.0 quedó accesible al
+ejecutar el comando con el permiso requerido para el socket del host. El fallo inicial de Docker
+era de permisos del sandbox sobre `/var/run/docker.sock`, no de un daemon detenido. Como alternativa,
+Podman rootless también pasó `podman info`, ejecución de un contenedor y el socket compatible con
+`DOCKER_HOST` usando runtime temporal bajo `/tmp`.
+
+El stack local de Supabase se levantó con Docker, aplicó las migraciones 0001–0020 mediante
+`db reset --local` y ejecutó 17 archivos pgTAP con 164 tests PASS. Las Edge Functions locales
+pasaron 5 tests con Deno; las llamadas HTTP sin autorización devolvieron 401 controlado. Las
+suites completas terminaron con backend 156/156 y frontend 66/66, además de format, analyze,
+aceptación de prototipos, arquitectura y verificación de migración en PASS.
+
+Con esa evidencia se actualizaron `tasks.md` y la matriz: 119/124 tareas están marcadas `[X]`.
+Permanecen abiertas T030, T115, T120, T121 y T124, porque sus criterios incluyen dispositivo,
+API 24+, GPS, permisos, plugins Android o el gate global que depende de ellos. El detalle de
+comandos, ciclos, salidas y criterios está en
+[`003-host-execution-2026-09-11.md`](003-host-execution-2026-09-11.md). No se simula aprobación
+Android y el release global continúa `NO LISTO`.

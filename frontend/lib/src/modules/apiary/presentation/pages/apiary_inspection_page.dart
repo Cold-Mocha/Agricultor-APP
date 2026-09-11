@@ -59,10 +59,10 @@ final class _ApiaryInspectionPageState
 
   @override
   Widget build(BuildContext context) => AgroPage(
-      title: 'Revisión apícola',
-      subtitle: 'El apicultor es un dato descriptivo, no una cuenta',
-      child: ListView(
-        children: [
+    title: 'Revisión apícola',
+    subtitle: 'El apicultor es un dato descriptivo, no una cuenta',
+    child: ListView(
+      children: [
         if (widget.sectorId != null) ...[
           BoundAgriculturalContextCard(
             bound: _bound!,

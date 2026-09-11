@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:agrocampo_backend/src/modules/history/domain/entities/history_event.dart';
-import 'package:agrocampo_backend/src/modules/agricultural_context/domain/entities/productive_domain.dart';
-import 'package:agrocampo_backend/src/modules/agricultural_context/contracts/dto/save_outcome.dart';
 import 'package:agrocampo_backend/src/modules/history/infrastructure/persistence/sector_history_dao.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
+import 'package:agrocampo_backend/src/shared/contracts/productive_domain.dart';
+import 'package:agrocampo_backend/src/shared/contracts/save_outcome.dart';
 import 'package:drift/drift.dart';
 
 final class HistoryRepository {
@@ -53,7 +53,8 @@ final class HistoryRepository {
                 : row.notes,
             status: row.status,
             syncState: row.syncState,
-            category: categories[row.sectorId] ?? ProductiveCategory.legacyUnknown,
+            category:
+                categories[row.sectorId] ?? ProductiveCategory.legacyUnknown,
             backupState: _backupState(row.syncState),
             details: _decodeDetails(row.detailsJson),
           ),
@@ -95,32 +96,36 @@ final class HistoryRepository {
       final linkedSoilIds = soilRows.isEmpty
           ? const <String>{}
           : (await _database
-                .customSelect(
-                  'SELECT id FROM soil_measurements WHERE id IN (${List.filled(soilRows.length, '?').join(',')}) AND labor_id IS NOT NULL',
-                  variables: [for (final row in soilRows) Variable(row.id)],
-                )
-                .get())
-              .map((row) => row.read<String>('id'))
-              .toSet();
+                    .customSelect(
+                      'SELECT id FROM soil_measurements WHERE id IN (${List.filled(soilRows.length, '?').join(',')}) AND labor_id IS NOT NULL',
+                      variables: [for (final row in soilRows) Variable(row.id)],
+                    )
+                    .get())
+                .map((row) => row.read<String>('id'))
+                .toSet();
       final soilCategories = await _sectorCategories(
         filter.ownerId,
         soilRows.map((row) => row.sectorId),
       );
       events.addAll(
-        soilRows.where((row) => !linkedSoilIds.contains(row.id)).map(
-          (row) => HistoryEvent(
-            id: row.id,
-            groupingKey: 'soil:${row.id}',
-            type: HistoryEventType.soil,
-            occurredAt: row.measuredAt,
-            title: 'Medición de suelo',
-            sectorId: row.sectorId,
-            detail: row.notes,
-            syncState: 'local',
-            category: soilCategories[row.sectorId] ?? ProductiveCategory.legacyUnknown,
-            backupState: BackupState.pending,
-          ),
-        ),
+        soilRows
+            .where((row) => !linkedSoilIds.contains(row.id))
+            .map(
+              (row) => HistoryEvent(
+                id: row.id,
+                groupingKey: 'soil:${row.id}',
+                type: HistoryEventType.soil,
+                occurredAt: row.measuredAt,
+                title: 'Medición de suelo',
+                sectorId: row.sectorId,
+                detail: row.notes,
+                syncState: 'local',
+                category:
+                    soilCategories[row.sectorId] ??
+                    ProductiveCategory.legacyUnknown,
+                backupState: BackupState.pending,
+              ),
+            ),
       );
     }
     final filtered = filter.category == null
@@ -143,11 +148,12 @@ final class HistoryRepository {
   ) async {
     final values = ids.toSet();
     if (values.isEmpty) return const {};
-    final rows = await (_database.select(_database.sectors)..where(
-          (row) => row.ownerId.equals(ownerId) & row.id.isIn(values),
-        ))
-        .get();
-    return {for (final row in rows) row.id: ProductiveCategory.fromCode(row.kind)};
+    final rows = await (_database.select(
+      _database.sectors,
+    )..where((row) => row.ownerId.equals(ownerId) & row.id.isIn(values))).get();
+    return {
+      for (final row in rows) row.id: ProductiveCategory.fromCode(row.kind),
+    };
   }
 
   BackupState _backupState(String state) => switch (state) {

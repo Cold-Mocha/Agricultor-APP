@@ -40,8 +40,23 @@ final class SectorRepository {
                 row.id.equals(sectorId) &
                 row.deletedAt.isNull(),
           ))
-          .watchSingleOrNull()
-          .map((row) => row == null ? null : _toDomain(row));
+          .watch()
+          .map((rows) => rows.isEmpty ? null : _toDomain(rows.first));
+
+  Future<domain.Sector?> loadById({
+    required String ownerId,
+    required String sectorId,
+  }) async {
+    final row =
+        await (_database.select(_database.sectors)..where(
+              (item) =>
+                  item.ownerId.equals(ownerId) &
+                  item.id.equals(sectorId) &
+                  item.deletedAt.isNull(),
+            ))
+            .getSingleOrNull();
+    return row == null ? null : _toDomain(row);
+  }
 
   domain.Sector _toDomain(Sector row) => domain.Sector(
     id: row.id,

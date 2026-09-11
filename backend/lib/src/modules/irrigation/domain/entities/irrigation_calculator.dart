@@ -88,10 +88,7 @@ abstract final class IrrigationCalculator {
     if (durationSeconds <= 0) {
       throw ArgumentError('duration_seconds_invalid');
     }
-    return _roundHalfUp(
-      totalFlowMlPerMinute * durationSeconds,
-      60,
-    );
+    return _roundHalfUp(totalFlowMlPerMinute * durationSeconds, 60);
   }
 
   static IrrigationCalculationResult calculate(

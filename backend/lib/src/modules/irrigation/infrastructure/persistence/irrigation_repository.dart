@@ -26,10 +26,12 @@ final class IrrigationRepository {
   }) async {
     input.validate();
     final instant = occurredAt.toUtc();
-    final sectorKind = await _database.customSelect(
-      'SELECT kind FROM sectors WHERE id = ? AND owner_id = ?',
-      variables: [Variable<String>(sectorId), Variable<String>(ownerId)],
-    ).getSingleOrNull();
+    final sectorKind = await _database
+        .customSelect(
+          'SELECT kind FROM sectors WHERE id = ? AND owner_id = ?',
+          variables: [Variable<String>(sectorId), Variable<String>(ownerId)],
+        )
+        .getSingleOrNull();
     if (sectorKind == null) throw StateError('owner_mismatch');
     if (sectorKind.read<String>('kind') != 'crop') {
       throw StateError('operation_not_valid_for_apiary');

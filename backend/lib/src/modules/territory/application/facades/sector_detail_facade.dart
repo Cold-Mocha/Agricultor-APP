@@ -34,6 +34,16 @@ final class SectorDetailFacade {
         .watchById(ownerId: ownerId, sectorId: sectorId);
   }
 
+  Future<Sector?> loadSector(String ownerId) async {
+    try {
+      await _cropCycles.ensureCatalog();
+    } on Object {
+      // Sector data remains readable if catalog seeding is unavailable.
+    }
+    return SectorRepository(_database)
+        .loadById(ownerId: ownerId, sectorId: sectorId);
+  }
+
   Stream<List<SectorSummary>> watchSummaries({
     required String ownerId,
     required String parcelId,

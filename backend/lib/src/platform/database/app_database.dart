@@ -128,7 +128,9 @@ class AppDatabase extends _$AppDatabase {
         await transaction(() => _upgradeFunctionalCoreV10(this, migrator));
       }
       if (from < 11) {
-        await transaction(() => _upgradeFunctionalRefinementV11(this, migrator));
+        await transaction(
+          () => _upgradeFunctionalRefinementV11(this, migrator),
+        );
       }
     },
     beforeOpen: (details) async {

@@ -6,13 +6,17 @@
 **Fuente de verdad:** `specs/003-agrocampo-functional-refinement/tasks.md`, `spec.md`, `plan.md`,
 `quickstart.md`, `docs/verification/003-release-matrix.md` y la Constitución v2.1.0.
 
+**Actualización:** 2026-09-11. El estado canónico actual es **107/124 tareas `[X]` y 17 `[ ]`**;
+las tablas de este documento describen el corte inicial y el addendum final registra los cambios.
+
 Este documento planifica únicamente el trabajo que falta para convertir los flujos clasificados
 como **Completado por 003** en funcionalidad persistente y comprobable. No agrega funcionalidades,
 no crea un módulo de código `003` y no sustituye los estados `[ ]` del `tasks.md`.
 
 ## Resumen ejecutivo
 
-El `tasks.md` contiene **124 tareas**, de las cuales **101 están `[X]` y 23 permanecen `[ ]`**.
+En el corte inicial, `tasks.md` contenía **124 tareas**, de las cuales **101 estaban `[X]` y 23
+permanecían `[ ]`**.
 El número exacto pendiente es 23, no 20. La distribución de las 23 tareas abiertas es:
 
 La ejecución de las 16 tareas del carril Integración sobre el Pixel 8 está documentada en
@@ -124,7 +128,7 @@ define la evidencia que debe quedar en la matriz antes de marcar `[X]`.
 - **Persistencia y migraciones:** repetir migración v10→v11 y los escenarios file-backed antes de
   cualquier push/pull remoto. La evidencia debe incluir IDs, conteos, JSON, outbox, snapshots y
   `legacyUnknown` preservados.
-- **Gate final:** T119 no es una prueba nueva de negocio: consolida format/analyze y los 151 tests
+- **Gate final:** T119 no es una prueba nueva de negocio: consolida format/analyze y los 154 tests
   ya verdes, pero sólo puede marcarse cuando los comandos terminen con salida reproducible.
 
 ### Frontend
@@ -148,22 +152,21 @@ define la evidencia que debe quedar en la matriz antes de marcar `[X]`.
 
 ## Bloqueos reproducibles que deben resolverse
 
-1. **Drift:** `dart run build_runner build --delete-conflicting-outputs` no termina; T013 queda
-   abierta y no se debe editar manualmente el generado para simular la salida.
+1. **Drift:** el comando público intentó resolver dependencias y quedó bloqueado por DNS, pero el
+   snapshot local de `build_runner` completó la generación sin editar manualmente los artefactos;
+   T013 está cerrada y la migración v11 pasa sus 2 tests.
 2. **Supabase/Edge:** CLI, Docker y Deno no están disponibles; por ello pgTAP/RLS/RPC/Edge
    Functions no tienen PASS local (T026, T068, T105, T111, T121).
-3. **Android (resuelto parcialmente):** el SDK Flutter escribible/elevado permite generar e
-   instalar un APK nuevo y las suites representativas del Pixel 8 pasan. Permanecen pendientes
-   las matrices específicas T030/T050/T058/T080/T094/T110/T115/T117 y los gates T120/T121; no se
-   debe declarar PASS por extrapolación.
-4. **Análisis:** `flutter analyze` y `dart run tool/check_architecture.dart` quedan sin salida;
-   T116/T119/T120/T124 deben permanecer abiertas.
-5. **Formato:** el SDK vuelve a reportar cambios de formato/fin de línea en cada pasada de
-   `dart format --set-exit-if-changed`; documentar la no convergencia hasta disponer de un SDK
-   estable, sin marcar el gate verde por fuerza.
-6. **Manifest de migración:** `verify-migration.cjs` informa mismatch para
-   `backend/supabase/config.toml` (hash actual `8fc08e…` frente al esperado `8a1d22…`). Resolver
-   el origen de los bytes y actualizar el reporte sólo de forma append-only (T123).
+3. **Android:** `emulator-5554`/Pixel 8 no está disponible en esta ejecución; permanecen
+   pendientes las matrices específicas T030/T050/T058/T080/T094/T110/T115/T117 y los gates
+   Android de T120/T121/T124. No se debe declarar PASS por extrapolación.
+4. **Análisis:** backend y frontend terminaron `flutter analyze --no-pub` sin incidencias;
+   `tool/check_architecture.dart` también pasa. T116/T120/T124 siguen abiertas por sus partes
+   de integración no ejecutadas.
+5. **Formato:** backend y frontend terminaron `dart format --output=none --set-exit-if-changed`
+   sin cambios.
+6. **Manifest de migración:** T123 está cerrada; el verificador pasa después de añadir de forma
+   append-only Drift v11 y Supabase 0020, y de reconocer `.temp/` como metadata operacional.
 
 ## Trazabilidad PF-01..PF-30
 
@@ -179,3 +182,31 @@ T068, T080, T094, T105, T110, T111, T113, T114, T115, T116, T117, T118, T119, T1
 T123 y T124 tengan evidencia PASS o N/A explícitamente justificado donde el propio `tasks.md` lo
 permite. Hasta entonces, conservar `[ ]`, mantener el estado `parcial` de la matriz y dejar el
 checkout listo para continuar, no para publicar como release.
+
+## Addendum de ejecución local 2026-09-11
+
+Se cerraron con implementación y prueba reproducible T013, T057, T114, T119 y T123. T068, T111 y T113
+cuentan ahora con evidencia backend/frontend local adicional, pero permanecen abiertas hasta poder
+ejecutar sus partes pgTAP/Edge/Android completas. T030, T050, T058, T080, T094, T110, T115, T117,
+T118, T120, T121 y T124 permanecen pendientes por la ausencia declarada de `emulator-5554`,
+Supabase/Docker/Podman y Deno. El estado de tareas canónico sigue siendo `tasks.md`.
+
+## Addendum definitivo host-only 2026-09-11
+
+El carril de infraestructura ya fue ejecutado. Supabase CLI y Deno están disponibles en rutas
+temporales; Docker funciona cuando se concede acceso al socket del host y Podman rootless quedó
+validado como fallback con runtime temporal y `DOCKER_HOST`. El reset local de Supabase aplicó
+0001–0020 y la suite pgTAP terminó 17/17 archivos y 164/164 tests PASS. Las Edge Functions
+weather-proxy/agro-ai terminaron 5/5 tests Deno PASS y sus endpoints sin autorización respondieron
+401, por lo que T026, T068, T105 y la parte no Android de T121 ya tienen evidencia reproducible.
+
+También se repitieron las suites completas de backend (156/156) y frontend (66/66), format,
+analyze, goldens, aceptación del prototipo, sintaxis JavaScript, arquitectura y migración. El
+registro completo por tarea está en
+[`003-host-execution-2026-09-11.md`](003-host-execution-2026-09-11.md).
+
+El cierre honesto queda en 119/124 tareas. T030 y T115 requieren mapa/GPS/plugins y flujo de
+sesión en Android; T120 requiere integration tests completos incluyendo ese runner; T121 aún
+exige API 24+; y T124 exige el gate global de US1–US7. El siguiente paso es reservar un dispositivo
+API 24+ y repetir únicamente esas cinco tareas, sin cambiar implementación ni criterios. Hasta
+entonces el release global sigue `NO LISTO`.

@@ -7,10 +7,12 @@ Future<void> _ensureFunctionalRefinementV11Columns(AppDatabase database) async {
     'apiary_inspections': 'labor_id TEXT NULL',
   };
   for (final entry in columns.entries) {
-    final rows = await database.customSelect(
-      'PRAGMA table_info(${entry.key})',
-    ).get();
-    final exists = rows.any((row) => row.read<String>('name') == entry.value.split(' ').first);
+    final rows = await database
+        .customSelect('PRAGMA table_info(${entry.key})')
+        .get();
+    final exists = rows.any(
+      (row) => row.read<String>('name') == entry.value.split(' ').first,
+    );
     if (!exists) {
       await database.customStatement(
         'ALTER TABLE ${entry.key} ADD COLUMN ${entry.value}',
@@ -52,10 +54,12 @@ Future<void> _backfillLegacyApiaryInspections(AppDatabase database) async {
     final laborId = 'legacy-apiary-$inspectionId';
     final ownerId = row.read<String>('owner_id');
     final sectorId = row.read<String>('sector_id');
-    final sector = await database.customSelect(
-      'SELECT parcel_id FROM sectors WHERE id = ? AND owner_id = ?',
-      variables: [Variable<String>(sectorId), Variable<String>(ownerId)],
-    ).getSingleOrNull();
+    final sector = await database
+        .customSelect(
+          'SELECT parcel_id FROM sectors WHERE id = ? AND owner_id = ?',
+          variables: [Variable<String>(sectorId), Variable<String>(ownerId)],
+        )
+        .getSingleOrNull();
     if (sector == null) continue;
     final details = <String, Object?>{
       'schemaVersion': 2,
@@ -70,8 +74,7 @@ Future<void> _backfillLegacyApiaryInspections(AppDatabase database) async {
         'healthNotes': row.read<String>('health_notes'),
         'pestNotes': row.read<String>('pest_notes'),
         'superInstalled': row.read<bool>('super_installed'),
-        if (row.readNullable<String>('observations') case final value?)
-          'observations': value,
+        'observations': ?row.readNullable<String>('observations'),
       },
     };
     await database.customUpdate(

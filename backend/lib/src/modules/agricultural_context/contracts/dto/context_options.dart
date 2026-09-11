@@ -1,11 +1,7 @@
-import 'package:agrocampo_backend/src/modules/agricultural_context/domain/entities/productive_domain.dart';
+import 'package:agrocampo_backend/src/shared/contracts/productive_domain.dart';
 
 final class ContextOption {
-  const ContextOption({
-    required this.id,
-    required this.name,
-    this.category,
-  });
+  const ContextOption({required this.id, required this.name, this.category});
   final String id;
   final String name;
   final ProductiveCategory? category;
