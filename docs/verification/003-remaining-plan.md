@@ -18,6 +18,8 @@ El número exacto pendiente es 23, no 20. La distribución de las 23 tareas abie
 La ejecución de las 16 tareas del carril Integración sobre el Pixel 8 está documentada en
 [`003-integration-pixel8-report.md`](003-integration-pixel8-report.md). Sus suites locales verdes
 no sustituyen los criterios remotos, de navegación pública o de gates que cada tarea declara.
+El orden paso a paso para cerrar backend, frontend, remoto y gates está en
+[`003-post-integration-gap-analysis.md`](003-post-integration-gap-analysis.md).
 
 | Carril | Abiertas | Observación |
 |---|---:|---|

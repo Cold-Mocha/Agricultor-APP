@@ -9,6 +9,9 @@ La configuración y el procedimiento reproducible del AVD están en
 La ejecución detallada de las 16 tareas de integración en el Pixel 8 está en
 [`003-integration-pixel8-report.md`](003-integration-pixel8-report.md).
 
+El análisis posterior y el paso a paso de cierre backend/frontend están en
+[`003-post-integration-gap-analysis.md`](003-post-integration-gap-analysis.md).
+
 Estado de la ejecución: `parcial`, salvo G0 documentado en
 [`003-baseline.md`](003-baseline.md). Cada fila debe enlazar una tarea y una suite concreta antes
 de marcarse como completada.
