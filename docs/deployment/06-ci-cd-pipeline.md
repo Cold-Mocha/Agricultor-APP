@@ -16,11 +16,8 @@ del repositorio puede escribir secretos).
 | `supabase-local` | Levanta un stack Supabase **local y desechable** (`supabase --workdir backend start`), aplica las migraciones 0001–0020 (`db reset`), corre la suite pgTAP completa (`test db`) y los tests Deno de `weather-proxy`/`agro-ai` | G10/G11 (sin la parte Android) |
 
 No incluye los `integration_test/*` de Flutter (necesitan un dispositivo/emulador
-Android) ni la construcción de un release firmado — eso vive en el segundo workflow.
-No se automatizó un runner de emulador Android: el propio proyecto documenta en
-`docs/verification/003-remaining-plan.md` que no se debe simular una aprobación
-Android con una suite host; mantener esa separación explícita evita reportar un
-falso verde en T030/T115/T120/T121/T124.
+Android) ni la construcción de un release firmado — eso vive en los otros dos
+workflows (`android-integration.yml` y `android-release.yml` respectivamente).
 
 ### Guards de `RuntimeConfig` (backend, cada push)
 
@@ -31,6 +28,38 @@ falso verde en T030/T115/T120/T121/T124.
    → debe fallar (`FormatException`). Si algún cambio futuro debilita esa
    protección y un build de producción sin Supabase deja de fallar, este job rompe
    CI con un error explícito en vez de dejarlo pasar en silencio.
+
+## `.github/workflows/android-integration.yml` — un archivo por funcionalidad
+
+Corre `flutter test integration_test` (todo `frontend/integration_test/`, ~25
+archivos — uno por funcionalidad: riego, apiary, fertilización, territorio,
+clima, AgroIA, historial, recordatorios, sincronización, sesión, etc.) contra
+un emulador Android hospedado por el runner (API 30, `google_apis`, `x86_64`),
+usando `reactivecircus/android-emulator-runner`. Reproduce, dentro de CI, la
+secuencia ya verificada a mano en
+[`android-pixel8-build-plan.md`](../verification/android-pixel8-build-plan.md):
+build del APK debug, `adb install`, conceder `ACCESS_FINE_LOCATION` /
+`ACCESS_COARSE_LOCATION` / `POST_NOTIFICATIONS` con `pm grant`, y fijar una
+ubicación conocida con `adb emu geo fix` antes de correr la suite.
+
+**Esto es evidencia de CI-emulador, no una certificación de dispositivo
+físico.** El propio proyecto documenta en `docs/verification/003-remaining-plan.md`
+que T030/T115/T120/T121/T124 exigen un dispositivo/emulador API 24+ real y no
+se cierran simulando aprobación con una suite host; este workflow no cambia
+esa regla — añade una red de regresión automática que antes no existía (nada
+en `integration_test/` corría en ningún pipeline), pero un verde aquí no
+declara esas tareas completas.
+
+**Advertencia honesta:** este workflow es nuevo y no se pudo ejecutar ni
+verificar en un runner real antes de este cambio (este entorno no tiene
+Flutter ni un emulador Android disponibles). Es la traducción más fiel posible
+del procedimiento ya probado manualmente, pero su primera corrida real puede
+necesitar ajustes — por ejemplo si algún archivo de `integration_test/`
+depende de un permiso, sensor o estado del dispositivo que el emulador de CI
+no reproduce igual que el Pixel 8 usado hasta ahora.
+
+Por su duración (build + boot de emulador + ~25 archivos, hasta 60 minutos)
+corre en paralelo a `ci.yml`, no encadenado a él.
 
 ## `.github/workflows/android-release.yml`
 
@@ -85,3 +114,8 @@ fuera de este pipeline hasta decidir con qué frecuencia deben desplegarse).
   `supabase --workdir backend start && supabase --workdir backend db reset && supabase --workdir backend test db`.
 - `release-build` con `::warning::` (no rojo) → artefacto válido para smoke test,
   no para publicar; revisar la tabla de secretos de arriba.
+- `android-integration` rojo → revisar primero si el emulador llegó a bootear
+  (timeout de 60 min) antes de mirar los tests; si booteó, el log de
+  `flutter test integration_test` indica qué archivo falló y por qué. Un
+  archivo que dependa de un permiso o sensor no cubierto por los `pm grant`/
+  `geo fix` de este workflow es la causa más probable en la primera corrida.

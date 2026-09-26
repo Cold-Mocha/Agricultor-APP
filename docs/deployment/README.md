@@ -47,6 +47,10 @@ configuradas y cuáles siguen pendientes. No crea ni completa nada por sí mismo
   construye un APK de depuración; construye un release firmado sólo cuando los
   secretos existen, y si no existen sigue generando un artefacto de smoke test
   marcado explícitamente como no apto para Play Store — nunca finge un release real.
+- Pipeline de integration tests Android (`.github/workflows/android-integration.yml`):
+  corre los ~25 archivos de `frontend/integration_test/` (uno por funcionalidad)
+  contra un emulador hospedado por el runner. Es evidencia de CI-emulador, no
+  certificación de dispositivo físico — no cierra T030/T115/T120/T121/T124.
 - Guarda de configuración de producción
   (`backend/tool/verify_runtime_config_guard.dart`, ejecutado en cada push): prueba
   automáticamente que la app rechaza compilarse en modo producción sin
