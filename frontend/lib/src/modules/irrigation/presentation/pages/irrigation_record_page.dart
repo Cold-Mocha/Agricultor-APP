@@ -8,6 +8,7 @@ import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class IrrigationRecordPage extends ConsumerStatefulWidget {
   const IrrigationRecordPage({this.initialSectorId, super.key});
@@ -74,7 +75,7 @@ final class _IrrigationRecordPageState
           onPressed: () => context.push(
             AppRoutes.irrigationConfigurationFor(sectorId: _bound?.sectorId),
           ),
-          icon: const Icon(Icons.settings_outlined),
+          icon: const Icon(LucideIcons.settings),
           label: const Text('Configurar goteo del sector'),
         ),
         const SizedBox(height: AgroSpacing.sm),

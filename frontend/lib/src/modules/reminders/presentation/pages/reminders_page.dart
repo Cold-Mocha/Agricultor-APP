@@ -7,6 +7,7 @@ import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.d
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class RemindersPage extends ConsumerStatefulWidget {
   const RemindersPage({super.key});
@@ -54,7 +55,7 @@ final class _RemindersPageState extends ConsumerState<RemindersPage> {
           const SizedBox(height: AgroSpacing.sm),
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.schedule),
+            leading: const Icon(LucideIcons.clock),
             title: const Text('Fecha y hora'),
             subtitle: Text(_scheduledAt.toLocal().toString()),
             onTap: _pickDateTime,
@@ -84,8 +85,8 @@ final class _RemindersPageState extends ConsumerState<RemindersPage> {
                         child: ListTile(
                           leading: Icon(
                             reminder.status == 'scheduled'
-                                ? Icons.notifications_none
-                                : Icons.notifications_off_outlined,
+                                ? LucideIcons.bell
+                                : LucideIcons.bellOff,
                           ),
                           title: Text(reminder.title),
                           subtitle: Text(

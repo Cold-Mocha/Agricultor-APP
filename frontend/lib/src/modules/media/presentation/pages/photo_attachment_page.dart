@@ -5,6 +5,7 @@ import 'package:agrocampo/src/modules/media/presentation/controllers/media_contr
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class PhotoAttachmentPage extends ConsumerStatefulWidget {
   const PhotoAttachmentPage({this.initialSectorId, super.key});
@@ -52,7 +53,7 @@ final class _PhotoAttachmentPageState
           const AspectRatio(
             aspectRatio: 4 / 3,
             child: Card(
-              child: Center(child: Icon(Icons.add_a_photo_outlined, size: 64)),
+              child: Center(child: Icon(LucideIcons.imagePlus, size: 64)),
             ),
           )
         else
@@ -66,7 +67,7 @@ final class _PhotoAttachmentPageState
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () => _pick(PhotoSelectionSource.camera),
-                icon: const Icon(Icons.camera_alt_outlined),
+                icon: const Icon(LucideIcons.camera),
                 label: const Text('Cámara'),
               ),
             ),
@@ -74,7 +75,7 @@ final class _PhotoAttachmentPageState
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () => _pick(PhotoSelectionSource.gallery),
-                icon: const Icon(Icons.photo_library_outlined),
+                icon: const Icon(LucideIcons.images),
                 label: const Text('Galería'),
               ),
             ),

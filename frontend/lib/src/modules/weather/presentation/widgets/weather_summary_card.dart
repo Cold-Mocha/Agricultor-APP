@@ -3,6 +3,7 @@ import 'package:agrocampo/src/modules/weather/presentation/controllers/weather_c
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Parcel-level weather hero from the canonical visual specification.
 ///
@@ -193,7 +194,7 @@ final class _WeatherHero extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        Icons.location_on_outlined,
+                        LucideIcons.mapPin,
                         color: colors.onPrimary,
                         size: AgroSizes.iconStandard,
                       ),
@@ -218,14 +219,14 @@ final class _WeatherHero extends StatelessWidget {
                           tooltip: 'Actualizar clima',
                           onPressed: onRetry,
                           color: colors.onPrimary,
-                          icon: const Icon(Icons.refresh_outlined),
+                          icon: const Icon(LucideIcons.refreshCw),
                         )
                       else if (onEditLocality != null)
                         IconButton(
                           tooltip: 'Editar localidad de la parcela',
                           onPressed: onEditLocality,
                           color: colors.onPrimary,
-                          icon: const Icon(Icons.edit_location_alt_outlined),
+                          icon: const Icon(LucideIcons.mapPinPen),
                         ),
                     ],
                   ),
@@ -264,7 +265,7 @@ final class _WeatherHero extends StatelessWidget {
                           SizedBox(
                             width: metricWidth,
                             child: _HeroMetric(
-                              icon: Icons.water_drop_outlined,
+                              icon: LucideIcons.droplet,
                               label: 'Humedad ambiental',
                               value: humidity,
                             ),
@@ -273,8 +274,8 @@ final class _WeatherHero extends StatelessWidget {
                             width: metricWidth,
                             child: _HeroMetric(
                               icon: warning
-                                  ? Icons.warning_amber_outlined
-                                  : Icons.ac_unit_outlined,
+                                  ? LucideIcons.triangleAlert
+                                  : LucideIcons.snowflake,
                               label: 'Helada',
                               value: frost,
                               warning: warning,

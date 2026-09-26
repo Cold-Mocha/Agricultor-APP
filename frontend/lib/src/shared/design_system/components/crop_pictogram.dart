@@ -1,6 +1,7 @@
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class CropPictogram extends StatelessWidget {
   const CropPictogram({
@@ -18,15 +19,15 @@ final class CropPictogram extends StatelessWidget {
   Widget build(BuildContext context) {
     final foreground = _color(context, colorToken);
     final image = asset == null
-        ? Icon(Icons.eco_outlined, color: foreground)
+        ? Icon(LucideIcons.leaf, color: foreground)
         : SvgPicture.asset(
             asset!,
             width: AgroSizes.iconFeatured,
             height: AgroSizes.iconFeatured,
             placeholderBuilder: (_) =>
-                Icon(Icons.eco_outlined, color: foreground),
+                Icon(LucideIcons.leaf, color: foreground),
             errorBuilder: (_, _, _) =>
-                Icon(Icons.eco_outlined, color: foreground),
+                Icon(LucideIcons.leaf, color: foreground),
           );
     return Semantics(
       image: semanticLabel != null,

@@ -6,6 +6,7 @@ import 'package:agrocampo/src/modules/territory/presentation/controllers/territo
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class ParcelListPage extends ConsumerWidget {
   const ParcelListPage({super.key});
@@ -19,7 +20,7 @@ final class ParcelListPage extends ConsumerWidget {
       actions: [
         IconButton(
           onPressed: () => context.push(AppRoutes.newParcel),
-          icon: const Icon(Icons.add),
+          icon: const Icon(LucideIcons.plus),
           tooltip: 'Nueva parcela',
         ),
       ],
@@ -34,8 +35,8 @@ final class ParcelListPage extends ConsumerWidget {
                       child: ListTile(
                         leading: Icon(
                           parcel.isActive
-                              ? Icons.check_circle
-                              : Icons.circle_outlined,
+                              ? LucideIcons.circleCheck
+                              : LucideIcons.circle,
                         ),
                         title: Text(parcel.name),
                         subtitle: Text(

@@ -1,5 +1,6 @@
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class AgroSettingsGroup extends StatelessWidget {
   const AgroSettingsGroup({
@@ -77,7 +78,7 @@ final class AgroSettingsTile extends StatelessWidget {
               ),
             ),
           const SizedBox(width: AgroSpacing.xxs),
-          const Icon(Icons.chevron_right_outlined),
+          const Icon(LucideIcons.chevronRight),
         ],
       ),
       onTap: onTap,

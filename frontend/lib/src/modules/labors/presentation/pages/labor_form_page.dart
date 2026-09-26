@@ -8,6 +8,7 @@ import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class LaborFormPage extends ConsumerStatefulWidget {
   const LaborFormPage({this.initialSectorId, this.initialLaborType, super.key});
@@ -110,7 +111,7 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
           subtitle: Text(
             MaterialLocalizations.of(context).formatMediumDate(_occurredAt),
           ),
-          trailing: const Icon(Icons.calendar_today_outlined),
+          trailing: const Icon(LucideIcons.calendar),
           onTap: _selectDate,
         ),
         const SizedBox(height: AgroSpacing.md),
@@ -133,18 +134,18 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
         if (_type == LaborType.irrigation)
           OutlinedButton.icon(
             onPressed: _openIrrigation,
-            icon: const Icon(Icons.water_drop_outlined),
+            icon: const Icon(LucideIcons.droplet),
             label: const Text('Calcular riego por goteo'),
           ),
         switch (_type) {
           LaborType.harvest => FilledButton.icon(
             onPressed: _openProduction,
-            icon: const Icon(Icons.agriculture_outlined),
+            icon: const Icon(LucideIcons.wheat),
             label: const Text('Registrar cosecha y producción'),
           ),
           LaborType.soil => FilledButton.icon(
             onPressed: _openSoil,
-            icon: const Icon(Icons.science_outlined),
+            icon: const Icon(LucideIcons.flaskConical),
             label: const Text('Abrir medición de suelo'),
           ),
           LaborType.apiary => FilledButton.icon(

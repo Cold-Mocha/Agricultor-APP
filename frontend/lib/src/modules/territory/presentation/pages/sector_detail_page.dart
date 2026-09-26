@@ -10,6 +10,7 @@ import 'package:agrocampo/src/shared/design_system/components/crop_pictogram.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class SectorDetailPage extends ConsumerWidget {
   const SectorDetailPage({required this.sectorId, super.key});
@@ -83,7 +84,7 @@ final class SectorDetailPage extends ConsumerWidget {
               tooltip: 'Abrir mapa de cuadrantes',
               onPressed: () =>
                   context.push(AppRoutes.quadrantMap(detail.parcelId)),
-              icon: const Icon(Icons.map_outlined),
+              icon: const Icon(LucideIcons.map),
             ),
           ],
           child: ListView(
@@ -108,24 +109,24 @@ final class SectorDetailPage extends ConsumerWidget {
                   AgroMetricCard(
                     label: 'Superficie',
                     value: '${summary.areaSquareMeters.toStringAsFixed(0)} m²',
-                    icon: Icons.straighten_outlined,
+                    icon: LucideIcons.ruler,
                   ),
                   AgroMetricCard(
                     label: 'Humedad del suelo',
                     value: summary.soilMoisturePercent == null
                         ? 'Sin medición'
                         : '${summary.soilMoisturePercent!.toStringAsFixed(0)} %',
-                    icon: Icons.opacity_outlined,
+                    icon: LucideIcons.droplets,
                   ),
                   AgroMetricCard(
                     label: 'Último riego',
                     value: _date(context, summary.lastIrrigationAt),
-                    icon: Icons.water_drop_outlined,
+                    icon: LucideIcons.droplet,
                   ),
                   AgroMetricCard(
                     label: 'Última medición',
                     value: _date(context, summary.lastSoilAt),
-                    icon: Icons.science_outlined,
+                    icon: LucideIcons.flaskConical,
                   ),
                 ],
               ),
@@ -139,38 +140,38 @@ final class SectorDetailPage extends ConsumerWidget {
               AgroAdaptiveGrid(
                 children: [
                   AgroActionTile(
-                    icon: Icons.add_task_outlined,
+                    icon: LucideIcons.clipboardPlus,
                     label: 'Registrar labor',
                     onTap: () => context.push(
                       AppRoutes.registerFor(sectorId: detail.id),
                     ),
                   ),
                   AgroActionTile(
-                    icon: Icons.water_drop_outlined,
+                    icon: LucideIcons.droplet,
                     label: 'Riego',
                     onTap: () => context.push(
                       AppRoutes.irrigationFor(sectorId: detail.id),
                     ),
                   ),
                   AgroActionTile(
-                    icon: Icons.science_outlined,
+                    icon: LucideIcons.flaskConical,
                     label: 'Suelo',
                     onTap: () =>
                         context.push(AppRoutes.soilFor(sectorId: detail.id)),
                   ),
                   AgroActionTile(
-                    icon: Icons.auto_awesome_outlined,
+                    icon: LucideIcons.sparkles,
                     label: 'AgroIA',
                     onTap: () => context.push(AppRoutes.agroAi),
                   ),
                   AgroActionTile(
-                    icon: Icons.eco_outlined,
+                    icon: LucideIcons.leaf,
                     label: 'Cambiar cultivo',
                     onTap: () =>
                         context.push(AppRoutes.sectorRotation(detail.id)),
                   ),
                   AgroActionTile(
-                    icon: Icons.history_outlined,
+                    icon: LucideIcons.history,
                     label: 'Ver historial',
                     onTap: () =>
                         context.push(AppRoutes.sectorHistory(detail.id)),
@@ -241,7 +242,7 @@ final class _CropIdentityCard extends StatelessWidget {
           const SizedBox(height: AgroSpacing.sm),
           OutlinedButton.icon(
             onPressed: onChangeCrop,
-            icon: const Icon(Icons.event_repeat_outlined),
+            icon: const Icon(LucideIcons.repeat),
             label: const Text('Cultivo y rotación'),
           ),
           if (onApiary case final action?) ...[

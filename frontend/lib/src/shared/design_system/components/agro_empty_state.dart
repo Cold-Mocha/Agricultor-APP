@@ -1,5 +1,6 @@
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class AgroEmptyState extends StatelessWidget {
   const AgroEmptyState({
@@ -20,7 +21,7 @@ final class AgroEmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.eco_outlined, size: 48),
+          const Icon(LucideIcons.leaf, size: 48),
           const SizedBox(height: AgroSpacing.md),
           Text(
             title,

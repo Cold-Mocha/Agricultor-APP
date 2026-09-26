@@ -2,6 +2,7 @@ import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/agricultural_context/presentation/controllers/agricultural_context_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class AgriculturalContextSelector extends ConsumerWidget {
   const AgriculturalContextSelector({
@@ -59,7 +60,7 @@ final class AgriculturalContextSelector extends ConsumerWidget {
                               : null,
                           label: 'Parcela',
                           hint: 'Selecciona una parcela',
-                          icon: Icons.landscape_outlined,
+                          icon: LucideIcons.mountain,
                           showLeadingIcon: !useHorizontalLayout,
                           items: [
                             for (final parcel in parcels)
@@ -95,7 +96,7 @@ final class AgriculturalContextSelector extends ConsumerWidget {
                           hint: agriculturalContext.parcelId == null
                               ? 'Primero elige parcela'
                               : 'Selecciona un sector',
-                          icon: Icons.grid_view_outlined,
+                          icon: LucideIcons.layoutGrid,
                           showLeadingIcon: !useHorizontalLayout,
                           items: [
                             for (final sector in sectors)

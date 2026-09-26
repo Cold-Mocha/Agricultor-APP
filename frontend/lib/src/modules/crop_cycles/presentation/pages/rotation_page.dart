@@ -7,6 +7,7 @@ import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class RotationPage extends ConsumerStatefulWidget {
   const RotationPage({required this.sectorId, super.key});
@@ -62,12 +63,12 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
                   IconButton(
                     tooltip: 'Intercambiar cultivos',
                     onPressed: () => _exchange(context, ref, ownerId),
-                    icon: const Icon(Icons.swap_horiz),
+                    icon: const Icon(LucideIcons.arrowLeftRight),
                   ),
                   IconButton(
                     tooltip: 'Planificar cultivo',
                     onPressed: () => _plan(context, ref, ownerId),
-                    icon: const Icon(Icons.add),
+                    icon: const Icon(LucideIcons.plus),
                   ),
                 ]
               : const [],
@@ -93,7 +94,7 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
                     final assignments = snapshot.data ?? const [];
                     final contextCard = Card(
                       child: ListTile(
-                        leading: const Icon(Icons.eco_outlined),
+                        leading: const Icon(LucideIcons.leaf),
                         title: Text('Contexto: ${sector.name}'),
                         subtitle: Text(
                           '${rotationContextLabel(sector.kind)} · fechas efectivas conservan el historial',
@@ -109,7 +110,7 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
                             message: 'Crea o activa una temporada y planifica el primer cultivo.',
                             action: FilledButton.icon(
                               onPressed: () => context.push(AppRoutes.seasons),
-                              icon: const Icon(Icons.calendar_month_outlined),
+                              icon: const Icon(LucideIcons.calendarDays),
                               label: const Text('Administrar temporadas'),
                             ),
                           ),
@@ -125,8 +126,8 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
                               leading: Icon(
                                 assignment.status ==
                                         SectorCropAssignmentStatus.active
-                                    ? Icons.eco
-                                    : Icons.event_outlined,
+                                    ? LucideIcons.leaf
+                                    : LucideIcons.calendar,
                               ),
                               title: Text(assignment.crop.label),
                               subtitle: Text(

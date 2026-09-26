@@ -2,6 +2,7 @@ import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/shared/design_system/semantics/agro_semantics.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class AgroAppShell extends StatelessWidget {
   const AgroAppShell({required this.navigationShell, super.key});
@@ -21,13 +22,13 @@ final class AgroAppShell extends StatelessWidget {
         ),
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_outlined),
+            icon: Icon(LucideIcons.home),
+            selectedIcon: Icon(LucideIcons.home),
             label: 'Inicio',
           ),
           NavigationDestination(
-            icon: Icon(Icons.grid_view_outlined),
-            selectedIcon: Icon(Icons.grid_view_outlined),
+            icon: Icon(LucideIcons.layoutGrid),
+            selectedIcon: Icon(LucideIcons.layoutGrid),
             label: 'Sectores',
           ),
           NavigationDestination(
@@ -36,13 +37,13 @@ final class AgroAppShell extends StatelessWidget {
             label: 'Registrar',
           ),
           NavigationDestination(
-            icon: Icon(Icons.auto_awesome_outlined),
-            selectedIcon: Icon(Icons.auto_awesome_outlined),
+            icon: Icon(LucideIcons.sparkles),
+            selectedIcon: Icon(LucideIcons.sparkles),
             label: 'AgroIA',
           ),
           NavigationDestination(
-            icon: Icon(Icons.apps_outlined),
-            selectedIcon: Icon(Icons.apps_outlined),
+            icon: Icon(LucideIcons.grid2x2),
+            selectedIcon: Icon(LucideIcons.grid2x2),
             label: 'Más',
           ),
         ],
@@ -67,7 +68,7 @@ final class _RegisterNavIcon extends StatelessWidget {
       borderRadius: BorderRadius.circular(AgroRadii.medium),
     ),
     child: Icon(
-      Icons.add_outlined,
+      LucideIcons.plus,
       color: selected
           ? Theme.of(context).colorScheme.onPrimary
           : Theme.of(context).colorScheme.onPrimaryContainer,

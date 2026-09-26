@@ -1,5 +1,7 @@
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
+import 'package:agrocampo/src/shared/design_system/motion/agro_motion_effects.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 enum AgroStatus { success, warning, info, error }
 
@@ -20,15 +22,19 @@ final class AgroStatusBanner extends StatelessWidget {
       AgroStatus.success => (
         colors.success,
         colors.onSuccess,
-        Icons.check_circle_outline,
+        LucideIcons.circleCheck,
       ),
       AgroStatus.warning => (
         colors.warning,
         colors.onWarning,
-        Icons.warning_amber_rounded,
+        LucideIcons.triangleAlert,
       ),
-      AgroStatus.info => (colors.info, colors.onInfo, Icons.info_outline),
-      AgroStatus.error => (colors.error, colors.onError, Icons.error_outline),
+      AgroStatus.info => (colors.info, colors.onInfo, LucideIcons.info),
+      AgroStatus.error => (
+        colors.error,
+        colors.onError,
+        LucideIcons.circleAlert,
+      ),
     };
     return Semantics(
       liveRegion: true,
@@ -47,7 +53,7 @@ final class AgroStatusBanner extends StatelessWidget {
             ),
           ],
         ),
-      ),
+      ).agroEntrance(context, duration: AgroMotion.quick),
     );
   }
 }

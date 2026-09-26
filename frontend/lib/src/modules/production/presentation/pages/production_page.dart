@@ -5,6 +5,7 @@ import 'package:agrocampo/src/modules/production/presentation/controllers/produc
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class ProductionPage extends ConsumerStatefulWidget {
   const ProductionPage({this.initialSectorId, super.key});
@@ -68,7 +69,7 @@ final class _ProductionPageState extends ConsumerState<ProductionPage> {
             final value = snapshot.data;
             return Card(
               child: ListTile(
-                leading: const Icon(Icons.eco_outlined),
+                leading: const Icon(LucideIcons.leaf),
                 title: Text(
                   value?.cropName ?? 'Selecciona un sector con cultivo vigente',
                 ),

@@ -7,6 +7,7 @@ import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.d
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class HistoryPage extends ConsumerStatefulWidget {
   const HistoryPage({this.initialSectorId, super.key});
@@ -129,10 +130,10 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
                                           ),
                                           child: Icon(
                                             event.syncState == 'synced'
-                                                ? Icons.cloud_done_outlined
+                                                ? LucideIcons.cloudCheck
                                                 : event.syncState == 'conflict'
-                                                ? Icons.sync_problem_outlined
-                                                : Icons.cloud_upload_outlined,
+                                                ? LucideIcons.cloudAlert
+                                                : LucideIcons.cloudUpload,
                                             size: 20,
                                           ),
                                         ),
@@ -160,9 +161,9 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
   );
 
   IconData _icon(HistoryEvent event) => switch (event.type) {
-    HistoryEventType.labor => Icons.agriculture_outlined,
-    HistoryEventType.cropAssignment => Icons.eco_outlined,
-    HistoryEventType.soil => Icons.science_outlined,
+    HistoryEventType.labor => LucideIcons.wheat,
+    HistoryEventType.cropAssignment => LucideIcons.leaf,
+    HistoryEventType.soil => LucideIcons.flaskConical,
   };
 
   String _syncLabel(String state, BackupState backup) => switch (backup) {

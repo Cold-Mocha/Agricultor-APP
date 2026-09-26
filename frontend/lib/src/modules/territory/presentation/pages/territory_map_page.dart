@@ -10,6 +10,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class TerritoryMapPage extends ConsumerStatefulWidget {
   const TerritoryMapPage({super.key, this.initialParcelId, this.tileProvider});
@@ -440,7 +441,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                         latitudeDelta: 0,
                         longitudeDelta: -.00001,
                       ),
-                      icon: const Icon(Icons.arrow_back),
+                      icon: const Icon(LucideIcons.arrowLeft),
                     ),
                     IconButton(
                       tooltip: 'Mover vértice al norte',
@@ -448,7 +449,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                         latitudeDelta: .00001,
                         longitudeDelta: 0,
                       ),
-                      icon: const Icon(Icons.arrow_upward),
+                      icon: const Icon(LucideIcons.arrowUp),
                     ),
                     IconButton(
                       tooltip: 'Mover vértice al sur',
@@ -456,7 +457,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                         latitudeDelta: -.00001,
                         longitudeDelta: 0,
                       ),
-                      icon: const Icon(Icons.arrow_downward),
+                      icon: const Icon(LucideIcons.arrowDown),
                     ),
                     IconButton(
                       tooltip: 'Mover vértice al este',
@@ -464,7 +465,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                         latitudeDelta: 0,
                         longitudeDelta: .00001,
                       ),
-                      icon: const Icon(Icons.arrow_forward),
+                      icon: const Icon(LucideIcons.arrowRight),
                     ),
                   ],
                 ),
@@ -487,7 +488,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                   IconButton(
                     tooltip: 'Usar mi ubicación',
                     onPressed: _locate,
-                    icon: const Icon(Icons.my_location),
+                    icon: const Icon(LucideIcons.locateFixed),
                   ),
                   if (_draft != null) ...[
                     IconButton(
@@ -495,14 +496,14 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                       onPressed: _draft!.canUndo
                           ? () => setState(_draft!.undo)
                           : null,
-                      icon: const Icon(Icons.undo),
+                      icon: const Icon(LucideIcons.undo2),
                     ),
                     IconButton(
                       tooltip: 'Quitar último punto',
                       onPressed: _draft!.points.isEmpty
                           ? null
                           : _removeLastPoint,
-                      icon: const Icon(Icons.remove_circle_outline),
+                      icon: const Icon(LucideIcons.circleMinus),
                     ),
                     TextButton(
                       onPressed: _cancel,
@@ -513,7 +514,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                       onPressed: selected == null
                           ? null
                           : () => context.push(AppRoutes.sector(selected.id)),
-                      icon: const Icon(Icons.open_in_new_outlined),
+                      icon: const Icon(LucideIcons.externalLink),
                       label: const Text('Ver cuadrante'),
                     ),
                     TextButton.icon(
@@ -525,7 +526,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                               _selectedVertex = points.isEmpty ? null : 0;
                               _draft = SectorGeometryDraft(points);
                             }),
-                      icon: const Icon(Icons.edit_outlined),
+                      icon: const Icon(LucideIcons.pencil),
                       label: const Text('Editar'),
                     ),
                   ],

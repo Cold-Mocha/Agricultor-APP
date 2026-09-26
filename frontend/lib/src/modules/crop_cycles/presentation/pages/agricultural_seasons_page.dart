@@ -8,6 +8,7 @@ import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class AgriculturalSeasonsPage extends ConsumerWidget {
   const AgriculturalSeasonsPage({super.key});
@@ -26,7 +27,7 @@ final class AgriculturalSeasonsPage extends ConsumerWidget {
           onPressed: ownerId == null || scope.parcelId == null
               ? null
               : () => context.push('${AppRoutes.seasons}/nueva'),
-          icon: const Icon(Icons.add),
+          icon: const Icon(LucideIcons.plus),
         ),
       ],
       child: Column(
@@ -64,7 +65,7 @@ final class AgriculturalSeasonsPage extends ConsumerWidget {
                                   '${_status(season.status)} · ${_date(season.startsOn)}${season.endsOn == null ? '' : ' — ${_date(season.endsOn!)}'} · ${_sync(season.syncState)}',
                                 ),
                                 selected: scope.seasonId == season.id,
-                                trailing: const Icon(Icons.chevron_right),
+                                trailing: const Icon(LucideIcons.chevronRight),
                                 onTap: () async {
                                   await ref
                                       .read(
@@ -91,9 +92,9 @@ final class AgriculturalSeasonsPage extends ConsumerWidget {
   }
 
   static IconData _icon(AgriculturalSeasonStatus status) => switch (status) {
-    AgriculturalSeasonStatus.active => Icons.play_circle_outline,
-    AgriculturalSeasonStatus.closed => Icons.check_circle_outline,
-    AgriculturalSeasonStatus.planned => Icons.event_outlined,
+    AgriculturalSeasonStatus.active => LucideIcons.circlePlay,
+    AgriculturalSeasonStatus.closed => LucideIcons.circleCheck,
+    AgriculturalSeasonStatus.planned => LucideIcons.calendar,
   };
 
   static String _status(AgriculturalSeasonStatus status) => switch (status) {

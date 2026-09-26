@@ -2,6 +2,7 @@ import 'package:agrocampo/src/modules/agricultural_context/presentation/controll
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class BoundAgriculturalContextCard extends ConsumerWidget {
   const BoundAgriculturalContextCard({
@@ -27,7 +28,7 @@ final class BoundAgriculturalContextCard extends ConsumerWidget {
               ? Theme.of(context).colorScheme.tertiaryContainer
               : null,
           child: ListTile(
-            leading: Icon(changed ? Icons.info_outline : Icons.place_outlined),
+            leading: Icon(changed ? LucideIcons.info : LucideIcons.mapPin),
             title: Text(
               [
                 value?.parcelName,

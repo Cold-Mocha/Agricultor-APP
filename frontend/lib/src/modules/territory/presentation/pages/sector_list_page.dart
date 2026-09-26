@@ -10,6 +10,7 @@ import 'package:agrocampo/src/shared/design_system/components/agro_section_heade
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class SectorListPage extends ConsumerWidget {
   const SectorListPage({super.key});
@@ -28,7 +29,7 @@ final class SectorListPage extends ConsumerWidget {
           onPressed: parcelId == null
               ? null
               : () => context.push(AppRoutes.quadrantMap(parcelId)),
-          icon: const Icon(Icons.map_outlined),
+          icon: const Icon(LucideIcons.map),
         ),
       ],
       child: state.when(
@@ -99,7 +100,7 @@ final class SectorListPage extends ConsumerWidget {
             message: 'Delimita el primero en el mapa para comenzar a registrar labores.',
             action: FilledButton.icon(
               onPressed: () => context.push(AppRoutes.quadrantMap(parcelId)),
-              icon: const Icon(Icons.draw_outlined),
+              icon: const Icon(LucideIcons.penTool),
               label: const Text('Delimitar en el mapa'),
             ),
           )
@@ -188,9 +189,9 @@ final class _HistoryPreviewRow extends StatelessWidget {
     child: ListTile(
       minLeadingWidth: AgroSizes.touchTarget,
       leading: Icon(switch (event.type) {
-        SectorHistoryType.labor => Icons.task_alt_outlined,
-        SectorHistoryType.soil => Icons.science_outlined,
-        SectorHistoryType.cropAssignment => Icons.eco_outlined,
+        SectorHistoryType.labor => LucideIcons.circleCheckBig,
+        SectorHistoryType.soil => LucideIcons.flaskConical,
+        SectorHistoryType.cropAssignment => LucideIcons.leaf,
       }),
       title: Text(event.title),
       subtitle: Text(
@@ -202,7 +203,7 @@ final class _HistoryPreviewRow extends StatelessWidget {
         ].join(' · '),
       ),
       trailing: const ExcludeSemantics(
-        child: Icon(Icons.chevron_right_outlined),
+        child: Icon(LucideIcons.chevronRight),
       ),
       onTap: onTap,
     ),

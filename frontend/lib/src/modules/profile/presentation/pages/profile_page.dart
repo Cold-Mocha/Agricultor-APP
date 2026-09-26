@@ -8,6 +8,7 @@ import 'package:agrocampo/src/shared/design_system/components/agro_settings_grou
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -51,7 +52,7 @@ final class ProfilePage extends ConsumerWidget {
                         title: 'Cuenta',
                         children: [
                           AgroSettingsTile(
-                            icon: Icons.badge_outlined,
+                            icon: LucideIcons.idCard,
                             title: 'Información personal',
                             subtitle: 'Nombre visible y dato de acceso',
                             onTap: () => context.push(
@@ -59,7 +60,7 @@ final class ProfilePage extends ConsumerWidget {
                             ),
                           ),
                           AgroSettingsTile(
-                            icon: Icons.location_on_outlined,
+                            icon: LucideIcons.mapPin,
                             title: 'Ubicación',
                             subtitle: 'Parcela activa y localidad',
                             value: locality,
@@ -72,14 +73,14 @@ final class ProfilePage extends ConsumerWidget {
                         title: 'Preferencias',
                         children: [
                           AgroSettingsTile(
-                            icon: Icons.notifications_outlined,
+                            icon: LucideIcons.bell,
                             title: 'Notificaciones',
                             subtitle: 'Alertas meteorológicas y recordatorios',
                             onTap: () =>
                                 context.push(AppRoutes.profileNotifications),
                           ),
                           AgroSettingsTile(
-                            icon: Icons.language_outlined,
+                            icon: LucideIcons.languages,
                             title: 'Idioma',
                             subtitle: 'Idioma de la aplicación',
                             value: 'Español (Chile)',
@@ -87,14 +88,14 @@ final class ProfilePage extends ConsumerWidget {
                                 context.push(AppRoutes.profileLanguage),
                           ),
                           AgroSettingsTile(
-                            icon: Icons.fingerprint,
+                            icon: LucideIcons.fingerprint,
                             title: 'Seguridad y biometría',
                             subtitle: 'Desbloqueo en este dispositivo',
                             onTap: () =>
                                 context.push(AppRoutes.profileSecurity),
                           ),
                           AgroSettingsTile(
-                            icon: Icons.light_mode_outlined,
+                            icon: LucideIcons.sun,
                             title: 'Tema',
                             subtitle: 'Apariencia disponible',
                             value: 'Claro',
@@ -107,19 +108,19 @@ final class ProfilePage extends ConsumerWidget {
                         title: 'Ayuda y privacidad',
                         children: [
                           AgroSettingsTile(
-                            icon: Icons.help_outline,
+                            icon: LucideIcons.circleHelp,
                             title: 'Ayuda y soporte',
                             subtitle: 'Uso en terreno y datos offline',
                             onTap: () => context.push(AppRoutes.profileHelp),
                           ),
                           AgroSettingsTile(
-                            icon: Icons.contact_support_outlined,
+                            icon: LucideIcons.circleHelp,
                             title: 'Contacto',
                             subtitle: 'Estado del canal de atención',
                             onTap: () => context.push(AppRoutes.profileContact),
                           ),
                           AgroSettingsTile(
-                            icon: Icons.privacy_tip_outlined,
+                            icon: LucideIcons.shieldCheck,
                             title: 'Privacidad',
                             subtitle: 'Guardado local y respaldo',
                             onTap: () => context.push(AppRoutes.profilePrivacy),
@@ -131,7 +132,7 @@ final class ProfilePage extends ConsumerWidget {
                         title: 'Datos',
                         children: [
                           AgroSettingsTile(
-                            icon: Icons.cloud_sync_outlined,
+                            icon: LucideIcons.cloudSync,
                             title: 'Estado del respaldo',
                             subtitle:
                                 'Pendientes, errores y última sincronización',
@@ -149,7 +150,7 @@ final class ProfilePage extends ConsumerWidget {
                           ),
                         ),
                         onPressed: () => _confirmSignOut(context, ref),
-                        icon: const Icon(Icons.logout_outlined),
+                        icon: const Icon(LucideIcons.logOut),
                         label: const Text('Cerrar sesión'),
                       ),
                       const SizedBox(height: AgroSpacing.lg),
@@ -220,7 +221,7 @@ final class _ProfileHeader extends StatelessWidget {
                       style: Theme.of(context).textTheme.headlineMedium,
                     )
                   : const Icon(
-                      Icons.person_outline,
+                      LucideIcons.user,
                       size: AgroSizes.iconFeatured,
                     ),
             ),
@@ -246,7 +247,7 @@ final class _ProfileHeader extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Icon(
-                        Icons.location_on_outlined,
+                        LucideIcons.mapPin,
                         size: AgroSizes.iconStandard,
                       ),
                       const SizedBox(width: AgroSpacing.xxs),
@@ -259,7 +260,7 @@ final class _ProfileHeader extends StatelessWidget {
             IconButton(
               tooltip: 'Editar información personal',
               onPressed: onEdit,
-              icon: const Icon(Icons.edit_outlined),
+              icon: const Icon(LucideIcons.pencil),
             ),
           ],
         ),

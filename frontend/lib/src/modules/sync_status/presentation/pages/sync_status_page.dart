@@ -4,6 +4,7 @@ import 'package:agrocampo/src/modules/sync_status/presentation/controllers/sync_
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class SyncStatusPage extends ConsumerWidget {
   const SyncStatusPage({this.ownerIdOverride, super.key});
@@ -37,13 +38,13 @@ final class SyncStatusPage extends ConsumerWidget {
           return ListView(
             children: [
               ListTile(
-                leading: const Icon(Icons.cloud_upload_outlined),
+                leading: const Icon(LucideIcons.cloudUpload),
                 title: const Text('Cambios pendientes'),
                 trailing: Text('$pending'),
               ),
               if (retryable > 0)
                 ListTile(
-                  leading: const Icon(Icons.schedule_rounded),
+                  leading: const Icon(LucideIcons.clock),
                   title: const Text('Esperando reintento'),
                   subtitle: const Text(
                     'Tus cambios siguen guardados localmente.',
@@ -52,14 +53,14 @@ final class SyncStatusPage extends ConsumerWidget {
                 ),
               if (blocked > 0)
                 ListTile(
-                  leading: const Icon(Icons.error_outline_rounded),
+                  leading: const Icon(LucideIcons.circleAlert),
                   title: const Text('Cambios que necesitan atención'),
                   trailing: Text('$blocked'),
                 ),
               StreamBuilder<int>(
                 stream: controller.watchConflictCount(ownerId),
                 builder: (context, conflicts) => ListTile(
-                  leading: const Icon(Icons.compare_arrows_rounded),
+                  leading: const Icon(LucideIcons.gitCompareArrows),
                   title: const Text('Conflictos por resolver'),
                   trailing: Text('${conflicts.data ?? 0}'),
                 ),
@@ -67,7 +68,7 @@ final class SyncStatusPage extends ConsumerWidget {
               FutureBuilder<DateTime?>(
                 future: controller.loadLastConfirmation(ownerId),
                 builder: (context, lastAck) => ListTile(
-                  leading: const Icon(Icons.cloud_done_outlined),
+                  leading: const Icon(LucideIcons.cloudCheck),
                   title: const Text('Último respaldo confirmado'),
                   subtitle: Text(
                     lastAck.data?.toLocal().toString() ??
@@ -77,7 +78,7 @@ final class SyncStatusPage extends ConsumerWidget {
               ),
               FilledButton.icon(
                 onPressed: () => controller.retry(ownerId),
-                icon: const Icon(Icons.sync_rounded),
+                icon: const Icon(LucideIcons.refreshCw),
                 label: const Text('Sincronizar ahora'),
               ),
             ],

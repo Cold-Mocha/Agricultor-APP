@@ -5,6 +5,7 @@ import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.d
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class AgroAiPage extends ConsumerStatefulWidget {
   const AgroAiPage({super.key});
@@ -50,8 +51,8 @@ final class _AgroAiPageState extends ConsumerState<AgroAiPage> {
                             ListTile(
                               leading: Icon(
                                 message.role == 'user'
-                                    ? Icons.person_outline
-                                    : Icons.eco_outlined,
+                                    ? LucideIcons.user
+                                    : LucideIcons.leaf,
                               ),
                               title: Text(message.content),
                               subtitle:

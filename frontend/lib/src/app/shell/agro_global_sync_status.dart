@@ -3,6 +3,7 @@ import 'package:agrocampo/src/modules/sync_status/presentation/controllers/sync_
 import 'package:agrocampo/src/shared/design_system/semantics/agro_semantics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 export 'package:agrocampo/src/modules/sync_status/presentation/controllers/sync_status_controller.dart'
     show pendingSyncCountProvider;
@@ -28,25 +29,25 @@ final class AgroGlobalSyncStatus extends ConsumerWidget
       pending,
     )) {
       (true, 0) => (
-        Icons.cloud_off_outlined,
+        LucideIcons.cloudOff,
         AgroColors.amberSoft,
         AgroColors.amberDark,
         'Sin conexión · puedes seguir registrando.',
       ),
       (true, final count) => (
-        Icons.cloud_off_outlined,
+        LucideIcons.cloudOff,
         AgroColors.amberSoft,
         AgroColors.amberDark,
         'Sin conexión · $pendingLabel pendiente${count == 1 ? '' : 's'}.',
       ),
       (false, 0) => (
-        Icons.cloud_done_outlined,
+        LucideIcons.cloudCheck,
         AgroColors.greenSoft,
         AgroColors.brandDark,
         'Con conexión · respaldo al día.',
       ),
       (false, final count) => (
-        Icons.cloud_upload_outlined,
+        LucideIcons.cloudUpload,
         AgroColors.skySoft,
         AgroColors.skyDark,
         '$pendingLabel pendiente${count == 1 ? '' : 's'} de sincronización.',
@@ -65,7 +66,10 @@ final class AgroGlobalSyncStatus extends ConsumerWidget
             padding: const EdgeInsets.symmetric(horizontal: AgroSpacing.md),
             child: Row(
               children: [
-                Icon(icon, color: foreground),
+                AnimatedSwitcher(
+                  duration: AgroMotion.quick,
+                  child: Icon(icon, key: ValueKey(icon), color: foreground),
+                ),
                 const SizedBox(width: AgroSpacing.sm),
                 Expanded(
                   child: Text(

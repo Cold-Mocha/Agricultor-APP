@@ -4,6 +4,7 @@ import 'package:agrocampo/src/shared/design_system/components/agro_navigation_ca
 import 'package:agrocampo/src/shared/design_system/components/agro_status_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 void main() {
   testWidgets('status banner exposes updates as a live region', (tester) async {
@@ -28,7 +29,7 @@ void main() {
         theme: AgroTheme.light,
         home: Scaffold(
           body: AgroNavigationCard(
-            icon: Icons.map_outlined,
+            icon: LucideIcons.map,
             title: 'Mapa de cuadrantes',
             subtitle: 'Revisa la distribución de la parcela.',
             onTap: () => taps += 1,
@@ -58,13 +59,13 @@ void main() {
                 children: [
                   AgroActionTile(
                     key: const ValueKey('riego'),
-                    icon: Icons.water_drop_outlined,
+                    icon: LucideIcons.droplet,
                     label: 'Riego',
                     onTap: () {},
                   ),
                   AgroActionTile(
                     key: const ValueKey('suelo'),
-                    icon: Icons.science_outlined,
+                    icon: LucideIcons.flaskConical,
                     label: 'Suelo',
                     onTap: () {},
                   ),

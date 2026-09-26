@@ -4,6 +4,7 @@ import 'package:agrocampo/src/shared/design_system/components/agro_status_banner
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -70,7 +71,7 @@ final class _LoginPageState extends ConsumerState<LoginPage> {
                             : () => ref
                                   .read(sessionControllerProvider.notifier)
                                   .unlockWithBiometrics(),
-                        icon: const Icon(Icons.fingerprint),
+                        icon: const Icon(LucideIcons.fingerprint),
                         label: const Text('Desbloquear con biometría'),
                       ),
                       const SizedBox(height: AgroSpacing.sm),

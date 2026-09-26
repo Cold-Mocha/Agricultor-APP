@@ -2,6 +2,7 @@ import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/territory/presentation/state/sector_ui_state.dart';
 import 'package:agrocampo/src/shared/design_system/components/crop_pictogram.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class SectorSummaryCard extends StatelessWidget {
   const SectorSummaryCard({
@@ -104,8 +105,8 @@ final class SectorSummaryCard extends StatelessWidget {
                             Icon(
                               summary.syncState == 'error' ||
                                       summary.syncState == 'conflict'
-                                  ? Icons.cloud_off_outlined
-                                  : Icons.cloud_upload_outlined,
+                                  ? LucideIcons.cloudOff
+                                  : LucideIcons.cloudUpload,
                               size: AgroSizes.iconAuxiliary,
                               color: Theme.of(context)
                                   .colorScheme
@@ -129,7 +130,7 @@ final class SectorSummaryCard extends StatelessWidget {
                 ),
                 const SizedBox(width: AgroSpacing.xs),
                 const ExcludeSemantics(
-                  child: Icon(Icons.chevron_right_outlined),
+                  child: Icon(LucideIcons.chevronRight),
                 ),
               ],
             ),

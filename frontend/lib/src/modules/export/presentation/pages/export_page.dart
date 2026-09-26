@@ -3,6 +3,7 @@ import 'package:agrocampo/src/modules/export/presentation/controllers/export_con
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class ExportPage extends ConsumerStatefulWidget {
   const ExportPage({super.key});
@@ -21,7 +22,7 @@ final class _ExportPageState extends ConsumerState<ExportPage> {
       children: [
         const Card(
           child: ListTile(
-            leading: Icon(Icons.table_view_outlined),
+            leading: Icon(LucideIcons.table),
             title: Text('Snapshot local XLSX v1'),
             subtitle: Text(
               'Incluye parcelas, sectores, labores, suelo, riego, producción y apicultura, incluso si hay respaldo pendiente.',
@@ -30,7 +31,7 @@ final class _ExportPageState extends ConsumerState<ExportPage> {
         ),
         FilledButton.icon(
           onPressed: _busy ? null : _export,
-          icon: const Icon(Icons.save_alt),
+          icon: const Icon(LucideIcons.download),
           label: Text(
             _busy ? 'Preparando y validando…' : 'Elegir destino y guardar',
           ),

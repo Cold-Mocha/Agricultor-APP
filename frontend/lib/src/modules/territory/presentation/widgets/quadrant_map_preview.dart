@@ -4,6 +4,7 @@ import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/territory/presentation/state/sector_ui_state.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class QuadrantMapPreview extends StatelessWidget {
   const QuadrantMapPreview({
@@ -44,7 +45,7 @@ final class QuadrantMapPreview extends StatelessWidget {
               padding: const EdgeInsets.all(AgroSpacing.md),
               child: Row(
                 children: [
-                  const Icon(Icons.map_outlined),
+                  const Icon(LucideIcons.map),
                   const SizedBox(width: AgroSpacing.sm),
                   Expanded(
                     child: Column(
@@ -61,7 +62,7 @@ final class QuadrantMapPreview extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const Icon(Icons.chevron_right_outlined),
+                  const Icon(LucideIcons.chevronRight),
                 ],
               ),
             ),

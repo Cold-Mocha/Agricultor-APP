@@ -9,10 +9,12 @@ import 'package:agrocampo/src/shared/design_system/components/agro_action_tile.d
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_navigation_card.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_section_header.dart';
+import 'package:agrocampo/src/shared/design_system/motion/agro_motion_effects.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -31,7 +33,7 @@ final class HomePage extends ConsumerWidget {
         IconButton(
           tooltip: 'Abrir perfil',
           onPressed: () => context.push(AppRoutes.profile),
-          icon: const Icon(Icons.account_circle_outlined),
+          icon: const Icon(LucideIcons.circleUserRound),
         ),
       ],
       child: ownerId == null
@@ -83,7 +85,7 @@ final class HomePage extends ConsumerWidget {
                       ),
                     const SizedBox(height: AgroSpacing.sm),
                     AgroNavigationCard(
-                      icon: Icons.grid_view_outlined,
+                      icon: LucideIcons.layoutGrid,
                       title: 'Ver cuadrantes',
                       subtitle:
                           '${parcel.name} · ${locality == null || locality.isEmpty ? 'sin ubicación configurada' : locality}',
@@ -99,7 +101,7 @@ final class HomePage extends ConsumerWidget {
                     AgroAdaptiveGrid(
                       children: [
                         AgroActionTile(
-                          icon: Icons.water_drop_outlined,
+                          icon: LucideIcons.droplet,
                           label: 'Riego',
                           description: 'Registrar o calcular',
                           onTap: () => context.push(
@@ -107,7 +109,7 @@ final class HomePage extends ConsumerWidget {
                           ),
                         ),
                         AgroActionTile(
-                          icon: Icons.science_outlined,
+                          icon: LucideIcons.flaskConical,
                           label: 'Suelo',
                           description: 'Ingresar mediciones',
                           onTap: () => context.push(
@@ -115,7 +117,7 @@ final class HomePage extends ConsumerWidget {
                           ),
                         ),
                         AgroActionTile(
-                          icon: Icons.compost_outlined,
+                          icon: LucideIcons.sprout,
                           label: 'Fertilización',
                           description: 'Producto, dosis y método',
                           onTap: () => context.push(
@@ -126,7 +128,7 @@ final class HomePage extends ConsumerWidget {
                           ),
                         ),
                         AgroActionTile(
-                          icon: Icons.pest_control_outlined,
+                          icon: LucideIcons.bug,
                           label: 'Control de enfermedades y plagas',
                           description: 'Tratamiento y objetivo',
                           onTap: () => context.push(
@@ -136,7 +138,7 @@ final class HomePage extends ConsumerWidget {
                             ),
                           ),
                         ),
-                      ],
+                      ].agroStaggeredEntrance(context),
                     ),
                     const SizedBox(height: AgroSpacing.lg),
                   ],
@@ -163,7 +165,7 @@ final class _MissingLocalityCard extends StatelessWidget {
           Row(
             children: [
               Icon(
-                Icons.location_off_outlined,
+                LucideIcons.mapPinOff,
                 color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(width: AgroSpacing.sm),
@@ -182,7 +184,7 @@ final class _MissingLocalityCard extends StatelessWidget {
           const SizedBox(height: AgroSpacing.sm),
           OutlinedButton.icon(
             onPressed: onTap,
-            icon: const Icon(Icons.edit_location_alt_outlined),
+            icon: const Icon(LucideIcons.mapPinPen),
             label: const Text('Agregar ubicación'),
           ),
         ],

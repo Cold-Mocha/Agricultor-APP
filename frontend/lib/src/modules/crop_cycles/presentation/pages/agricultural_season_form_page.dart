@@ -5,6 +5,7 @@ import 'package:agrocampo/src/modules/crop_cycles/presentation/controllers/crop_
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class AgriculturalSeasonFormPage extends ConsumerStatefulWidget {
   const AgriculturalSeasonFormPage({this.seasonId, super.key});
@@ -135,7 +136,7 @@ final class _AgriculturalSeasonFormPageState
           const SizedBox(height: 24),
           FilledButton.icon(
             onPressed: _saving ? null : _save,
-            icon: const Icon(Icons.save_outlined),
+            icon: const Icon(LucideIcons.save),
             label: Text(_saving ? 'Guardando…' : 'Guardar localmente'),
           ),
         ],
@@ -194,7 +195,7 @@ final class _DateTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ListTile(
     contentPadding: EdgeInsets.zero,
-    leading: const Icon(Icons.calendar_month_outlined),
+    leading: const Icon(LucideIcons.calendarDays),
     title: Text(label),
     subtitle: Text('${value.day}/${value.month}/${value.year}'),
     onTap: onTap,

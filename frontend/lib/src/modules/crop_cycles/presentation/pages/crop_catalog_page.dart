@@ -6,6 +6,7 @@ import 'package:agrocampo/src/shared/design_system/components/crop_pictogram.dar
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class CropCatalogPage extends ConsumerStatefulWidget {
   const CropCatalogPage({super.key});
@@ -36,7 +37,7 @@ final class _CropCatalogPageState extends ConsumerState<CropCatalogPage> {
           onPressed: ownerId == null
               ? null
               : () => _editCustom(controller, ownerId),
-          icon: const Icon(Icons.add),
+          icon: const Icon(LucideIcons.plus),
         ),
       ],
       child: ownerId == null
@@ -51,7 +52,7 @@ final class _CropCatalogPageState extends ConsumerState<CropCatalogPage> {
                   TextField(
                     controller: _search,
                     decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: Icon(LucideIcons.search),
                       labelText: 'Buscar cultivo',
                     ),
                     onChanged: (_) => setState(() {}),

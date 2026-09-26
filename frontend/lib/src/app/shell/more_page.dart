@@ -5,6 +5,7 @@ import 'package:agrocampo/src/shared/design_system/components/agro_navigation_ca
 import 'package:agrocampo/src/shared/design_system/components/agro_section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class MorePage extends StatelessWidget {
   const MorePage({super.key});
@@ -22,19 +23,19 @@ final class MorePage extends StatelessWidget {
         ),
         const SizedBox(height: AgroSpacing.sm),
         AgroNavigationCard(
-          icon: Icons.calendar_month_outlined,
+          icon: LucideIcons.calendarDays,
           title: 'Temporadas',
           subtitle: 'Ciclos productivos y vigencia',
           onTap: () => context.push(AppRoutes.seasons),
         ),
         AgroNavigationCard(
-          icon: Icons.eco_outlined,
+          icon: LucideIcons.leaf,
           title: 'Catálogo de cultivos',
           subtitle: 'Especies oficiales y personalizadas',
           onTap: () => context.push(AppRoutes.cropCatalog),
         ),
         AgroNavigationCard(
-          icon: Icons.history_outlined,
+          icon: LucideIcons.history,
           title: 'Historial agrícola',
           subtitle: 'Actividades, cultivos y mediciones',
           onTap: () => context.push(AppRoutes.history),
@@ -46,7 +47,7 @@ final class MorePage extends StatelessWidget {
         ),
         const SizedBox(height: AgroSpacing.sm),
         AgroNavigationCard(
-          icon: Icons.notifications_outlined,
+          icon: LucideIcons.bell,
           title: 'Recordatorios',
           subtitle: 'Avisos locales de labores',
           onTap: () => context.push(AppRoutes.reminders),
@@ -58,13 +59,13 @@ final class MorePage extends StatelessWidget {
         ),
         const SizedBox(height: AgroSpacing.sm),
         AgroNavigationCard(
-          icon: Icons.cloud_sync_outlined,
+          icon: LucideIcons.cloudSync,
           title: 'Sincronización',
           subtitle: 'Pendientes, errores y conflictos',
           onTap: () => context.push(AppRoutes.synchronization),
         ),
         AgroNavigationCard(
-          icon: Icons.table_view_outlined,
+          icon: LucideIcons.table,
           title: 'Exportar XLSX',
           subtitle: 'Respaldo legible de tus datos',
           onTap: () => context.push(AppRoutes.export),
@@ -73,7 +74,7 @@ final class MorePage extends StatelessWidget {
         const AgroSectionHeader(title: 'Aplicación'),
         const SizedBox(height: AgroSpacing.sm),
         AgroNavigationCard(
-          icon: Icons.settings_outlined,
+          icon: LucideIcons.settings,
           title: 'Configuración',
           subtitle: 'Alcance y opciones disponibles',
           onTap: () => context.push(AppRoutes.settings),

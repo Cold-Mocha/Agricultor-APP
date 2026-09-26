@@ -1,5 +1,6 @@
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class AgroNavigationCard extends StatelessWidget {
   const AgroNavigationCard({
@@ -69,7 +70,7 @@ final class AgroNavigationCard extends StatelessWidget {
                 const SizedBox(width: AgroSpacing.xs),
                 trailing ??
                     const ExcludeSemantics(
-                      child: Icon(Icons.chevron_right_outlined),
+                      child: Icon(LucideIcons.chevronRight),
                     ),
               ],
             ),

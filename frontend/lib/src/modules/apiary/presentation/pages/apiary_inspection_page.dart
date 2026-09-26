@@ -7,6 +7,7 @@ import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class ApiaryInspectionPage extends ConsumerStatefulWidget {
   const ApiaryInspectionPage({this.sectorId, super.key});
@@ -103,7 +104,7 @@ final class _ApiaryInspectionPageState
             onPressed: () => context.push(
               AppRoutes.photoFor(sectorId: _bound?.sectorId ?? widget.sectorId),
             ),
-            icon: const Icon(Icons.add_a_photo_outlined),
+            icon: const Icon(LucideIcons.imagePlus),
             label: const Text('Adjuntar fotografía'),
           ),
         const SizedBox(height: AgroSpacing.md),

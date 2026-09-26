@@ -5,6 +5,7 @@ import 'package:agrocampo/src/modules/profile/presentation/controllers/profile_c
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class ProfilePersonalInformationPage extends ConsumerStatefulWidget {
   const ProfilePersonalInformationPage({super.key});
@@ -111,7 +112,7 @@ final class ProfileNotificationsPage extends ConsumerWidget {
                   stream: controller.watchWeatherAlertsEnabled(ownerId),
                   builder: (context, snapshot) => SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    secondary: const Icon(Icons.notifications_outlined),
+                    secondary: const Icon(LucideIcons.bell),
                     title: const Text('Alertas meteorológicas'),
                     subtitle: const Text(
                       'Los avisos se consultan cuando hay conexión. El registro local sigue disponible.',
@@ -122,7 +123,7 @@ final class ProfileNotificationsPage extends ConsumerWidget {
                   ),
                 ),
                 const _InformationCard(
-                  icon: Icons.alarm_outlined,
+                  icon: LucideIcons.alarmClock,
                   title: 'Recordatorios de labores',
                   message: 'Se administran desde Más > Recordatorios y funcionan como avisos locales del dispositivo.',
                 ),
@@ -145,7 +146,7 @@ final class ProfileSecurityPage extends ConsumerWidget {
         children: [
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            secondary: const Icon(Icons.fingerprint),
+            secondary: const Icon(LucideIcons.fingerprint),
             title: const Text('Desbloqueo biométrico'),
             subtitle: const Text(
               'Usa la biometría configurada en este dispositivo después de iniciar sesión.',
@@ -168,7 +169,7 @@ final class ProfileSecurityPage extends ConsumerWidget {
                   },
           ),
           const _InformationCard(
-            icon: Icons.lock_outline,
+            icon: LucideIcons.lock,
             title: 'Datos locales protegidos',
             message: 'La sesión se conserva con almacenamiento seguro. Cerrar sesión detiene la sincronización de esta cuenta.',
           ),
@@ -193,7 +194,7 @@ final class ProfileInformationPage extends StatelessWidget {
         'Idioma disponible en esta versión',
         const [
           _InfoItem(
-            Icons.language_outlined,
+            LucideIcons.languages,
             'Español (Chile)',
             'Es el idioma activo del MVP. Aún no hay otros idiomas disponibles.',
           ),
@@ -204,7 +205,7 @@ final class ProfileInformationPage extends StatelessWidget {
         'Apariencia de AgroCampo',
         const [
           _InfoItem(
-            Icons.light_mode_outlined,
+            LucideIcons.sun,
             'Modo claro',
             'Es el tema disponible actualmente. No se simula un modo oscuro que todavía no forma parte del MVP.',
           ),
@@ -215,17 +216,17 @@ final class ProfileInformationPage extends StatelessWidget {
         'Respuestas para trabajar en terreno',
         const [
           _InfoItem(
-            Icons.cloud_off_outlined,
+            LucideIcons.cloudOff,
             '¿Puedo registrar sin conexión?',
             'Sí. Los registros se guardan primero en el dispositivo y se respaldan cuando vuelve la conexión.',
           ),
           _InfoItem(
-            Icons.grid_view_outlined,
+            LucideIcons.layoutGrid,
             '¿Dónde veo un cuadrante?',
             'Abre Sectores, toca su tarjeta y encontrarás sus métricas, labores e historial.',
           ),
           _InfoItem(
-            Icons.sync_outlined,
+            LucideIcons.refreshCw,
             '¿Cómo reviso el respaldo?',
             'En Más > Sincronización puedes ver pendientes, errores y reintentar.',
           ),
@@ -236,7 +237,7 @@ final class ProfileInformationPage extends StatelessWidget {
         'Canal de atención',
         const [
           _InfoItem(
-            Icons.contact_support_outlined,
+            LucideIcons.circleHelp,
             'Contacto no configurado',
             'Esta versión no incluye todavía un correo, teléfono o sitio oficial de soporte. No se mostrará un canal inventado.',
           ),
@@ -247,17 +248,17 @@ final class ProfileInformationPage extends StatelessWidget {
         'Cómo opera esta versión',
         const [
           _InfoItem(
-            Icons.phone_android_outlined,
+            LucideIcons.smartphone,
             'Trabajo local primero',
             'Tus registros se guardan en el dispositivo antes del respaldo en Supabase.',
           ),
           _InfoItem(
-            Icons.account_circle_outlined,
+            LucideIcons.circleUserRound,
             'Datos por cuenta',
             'La información agrícola se consulta separada por la cuenta autenticada.',
           ),
           _InfoItem(
-            Icons.info_outline,
+            LucideIcons.info,
             'Resumen informativo',
             'Este texto describe el comportamiento del MVP y no reemplaza una política legal publicada.',
           ),
@@ -291,13 +292,13 @@ final class GeneralSettingsPage extends StatelessWidget {
       child: Column(
         children: [
           _InformationCard(
-            icon: Icons.person_outline,
+            icon: LucideIcons.user,
             title: 'Uso personal',
             message: 'AgroCampo organiza el cuaderno de campo de la persona propietaria. No incorpora empresas, trabajadores ni roles administrativos.',
           ),
           SizedBox(height: AgroSpacing.sm),
           _InformationCard(
-            icon: Icons.tune_outlined,
+            icon: LucideIcons.slidersHorizontal,
             title: 'Preferencias personales',
             message: 'Notificaciones, biometría, idioma, tema y privacidad están reunidos en Perfil.',
           ),
