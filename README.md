@@ -111,3 +111,16 @@ ignorados.
 Los tests pgTAP/Deno requieren sus CLIs y un proyecto Supabase local. La firma de producción exige
 un keystore aportado por el propietario. La evidencia de diseño, seguridad, resiliencia, aceptación
 y release está en [`docs/verification/`](./docs/verification/).
+
+## CI/CD y despliegue
+
+`.github/workflows/ci.yml` reproduce en cada push/PR, sin secretos, los comandos de esta sección
+(analyze/format/test de ambos paquetes, el architecture guard, la aceptación del prototipo, la
+verificación del manifiesto de migración y un stack Supabase local desechable con pgTAP + Edge
+Functions). `.github/workflows/android-release.yml` construye siempre un APK de depuración y,
+cuando los secretos de firma/Supabase están cargados, un release firmado apto para Play Store.
+
+Lo que sigue pendiente de credenciales reales (proyecto Supabase, Firebase/FCM, API key de Gemini,
+keystore de release y coordenadas reales de la parcela) está documentado paso a paso en
+[`docs/deployment/`](./docs/deployment/README.md), junto con `./scripts/check_deployment_readiness.sh`
+para verificar localmente qué falta sin exponer ningún secreto.
