@@ -8,9 +8,9 @@ después de aplicar todas las correcciones.
 |---|---|---|
 | [I1](#i1-banner-global-en-modo-local) | Global | Resuelto · captura pendiente |
 | [I2](#i2-riego-muestra-valores-internos) | Registrar | Resuelto · captura pendiente |
-| [I3](#i3-recordatorios-y-sincronización-muestran-datos-sin-formato) | Más | Pendiente |
-| [I4](#i4-catálogo-muestra-códigos-de-categoría) | Más | Pendiente |
-| [I5](#i5-funciones-con-red-en-modo-local) | Inicio, AgroIA, Más | En curso (clima resuelto) |
+| [I3](#i3-recordatorios-y-sincronización-muestran-datos-sin-formato) | Más | Resuelto · captura pendiente |
+| [I4](#i4-catálogo-muestra-códigos-de-categoría) | Más | Resuelto · captura pendiente |
+| [I5](#i5-funciones-con-red-en-modo-local) | Inicio, AgroIA, Más | Resuelto · captura pendiente |
 | [I6](#i6-perfil-habla-de-una-cuenta-en-modo-local) | Inicio (Perfil) | Resuelto · captura pendiente |
 | [I7](#i7-encabezado-distinto-en-parcelas) | Inicio (Parcelas) | Resuelto · captura pendiente |
 | [I8](#i8-apicultura-ofrecida-en-sectores-de-cultivo) | Registrar | Resuelto · captura pendiente |

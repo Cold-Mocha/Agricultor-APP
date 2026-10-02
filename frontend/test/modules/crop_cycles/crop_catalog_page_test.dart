@@ -38,6 +38,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.widgetWithText(ListTile, 'Maíz'), findsOneWidget);
     expect(find.text('Oficial'), findsOneWidget);
+    expect(find.textContaining('· Cereal'), findsOneWidget);
     await tester.enterText(find.byType(TextField).first, '');
     await tester.pumpAndSettle();
 

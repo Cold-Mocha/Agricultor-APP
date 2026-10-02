@@ -1,6 +1,7 @@
 import 'package:agrocampo/src/app/layout/agro_page.dart';
 import 'package:agrocampo/src/modules/auth/auth_ui.dart';
 import 'package:agrocampo/src/modules/crop_cycles/presentation/controllers/crop_cycles_controller.dart';
+import 'package:agrocampo/src/modules/crop_cycles/presentation/formatters/crop_category_label.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
 import 'package:agrocampo/src/shared/design_system/components/crop_pictogram.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
@@ -87,8 +88,8 @@ final class _CropCatalogPageState extends ConsumerState<CropCatalogPage> {
                                     crop.archived
                                         ? 'Personalizado · Archivado'
                                         : crop.isCustom
-                                        ? 'Personalizado · ${crop.category ?? ''}'
-                                        : '${crop.scientificName ?? 'Catálogo oficial'} · ${crop.category ?? ''}',
+                                        ? 'Personalizado · ${cropCategoryLabel(crop.category)}'
+                                        : '${crop.scientificName ?? 'Catálogo oficial'} · ${cropCategoryLabel(crop.category)}',
                                   ),
                                   trailing: crop.isCustom
                                       ? PopupMenuButton<String>(
