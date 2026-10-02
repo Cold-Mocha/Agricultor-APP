@@ -2,6 +2,7 @@ import 'package:agrocampo/src/app/layout/agro_page.dart';
 import 'package:agrocampo/src/modules/auth/auth_ui.dart';
 import 'package:agrocampo/src/modules/sync_status/presentation/controllers/sync_status_controller.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
+import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -21,6 +22,16 @@ final class SyncStatusPage extends ConsumerWidget {
         child: AgroEmptyState(
           title: 'Sin sesión local',
           message: 'Inicia sesión para ver el respaldo.',
+        ),
+      );
+    }
+    if (ref.watch(isLocalModeProvider)) {
+      return const AgroPage(
+        title: 'Sincronización',
+        subtitle: 'Modo local · tus datos se guardan en este dispositivo.',
+        child: AgroEmptyState(
+          title: 'Respaldo en la nube desactivado',
+          message: 'Disponible al activar el respaldo en la nube. Para guardar una copia, usa Más > Exportar XLSX.',
         ),
       );
     }
@@ -71,8 +82,9 @@ final class SyncStatusPage extends ConsumerWidget {
                   leading: const Icon(LucideIcons.cloudCheck),
                   title: const Text('Último respaldo confirmado'),
                   subtitle: Text(
-                    lastAck.data?.toLocal().toString() ??
-                        'Aún no hay confirmaciones remotas.',
+                    lastAck.data == null
+                        ? 'Aún no hay confirmaciones remotas.'
+                        : _dateTime(context, lastAck.data!),
                   ),
                 ),
               ),
@@ -87,4 +99,11 @@ final class SyncStatusPage extends ConsumerWidget {
       ),
     );
   }
+}
+
+String _dateTime(BuildContext context, DateTime value) {
+  final local = value.toLocal();
+  final localizations = MaterialLocalizations.of(context);
+  return '${localizations.formatMediumDate(local)} · '
+      '${localizations.formatTimeOfDay(TimeOfDay.fromDateTime(local))}';
 }

@@ -1,4 +1,6 @@
 import 'package:agrocampo/src/modules/sync_status/presentation/pages/sync_status_page.dart';
+import 'package:agrocampo_backend/agrocampo_backend.dart'
+    show isLocalModeProvider;
 import 'package:agrocampo_backend/src/composition/backend_providers.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:drift/drift.dart';
@@ -47,5 +49,25 @@ void main() {
     expect(find.text('Sincronizar ahora'), findsOneWidget);
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(milliseconds: 1));
+  });
+
+  testWidgets('local mode explains cloud backup is disabled', (tester) async {
+    final database = createInMemoryDatabase();
+    addTearDown(database.close);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(database),
+          isLocalModeProvider.overrideWithValue(true),
+        ],
+        child: const MaterialApp(
+          home: SyncStatusPage(ownerIdOverride: 'owner-1'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Respaldo en la nube desactivado'), findsOneWidget);
+    expect(find.text('Sincronizar ahora'), findsNothing);
   });
 }
