@@ -96,6 +96,6 @@ jobs:
             adb shell settings put secure location_mode 3
             adb shell pm grant cl.agrocampo.app android.permission.ACCESS_FINE_LOCATION
             adb shell pm grant cl.agrocampo.app android.permission.ACCESS_COARSE_LOCATION
-            adb shell pm grant cl.agrocampo.app android.permission.POST_NOTIFICATIONS
+            if [ "$(adb shell getprop ro.build.version.sdk | tr -d '\r')" -ge 33 ]; then adb shell pm grant cl.agrocampo.app android.permission.POST_NOTIFICATIONS; fi
             adb emu geo fix ${{ env.AVD_GEO_LONGITUDE }} ${{ env.AVD_GEO_LATITUDE }}
             flutter test integration_test -d emulator-5554 --no-pub --reporter expanded
