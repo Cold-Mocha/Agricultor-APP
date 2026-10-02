@@ -51,6 +51,7 @@ final class _ParcelFormPageState extends ConsumerState<ParcelFormPage> {
   @override
   Widget build(BuildContext context) => AgroPage(
     title: widget.parcelId == null ? 'Nueva parcela' : 'Editar parcela',
+    subtitle: 'Se guarda en este dispositivo',
     child: ListView(
       children: [
         TextField(

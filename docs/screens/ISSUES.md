@@ -10,9 +10,9 @@ después de aplicar todas las correcciones.
 | [I2](#i2-riego-muestra-valores-internos) | Registrar | Pendiente |
 | [I3](#i3-recordatorios-y-sincronización-muestran-datos-sin-formato) | Más | Pendiente |
 | [I4](#i4-catálogo-muestra-códigos-de-categoría) | Más | Pendiente |
-| [I5](#i5-funciones-con-red-en-modo-local) | Inicio, AgroIA, Más | Pendiente |
-| [I6](#i6-perfil-habla-de-una-cuenta-en-modo-local) | Inicio (Perfil) | Pendiente |
-| [I7](#i7-encabezado-distinto-en-parcelas) | Inicio (Parcelas) | Pendiente |
+| [I5](#i5-funciones-con-red-en-modo-local) | Inicio, AgroIA, Más | En curso (clima resuelto) |
+| [I6](#i6-perfil-habla-de-una-cuenta-en-modo-local) | Inicio (Perfil) | Resuelto · captura pendiente |
+| [I7](#i7-encabezado-distinto-en-parcelas) | Inicio (Parcelas) | Resuelto · captura pendiente |
 | [I8](#i8-apicultura-ofrecida-en-sectores-de-cultivo) | Registrar | Pendiente |
 
 ## I1. Banner global en modo local

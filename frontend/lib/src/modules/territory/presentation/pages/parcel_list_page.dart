@@ -17,6 +17,7 @@ final class ParcelListPage extends ConsumerWidget {
     final controller = ref.watch(parcelControllerProvider);
     return AgroPage(
       title: 'Parcelas',
+      subtitle: 'Contexto territorial de tu trabajo',
       actions: [
         IconButton(
           onPressed: () => context.push(AppRoutes.newParcel),
