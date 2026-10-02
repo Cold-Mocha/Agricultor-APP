@@ -5,6 +5,8 @@ import 'package:agrocampo/src/modules/auth/auth_ui.dart';
 import 'package:agrocampo/src/modules/reminders/presentation/controllers/reminders_controller.dart';
 import 'package:agrocampo/src/modules/reminders/presentation/formatters/reminder_labels.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
+import 'package:agrocampo/src/shared/design_system/motion/agro_motion_effects.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,7 +65,10 @@ final class _RemindersPageState extends ConsumerState<RemindersPage> {
             onTap: _pickDateTime,
           ),
           FilledButton(
-            onPressed: ownerId == null ? null : _save,
+            onPressed: AgroFeedback.tap(
+              context,
+              ownerId == null ? null : _save,
+            ),
             child: Text(
               _editingId == null ? 'Programar recordatorio' : 'Guardar cambios',
             ),
@@ -130,7 +135,7 @@ final class _RemindersPageState extends ConsumerState<RemindersPage> {
                                 ),
                         ),
                       ),
-                  ],
+                  ].agroStaggeredEntrance(context),
                 );
               },
             ),

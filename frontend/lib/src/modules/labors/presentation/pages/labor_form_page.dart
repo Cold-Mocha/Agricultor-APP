@@ -4,6 +4,7 @@ import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
 import 'package:agrocampo/src/modules/labors/presentation/controllers/labors_controller.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_section_header.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -158,17 +159,20 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
           ),
         switch (_type) {
           LaborType.harvest => FilledButton.icon(
-            onPressed: _openProduction,
+            onPressed: AgroFeedback.tap(context, _openProduction),
             icon: const Icon(LucideIcons.wheat),
             label: const Text('Registrar cosecha y producción'),
           ),
           LaborType.soil => FilledButton.icon(
-            onPressed: _openSoil,
+            onPressed: AgroFeedback.tap(context, _openSoil),
             icon: const Icon(LucideIcons.flaskConical),
             label: const Text('Abrir medición de suelo'),
           ),
           LaborType.apiary => FilledButton.icon(
-            onPressed: _bound?.sectorId == null ? null : _openApiary,
+            onPressed: AgroFeedback.tap(
+              context,
+              _bound?.sectorId == null ? null : _openApiary,
+            ),
             icon: const Icon(Icons.hive_outlined),
             label: const Text('Abrir revisión apícola'),
           ),
@@ -343,17 +347,24 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
             ),
           );
       if (!mounted || outcome == null) return;
-      final message = switch (outcome) {
-        SavedLocal<LaborFormInput>() =>
-          'Actividad guardada localmente · pendiente de sincronizar',
-        ValidationFailed<LaborFormInput>() ||
-        DomainRejected<LaborFormInput>() =>
-          'Revisa los datos; el borrador se conservó.',
-        StorageFailed<LaborFormInput>() || StaleVersion<LaborFormInput>() =>
-          'No se pudo guardar; el comando y el borrador se conservaron.',
-      };
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(message)));
+      switch (outcome) {
+        case SavedLocal<LaborFormInput>():
+          AgroFeedback.recordSaved(
+            context,
+            'Actividad guardada localmente · pendiente de sincronizar',
+          );
+        case ValidationFailed<LaborFormInput>() ||
+            DomainRejected<LaborFormInput>():
+          AgroFeedback.error(
+            context,
+            'Revisa los datos; el borrador se conservó.',
+          );
+        case StorageFailed<LaborFormInput>() || StaleVersion<LaborFormInput>():
+          AgroFeedback.error(
+            context,
+            'No se pudo guardar; el comando y el borrador se conservaron.',
+          );
+      }
     } finally {
       if (mounted) setState(() => _saving = false);
     }

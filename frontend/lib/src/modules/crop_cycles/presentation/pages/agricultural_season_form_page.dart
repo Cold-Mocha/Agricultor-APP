@@ -2,6 +2,8 @@ import 'package:agrocampo/src/app/layout/agro_page.dart';
 import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
 import 'package:agrocampo/src/modules/auth/auth_ui.dart';
 import 'package:agrocampo/src/modules/crop_cycles/presentation/controllers/crop_cycles_controller.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_sound_effects.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -135,7 +137,7 @@ final class _AgriculturalSeasonFormPageState
           ),
           const SizedBox(height: 24),
           FilledButton.icon(
-            onPressed: _saving ? null : _save,
+            onPressed: AgroFeedback.tap(context, _saving ? null : _save),
             icon: const Icon(LucideIcons.save),
             label: Text(_saving ? 'Guardando…' : 'Guardar localmente'),
           ),
@@ -145,7 +147,10 @@ final class _AgriculturalSeasonFormPageState
   );
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      AgroFeedback.playSound(context, AgroSound.error);
+      return;
+    }
     final ownerId = ref.read(unlockedOwnerIdProvider);
     final parcelId = ref.read(agriculturalContextControllerProvider).parcelId;
     if (ownerId == null || parcelId == null) return;
@@ -173,8 +178,7 @@ final class _AgriculturalSeasonFormPageState
       if (mounted) Navigator.of(context).pop();
     } on Object catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('No se pudo guardar: $error')));
+      AgroFeedback.error(context, 'No se pudo guardar: $error');
     } finally {
       if (mounted) setState(() => _saving = false);
     }

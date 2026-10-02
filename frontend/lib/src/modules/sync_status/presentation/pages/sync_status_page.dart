@@ -2,6 +2,7 @@ import 'package:agrocampo/src/app/layout/agro_page.dart';
 import 'package:agrocampo/src/modules/auth/auth_ui.dart';
 import 'package:agrocampo/src/modules/sync_status/presentation/controllers/sync_status_controller.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -89,7 +90,10 @@ final class SyncStatusPage extends ConsumerWidget {
                 ),
               ),
               FilledButton.icon(
-                onPressed: () => controller.retry(ownerId),
+                onPressed: AgroFeedback.tap(
+                  context,
+                  () => controller.retry(ownerId),
+                ),
                 icon: const Icon(LucideIcons.refreshCw),
                 label: const Text('Sincronizar ahora'),
               ),

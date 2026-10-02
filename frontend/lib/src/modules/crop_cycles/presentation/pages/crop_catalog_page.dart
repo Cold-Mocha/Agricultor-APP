@@ -4,6 +4,7 @@ import 'package:agrocampo/src/modules/crop_cycles/presentation/controllers/crop_
 import 'package:agrocampo/src/modules/crop_cycles/presentation/formatters/crop_category_label.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
 import 'package:agrocampo/src/shared/design_system/components/crop_pictogram.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -157,9 +158,7 @@ final class _CropCatalogPageState extends ConsumerState<CropCatalogPage> {
       }
     } on Object catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('No se pudo guardar: $error')));
+        AgroFeedback.error(context, 'No se pudo guardar: $error');
       }
     }
   }
@@ -219,12 +218,15 @@ final class _CustomCropDialogState extends State<_CustomCropDialog> {
         child: const Text('Cancelar'),
       ),
       FilledButton(
-        onPressed: () => Navigator.pop(
+        onPressed: AgroFeedback.tap(
           context,
-          CustomCropFormInput(
-            id: widget.cropId,
-            name: _name.text,
-            notes: _notes.text,
+          () => Navigator.pop(
+            context,
+            CustomCropFormInput(
+              id: widget.cropId,
+              name: _name.text,
+              notes: _notes.text,
+            ),
           ),
         ),
         child: const Text('Guardar'),

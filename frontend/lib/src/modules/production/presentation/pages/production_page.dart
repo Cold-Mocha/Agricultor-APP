@@ -2,6 +2,7 @@ import 'package:agrocampo/src/app/layout/agro_page.dart';
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
 import 'package:agrocampo/src/modules/production/presentation/controllers/production_controller.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -168,20 +169,13 @@ final class _ProductionPageState extends ConsumerState<ProductionPage> {
         _showMissingContext();
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Cosecha guardada localmente · pendiente de sincronizar',
-          ),
-        ),
+      AgroFeedback.recordSaved(
+        context,
+        'Cosecha guardada localmente · pendiente de sincronizar',
       );
     } on Object {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Revisa la cantidad y el contexto agrícola.'),
-        ),
-      );
+      AgroFeedback.error(context, 'Revisa la cantidad y el contexto agrícola.');
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -189,10 +183,9 @@ final class _ProductionPageState extends ConsumerState<ProductionPage> {
 
   void _showMissingContext() {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Selecciona un sector con temporada y cultivo vigentes.'),
-      ),
+    AgroFeedback.error(
+      context,
+      'Selecciona un sector con temporada y cultivo vigentes.',
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
+import 'package:agrocampo/src/shared/design_system/motion/agro_page_transitions.dart';
 import 'package:flutter/material.dart';
 
 abstract final class AgroTheme {
@@ -39,6 +40,16 @@ abstract final class AgroTheme {
     );
     return base.copyWith(
       scaffoldBackgroundColor: AgroColors.surface,
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: AgroPageTransitionsBuilder(),
+          TargetPlatform.iOS: AgroPageTransitionsBuilder(),
+          TargetPlatform.linux: AgroPageTransitionsBuilder(),
+          TargetPlatform.macOS: AgroPageTransitionsBuilder(),
+          TargetPlatform.windows: AgroPageTransitionsBuilder(),
+          TargetPlatform.fuchsia: AgroPageTransitionsBuilder(),
+        },
+      ),
       textTheme: _textTheme(base.textTheme),
       extensions: const [
         AgroSemanticColors(

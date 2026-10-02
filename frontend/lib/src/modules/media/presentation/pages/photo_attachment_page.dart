@@ -2,6 +2,7 @@ import 'package:agrocampo/src/app/layout/agro_page.dart';
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
 import 'package:agrocampo/src/modules/media/presentation/controllers/media_controller.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -101,12 +102,21 @@ final class _PhotoAttachmentPageState
     final sectorId = _bound?.sectorId;
     final selected = _selected;
     if (sectorId == null || selected == null) return;
-    final saved = await ref
-        .read(photoAttachmentControllerProvider)
-        .attach(sectorId: sectorId, selection: selected);
+    final bool saved;
+    try {
+      saved = await ref
+          .read(photoAttachmentControllerProvider)
+          .attach(sectorId: sectorId, selection: selected);
+    } on Object {
+      if (mounted) {
+        AgroFeedback.error(
+          context,
+          'No se pudo guardar la fotografía. Vuelve a intentarlo.',
+        );
+      }
+      return;
+    }
     if (!mounted || !saved) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Fotografía guardada localmente.')),
-    );
+    AgroFeedback.recordSaved(context, 'Fotografía guardada localmente.');
   }
 }

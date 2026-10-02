@@ -1,6 +1,8 @@
 import 'package:agrocampo/src/app/layout/agro_page.dart';
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/sync_status/presentation/controllers/sync_status_controller.dart';
+import 'package:agrocampo/src/shared/design_system/components/agro_skeleton.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,7 +22,7 @@ final class ConflictResolutionPage extends ConsumerWidget {
         builder: (context, snapshot) {
           final conflict = snapshot.data;
           if (conflict == null) {
-            return const Center(child: CircularProgressIndicator());
+            return const AgroSkeletonList(itemCount: 2);
           }
           return ListView(
             children: [
@@ -33,7 +35,10 @@ final class ConflictResolutionPage extends ConsumerWidget {
                 description: conflict.remoteDescription,
               ),
               FilledButton(
-                onPressed: () => controller.keepLocalVersion(conflictId),
+                onPressed: AgroFeedback.tap(
+                  context,
+                  () => controller.keepLocalVersion(conflictId),
+                ),
                 child: const Text('Conservar versión local'),
               ),
               OutlinedButton(

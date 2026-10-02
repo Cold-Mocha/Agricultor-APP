@@ -7,6 +7,9 @@ import 'package:agrocampo/src/modules/territory/presentation/widgets/quadrant_ma
 import 'package:agrocampo/src/modules/territory/presentation/widgets/sector_summary_card.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_section_header.dart';
+import 'package:agrocampo/src/shared/design_system/components/agro_skeleton.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
+import 'package:agrocampo/src/shared/design_system/motion/agro_motion_effects.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -33,7 +36,7 @@ final class SectorListPage extends ConsumerWidget {
         ),
       ],
       child: state.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const AgroSkeletonList(),
         error: (error, stackTrace) => const AgroEmptyState(
           title: 'No se pudieron leer los cuadrantes',
           message: 'Los datos locales siguen guardados. Vuelve a abrir esta sección.',
@@ -99,13 +102,16 @@ final class SectorListPage extends ConsumerWidget {
             title: 'Aún no hay cuadrantes',
             message: 'Delimita el primero en el mapa para comenzar a registrar labores.',
             action: FilledButton.icon(
-              onPressed: () => context.push(AppRoutes.quadrantMap(parcelId)),
+              onPressed: AgroFeedback.tap(
+                context,
+                () => context.push(AppRoutes.quadrantMap(parcelId)),
+              ),
               icon: const Icon(LucideIcons.penTool),
               label: const Text('Delimitar en el mapa'),
             ),
           )
         else
-          for (final sector in state.sectors) ...[
+          for (final (index, sector) in state.sectors.indexed) ...[
             SectorSummaryCard(
               key: ValueKey(sector.id),
               summary: sector,
@@ -118,7 +124,7 @@ final class SectorListPage extends ConsumerWidget {
                   context.push(AppRoutes.sector(sector.id));
                 }
               },
-            ),
+            ).agroListItemEntrance(context, index),
             const SizedBox(height: AgroSpacing.xs),
           ],
         const SizedBox(height: AgroSpacing.md),
@@ -140,7 +146,7 @@ final class SectorListPage extends ConsumerWidget {
         ),
         const SizedBox(height: AgroSpacing.sm),
         if (state.historyLoading)
-          const LinearProgressIndicator()
+          const AgroSkeletonBlock(height: AgroSizes.skeletonCard)
         else if (state.history.isEmpty)
           const Card(
             child: Padding(

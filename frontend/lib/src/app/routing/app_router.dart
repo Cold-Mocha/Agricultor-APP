@@ -84,6 +84,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                         builder: (_, _) => const ProfileSecurityPage(),
                       ),
                       GoRoute(
+                        path: 'sonidos-y-animaciones',
+                        builder: (_, _) => const ProfileFeedbackPage(),
+                      ),
+                      GoRoute(
                         path: 'tema',
                         builder: (_, _) => const ProfileInformationPage(
                           kind: ProfileInformationKind.theme,

@@ -5,6 +5,7 @@ import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_
 import 'package:agrocampo/src/modules/irrigation/presentation/controllers/irrigation_controller.dart';
 import 'package:agrocampo/src/modules/irrigation/presentation/formatters/irrigation_labels.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_status_banner.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -175,12 +176,21 @@ final class _IrrigationRecordPageState
 
   Future<void> _save() async {
     final input = _input();
-    final saved = await ref
-        .read(irrigationFormControllerProvider)
-        .save(input, calculation: _preview);
+    final bool saved;
+    try {
+      saved = await ref
+          .read(irrigationFormControllerProvider)
+          .save(input, calculation: _preview);
+    } on Object {
+      if (mounted) {
+        AgroFeedback.error(
+          context,
+          'Revisa los datos; el borrador se conservó.',
+        );
+      }
+      return;
+    }
     if (!mounted || !saved) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Riego guardado localmente.')));
+    AgroFeedback.recordSaved(context, 'Riego guardado localmente.');
   }
 }

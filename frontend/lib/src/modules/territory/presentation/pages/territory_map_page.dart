@@ -4,6 +4,7 @@ import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
 import 'package:agrocampo/src/modules/auth/auth_ui.dart';
 import 'package:agrocampo/src/modules/territory/presentation/controllers/territory_controllers.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -574,8 +575,9 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
         .selectSector(id);
     if (!mounted) return;
     _cancel();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Geometría guardada en este dispositivo.')),
+    AgroFeedback.recordSaved(
+      context,
+      'Geometría guardada en este dispositivo.',
     );
   }
 

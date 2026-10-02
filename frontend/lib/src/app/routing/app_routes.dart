@@ -30,6 +30,7 @@ abstract final class AppRoutes {
   static const profileNotifications = '/inicio/perfil/notificaciones';
   static const profileLanguage = '/inicio/perfil/idioma';
   static const profileSecurity = '/inicio/perfil/seguridad';
+  static const profileFeedback = '/inicio/perfil/sonidos-y-animaciones';
   static const profileTheme = '/inicio/perfil/tema';
   static const profileHelp = '/inicio/perfil/ayuda';
   static const profileContact = '/inicio/perfil/contacto';

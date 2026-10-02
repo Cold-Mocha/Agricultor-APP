@@ -1,4 +1,5 @@
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
+import 'package:agrocampo/src/shared/design_system/motion/agro_press_scale.dart';
 import 'package:flutter/material.dart';
 
 final class AgroActionTile extends StatelessWidget {
@@ -21,35 +22,38 @@ final class AgroActionTile extends StatelessWidget {
     enabled: onTap != null,
     label: description == null ? label : '$label. $description',
     excludeSemantics: true,
-    child: Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 92),
-          child: Padding(
-            padding: const EdgeInsets.all(AgroSpacing.sm),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  icon,
-                  size: AgroSizes.iconAction,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(height: AgroSpacing.xs),
-                Text(label, style: Theme.of(context).textTheme.titleSmall),
-                if (description case final value?) ...[
-                  const SizedBox(height: AgroSpacing.xxs),
-                  Text(
-                    value,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+    child: AgroPressScale(
+      enabled: onTap != null,
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 92),
+            child: Padding(
+              padding: const EdgeInsets.all(AgroSpacing.sm),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    icon,
+                    size: AgroSizes.iconAction,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
+                  const SizedBox(height: AgroSpacing.xs),
+                  Text(label, style: Theme.of(context).textTheme.titleSmall),
+                  if (description case final value?) ...[
+                    const SizedBox(height: AgroSpacing.xxs),
+                    Text(
+                      value,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),

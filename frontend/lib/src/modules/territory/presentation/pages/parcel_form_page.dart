@@ -2,6 +2,7 @@ import 'package:agrocampo/src/app/layout/agro_page.dart';
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/auth/auth_ui.dart';
 import 'package:agrocampo/src/modules/territory/presentation/controllers/territory_controllers.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -70,7 +71,7 @@ final class _ParcelFormPageState extends ConsumerState<ParcelFormPage> {
         ),
         const SizedBox(height: AgroSpacing.md),
         FilledButton(
-          onPressed: () async {
+          onPressed: AgroFeedback.tap(context, () async {
             final ownerId = ref.read(sessionControllerProvider).ownerId;
             if (ownerId == null || _name.text.trim().isEmpty) return;
             await ref
@@ -85,7 +86,7 @@ final class _ParcelFormPageState extends ConsumerState<ParcelFormPage> {
                   ),
                 );
             if (context.mounted) context.pop();
-          },
+          }),
           child: const Text('Guardar sin conexión'),
         ),
       ],

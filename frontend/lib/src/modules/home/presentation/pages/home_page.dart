@@ -9,6 +9,8 @@ import 'package:agrocampo/src/shared/design_system/components/agro_action_tile.d
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_navigation_card.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_section_header.dart';
+import 'package:agrocampo/src/shared/design_system/components/agro_skeleton.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
 import 'package:agrocampo/src/shared/design_system/motion/agro_motion_effects.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +48,7 @@ final class HomePage extends ConsumerWidget {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting &&
                     !snapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const AgroSkeletonList();
                 }
                 final parcel = snapshot.data;
                 if (parcel == null) {
@@ -54,7 +56,10 @@ final class HomePage extends ConsumerWidget {
                     title: 'Crea tu primera parcela',
                     message: 'La parcela activa organiza cuadrantes, cultivos y registros.',
                     action: FilledButton(
-                      onPressed: () => context.push(AppRoutes.newParcel),
+                      onPressed: AgroFeedback.tap(
+                        context,
+                        () => context.push(AppRoutes.newParcel),
+                      ),
                       child: const Text('Crear parcela'),
                     ),
                   );

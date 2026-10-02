@@ -3,6 +3,8 @@ import 'package:agrocampo/src/app/routing/app_routes.dart';
 import 'package:agrocampo/src/modules/auth/auth_ui.dart';
 import 'package:agrocampo/src/modules/crop_cycles/presentation/controllers/crop_cycles_controller.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
+import 'package:agrocampo/src/shared/design_system/components/agro_skeleton.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -73,7 +75,7 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
                 ]
               : const [],
           child: sectorSnapshot.connectionState != ConnectionState.done
-              ? const Center(child: CircularProgressIndicator())
+              ? const AgroSkeletonList()
               : sector == null
               ? const AgroEmptyState(
                   title: 'Sector no disponible',
@@ -109,7 +111,10 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
                             title: 'Sin cultivos asignados',
                             message: 'Crea o activa una temporada y planifica el primer cultivo.',
                             action: FilledButton.icon(
-                              onPressed: () => context.push(AppRoutes.seasons),
+                              onPressed: AgroFeedback.tap(
+                                context,
+                                () => context.push(AppRoutes.seasons),
+                              ),
                               icon: const Icon(LucideIcons.calendarDays),
                               label: const Text('Administrar temporadas'),
                             ),
@@ -247,7 +252,10 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
               child: const Text('Cancelar'),
             ),
             FilledButton(
-              onPressed: () => Navigator.pop(dialogContext, true),
+              onPressed: AgroFeedback.tap(
+                dialogContext,
+                () => Navigator.pop(dialogContext, true),
+              ),
               child: const Text('Planificar'),
             ),
           ],
@@ -331,7 +339,10 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
               child: const Text('Cancelar'),
             ),
             FilledButton(
-              onPressed: () => Navigator.pop(dialogContext, true),
+              onPressed: AgroFeedback.tap(
+                dialogContext,
+                () => Navigator.pop(dialogContext, true),
+              ),
               child: const Text('Intercambiar'),
             ),
           ],

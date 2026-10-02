@@ -2,6 +2,7 @@ import 'package:agrocampo/src/app/layout/agro_page.dart';
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
 import 'package:agrocampo/src/modules/soil/presentation/controllers/soil_controller.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,32 +86,41 @@ final class _SoilMeasurementPageState
   Future<void> _save() async {
     final sectorId = _bound?.sectorId;
     if (sectorId == null) return;
-    final saved = await ref
-        .read(soilMeasurementControllerProvider)
-        .save(
-          sectorId: sectorId,
-          input: SoilMeasurementInput(
-            moisturePercent: _number(0),
-            ph: _number(1),
-            temperatureCelsius: _number(2),
-            conductivity: _number(3),
-            nitrogen: _number(4),
-            phosphorus: _number(5),
-            potassium: _number(6),
-            units: const {
-              'moisturePercent': '%',
-              'ph': 'pH',
-              'temperatureCelsius': '°C',
-              'conductivity': 'mS/cm',
-              'nitrogen': 'mg/kg',
-              'phosphorus': 'mg/kg',
-              'potassium': 'mg/kg',
-            },
-          ),
+    final bool saved;
+    try {
+      saved = await ref
+          .read(soilMeasurementControllerProvider)
+          .save(
+            sectorId: sectorId,
+            input: SoilMeasurementInput(
+              moisturePercent: _number(0),
+              ph: _number(1),
+              temperatureCelsius: _number(2),
+              conductivity: _number(3),
+              nitrogen: _number(4),
+              phosphorus: _number(5),
+              potassium: _number(6),
+              units: const {
+                'moisturePercent': '%',
+                'ph': 'pH',
+                'temperatureCelsius': '°C',
+                'conductivity': 'mS/cm',
+                'nitrogen': 'mg/kg',
+                'phosphorus': 'mg/kg',
+                'potassium': 'mg/kg',
+              },
+            ),
+          );
+    } on Object {
+      if (mounted) {
+        AgroFeedback.error(
+          context,
+          'Revisa los datos; el borrador se conservó.',
         );
+      }
+      return;
+    }
     if (!mounted || !saved) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Medición guardada localmente.')),
-    );
+    AgroFeedback.recordSaved(context, 'Medición guardada localmente.');
   }
 }

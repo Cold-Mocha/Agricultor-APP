@@ -1,4 +1,5 @@
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
+import 'package:agrocampo/src/shared/design_system/motion/agro_press_scale.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -24,55 +25,61 @@ final class AgroNavigationCard extends StatelessWidget {
     enabled: onTap != null,
     label: '$title. $subtitle',
     excludeSemantics: true,
-    child: Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 80),
-          child: Padding(
-            padding: const EdgeInsets.all(AgroSpacing.md),
-            child: Row(
-              children: [
-                Container(
-                  width: AgroSizes.touchTarget,
-                  height: AgroSizes.touchTarget,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(AgroRadii.medium),
-                  ),
-                  alignment: Alignment.center,
-                  child: Icon(
-                    icon,
-                    size: AgroSizes.iconAction,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
-                ),
-                const SizedBox(width: AgroSpacing.sm),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: AgroSpacing.xxs),
-                      Text(
-                        subtitle,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: AgroSpacing.xs),
-                trailing ??
-                    const ExcludeSemantics(
-                      child: Icon(LucideIcons.chevronRight),
+    child: AgroPressScale(
+      enabled: onTap != null,
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 80),
+            child: Padding(
+              padding: const EdgeInsets.all(AgroSpacing.md),
+              child: Row(
+                children: [
+                  Container(
+                    width: AgroSizes.touchTarget,
+                    height: AgroSizes.touchTarget,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(AgroRadii.medium),
                     ),
-              ],
+                    alignment: Alignment.center,
+                    child: Icon(
+                      icon,
+                      size: AgroSizes.iconAction,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                  const SizedBox(width: AgroSpacing.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: AgroSpacing.xxs),
+                        Text(
+                          subtitle,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: AgroSpacing.xs),
+                  trailing ??
+                      const ExcludeSemantics(
+                        child: Icon(LucideIcons.chevronRight),
+                      ),
+                ],
+              ),
             ),
           ),
         ),

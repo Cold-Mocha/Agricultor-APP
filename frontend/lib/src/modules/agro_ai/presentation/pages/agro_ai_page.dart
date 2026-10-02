@@ -2,6 +2,7 @@ import 'package:agrocampo/src/app/layout/agro_page.dart';
 import 'package:agrocampo/src/modules/agro_ai/presentation/controllers/agro_ai_controller.dart';
 import 'package:agrocampo/src/modules/auth/auth_ui.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -94,10 +95,12 @@ final class _AgroAiPageState extends ConsumerState<AgroAiPage> {
               label: 'Enviar consulta a AgroIA',
               button: true,
               child: FilledButton(
-                onPressed:
-                    ownerId == null || _sending || _question.text.trim().isEmpty
-                    ? null
-                    : _send,
+                onPressed: AgroFeedback.tap(
+                  context,
+                  ownerId == null || _sending || _question.text.trim().isEmpty
+                      ? null
+                      : _send,
+                ),
                 child: Text(_sending ? 'Consultando…' : 'Enviar consulta'),
               ),
             ),

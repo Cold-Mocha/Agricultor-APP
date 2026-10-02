@@ -14,6 +14,7 @@ producción.
 | [`001-agrocampo-android-mvp`](../specs/001-agrocampo-android-mvp/tasks.md) | 85/85 | — |
 | [`002-agrocampo-functional-core`](../specs/002-agrocampo-functional-core/tasks.md) | 114/118 | T016, T096, T115, T118 |
 | [`003-agrocampo-functional-refinement`](../specs/003-agrocampo-functional-refinement/tasks.md) | 119/124 | T030, T115, T120, T121, T124 |
+| [`004-agrocampo-sensory-feedback`](../specs/004-agrocampo-sensory-feedback/tasks.md) | 16/17 | T017 |
 
 Todas las pendientes requieren ejecución en **Android API 24+** (emulador o dispositivo real), no
 cambios de implementación:
@@ -29,6 +30,7 @@ cambios de implementación:
 | 003 T120 | Gate frontend completo, incluidos integration tests. |
 | 003 T121 | pgTAP/RLS/RPC, Deno y Android API 24+ sobre stacks desechables. |
 | 003 T124 | Gate final: constitución, arquitectura, alcance y US1–US7. |
+| 004 T017 | Audio real (modo silencio, sin pausar música ajena), reducir movimiento y transiciones en dispositivo. |
 
 Los resultados de esas ejecuciones se registran en este documento.
 
@@ -45,6 +47,15 @@ Los resultados de esas ejecuciones se registran en este documento.
 
 `android-integration.yml` corre `frontend/integration_test/` en un emulador de CI (API 30). Es
 una red de regresión, no reemplaza la verificación API 24+ anterior.
+
+## Verificación 004 (host, 2026-10-02)
+
+| Suite | Resultado |
+|---|---|
+| Backend `flutter test` | 162/162 (incluye preferencias de feedback) |
+| Frontend `flutter test` (widgets + goldens) | 100/100 (goldens sin cambios) |
+| Format, analyze, `tool/check_architecture.dart`, aceptación del prototipo | PASS |
+| `flutter build apk` y audio en dispositivo | No ejecutado en este host (sin Android SDK); queda en 004 T017 |
 
 ## Brechas de producto conocidas
 

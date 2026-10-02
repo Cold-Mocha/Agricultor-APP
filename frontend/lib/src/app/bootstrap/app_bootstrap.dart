@@ -1,5 +1,6 @@
 import 'package:agrocampo/src/app/agro_campo_app.dart';
 import 'package:agrocampo/src/app/routing/app_routes.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_sound_effects.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,7 +13,7 @@ Future<void> bootstrapAgroCampo() async {
   runApp(
     UncontrolledProviderScope(
       container: backend.container,
-      child: const AgroCampoApp(),
+      child: AgroCampoApp(soundEffects: AudioplayersSoundEffects()),
     ),
   );
 }

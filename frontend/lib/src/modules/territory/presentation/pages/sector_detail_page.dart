@@ -6,6 +6,7 @@ import 'package:agrocampo/src/shared/design_system/components/agro_action_tile.d
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_metric_card.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_section_header.dart';
+import 'package:agrocampo/src/shared/design_system/components/agro_skeleton.dart';
 import 'package:agrocampo/src/shared/design_system/components/crop_pictogram.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,10 +22,8 @@ final class SectorDetailPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(sectorDetailUiStateProvider(sectorId));
     return state.when(
-      loading: () => const AgroPage(
-        title: 'Cuadrante',
-        child: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () =>
+          const AgroPage(title: 'Cuadrante', child: AgroSkeletonList()),
       error: (error, stackTrace) => const AgroPage(
         title: 'Cuadrante',
         child: AgroEmptyState(
@@ -63,10 +62,7 @@ final class SectorDetailPage extends ConsumerWidget {
         final detail = state.detail;
         final summary = state.summary;
         if (detail == null || summary == null) {
-          return const AgroPage(
-            title: 'Cuadrante',
-            child: Center(child: CircularProgressIndicator()),
-          );
+          return const AgroPage(title: 'Cuadrante', child: AgroSkeletonList());
         }
         if (state.selectedSectorId != detail.id) {
           Future<void>.microtask(

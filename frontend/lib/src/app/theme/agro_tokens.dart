@@ -57,6 +57,9 @@ abstract final class AgroSizes {
   static const mapPreview = 184.0;
   static const maxContentWidth = 840.0;
   static const mapVertexVisual = 20.0;
+  static const skeletonLine = 16.0;
+  static const skeletonCard = 92.0;
+  static const successBadge = 96.0;
 }
 
 abstract final class AgroElevation {
@@ -66,8 +69,14 @@ abstract final class AgroElevation {
 
 abstract final class AgroMotion {
   static const quick = Duration(milliseconds: 100);
+  static const exit = Duration(milliseconds: 150);
   static const standard = Duration(milliseconds: 200);
   static const emphasized = Duration(milliseconds: 300);
+  static const staggerStep = Duration(milliseconds: 40);
+  static const staggerMaxSteps = 4;
+  static const skeletonPulse = Duration(milliseconds: 900);
+  static const successHold = Duration(milliseconds: 600);
+  static const pressedScale = 0.97;
 }
 
 @immutable

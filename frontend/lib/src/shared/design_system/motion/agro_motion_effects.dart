@@ -35,16 +35,31 @@ extension AgroMotionEntrance on Widget {
 extension AgroMotionStagger on List<Widget> {
   /// Applies [AgroMotionEntrance.agroEntrance] to each item with a small
   /// incremental delay so a grid/list settles in as one readable motion
-  /// instead of popping in at once. Stagger is itself dropped under reduced
+  /// instead of popping in at once. The delay stops growing after
+  /// [AgroMotion.staggerMaxSteps] so long lists still settle within the
+  /// short window master.md allows. Stagger is itself dropped under reduced
   /// motion (master.md: "elimina ... stagger"), so every item just appears.
-  List<Widget> agroStaggeredEntrance(
-    BuildContext context, {
-    Duration step = const Duration(milliseconds: 40),
-  }) {
+  List<Widget> agroStaggeredEntrance(BuildContext context) {
     if (agroPrefersReducedMotion(context)) return this;
     return [
       for (final (index, child) in indexed)
-        child.agroEntrance(context, delay: step * index),
+        child.agroEntrance(context, delay: agroStaggerDelay(index)),
     ];
+  }
+}
+
+/// Delay for the [index]-th item of a staggered entrance, capped so the
+/// whole group settles within [AgroMotion.staggerMaxSteps] steps.
+Duration agroStaggerDelay(int index) =>
+    AgroMotion.staggerStep *
+    (index < AgroMotion.staggerMaxSteps ? index : AgroMotion.staggerMaxSteps);
+
+extension AgroMotionListItem on Widget {
+  /// Entrance for an item built lazily by a list builder. Only the first
+  /// screenful is staggered; later rows (built while scrolling) appear
+  /// directly so scrolling never waits on motion.
+  Widget agroListItemEntrance(BuildContext context, int index) {
+    if (index > AgroMotion.staggerMaxSteps) return this;
+    return agroEntrance(context, delay: agroStaggerDelay(index));
   }
 }

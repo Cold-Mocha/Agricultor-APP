@@ -1,6 +1,8 @@
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/auth/presentation/controllers/session_controller.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_status_banner.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_sound_effects.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -66,11 +68,14 @@ final class _LoginPageState extends ConsumerState<LoginPage> {
                     const SizedBox(height: AgroSpacing.lg),
                     if (locked) ...[
                       FilledButton.icon(
-                        onPressed: loading
-                            ? null
-                            : () => ref
-                                  .read(sessionControllerProvider.notifier)
-                                  .unlockWithBiometrics(),
+                        onPressed: AgroFeedback.tap(
+                          context,
+                          loading
+                              ? null
+                              : () => ref
+                                    .read(sessionControllerProvider.notifier)
+                                    .unlockWithBiometrics(),
+                        ),
                         icon: const Icon(LucideIcons.fingerprint),
                         label: const Text('Desbloquear con biometría'),
                       ),
@@ -105,18 +110,26 @@ final class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                     const SizedBox(height: AgroSpacing.lg),
                     FilledButton(
-                      onPressed: loading
-                          ? null
-                          : () {
-                              if (_formKey.currentState!.validate()) {
-                                ref
-                                    .read(sessionControllerProvider.notifier)
-                                    .signIn(
-                                      email: _email.text,
-                                      password: _password.text,
-                                    );
-                              }
-                            },
+                      onPressed: AgroFeedback.tap(
+                        context,
+                        loading
+                            ? null
+                            : () {
+                                if (_formKey.currentState!.validate()) {
+                                  ref
+                                      .read(sessionControllerProvider.notifier)
+                                      .signIn(
+                                        email: _email.text,
+                                        password: _password.text,
+                                      );
+                                } else {
+                                  AgroFeedback.playSound(
+                                    context,
+                                    AgroSound.error,
+                                  );
+                                }
+                              },
+                      ),
                       child: Text(loading ? 'Ingresando…' : 'Ingresar'),
                     ),
                   ],

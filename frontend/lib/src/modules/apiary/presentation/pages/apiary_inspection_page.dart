@@ -4,6 +4,7 @@ import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
 import 'package:agrocampo/src/modules/apiary/presentation/controllers/apiary_inspection_controller.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
+import 'package:agrocampo/src/shared/design_system/feedback/agro_feedback.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -142,34 +143,45 @@ final class _ApiaryInspectionPageState
     final sectorId = _bound?.sectorId ?? widget.sectorId;
     if (sectorId == null) return;
     if (_bound?.category != ProductiveCategory.apiary) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Selecciona una unidad apícola para esta operación.'),
-        ),
+      AgroFeedback.error(
+        context,
+        'Selecciona una unidad apícola para esta operación.',
       );
       return;
     }
-    final saved = await ref
-        .read(apiaryInspectionControllerProvider)
-        .save(
-          sectorId: sectorId,
-          input: ApiaryInspectionInput(
-            taskType: _task,
-            beekeeperName: _beekeeper.text,
-            hiveCount: int.tryParse(_hives.text) ?? 0,
-            queenStatus: _queen.text,
-            broodStatus: _brood.text,
-            feedingStatus: _feeding.text,
-            healthNotes: _health.text,
-            pestNotes: _pests.text,
-            superInstalled: _superInstalled,
-            inspectedAt: DateTime.now(),
-            observations: _observations.text,
-          ),
+    final bool saved;
+    try {
+      saved = await ref
+          .read(apiaryInspectionControllerProvider)
+          .save(
+            sectorId: sectorId,
+            input: ApiaryInspectionInput(
+              taskType: _task,
+              beekeeperName: _beekeeper.text,
+              hiveCount: int.tryParse(_hives.text) ?? 0,
+              queenStatus: _queen.text,
+              broodStatus: _brood.text,
+              feedingStatus: _feeding.text,
+              healthNotes: _health.text,
+              pestNotes: _pests.text,
+              superInstalled: _superInstalled,
+              inspectedAt: DateTime.now(),
+              observations: _observations.text,
+            ),
+          );
+    } on Object {
+      if (mounted) {
+        AgroFeedback.error(
+          context,
+          'Revisa los datos; el borrador se conservó.',
         );
+      }
+      return;
+    }
     if (mounted && saved) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Revisión guardada en este dispositivo.')),
+      AgroFeedback.recordSaved(
+        context,
+        'Revisión guardada en este dispositivo.',
       );
     }
   }
