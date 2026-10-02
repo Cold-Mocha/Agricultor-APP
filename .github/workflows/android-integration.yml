@@ -32,7 +32,8 @@ env:
 
 jobs:
   integration-tests:
-    name: integration_test/ on Android API ${{ env.AVD_API_LEVEL }} emulator
+    # `env` is not available in jobs.<id>.name; keep in sync with AVD_API_LEVEL.
+    name: integration_test/ on Android API 30 emulator
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
