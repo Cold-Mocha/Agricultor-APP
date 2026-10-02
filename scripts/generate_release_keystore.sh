@@ -4,7 +4,7 @@
 #
 # Este script SÓLO crea el archivo local; la decisión de qué contraseña usar y la
 # custodia posterior del keystore siguen siendo un paso humano — ver
-# docs/deployment/04-android-release-signing.md. Perder este archivo o su
+# docs/deployment.md#4-firma-android. Perder este archivo o su
 # contraseña impide volver a actualizar la app ya publicada en Play Store: haz
 # backup fuera del repositorio (está en .gitignore a propósito).
 
@@ -45,4 +45,4 @@ echo
 echo "Creado: $KEYSTORE_PATH y $KEY_PROPERTIES_PATH (ambos gitignored)."
 echo "Siguiente paso: subir el keystore como secreto de GitHub Actions."
 echo "  base64 -w0 $KEYSTORE_PATH   # copiar la salida a ANDROID_KEYSTORE_BASE64"
-echo "Detalle completo: docs/deployment/04-android-release-signing.md"
+echo "Detalle completo: docs/deployment.md#4-firma-android"

@@ -1,46 +1,40 @@
 #!/usr/bin/env bash
 # Construye localmente el mismo artefacto de release que produce
-# .github/workflows/android-release.yml, a partir de frontend/.env y
+# .github/workflows/android-release.yml, a partir del .env de la raíz y de
 # frontend/android/key.properties (ambos gitignored). No crea credenciales; sólo
 # las consume si ya existen.
 #
 # Uso:
-#   cp frontend/.env.example frontend/.env   # completar valores reales
+#   cp .env.example .env   # completar la sección [APP]
 #   # generar key.properties con scripts/generate_release_keystore.sh, o a mano
 #   ./scripts/build_android_release.sh
 
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
-
-ENV_FILE="frontend/.env"
-if [ -f "$ENV_FILE" ]; then
-  # shellcheck disable=SC1090
-  set -a; source "$ENV_FILE"; set +a
-fi
+# shellcheck source=lib/env.sh
+source scripts/lib/env.sh
+load_env
 
 if [ ! -f "frontend/android/key.properties" ]; then
   echo "AVISO: frontend/android/key.properties no existe todavía." >&2
   echo "El build quedará firmado con la clave debug (NO apto para Play Store)." >&2
-  echo "Ver docs/deployment/04-android-release-signing.md o scripts/generate_release_keystore.sh." >&2
+  echo "Ver docs/deployment.md o scripts/generate_release_keystore.sh." >&2
 fi
 
 DEFINES=()
-if [ -n "${MAP_TILE_URL:-}" ]; then
-  DEFINES+=("--dart-define=MAP_TILE_URL=$MAP_TILE_URL")
-fi
-if [ -n "${MAP_INITIAL_LATITUDE:-}" ]; then
-  DEFINES+=("--dart-define=MAP_INITIAL_LATITUDE=$MAP_INITIAL_LATITUDE")
-fi
-if [ -n "${MAP_INITIAL_LONGITUDE:-}" ]; then
-  DEFINES+=("--dart-define=MAP_INITIAL_LONGITUDE=$MAP_INITIAL_LONGITUDE")
-fi
+for key in MAP_TILE_URL MAP_INITIAL_LATITUDE MAP_INITIAL_LONGITUDE; do
+  if env_is_set "$key"; then
+    DEFINES+=("--dart-define=$key=$(env_value "$key")")
+  fi
+done
 
-if [ -n "${SUPABASE_URL:-}" ] && [ -n "${SUPABASE_PUBLISHABLE_KEY:-}" ]; then
-  DEFINES+=("--dart-define=AGROCAMPO_ENV=${AGROCAMPO_ENV:-production}")
-  DEFINES+=("--dart-define=SUPABASE_URL=$SUPABASE_URL")
-  DEFINES+=("--dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY")
+if env_is_set SUPABASE_URL && env_is_set SUPABASE_PUBLISHABLE_KEY; then
+  app_env="$(env_value AGROCAMPO_ENV)"
+  DEFINES+=("--dart-define=AGROCAMPO_ENV=${app_env:-production}")
+  DEFINES+=("--dart-define=SUPABASE_URL=$(env_value SUPABASE_URL)")
+  DEFINES+=("--dart-define=SUPABASE_PUBLISHABLE_KEY=$(env_value SUPABASE_PUBLISHABLE_KEY)")
 else
-  echo "AVISO: SUPABASE_URL/SUPABASE_PUBLISHABLE_KEY no configurados en frontend/.env." >&2
+  echo "AVISO: SUPABASE_URL/SUPABASE_PUBLISHABLE_KEY no configurados en $ENV_FILE." >&2
   echo "El build usará el modo development sin backend remoto (offline-only)." >&2
 fi
 
