@@ -13,7 +13,7 @@ después de aplicar todas las correcciones.
 | [I5](#i5-funciones-con-red-en-modo-local) | Inicio, AgroIA, Más | En curso (clima resuelto) |
 | [I6](#i6-perfil-habla-de-una-cuenta-en-modo-local) | Inicio (Perfil) | Resuelto · captura pendiente |
 | [I7](#i7-encabezado-distinto-en-parcelas) | Inicio (Parcelas) | Resuelto · captura pendiente |
-| [I8](#i8-apicultura-ofrecida-en-sectores-de-cultivo) | Registrar | Pendiente |
+| [I8](#i8-apicultura-ofrecida-en-sectores-de-cultivo) | Registrar | Resuelto · captura pendiente |
 
 ## I1. Banner global en modo local
 

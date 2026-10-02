@@ -42,10 +42,28 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _bound ??= BoundAgriculturalContext.from(
-      ref.read(agriculturalContextControllerProvider),
-      sectorId: widget.initialSectorId,
-    );
+    if (_bound == null) {
+      _bound = BoundAgriculturalContext.from(
+        ref.read(agriculturalContextControllerProvider),
+        sectorId: widget.initialSectorId,
+      );
+      _keepTypeCompatible();
+    }
+  }
+
+  /// Mirrors DomainCompatibilityPolicy: apiary sectors only accept apiary
+  /// work and every other sector excludes it.
+  List<LaborType> get _availableTypes =>
+      _bound?.category == ProductiveCategory.apiary
+      ? const [LaborType.apiary]
+      : [
+          for (final type in LaborType.values)
+            if (type != LaborType.apiary) type,
+        ];
+
+  void _keepTypeCompatible() {
+    final types = _availableTypes;
+    if (!types.contains(_type)) _type = types.first;
   }
 
   @override
@@ -81,11 +99,12 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
           changed: _bound!.differsFrom(
             ref.watch(agriculturalContextControllerProvider),
           ),
-          onRebind: () => setState(
-            () => _bound = BoundAgriculturalContext.from(
+          onRebind: () => setState(() {
+            _bound = BoundAgriculturalContext.from(
               ref.read(agriculturalContextControllerProvider),
-            ),
-          ),
+            );
+            _keepTypeCompatible();
+          }),
         ),
         const SizedBox(height: AgroSpacing.lg),
         const AgroSectionHeader(
@@ -99,7 +118,7 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
           initialValue: _type,
           decoration: const InputDecoration(labelText: 'Tipo de labor'),
           items: [
-            for (final type in LaborType.values)
+            for (final type in _availableTypes)
               DropdownMenuItem(value: type, child: Text(type.label)),
           ],
           onChanged: (value) => setState(() => _type = value ?? _type),

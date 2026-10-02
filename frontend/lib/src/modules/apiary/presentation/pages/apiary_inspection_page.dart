@@ -3,6 +3,7 @@ import 'package:agrocampo/src/app/routing/app_routes.dart';
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
 import 'package:agrocampo/src/modules/apiary/presentation/controllers/apiary_inspection_controller.dart';
+import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -77,38 +78,48 @@ final class _ApiaryInspectionPageState
             ),
           ),
         ],
-        DropdownButtonFormField<ApiaryTaskType>(
-          initialValue: _task,
-          decoration: const InputDecoration(labelText: 'Tipo de tarea'),
-          items: [
-            for (final value in ApiaryTaskType.values)
-              DropdownMenuItem(value: value, child: Text(_label(value))),
-          ],
-          onChanged: (value) => setState(() => _task = value ?? _task),
-        ),
-        _field(_beekeeper, 'Apicultor responsable'),
-        _field(_hives, 'Cantidad de colmenas', number: true),
-        _field(_queen, 'Estado de la reina'),
-        _field(_brood, 'Postura'),
-        _field(_feeding, 'Alimentación'),
-        _field(_health, 'Enfermedades / sanidad'),
-        _field(_pests, 'Plagas'),
-        SwitchListTile(
-          value: _superInstalled,
-          onChanged: (value) => setState(() => _superInstalled = value),
-          title: const Text('Alza instalada'),
-        ),
-        _field(_observations, 'Observaciones'),
-        if (widget.sectorId != null)
-          OutlinedButton.icon(
-            onPressed: () => context.push(
-              AppRoutes.photoFor(sectorId: _bound?.sectorId ?? widget.sectorId),
-            ),
-            icon: const Icon(LucideIcons.imagePlus),
-            label: const Text('Adjuntar fotografía'),
+        if (_bound?.sectorId != null &&
+            _bound?.category != ProductiveCategory.apiary)
+          const AgroEmptyState(
+            title: 'Sector incompatible',
+            message: 'La revisión apícola se registra sólo en un sector apícola. Selecciona una unidad apícola en el contexto.',
+          )
+        else ...[
+          DropdownButtonFormField<ApiaryTaskType>(
+            initialValue: _task,
+            decoration: const InputDecoration(labelText: 'Tipo de tarea'),
+            items: [
+              for (final value in ApiaryTaskType.values)
+                DropdownMenuItem(value: value, child: Text(_label(value))),
+            ],
+            onChanged: (value) => setState(() => _task = value ?? _task),
           ),
-        const SizedBox(height: AgroSpacing.md),
-        FilledButton(onPressed: _save, child: const Text('Guardar revisión')),
+          _field(_beekeeper, 'Apicultor responsable'),
+          _field(_hives, 'Cantidad de colmenas', number: true),
+          _field(_queen, 'Estado de la reina'),
+          _field(_brood, 'Postura'),
+          _field(_feeding, 'Alimentación'),
+          _field(_health, 'Enfermedades / sanidad'),
+          _field(_pests, 'Plagas'),
+          SwitchListTile(
+            value: _superInstalled,
+            onChanged: (value) => setState(() => _superInstalled = value),
+            title: const Text('Alza instalada'),
+          ),
+          _field(_observations, 'Observaciones'),
+          if (widget.sectorId != null)
+            OutlinedButton.icon(
+              onPressed: () => context.push(
+                AppRoutes.photoFor(
+                  sectorId: _bound?.sectorId ?? widget.sectorId,
+                ),
+              ),
+              icon: const Icon(LucideIcons.imagePlus),
+              label: const Text('Adjuntar fotografía'),
+            ),
+          const SizedBox(height: AgroSpacing.md),
+          FilledButton(onPressed: _save, child: const Text('Guardar revisión')),
+        ],
       ],
     ),
   );
