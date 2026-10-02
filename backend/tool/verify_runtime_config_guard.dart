@@ -19,6 +19,7 @@ void main() {
     stdout.writeln(
       'RuntimeConfig resolved: '
       'environment=${config.environment.environment.name} '
+      'online=${config.online} '
       'hasSupabase=${config.hasSupabase}',
     );
     exitCode = 0;

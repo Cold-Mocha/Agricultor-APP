@@ -2,6 +2,7 @@ import 'package:agrocampo_backend/src/composition/backend_providers.dart';
 import 'package:agrocampo_backend/src/composition/sync_scheduler.dart';
 import 'package:agrocampo_backend/src/modules/auth/application/facades/auth_session_facade.dart';
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/auth_repository.dart';
+import 'package:agrocampo_backend/src/modules/auth/infrastructure/local_auth_repository.dart';
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/secure_session_store.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:agrocampo_backend/src/platform/network/runtime_config.dart';
@@ -31,10 +32,12 @@ final class AgroCampoBackend {
       client = Supabase.instance.client;
     }
     const secureStorage = FlutterSecureStorage();
-    final authRepository = SupabaseAuthRepository(
-      client: client,
-      store: const SecureSessionStore(secureStorage),
-    );
+    final AuthRepository authRepository = config.online
+        ? SupabaseAuthRepository(
+            client: client,
+            store: const SecureSessionStore(secureStorage),
+          )
+        : const LocalAuthRepository(LocalOwnerStore(secureStorage));
     final syncScheduler = WorkManagerSyncScheduler();
     await syncScheduler.initialize();
     final notificationScheduler = PluginLocalNotificationScheduler();
@@ -46,6 +49,7 @@ final class AgroCampoBackend {
           appDatabaseProvider.overrideWithValue(database),
           supabaseClientProvider.overrideWithValue(client),
           authRepositoryProvider.overrideWithValue(authRepository),
+          isLocalModeProvider.overrideWithValue(!config.online),
           syncSchedulerProvider.overrideWithValue(syncScheduler),
           localNotificationSchedulerProvider.overrideWithValue(
             notificationScheduler,

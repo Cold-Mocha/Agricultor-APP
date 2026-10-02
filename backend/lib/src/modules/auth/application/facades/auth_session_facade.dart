@@ -3,12 +3,23 @@ import 'package:agrocampo_backend/src/modules/auth/contracts/biometric_unlock_re
 import 'package:agrocampo_backend/src/modules/auth/domain/entities/session_state.dart';
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/auth_repository.dart';
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/biometric_unlock_gateway.dart';
+import 'package:agrocampo_backend/src/modules/auth/infrastructure/local_auth_repository.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
+import 'package:agrocampo_backend/src/platform/database/owner_transfer.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>(
   (ref) => throw StateError('AuthRepository no configurado'),
+);
+
+/// True in local-only builds (`AGROCAMPO_ONLINE=false`): there is no account
+/// to sign out of and remote services are disabled.
+final isLocalModeProvider = Provider<bool>((ref) => false);
+
+final localOwnerStoreProvider = Provider<LocalOwnerStore>(
+  (ref) => const LocalOwnerStore(FlutterSecureStorage()),
 );
 
 final authSessionFacadeProvider = Provider<AuthSessionFacade>((ref) {
@@ -16,6 +27,14 @@ final authSessionFacadeProvider = Provider<AuthSessionFacade>((ref) {
     () => ref.read(authRepositoryProvider),
     () => ref.read(biometricUnlockGatewayProvider),
     () => ref.read(appDatabaseProvider),
+    (ownerId) async {
+      final store = ref.read(localOwnerStoreProvider);
+      final localOwnerId = await store.readOwnerId();
+      if (localOwnerId == null || localOwnerId == ownerId) return;
+      await OwnerTransfer(ref.read(appDatabaseProvider))
+          .transfer(from: localOwnerId, to: ownerId);
+      await store.clearOwnerId();
+    },
     (ownerId) => ref.read(cropAssignmentReconcilerProvider).reconcile(ownerId),
     (ownerId) => ref.read(reminderReconcilerProvider).reconcile(ownerId),
     (ownerId) => ref.read(syncTriggerCoordinatorProvider).start(ownerId),
@@ -30,6 +49,7 @@ final class AuthSessionFacade {
     this._auth,
     this._biometrics,
     this._database,
+    this._adoptLocalOwner,
     this._reconcileCrops,
     this._reconcileReminders,
     this._startSync,
@@ -39,6 +59,7 @@ final class AuthSessionFacade {
   final AuthRepository Function() _auth;
   final BiometricUnlockGateway Function() _biometrics;
   final AppDatabase Function() _database;
+  final Future<void> Function(String ownerId) _adoptLocalOwner;
   final Future<void> Function(String ownerId) _reconcileCrops;
   final Future<void> Function(String ownerId) _reconcileReminders;
   final Future<void> Function(String ownerId) _startSync;
@@ -82,6 +103,12 @@ final class AuthSessionFacade {
   }
 
   Future<void> resumeOwner(String ownerId) async {
+    try {
+      await _adoptLocalOwner(ownerId);
+    } on Object {
+      // The transfer is transactional; a failure keeps the local owner and
+      // retries on the next resume.
+    }
     try {
       await _reconcileCrops(ownerId);
     } on Object {

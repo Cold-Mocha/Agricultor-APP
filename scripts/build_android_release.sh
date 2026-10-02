@@ -22,7 +22,7 @@ if [ ! -f "frontend/android/key.properties" ]; then
 fi
 
 DEFINES=()
-for key in MAP_TILE_URL MAP_INITIAL_LATITUDE MAP_INITIAL_LONGITUDE; do
+for key in AGROCAMPO_ONLINE MAP_TILE_URL MAP_INITIAL_LATITUDE MAP_INITIAL_LONGITUDE; do
   if env_is_set "$key"; then
     DEFINES+=("--dart-define=$key=$(env_value "$key")")
   fi

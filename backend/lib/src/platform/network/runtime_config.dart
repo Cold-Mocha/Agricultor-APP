@@ -5,13 +5,15 @@ final class RuntimeConfig {
     required this.environment,
     required this.supabaseUrl,
     required this.supabasePublishableKey,
+    this.online = true,
   });
 
   factory RuntimeConfig.fromCompileTime() {
     final environment = AppEnvironmentConfig.fromCompileTime();
+    const online = bool.fromEnvironment('AGROCAMPO_ONLINE', defaultValue: true);
     const url = String.fromEnvironment('SUPABASE_URL');
     const key = String.fromEnvironment('SUPABASE_PUBLISHABLE_KEY');
-    if (environment.isProduction && (url.isEmpty || key.isEmpty)) {
+    if (online && environment.isProduction && (url.isEmpty || key.isEmpty)) {
       throw const FormatException(
         'Falta configuración pública de Supabase para producción.',
       );
@@ -20,6 +22,7 @@ final class RuntimeConfig {
       environment: environment,
       supabaseUrl: url,
       supabasePublishableKey: key,
+      online: online,
     );
   }
 
@@ -27,6 +30,10 @@ final class RuntimeConfig {
   final String supabaseUrl;
   final String supabasePublishableKey;
 
+  /// False builds a local-only app: no sign-in, no Supabase and no remote
+  /// services, even when Supabase values are present.
+  final bool online;
+
   bool get hasSupabase =>
-      supabaseUrl.isNotEmpty && supabasePublishableKey.isNotEmpty;
+      online && supabaseUrl.isNotEmpty && supabasePublishableKey.isNotEmpty;
 }

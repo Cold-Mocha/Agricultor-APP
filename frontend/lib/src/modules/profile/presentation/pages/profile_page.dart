@@ -5,6 +5,7 @@ import 'package:agrocampo/src/modules/auth/auth_ui.dart';
 import 'package:agrocampo/src/modules/profile/presentation/controllers/profile_controller.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_settings_group.dart';
+import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +17,7 @@ final class ProfilePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ownerId = ref.watch(unlockedOwnerIdProvider);
+    final localMode = ref.watch(isLocalModeProvider);
     final controller = ref.watch(profileControllerProvider);
     return AgroPage(
       title: 'Perfil',
@@ -142,18 +144,22 @@ final class ProfilePage extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: AgroSpacing.lg),
-                      OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Theme.of(context).colorScheme.error,
-                          side: BorderSide(
-                            color: Theme.of(context).colorScheme.error,
+                      if (!localMode) ...[
+                        OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Theme.of(context)
+                                .colorScheme
+                                .error,
+                            side: BorderSide(
+                              color: Theme.of(context).colorScheme.error,
+                            ),
                           ),
+                          onPressed: () => _confirmSignOut(context, ref),
+                          icon: const Icon(LucideIcons.logOut),
+                          label: const Text('Cerrar sesión'),
                         ),
-                        onPressed: () => _confirmSignOut(context, ref),
-                        icon: const Icon(LucideIcons.logOut),
-                        label: const Text('Cerrar sesión'),
-                      ),
-                      const SizedBox(height: AgroSpacing.lg),
+                        const SizedBox(height: AgroSpacing.lg),
+                      ],
                     ],
                   );
                 },
