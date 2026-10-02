@@ -71,4 +71,41 @@ final class ProfileFacade {
 
   Future<void> setWeatherAlertsEnabled(String ownerId, bool enabled) =>
       _weather.setAlertsEnabled(ownerId, enabled);
+
+  static const _soundEffectsKey = 'sound_effects_enabled';
+  static const _animationsKey = 'animations_enabled';
+
+  /// Local-only preferences; a missing row means the enabled default.
+  Stream<FeedbackPreferences> watchFeedbackPreferences(String ownerId) =>
+      (_database.select(_database.appPreferences)..where(
+            (row) =>
+                row.ownerId.equals(ownerId) &
+                row.key.isIn(const [_soundEffectsKey, _animationsKey]),
+          ))
+          .watch()
+          .map((rows) {
+            final values = {for (final row in rows) row.key: row.value};
+            return FeedbackPreferences(
+              soundEffectsEnabled: values[_soundEffectsKey] != 'false',
+              animationsEnabled: values[_animationsKey] != 'false',
+            );
+          });
+
+  Future<void> setSoundEffectsEnabled(String ownerId, bool enabled) =>
+      _writePreference(ownerId, _soundEffectsKey, enabled);
+
+  Future<void> setAnimationsEnabled(String ownerId, bool enabled) =>
+      _writePreference(ownerId, _animationsKey, enabled);
+
+  Future<void> _writePreference(String ownerId, String key, bool enabled) =>
+      _database
+          .into(_database.appPreferences)
+          .insertOnConflictUpdate(
+            AppPreferencesCompanion.insert(
+              ownerId: ownerId,
+              key: key,
+              value: '$enabled',
+              updatedAt: DateTime.now().toUtc(),
+            ),
+          );
 }
