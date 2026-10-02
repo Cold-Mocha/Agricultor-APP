@@ -126,6 +126,10 @@ void main() {
       find.textContaining('Permiso denegado; recordatorio conservado'),
       findsOneWidget,
     );
+    expect(find.textContaining('Programado'), findsNWidgets(2));
+    expect(find.textContaining('Completado'), findsOneWidget);
+    expect(find.textContaining('scheduled'), findsNothing);
+    expect(find.textContaining(RegExp(r'\d{2}:\d{2}:\d{2}\.')), findsNothing);
     // Only the two "scheduled" reminders (r1, r3) expose the action menu;
     // the completed one (r2) does not.
     expect(find.byType(PopupMenuButton<String>), findsNWidgets(2));
