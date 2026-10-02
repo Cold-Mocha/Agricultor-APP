@@ -47,7 +47,7 @@ cp .env.example .env            # completar SUPABASE_URL y SUPABASE_PUBLISHABLE_
 ```
 
 El primer acceso requiere Supabase (remoto o local con `supabase --workdir backend start`; desde
-el emulador la URL local es `http://10.0.2.2:54321`). Sin Supabase la app abre, pero el login
+el emulador la URL local es `http://10.0.2.2:54421`). Sin Supabase la app abre, pero el login
 responde "Configura Supabase para el primer acceso". Tras un primer login, la sesión guardada
 permite trabajar offline.
 
