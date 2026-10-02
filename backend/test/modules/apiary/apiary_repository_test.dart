@@ -38,10 +38,13 @@ void main() {
     expect(inspection.beekeeperName, 'Ana Pérez');
     expect(inspection.hiveCount, 12);
     expect(
-      (await database.customSelect(
-        'SELECT labor_id FROM apiary_inspections WHERE id = ?',
-        variables: [Variable(inspection.id)],
-      ).getSingle()).read<String>('labor_id'),
+      (await database
+              .customSelect(
+                'SELECT labor_id FROM apiary_inspections WHERE id = ?',
+                variables: [Variable(inspection.id)],
+              )
+              .getSingle())
+          .read<String>('labor_id'),
       isNotEmpty,
     );
     expect(await database.select(database.labors).get(), hasLength(1));

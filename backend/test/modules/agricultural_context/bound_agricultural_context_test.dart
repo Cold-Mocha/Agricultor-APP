@@ -68,10 +68,7 @@ void main() {
       ),
       allowedOperations: [ProductiveOperation.apiaryInspection],
     );
-    final bound = BoundAgriculturalContext.from(
-      context,
-      resolvedFor: resolved,
-    );
+    final bound = BoundAgriculturalContext.from(context, resolvedFor: resolved);
     expect(bound.category, ProductiveCategory.apiary);
     expect(bound.labels.sector, 'Colmenar');
     expect(bound.allowedOperations, [ProductiveOperation.apiaryInspection]);

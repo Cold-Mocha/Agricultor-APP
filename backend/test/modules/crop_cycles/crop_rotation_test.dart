@@ -7,35 +7,46 @@ import 'package:agrocampo_backend/src/modules/crop_cycles/infrastructure/persist
 import 'package:agrocampo_backend/src/modules/labors/domain/entities/fertilization_details.dart';
 import 'package:agrocampo_backend/src/modules/labors/domain/entities/labor_type.dart';
 import 'package:agrocampo_backend/src/modules/labors/infrastructure/persistence/labor_repository.dart';
-import 'package:agrocampo_backend/src/platform/database/app_database.dart' as db;
+import 'package:agrocampo_backend/src/platform/database/app_database.dart'
+    as db;
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:drift/drift.dart' as drift;
 
 import '../../helpers/in_memory_database.dart';
 
 void main() {
-  test('crop rotation rejects an apiary sector without partial assignment', () async {
-    final fixture = await _fixture();
-    addTearDown(fixture.database.close);
-    await (fixture.database.update(fixture.database.sectors)
-          ..where((row) => row.id.equals('sector-1')))
-        .write(const db.SectorsCompanion(kind: Value('apiary')));
-    final outboxBefore = await fixture.database.select(fixture.database.syncOutbox).get();
-    final repository = SectorCropAssignmentRepository(fixture.database);
-    await expectLater(
-      repository.plan(
-        ownerId: 'owner-1',
-        sectorId: 'sector-1',
-        agriculturalSeasonId: fixture.seasonId,
-        crop: fixture.maize,
-        effectiveFrom: DateTime.utc(2026, 8),
-      ),
-      throwsA(isA<StateError>()),
-    );
-    expect(await fixture.database.select(fixture.database.cropSeasons).get(), isEmpty);
-    expect(await fixture.database.select(fixture.database.syncOutbox).get(), outboxBefore);
-  });
+  test(
+    'crop rotation rejects an apiary sector without partial assignment',
+    () async {
+      final fixture = await _fixture();
+      addTearDown(fixture.database.close);
+      await (fixture.database.update(fixture.database.sectors)
+            ..where((row) => row.id.equals('sector-1')))
+          .write(const db.SectorsCompanion(kind: Value('apiary')));
+      final outboxBefore = await fixture.database
+          .select(fixture.database.syncOutbox)
+          .get();
+      final repository = SectorCropAssignmentRepository(fixture.database);
+      await expectLater(
+        repository.plan(
+          ownerId: 'owner-1',
+          sectorId: 'sector-1',
+          agriculturalSeasonId: fixture.seasonId,
+          crop: fixture.maize,
+          effectiveFrom: DateTime.utc(2026, 8),
+        ),
+        throwsA(isA<StateError>()),
+      );
+      expect(
+        await fixture.database.select(fixture.database.cropSeasons).get(),
+        isEmpty,
+      );
+      expect(
+        await fixture.database.select(fixture.database.syncOutbox).get(),
+        outboxBefore,
+      );
+    },
+  );
 
   test(
     'future rotation activates at its exact date and preserves previous row',

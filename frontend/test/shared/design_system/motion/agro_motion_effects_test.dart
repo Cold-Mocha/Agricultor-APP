@@ -88,16 +88,15 @@ void main() {
       _withReducedMotion(
         reduced: false,
         child: Builder(
-          builder: (context) => Column(
-            children: items.agroStaggeredEntrance(context),
-          ),
+          builder: (context) =>
+              Column(children: items.agroStaggeredEntrance(context)),
         ),
       ),
     );
 
     expect(find.byType(Animate), findsNWidgets(items.length));
     for (final item in items) {
-      expect(find.text((item as Text).data!), findsOneWidget);
+      expect(find.text(item.data!), findsOneWidget);
     }
     await tester.pumpAndSettle();
   });
@@ -110,9 +109,8 @@ void main() {
         _withReducedMotion(
           reduced: true,
           child: Builder(
-            builder: (context) => Column(
-              children: items.agroStaggeredEntrance(context),
-            ),
+            builder: (context) =>
+                Column(children: items.agroStaggeredEntrance(context)),
           ),
         ),
       );

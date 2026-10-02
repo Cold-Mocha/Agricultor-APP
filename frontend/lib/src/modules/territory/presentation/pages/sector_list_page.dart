@@ -202,9 +202,7 @@ final class _HistoryPreviewRow extends StatelessWidget {
           if (event.cropLabel != null) event.cropLabel!,
         ].join(' · '),
       ),
-      trailing: const ExcludeSemantics(
-        child: Icon(LucideIcons.chevronRight),
-      ),
+      trailing: const ExcludeSemantics(child: Icon(LucideIcons.chevronRight)),
       onTap: onTap,
     ),
   );

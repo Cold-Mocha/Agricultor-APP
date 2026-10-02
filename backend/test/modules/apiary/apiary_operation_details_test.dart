@@ -19,7 +19,9 @@ ApiaryInspectionInput input(ApiaryTaskType task, {String observations = ''}) =>
 void main() {
   test('each apiary task retains its discriminator and own fields', () {
     for (final task in ApiaryTaskType.values) {
-      final details = ApiaryOperationDetails.fromInput(input(task, observations: 'nota'));
+      final details = ApiaryOperationDetails.fromInput(
+        input(task, observations: 'nota'),
+      );
       final json = details.toJson();
       expect(json['taskType'], task.name);
       expect(json['hiveCount'], 4);
@@ -27,20 +29,23 @@ void main() {
     }
   });
 
-  test('inspection, feeding and health validate their task-specific fields', () {
-    expect(
-      () => ApiaryOperationDetails.fromInput(
-        input(ApiaryTaskType.inspection).copyWithForTest(queenStatus: ''),
-      ).toJson(),
-      throwsArgumentError,
-    );
-    expect(
-      () => ApiaryOperationDetails.fromInput(
-        input(ApiaryTaskType.feeding),
-      ).toJson(),
-      isNot(throwsArgumentError),
-    );
-  });
+  test(
+    'inspection, feeding and health validate their task-specific fields',
+    () {
+      expect(
+        () => ApiaryOperationDetails.fromInput(
+          input(ApiaryTaskType.inspection).copyWithForTest(queenStatus: ''),
+        ).toJson(),
+        throwsArgumentError,
+      );
+      expect(
+        () =>
+            ApiaryOperationDetails.fromInput(input(ApiaryTaskType.feeding))
+                .toJson(),
+        isNot(throwsArgumentError),
+      );
+    },
+  );
 }
 
 extension on ApiaryInspectionInput {

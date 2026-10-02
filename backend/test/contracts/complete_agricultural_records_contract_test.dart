@@ -4,30 +4,33 @@ import 'package:agrocampo_backend/src/modules/soil/soil_api.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('public record inputs retain discriminators, units and optional omissions', () {
-    final labor = LaborFormInput(
-      sectorId: 'sector-1',
-      type: LaborType.diseaseAndPestControl,
-      occurredAt: DateTime(2026),
-      primary: 'Producto',
-      secondary: 'Pulgón',
-      amount: '2',
-      unit: 'ml/L',
-      extra: '7',
-      customName: '',
-      notes: 'observación',
-    );
-    const harvest = ProductionFormInput(
-      sectorId: 'sector-1',
-      quantity: '12.5',
-      unit: 'kg',
-      qualityNotes: 'Primera',
-    );
-    const soil = SoilMeasurementInput(moisturePercent: 0);
-    expect(labor.type, LaborType.diseaseAndPestControl);
-    expect(harvest.destination, isNull);
-    expect(soil.moisturePercent, 0);
-  });
+  test(
+    'public record inputs retain discriminators, units and optional omissions',
+    () {
+      final labor = LaborFormInput(
+        sectorId: 'sector-1',
+        type: LaborType.diseaseAndPestControl,
+        occurredAt: DateTime(2026),
+        primary: 'Producto',
+        secondary: 'Pulgón',
+        amount: '2',
+        unit: 'ml/L',
+        extra: '7',
+        customName: '',
+        notes: 'observación',
+      );
+      const harvest = ProductionFormInput(
+        sectorId: 'sector-1',
+        quantity: '12.5',
+        unit: 'kg',
+        qualityNotes: 'Primera',
+      );
+      const soil = SoilMeasurementInput(moisturePercent: 0);
+      expect(labor.type, LaborType.diseaseAndPestControl);
+      expect(harvest.destination, isNull);
+      expect(soil.moisturePercent, 0);
+    },
+  );
 
   test('typed details expose complete phytosanitary and harvest fields', () {
     final phytosanitary = const PhytosanitaryDetails(

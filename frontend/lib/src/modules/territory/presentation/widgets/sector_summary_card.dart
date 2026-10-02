@@ -129,9 +129,7 @@ final class SectorSummaryCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: AgroSpacing.xs),
-                const ExcludeSemantics(
-                  child: Icon(LucideIcons.chevronRight),
-                ),
+                const ExcludeSemantics(child: Icon(LucideIcons.chevronRight)),
               ],
             ),
           ),

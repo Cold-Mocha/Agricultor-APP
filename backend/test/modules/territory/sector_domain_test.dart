@@ -21,13 +21,16 @@ void main() {
     expect(() => draft.add(const GeoPoint(-38.72, -72.60)), throwsStateError);
   });
 
-  test('confirm validates and closes the draft without changing source points', () {
-    final source = [...square];
-    final draft = SectorGeometryDraft(source);
-    final confirmed = draft.confirm();
-    expect(draft.state, SectorGeometryDraftState.confirmed);
-    expect(confirmed, square);
-    expect(source, square);
-    expect(() => draft.remove(0), throwsStateError);
-  });
+  test(
+    'confirm validates and closes the draft without changing source points',
+    () {
+      final source = [...square];
+      final draft = SectorGeometryDraft(source);
+      final confirmed = draft.confirm();
+      expect(draft.state, SectorGeometryDraftState.confirmed);
+      expect(confirmed, square);
+      expect(source, square);
+      expect(() => draft.remove(0), throwsStateError);
+    },
+  );
 }

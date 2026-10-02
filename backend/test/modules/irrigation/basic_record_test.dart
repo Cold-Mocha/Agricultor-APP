@@ -35,18 +35,21 @@ void main() {
     },
   );
 
-  test('basic drip math and pressure survive in the confirmed input snapshot', () {
-    const input = BasicIrrigationInput(
-      type: IrrigationType.drip,
-      soilType: SoilType.loamy,
-      durationMinutes: 45,
-      flowLitersPerHour: 120,
-      pressureKpa: 80,
-    );
-    expect(input.estimatedVolumeLiters, 90);
-    expect(input.toJson()['pressure_kpa'], 80);
-    expect(input.toJson()['estimated_liters'], 90);
-  });
+  test(
+    'basic drip math and pressure survive in the confirmed input snapshot',
+    () {
+      const input = BasicIrrigationInput(
+        type: IrrigationType.drip,
+        soilType: SoilType.loamy,
+        durationMinutes: 45,
+        flowLitersPerHour: 120,
+        pressureKpa: 80,
+      );
+      expect(input.estimatedVolumeLiters, 90);
+      expect(input.toJson()['pressure_kpa'], 80);
+      expect(input.toJson()['estimated_liters'], 90);
+    },
+  );
 
   test('drip confirmation writes one labor aggregate and immutable config snapshot', () async {
     final database = createInMemoryDatabase();
@@ -99,7 +102,10 @@ void main() {
     expect(record.configVersion, 1);
     expect(record.performedDetailsJson, contains('config_snapshot'));
     expect(record.performedDetailsJson, contains('pressure_kpa'));
-    expect(record.performedDetailsJson, contains('total_flow_l_per_h*duration_min/60'));
+    expect(
+      record.performedDetailsJson,
+      contains('total_flow_l_per_h*duration_min/60'),
+    );
     expect(record.performedDetailsJson, contains('roundHalfUp'));
     expect(await database.select(database.irrigationEstimates).get(), isEmpty);
     expect(
@@ -114,7 +120,10 @@ void main() {
     final database = createInMemoryDatabase();
     addTearDown(database.close);
     await seedAgriculturalContextFixture(database);
-    final repository = IrrigationRepository(database, LaborRepository(database));
+    final repository = IrrigationRepository(
+      database,
+      LaborRepository(database),
+    );
     const input = BasicIrrigationInput(
       type: IrrigationType.drip,
       soilType: SoilType.loamy,
@@ -137,7 +146,10 @@ void main() {
       input: input,
     );
     expect(await database.select(database.labors).get(), hasLength(1));
-    expect(await database.select(database.irrigationRecords).get(), hasLength(1));
+    expect(
+      await database.select(database.irrigationRecords).get(),
+      hasLength(1),
+    );
     await database.customUpdate(
       'UPDATE sectors SET kind = ? WHERE id = ?',
       variables: [Variable<String>('apiary'), Variable<String>('sector-1')],

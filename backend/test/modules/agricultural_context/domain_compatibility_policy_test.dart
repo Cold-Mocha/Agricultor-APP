@@ -43,13 +43,19 @@ void main() {
     }
   });
 
-  test('legacy category rejects all mutation operations without partial state', () {
-    final decision = policy.evaluate(
-      category: ProductiveCategory.legacyUnknown,
-      operation: ProductiveOperation.photoAttach,
-      context: 'legacy-sector',
-    );
-    expect(decision, isA<CompatibilityRejected>());
-    expect((decision as CompatibilityRejected).code, 'legacy_category_unsupported');
-  });
+  test(
+    'legacy category rejects all mutation operations without partial state',
+    () {
+      final decision = policy.evaluate(
+        category: ProductiveCategory.legacyUnknown,
+        operation: ProductiveOperation.photoAttach,
+        context: 'legacy-sector',
+      );
+      expect(decision, isA<CompatibilityRejected>());
+      expect(
+        (decision as CompatibilityRejected).code,
+        'legacy_category_unsupported',
+      );
+    },
+  );
 }

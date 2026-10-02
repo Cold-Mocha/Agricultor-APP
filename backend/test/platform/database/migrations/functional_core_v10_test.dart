@@ -28,7 +28,11 @@ void main() {
       // v11 may add the deterministic apiary labor root while preserving the
       // original v9 labor row; all fixture rows must remain addressable.
       if (tableName == 'labors') {
-        expect(count, greaterThanOrEqualTo(1), reason: '$tableName must be preserved');
+        expect(
+          count,
+          greaterThanOrEqualTo(1),
+          reason: '$tableName must be preserved',
+        );
       } else {
         expect(count, 1, reason: '$tableName must be preserved');
       }

@@ -18,22 +18,25 @@ void main() {
     }
   });
 
-  test('invalid and incompatible fields are rejected or omitted explicitly', () {
-    expect(
-      () => const FertilizationDetails(
-        product: '',
+  test(
+    'invalid and incompatible fields are rejected or omitted explicitly',
+    () {
+      expect(
+        () => const FertilizationDetails(
+          product: '',
+          amount: 1,
+          unit: 'kg',
+          applicationMethod: 'manual',
+        ).toEnvelope(),
+        throwsArgumentError,
+      );
+      final details = const FertilizationDetails(
+        product: 'Abono',
         amount: 1,
         unit: 'kg',
         applicationMethod: 'manual',
-      ).toEnvelope(),
-      throwsArgumentError,
-    );
-    final details = const FertilizationDetails(
-      product: 'Abono',
-      amount: 1,
-      unit: 'kg',
-      applicationMethod: 'manual',
-    ).toEnvelope();
-    expect(details.data.containsKey('irrigationLaborId'), isFalse);
-  });
+      ).toEnvelope();
+      expect(details.data.containsKey('irrigationLaborId'), isFalse);
+    },
+  );
 }

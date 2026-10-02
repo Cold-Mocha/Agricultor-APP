@@ -1,8 +1,8 @@
 import 'package:agrocampo_backend/src/modules/apiary/domain/entities/apiary_inspection_input.dart';
 import 'package:agrocampo_backend/src/modules/apiary/infrastructure/persistence/apiary_repository.dart';
+import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo_point.dart';
 import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
 import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
-import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo_point.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';

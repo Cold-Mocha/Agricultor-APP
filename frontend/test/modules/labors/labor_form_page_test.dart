@@ -100,10 +100,7 @@ void main() {
       scrollable: find.byType(Scrollable).first,
     );
     await tester.ensureVisible(find.text('Guardar actividad'));
-    await tester.drag(
-      find.byType(ListView).first,
-      const Offset(0, -300),
-    );
+    await tester.drag(find.byType(ListView).first, const Offset(0, -300));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Guardar actividad'));
     await tester.pumpAndSettle();

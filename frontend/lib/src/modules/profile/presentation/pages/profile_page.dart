@@ -220,10 +220,7 @@ final class _ProfileHeader extends StatelessWidget {
                           .toUpperCase(),
                       style: Theme.of(context).textTheme.headlineMedium,
                     )
-                  : const Icon(
-                      LucideIcons.user,
-                      size: AgroSizes.iconFeatured,
-                    ),
+                  : const Icon(LucideIcons.user, size: AgroSizes.iconFeatured),
             ),
             const SizedBox(width: AgroSpacing.md),
             Expanded(
