@@ -75,7 +75,7 @@ final class IrrigationEstimateResult extends IrrigationCalculationResult {
 abstract final class IrrigationCalculator {
   static const algorithmVersion = 2;
 
-  /// Deterministic, non-agronomic drip arithmetic used by 003.
+  /// Deterministic, non-agronomic drip arithmetic.
   /// `totalFlowMlPerMinute` is already normalized from the submitted flow and
   /// explicit scope/count. No crop, weather, stage or texture data enters it.
   static int basicDripVolumeMl({

@@ -17,7 +17,7 @@ final territoryMapFacadeProvider = Provider<TerritoryMapFacade>(
   ),
 );
 
-/// Local geometry and location operations; map rendering follows master.md.
+/// Local geometry and location operations.
 final class TerritoryMapFacade {
   TerritoryMapFacade._(this._database, this._location);
   final AppDatabase _database;

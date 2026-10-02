@@ -55,7 +55,6 @@ final class CropExchangeOption {
 }
 
 /// Application operations for catalog, seasons and dated crop assignments.
-/// Presentation follows master.md Screens, Navigation, States and Offline UX.
 final class CropCyclesFacade {
   CropCyclesFacade._(this._database);
   final db.AppDatabase _database;

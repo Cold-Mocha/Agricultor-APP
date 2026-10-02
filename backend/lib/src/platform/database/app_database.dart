@@ -135,7 +135,7 @@ class AppDatabase extends _$AppDatabase {
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
-      // Idempotent so v10 databases created by older 002 builds also receive
+      // Idempotent so v10 databases created by earlier builds also receive
       // the query indexes without a destructive schema bump.
       for (final statement in _functionalCoreV10Indexes) {
         await customStatement(statement);

@@ -7,7 +7,7 @@ import '../test/modules/labors/labor_form_page_test.dart' as labor;
 import '../test/modules/production/production_page_test.dart' as production;
 import '../test/modules/soil/soil_measurement_page_test.dart' as soil;
 
-/// Representative 003 flow set. Each scenario uses the public UI and a
+/// Representative functional flow set. Each scenario uses the public UI and a
 /// local Drift database, so it is also runnable on the Android emulator.
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

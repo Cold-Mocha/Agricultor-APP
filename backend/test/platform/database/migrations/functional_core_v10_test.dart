@@ -16,8 +16,8 @@ void main() {
         .customSelect('PRAGMA user_version')
         .map((row) => row.read<int>('user_version'))
         .getSingle();
-    // 003 advances the current database to v11; the assertions below remain
-    // the v10 preservation checks and do not close the 002 task.
+    // The current database is v11; the assertions below remain the v10
+    // preservation checks.
     expect(version, 11);
 
     for (final tableName in functionalCoreV9TableNames) {

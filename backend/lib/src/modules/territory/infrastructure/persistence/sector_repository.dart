@@ -191,8 +191,8 @@ final class SectorRepository {
     return sectorId;
   }
 
-  /// Explicit 003 command. New callers must supply the immutable category and
-  /// the version they edited; legacy `save` remains for 001/002 fixtures.
+  /// Explicit command. Callers must supply the immutable category and the
+  /// version they edited; `save` remains for existing fixtures.
   Future<String> saveConfirmed({
     required String ownerId,
     required String parcelId,

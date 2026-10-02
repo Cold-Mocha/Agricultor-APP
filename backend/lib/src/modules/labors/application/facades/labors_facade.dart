@@ -35,7 +35,7 @@ final class LaborsFacade {
 
   /// Typed command boundary used by independent backend callers. Every
   /// failure retains the exact input so a presentation layer can retry it;
-  /// the legacy [save] method above remains source-compatible with 001/002.
+  /// the [save] method above remains for existing callers.
   Future<SaveOutcome<LaborFormInput>> saveOutcome({
     required String ownerId,
     required LaborFormInput input,
