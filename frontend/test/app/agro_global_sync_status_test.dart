@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:agrocampo/src/app/shell/agro_global_sync_status.dart';
 import 'package:agrocampo/src/app/theme/agro_theme.dart';
+import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:agrocampo_backend/src/composition/backend_providers.dart';
 import 'package:agrocampo_backend/src/platform/network/connectivity_service.dart';
 import 'package:flutter/material.dart';
@@ -58,5 +59,35 @@ void main() {
       findsOneWidget,
     );
     semantics.dispose();
+  });
+
+  testWidgets('local mode replaces pending sync with a device-only notice', (
+    tester,
+  ) async {
+    final connectivity = _Connectivity();
+    addTearDown(connectivity.controller.close);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          isLocalModeProvider.overrideWithValue(true),
+          connectivityServiceProvider.overrideWithValue(connectivity),
+          pendingSyncCountProvider.overrideWith(
+            (ref, ownerId) => Stream.value(2),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AgroTheme.light,
+          home: const Scaffold(body: AgroGlobalSyncStatus(ownerId: 'owner-1')),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Modo local · tus datos se guardan en este dispositivo.'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('pendiente'), findsNothing);
   });
 }

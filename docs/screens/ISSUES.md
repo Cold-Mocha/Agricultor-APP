@@ -6,7 +6,7 @@ después de aplicar todas las correcciones.
 
 | Id | Pestaña | Estado |
 |---|---|---|
-| [I1](#i1-banner-global-en-modo-local) | Global | Pendiente |
+| [I1](#i1-banner-global-en-modo-local) | Global | Resuelto · captura pendiente |
 | [I2](#i2-riego-muestra-valores-internos) | Registrar | Pendiente |
 | [I3](#i3-recordatorios-y-sincronización-muestran-datos-sin-formato) | Más | Pendiente |
 | [I4](#i4-catálogo-muestra-códigos-de-categoría) | Más | Pendiente |

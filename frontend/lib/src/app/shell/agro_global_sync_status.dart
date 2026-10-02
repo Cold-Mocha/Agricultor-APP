@@ -1,6 +1,7 @@
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/sync_status/presentation/controllers/sync_status_controller.dart';
 import 'package:agrocampo/src/shared/design_system/semantics/agro_semantics.dart';
+import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -23,11 +24,18 @@ final class AgroGlobalSyncStatus extends ConsumerWidget
   Widget build(BuildContext context, WidgetRef ref) {
     final pending = ref.watch(pendingSyncCountProvider(ownerId)).value ?? 0;
     final offline = ref.watch(offlineStatusProvider).value ?? false;
+    final localMode = ref.watch(isLocalModeProvider);
     final pendingLabel = pending == 1 ? '1 registro' : '$pending registros';
     final (icon, background, foreground, message) = switch ((
       offline,
       pending,
     )) {
+      _ when localMode => (
+        LucideIcons.hardDrive,
+        AgroColors.skySoft,
+        AgroColors.skyDark,
+        'Modo local · tus datos se guardan en este dispositivo.',
+      ),
       (true, 0) => (
         LucideIcons.cloudOff,
         AgroColors.amberSoft,
