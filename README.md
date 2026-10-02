@@ -13,6 +13,7 @@ hay red. Clima y AgroIA son auxiliares: si fallan, el trabajo de campo continúa
 | [`docs/architecture/frontend-backend-boundary.md`](./docs/architecture/frontend-backend-boundary.md) | Reglas de imports y ownership entre `frontend/` y `backend/`. |
 | [`docs/deployment.md`](./docs/deployment.md) | Credenciales, Supabase, Firebase, Gemini, firma y CI/CD. |
 | [`docs/status.md`](./docs/status.md) | Avance, pendientes y última verificación. |
+| [`docs/screens/`](./docs/screens/README.md) | Capturas de todas las pantallas con su propósito, CTA y hallazgos de UI. |
 | [`specs/`](./specs/) | Requisitos normativos: 001 (MVP), 002 (núcleo funcional), 003 (refinamiento). |
 | [`master.md`](./master.md) | Design System: única autoridad de UI/UX. |
 
@@ -42,14 +43,20 @@ Flutter 3.47.0 (Dart 3.13), Android SDK 36 con un emulador o dispositivo API 24+
 
 ```bash
 flutter pub get                 # en la raíz
-cp .env.example .env            # completar SUPABASE_URL y SUPABASE_PUBLISHABLE_KEY
+cp .env.example .env            # opcional
 ./scripts/run_app.sh            # flutter run con la sección [APP] del .env
 ```
 
-El primer acceso requiere Supabase (remoto o local con `supabase --workdir backend start`; desde
-el emulador la URL local es `http://10.0.2.2:54421`). Sin Supabase la app abre, pero el login
-responde "Configura Supabase para el primer acceso". Tras un primer login, la sesión guardada
-permite trabajar offline.
+`AGROCAMPO_ONLINE` es el switch local/online:
+
+| Valor | Comportamiento |
+|---|---|
+| `false` (default de `run_app.sh`) | Todo en el dispositivo: sin login ni Supabase. Clima, AgroIA y sincronización quedan desactivados. |
+| `true` (default del código y del release) | Login con Supabase y sincronización. En el primer login, los datos creados en modo local se transfieren a esa cuenta y se suben. |
+
+En modo online, el primer acceso requiere Supabase, remoto o local con
+`supabase --workdir backend start` (desde el emulador, `http://10.0.2.2:54421`). Tras ese login, la
+sesión guardada permite trabajar offline.
 
 El `.env` de la raíz centraliza todas las credenciales locales. Sólo la sección `[APP]` llega al
 APK; los secretos de Edge Functions van a Supabase con `./scripts/supabase_secrets.sh`. Detalle en

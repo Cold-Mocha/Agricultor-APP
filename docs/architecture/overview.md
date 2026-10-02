@@ -179,6 +179,7 @@ raíz por `scripts/run_app.sh` y `scripts/build_android_release.sh`):
 | Variable | Uso |
 |---|---|
 | `AGROCAMPO_ENV` | `development` (default), `staging`, `production`. |
+| `AGROCAMPO_ONLINE` | Switch local/online. `false`: sin login ni Supabase (dueño local en `LocalAuthRepository`). `true` (default): Supabase; el primer login transfiere los datos locales con `OwnerTransfer`. |
 | `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` | Necesarias para el primer login y la sincronización; obligatorias en `production`. Después del primer login, la sesión guardada permite trabajar offline. |
 | `MAP_INITIAL_LATITUDE`, `MAP_INITIAL_LONGITUDE`, `MAP_TILE_URL` | Centro y teselas del mapa. |
 
