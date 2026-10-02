@@ -739,7 +739,8 @@ La barra inferior contiene exactamente cinco destinos:
 
 - **Objetivo:** identificar a la persona propietaria y acceder a preferencias personales.
 - **Jerarquía:** resumen de perfil y tres grupos de ajustes.
-- **Componentes:** avatar, acción editar, filas de configuración, valores y chevrons.
+- **Componentes:** avatar, acción editar, filas de configuración, valores y chevrons. Preferencias
+  incluye "Sonidos y animaciones" (004) con interruptores "Efectos de sonido" y "Animaciones".
 - **Información:** nombre visible, dato de acceso para presentación, ubicación/preferencias personales
   autorizadas y resumen de sincronización.
 - **Acción primaria:** editar perfil o cerrar sesión dentro del alcance aprobado.
@@ -988,6 +989,24 @@ La capa visual consume estados semánticos, no banderas ambiguas. Un registro di
 - Una transición se puede interrumpir y siempre termina en el estado correcto.
 - Carga prolongada usa progreso estable o skeleton reservado; no muestra spinners fugaces.
 - Salida más rápida que entrada y sin bloquear interacción.
+- Tokens `AgroMotion` (004): `quick` 100 ms, `exit` 150 ms, `standard` 200 ms, `emphasized` 300 ms,
+  `staggerStep` 40 ms con un máximo de 4 pasos, `skeletonPulse` 900 ms y `successHold` 600 ms.
+- Página apilada: fundido + desplazamiento horizontal corto al entrar (`standard`), salida `exit`.
+- Tarjetas de acción y navegación: escala 0,97 al presionar (`quick`) además del ripple.
+- Skeleton: bloques `greenSoft` con radio `medium`, pulso de opacidad; estático con movimiento reducido.
+- Registro agrícola guardado: check animado centrado de 96 dp sobre círculo `brand`, entrada
+  `emphasized`, permanencia `successHold`, salida `exit`, sin bloquear toques y siempre acompañado por
+  snackbar textual. Sin confeti.
+- La preferencia "Animaciones" de Perfil equivale a movimiento reducido del sistema.
+
+### Sonido
+
+- El sonido es complementario: todo evento sonoro tiene texto equivalente; nunca es el único canal.
+- Efectos: `tap` (botón principal), `saved` (confirmación de guardado de ajustes/exportación),
+  `record_saved` (registro agrícola, distintivo) y `error` (guardado fallido o campos inválidos).
+- Volumen bajo, sin foco de audio (no pausa música ni navegación), uso Android de sonificación.
+- OGG Vorbis mono ≤ 20 KB, sintetizados por `tool/generate_sounds.sh`.
+- Perfil > Preferencias > "Sonidos y animaciones" permite desactivar ambos; por defecto activos.
 
 ### Calidad visual y pruebas
 
