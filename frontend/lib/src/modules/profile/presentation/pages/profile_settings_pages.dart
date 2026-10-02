@@ -139,6 +139,7 @@ final class ProfileSecurityPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final session = ref.watch(sessionControllerProvider);
+    final localMode = ref.watch(isLocalModeProvider);
     return AgroPage(
       title: 'Seguridad',
       subtitle: 'Acceso y desbloqueo del dispositivo',
@@ -148,8 +149,10 @@ final class ProfileSecurityPage extends ConsumerWidget {
             contentPadding: EdgeInsets.zero,
             secondary: const Icon(LucideIcons.fingerprint),
             title: const Text('Desbloqueo biométrico'),
-            subtitle: const Text(
-              'Usa la biometría configurada en este dispositivo después de iniciar sesión.',
+            subtitle: Text(
+              localMode
+                  ? 'Usa la biometría configurada en este dispositivo al abrir AgroCampo.'
+                  : 'Usa la biometría configurada en este dispositivo después de iniciar sesión.',
             ),
             value: session.biometricEnabled,
             onChanged: session.ownerId == null
@@ -168,10 +171,12 @@ final class ProfileSecurityPage extends ConsumerWidget {
                     );
                   },
           ),
-          const _InformationCard(
+          _InformationCard(
             icon: LucideIcons.lock,
             title: 'Datos locales protegidos',
-            message: 'La sesión se conserva con almacenamiento seguro. Cerrar sesión detiene la sincronización de esta cuenta.',
+            message: localMode
+                ? 'Tus datos se guardan sólo en este dispositivo, con almacenamiento seguro.'
+                : 'La sesión se conserva con almacenamiento seguro. Cerrar sesión detiene la sincronización de esta cuenta.',
           ),
         ],
       ),
@@ -181,13 +186,14 @@ final class ProfileSecurityPage extends ConsumerWidget {
 
 enum ProfileInformationKind { language, theme, help, contact, privacy }
 
-final class ProfileInformationPage extends StatelessWidget {
+final class ProfileInformationPage extends ConsumerWidget {
   const ProfileInformationPage({required this.kind, super.key});
 
   final ProfileInformationKind kind;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final localMode = ref.watch(isLocalModeProvider);
     final (title, subtitle, items) = switch (kind) {
       ProfileInformationKind.language => (
         'Idioma',
@@ -214,22 +220,31 @@ final class ProfileInformationPage extends StatelessWidget {
       ProfileInformationKind.help => (
         'Ayuda y soporte',
         'Respuestas para trabajar en terreno',
-        const [
+        [
           _InfoItem(
             LucideIcons.cloudOff,
             '¿Puedo registrar sin conexión?',
-            'Sí. Los registros se guardan primero en el dispositivo y se respaldan cuando vuelve la conexión.',
+            localMode
+                ? 'Sí. En modo local todos los registros se guardan en este dispositivo.'
+                : 'Sí. Los registros se guardan primero en el dispositivo y se respaldan cuando vuelve la conexión.',
           ),
           _InfoItem(
             LucideIcons.layoutGrid,
             '¿Dónde veo un cuadrante?',
             'Abre Sectores, toca su tarjeta y encontrarás sus métricas, labores e historial.',
           ),
-          _InfoItem(
-            LucideIcons.refreshCw,
-            '¿Cómo reviso el respaldo?',
-            'En Más > Sincronización puedes ver pendientes, errores y reintentar.',
-          ),
+          if (localMode)
+            const _InfoItem(
+              LucideIcons.fileSpreadsheet,
+              '¿Cómo respaldo mis datos?',
+              'En Más > Exportar XLSX puedes guardar una copia legible de tus datos.',
+            )
+          else
+            const _InfoItem(
+              LucideIcons.refreshCw,
+              '¿Cómo reviso el respaldo?',
+              'En Más > Sincronización puedes ver pendientes, errores y reintentar.',
+            ),
         ],
       ),
       ProfileInformationKind.contact => (
@@ -246,17 +261,25 @@ final class ProfileInformationPage extends StatelessWidget {
       ProfileInformationKind.privacy => (
         'Privacidad',
         'Cómo opera esta versión',
-        const [
-          _InfoItem(
-            LucideIcons.smartphone,
-            'Trabajo local primero',
-            'Tus registros se guardan en el dispositivo antes del respaldo en Supabase.',
-          ),
-          _InfoItem(
-            LucideIcons.circleUserRound,
-            'Datos por cuenta',
-            'La información agrícola se consulta separada por la cuenta autenticada.',
-          ),
+        [
+          if (localMode) ...const [
+            _InfoItem(
+              LucideIcons.smartphone,
+              'Datos en este dispositivo',
+              'Tus registros se guardan sólo en este dispositivo; no se envían a la nube.',
+            ),
+          ] else ...const [
+            _InfoItem(
+              LucideIcons.smartphone,
+              'Trabajo local primero',
+              'Tus registros se guardan en el dispositivo antes del respaldo en Supabase.',
+            ),
+            _InfoItem(
+              LucideIcons.circleUserRound,
+              'Datos por cuenta',
+              'La información agrícola se consulta separada por la cuenta autenticada.',
+            ),
+          ],
           _InfoItem(
             LucideIcons.info,
             'Resumen informativo',
