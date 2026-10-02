@@ -3,6 +3,7 @@ import 'package:agrocampo/src/app/routing/app_routes.dart';
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
 import 'package:agrocampo/src/modules/irrigation/presentation/controllers/irrigation_controller.dart';
+import 'package:agrocampo/src/modules/irrigation/presentation/formatters/irrigation_labels.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_status_banner.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
@@ -86,7 +87,7 @@ final class _IrrigationRecordPageState
           decoration: const InputDecoration(labelText: 'Tipo de riego'),
           items: [
             for (final value in IrrigationType.values)
-              DropdownMenuItem(value: value, child: Text(value.name)),
+              DropdownMenuItem(value: value, child: Text(value.label)),
           ],
           onChanged: (value) => setState(() => _type = value ?? _type),
         ),
@@ -97,7 +98,7 @@ final class _IrrigationRecordPageState
           decoration: const InputDecoration(labelText: 'Tipo de suelo'),
           items: [
             for (final value in SoilType.values)
-              DropdownMenuItem(value: value, child: Text(value.name)),
+              DropdownMenuItem(value: value, child: Text(value.label)),
           ],
           onChanged: (value) => setState(() => _soil = value ?? _soil),
         ),

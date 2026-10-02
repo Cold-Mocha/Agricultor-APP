@@ -1,6 +1,5 @@
 import 'package:agrocampo/src/app/theme/agro_theme.dart';
 import 'package:agrocampo/src/modules/irrigation/presentation/pages/irrigation_record_page.dart';
-import 'package:agrocampo_backend/src/modules/irrigation/domain/entities/irrigation_record.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,7 +28,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('irrigation-type')));
       await tester.pumpAndSettle();
-      await tester.tap(find.text(IrrigationType.furrow.name).last);
+      await tester.tap(find.text('Surco').last);
       await tester.pumpAndSettle();
       final calculateButton = find.widgetWithText(
         TextButton,
@@ -45,7 +44,7 @@ void main() {
       await tester.tap(calculateButton);
       await tester.pumpAndSettle();
       expect(
-        find.text('002 solo calcula recomendaciones para riego por goteo.'),
+        find.text('Sólo se calculan recomendaciones para riego por goteo.'),
         findsOneWidget,
       );
       await tester.pumpWidget(const SizedBox.shrink());
@@ -77,6 +76,10 @@ void main() {
         find.textContaining('Regla agronómica no disponible'),
         findsOneWidget,
       );
+      expect(find.text('Goteo'), findsOneWidget);
+      expect(find.text('No lo sé'), findsOneWidget);
+      expect(find.text('drip'), findsNothing);
+      expect(find.text('unknown'), findsNothing);
       await tester.enterText(find.byType(TextField).first, '30');
       final calculateButton = find.widgetWithText(
         TextButton,
@@ -100,7 +103,7 @@ void main() {
       );
       await tester.tap(find.byKey(const ValueKey('irrigation-type')));
       await tester.pumpAndSettle();
-      await tester.tap(find.text(IrrigationType.furrow.name).last);
+      await tester.tap(find.text('Surco').last);
       await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
         calculateButton,
@@ -112,7 +115,7 @@ void main() {
       await tester.tap(calculateButton);
       await tester.pumpAndSettle();
       expect(
-        find.textContaining('solo calcula recomendaciones'),
+        find.textContaining('Sólo se calculan recomendaciones'),
         findsOneWidget,
       );
       await tester.pumpWidget(const SizedBox.shrink());

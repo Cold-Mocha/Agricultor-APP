@@ -32,7 +32,7 @@ final class IrrigationFormController {
     if (calculation == null) return null;
     final message = switch (calculation.unavailableCode) {
       'method_not_drip' =>
-        '002 solo calcula recomendaciones para riego por goteo.',
+        'Sólo se calculan recomendaciones para riego por goteo.',
       'operation_not_valid_for_apiary' =>
         'El riego no aplica a una unidad apícola.',
       'drip_config_unavailable' =>

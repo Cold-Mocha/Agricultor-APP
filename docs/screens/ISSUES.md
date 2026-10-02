@@ -7,7 +7,7 @@ después de aplicar todas las correcciones.
 | Id | Pestaña | Estado |
 |---|---|---|
 | [I1](#i1-banner-global-en-modo-local) | Global | Resuelto · captura pendiente |
-| [I2](#i2-riego-muestra-valores-internos) | Registrar | Pendiente |
+| [I2](#i2-riego-muestra-valores-internos) | Registrar | Resuelto · captura pendiente |
 | [I3](#i3-recordatorios-y-sincronización-muestran-datos-sin-formato) | Más | Pendiente |
 | [I4](#i4-catálogo-muestra-códigos-de-categoría) | Más | Pendiente |
 | [I5](#i5-funciones-con-red-en-modo-local) | Inicio, AgroIA, Más | En curso (clima resuelto) |
@@ -38,6 +38,8 @@ después de aplicar todas las correcciones.
   - `IrrigationType`: Goteo, Aspersión, Surco, Gravedad.
   - `SoilType`: Arenoso, Franco, Arcilloso, No lo sé.
 - **master.md:** Screens → Riego (tipo de riego, tipo de suelo); Voz visual y verbal.
+- **También:** el mensaje "002 solo calcula recomendaciones…" exponía el número de la spec; ahora dice
+  "Sólo se calculan recomendaciones para riego por goteo."
 - **Test:** el formulario muestra "Goteo" y "No lo sé", y nunca los nombres del enum.
 
 ## I3. Recordatorios y Sincronización muestran datos sin formato
