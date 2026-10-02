@@ -179,7 +179,7 @@ raíz por `scripts/run_app.sh` y `scripts/build_android_release.sh`):
 | Variable | Uso |
 |---|---|
 | `AGROCAMPO_ENV` | `development` (default), `staging`, `production`. |
-| `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` | Sin ellas la app funciona sólo local; obligatorias en `production`. |
+| `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` | Necesarias para el primer login y la sincronización; obligatorias en `production`. Después del primer login, la sesión guardada permite trabajar offline. |
 | `MAP_INITIAL_LATITUDE`, `MAP_INITIAL_LONGITUDE`, `MAP_TILE_URL` | Centro y teselas del mapa. |
 
 Los secretos de servidor (Gemini, cuenta de servicio Firebase) están en la sección `[FUNCTIONS]` del
@@ -262,7 +262,7 @@ cuando hay secretos) y `pages.yml` (prototipo en GitHub Pages). Detalle en [`dep
 
 ```bash
 flutter pub get                 # en la raíz (workspace)
-cp .env.example .env            # opcional; sin Supabase funciona en modo local
+cp .env.example .env            # Supabase es necesario para el primer login
 ./scripts/run_app.sh            # emulador o dispositivo
 ```
 

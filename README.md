@@ -42,9 +42,14 @@ Flutter 3.47.0 (Dart 3.13), Android SDK 36 con un emulador o dispositivo API 24+
 
 ```bash
 flutter pub get                 # en la raíz
-cp .env.example .env            # opcional; sin .env la app corre en modo local
+cp .env.example .env            # completar SUPABASE_URL y SUPABASE_PUBLISHABLE_KEY
 ./scripts/run_app.sh            # flutter run con la sección [APP] del .env
 ```
+
+El primer acceso requiere Supabase (remoto o local con `supabase --workdir backend start`; desde
+el emulador la URL local es `http://10.0.2.2:54321`). Sin Supabase la app abre, pero el login
+responde "Configura Supabase para el primer acceso". Tras un primer login, la sesión guardada
+permite trabajar offline.
 
 El `.env` de la raíz centraliza todas las credenciales locales. Sólo la sección `[APP]` llega al
 APK; los secretos de Edge Functions van a Supabase con `./scripts/supabase_secrets.sh`. Detalle en
