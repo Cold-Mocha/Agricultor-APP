@@ -1,5 +1,7 @@
 import 'package:agrocampo/src/app/theme/agro_theme.dart';
 import 'package:agrocampo/src/modules/weather/presentation/widgets/weather_summary_card.dart';
+import 'package:agrocampo_backend/agrocampo_backend.dart'
+    show isLocalModeProvider;
 import 'package:agrocampo_backend/src/composition/backend_providers.dart';
 import 'package:agrocampo_backend/src/modules/weather/domain/entities/weather_snapshot.dart';
 import 'package:agrocampo_backend/src/modules/weather/infrastructure/persistence/weather_gateway.dart';
@@ -179,6 +181,47 @@ void main() {
     expect(find.text('Clima sin datos'), findsOneWidget);
     expect(find.byTooltip('Actualizar clima'), findsOneWidget);
     expect(find.text('Sin datos'), findsNWidgets(2));
+  });
+
+  testWidgets('local mode explains weather needs the cloud and hides refresh', (
+    tester,
+  ) async {
+    final database = createInMemoryDatabase();
+    addTearDown(database.close);
+    final now = DateTime.now().toUtc();
+    final repository = WeatherRepository(
+      database,
+      _Gateway(
+        snapshot: _snapshot(now: now, expiresAt: now),
+        fail: true,
+      ),
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          isLocalModeProvider.overrideWithValue(true),
+          weatherRepositoryProvider.overrideWithValue(repository),
+        ],
+        child: MaterialApp(
+          theme: AgroTheme.light,
+          home: const Scaffold(
+            body: WeatherSummaryCard(
+              ownerId: 'owner-1',
+              parcelId: 'parcel-1',
+              locality: 'Curicó',
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Disponible al activar el respaldo en la nube.'),
+      findsOneWidget,
+    );
+    expect(find.byTooltip('Actualizar clima'), findsNothing);
   });
 }
 

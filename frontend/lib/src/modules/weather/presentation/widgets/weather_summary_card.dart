@@ -74,16 +74,19 @@ final class _WeatherSummaryCardState extends ConsumerState<WeatherSummaryCard> {
         );
       }
       if (snapshot.hasError || snapshot.data is WeatherUnavailable) {
+        final localMode = ref.watch(isLocalModeProvider);
         return _WeatherHero(
           locality: widget.locality,
-          status: 'No hay información climática guardada',
+          status: localMode
+              ? 'Disponible al activar el respaldo en la nube.'
+              : 'No hay información climática guardada',
           temperature: '—',
           summary: 'Clima sin datos',
           humidity: 'Sin datos',
           frost: 'Sin datos',
           attribution: null,
           attributionUrl: null,
-          onRetry: _retry,
+          onRetry: localMode ? null : _retry,
           onEditLocality: widget.onEditLocality,
         );
       }
