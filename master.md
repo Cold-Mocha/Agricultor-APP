@@ -894,6 +894,22 @@ Los mensajes indican resultado, ubicación del dato y siguiente paso. No se util
 - La última información válida se conserva con fecha y hora; nunca se presenta como actual si está desactualizada.
 - Color, animación y badge siempre se acompañan por texto e icono.
 
+### Modo local (sin cuenta)
+
+Una build con `AGROCAMPO_ONLINE=false` funciona sólo en el dispositivo: no hay cuenta, respaldo en
+la nube, clima ni AgroIA. La interfaz no promete esas funciones ni muestra pendientes que nunca se
+sincronizarán.
+
+| Nivel | Tratamiento |
+|---|---|
+| Global | Banner *Informativo* (`sky-soft` / `sky-dark`), icono de almacenamiento local y el texto “Modo local · tus datos se guardan en este dispositivo.” Sin contador de pendientes. |
+| Función que requiere red (clima, sincronización) | Se oculta su acción y se explica con “Disponible al activar el respaldo en la nube.” |
+| AgroIA | Estado vacío sin compositor: “AgroIA necesita el modo con respaldo en la nube. Tus registros siguen en este dispositivo.” |
+| Perfil | Sin “Cerrar sesión”; los textos de seguridad y privacidad hablan de “este dispositivo”, nunca de una cuenta. |
+
+Los formularios y el historial se comportan igual que offline: “Guardado en este dispositivo” es el
+resultado final, sin estado de respaldo pendiente.
+
 ## Flutter Implementation Guidelines
 
 ### Arquitectura visual del tema

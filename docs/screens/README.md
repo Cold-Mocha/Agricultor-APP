@@ -9,6 +9,8 @@ cultivo ni temporada, y 2 cambios pendientes. Se recortaron la barra de estado y
 Android. La marca vertical delgada en el borde izquierdo de algunas capturas es el panel Edge de
 Samsung, no la app.
 
+Los hallazgos y su plan de corrección están en [`ISSUES.md`](./ISSUES.md).
+
 Cada ficha indica: **ruta** (`go_router`), **propósito**, **CTA** (call to action principal),
 **qué hace** y **qué debería mostrar** cuando hay datos. Las observaciones marcadas con ⚠️ están
 resumidas en [Hallazgos](#hallazgos).
