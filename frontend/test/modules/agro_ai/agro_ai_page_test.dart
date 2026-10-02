@@ -22,11 +22,13 @@ void main() {
     WidgetTester tester, {
     required AppDatabase database,
     SessionState session = const SessionState.signedIn('owner-1'),
+    bool localMode = false,
   }) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           appDatabaseProvider.overrideWithValue(database),
+          isLocalModeProvider.overrideWithValue(localMode),
           connectivityServiceProvider.overrideWithValue(_OnlineConnectivity()),
           sessionControllerProvider.overrideWithBuild(
             (ref, notifier) => session,
@@ -155,4 +157,14 @@ void main() {
       await database.close();
     },
   );
+
+  testWidgets('local mode explains AgroIA needs cloud backup', (tester) async {
+    final database = createInMemoryDatabase();
+    await pumpPage(tester, database: database, localMode: true);
+
+    expect(find.text('AgroIA no disponible en modo local'), findsOneWidget);
+    expect(find.text('Enviar consulta'), findsNothing);
+    expect(find.byType(TextField), findsNothing);
+    await database.close();
+  });
 }

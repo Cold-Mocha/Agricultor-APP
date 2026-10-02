@@ -27,6 +27,7 @@ final class _AgroAiPageState extends ConsumerState<AgroAiPage> {
   Widget build(BuildContext context) {
     final controller = ref.watch(agroAiControllerProvider);
     final ownerId = ref.watch(sessionControllerProvider).ownerId;
+    final localMode = ref.watch(isLocalModeProvider);
     return AgroPage(
       title: 'AgroIA',
       subtitle: agroAiDisclaimer,
@@ -39,6 +40,12 @@ final class _AgroAiPageState extends ConsumerState<AgroAiPage> {
                     stream: controller.watchMessages(ownerId),
                     builder: (context, snapshot) {
                       final messages = snapshot.data ?? const [];
+                      if (messages.isEmpty && localMode) {
+                        return const AgroEmptyState(
+                          title: 'AgroIA no disponible en modo local',
+                          message: 'AgroIA necesita el modo con respaldo en la nube. Tus registros siguen en este dispositivo.',
+                        );
+                      }
                       if (messages.isEmpty) {
                         return const AgroEmptyState(
                           title: 'Haz tu primera consulta',
@@ -77,22 +84,24 @@ final class _AgroAiPageState extends ConsumerState<AgroAiPage> {
                     },
                   ),
           ),
-          TextField(
-            controller: _question,
-            onChanged: (_) => setState(() {}),
-            decoration: const InputDecoration(labelText: 'Consulta agrícola'),
-          ),
-          Semantics(
-            label: 'Enviar consulta a AgroIA',
-            button: true,
-            child: FilledButton(
-              onPressed:
-                  ownerId == null || _sending || _question.text.trim().isEmpty
-                  ? null
-                  : _send,
-              child: Text(_sending ? 'Consultando…' : 'Enviar consulta'),
+          if (!localMode) ...[
+            TextField(
+              controller: _question,
+              onChanged: (_) => setState(() {}),
+              decoration: const InputDecoration(labelText: 'Consulta agrícola'),
             ),
-          ),
+            Semantics(
+              label: 'Enviar consulta a AgroIA',
+              button: true,
+              child: FilledButton(
+                onPressed:
+                    ownerId == null || _sending || _question.text.trim().isEmpty
+                    ? null
+                    : _send,
+                child: Text(_sending ? 'Consultando…' : 'Enviar consulta'),
+              ),
+            ),
+          ],
         ],
       ),
     );
