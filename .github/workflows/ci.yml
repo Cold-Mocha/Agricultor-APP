@@ -4,8 +4,7 @@ name: CI
 # stack Supabase local desechable, los comandos documentados en
 # specs/003-agrocampo-functional-refinement/quickstart.md (G0, G10 no-Android, G11
 # no-Android, G12) y docs/architecture/frontend-backend-boundary.md. No sustituye la
-# evidencia de dispositivo Android descrita en docs/verification/; ese carril
-# permanece manual hasta contar con un dispositivo/emulador API 24+ certificado.
+# verificación en dispositivo Android API 24+ pendiente (ver docs/status.md).
 
 on:
   push:
@@ -109,16 +108,6 @@ jobs:
       - name: Embedded JavaScript syntax check
         run: |
           node -e "const fs=require('fs'); const html=fs.readFileSync('agrocampo-highfi.html','utf8'); const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]); for (const script of scripts) new Function(script); console.log('Embedded JavaScript syntax OK:', scripts.length);"
-
-  migration-manifest:
-    name: Migration manifest integrity
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - run: node docs/architecture/verify-migration.cjs
 
   supabase-local:
     name: G10/G11 · Supabase local stack (pgTAP + Edge Functions)

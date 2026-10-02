@@ -9,7 +9,9 @@ and two static prototypes used only as evidence. Functional requirements remain 
 the only visual source is `master.md`.
 `index.html` is the GitHub Pages prototype, `agrocampo-highfi.html` is an audited visual/flow
 reference, and `agrocampo-acceptance.test.js` validates the deployed prototype. Neither HTML file
-defines production architecture or adds product scope.
+defines production architecture or adds product scope. Project documentation lives in `README.md`
+and `docs/` (`architecture/`, `deployment.md`, `status.md`); keep `docs/status.md` current when a
+task or verification run closes.
 
 ## Build, Test, and Development Commands
 
@@ -19,6 +21,11 @@ run Flutter analysis/tests inside `frontend/` or `backend/`. Run Drift generatio
 integration tests inside `frontend/`. Use `supabase --workdir backend ...` from repository root.
 Commands and ownership are documented in `docs/architecture/frontend-backend-boundary.md` and
 version gates remain in `specs/001-agrocampo-android-mvp/quickstart.md`.
+
+All local credentials live in the root `.env` (template `.env.example`). Run the app with
+`./scripts/run_app.sh`; only the `[APP]` allowlist in `scripts/lib/env.sh` reaches `--dart-define`.
+Edge Function secrets go to Supabase via `./scripts/supabase_secrets.sh push|serve`. Never add a
+secret to the `[APP]` list or read one with `String.fromEnvironment`.
 
 Open `index.html` or `agrocampo-highfi.html` directly to inspect the static prototypes.
 
@@ -53,11 +60,14 @@ Update `agrocampo-acceptance.test.js` when a requested behavior changes the requ
 
 ## Commit & Pull Request Guidelines
 
-The current Git history has only one short commit (`Innit`), so no detailed convention is established. Use concise imperative commit messages, for example `Update irrigation form copy` or `Fix map section editing`. Pull requests should summarize the visible change, list verification commands run, link any related issue or request, and include screenshots or screen recordings for UI changes.
+Use Conventional Commits in English with a scope, for example `fix(irrigation): validate flow units` or `docs(deployment): document FCM wiring`. Keep milestones in separate commits. Pull requests should summarize the visible change, list verification commands run, link any related issue or request, and include screenshots or screen recordings for UI changes.
 
 ## Agent-Specific Instructions
 
-Follow `AGENTES.md` for prototype edits and the canonical `tasks.md` for Android implementation.
+For prototype edits: change only the files needed, keep plain HTML/CSS/JavaScript with hash
+routes and existing helpers, keep mock state coherent, reuse existing components and icons, check
+whether edited copy or styles repeat on other screens, and run both prototype commands above
+before finishing. Follow the canonical `tasks.md` for Android implementation.
 Every UI task must cite `master.md`. Do not introduce functionality outside the approved specs.
 The frontend/backend split is explicitly approved and does not expand product scope.
 Backend/APIs/frameworks remain forbidden in the static prototype, while the

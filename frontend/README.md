@@ -14,7 +14,8 @@ flutter test
 flutter build apk --debug
 ```
 
-El APK está en `build/app/outputs/flutter-apk/app-debug.apk`. Las pruebas instrumentadas en
+Para ejecutarla con la configuración del `.env` de la raíz, usa `./scripts/run_app.sh` desde la
+raíz. El APK está en `build/app/outputs/flutter-apk/app-debug.apk`. Las pruebas instrumentadas en
 `integration_test/` requieren Android conectado. El host nativo permanece en `android/`, incluso
 para integraciones mantenidas por Backend. Consulta la [frontera](../docs/architecture/frontend-backend-boundary.md).
 

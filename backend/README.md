@@ -16,7 +16,9 @@ deno test --allow-env supabase/functions/weather-proxy/tests supabase/functions/
 
 `build_runner` usa `build.yaml`; las instantáneas de migración están en `drift_schemas/`.
 Los tests de lógica, persistencia y contratos están en `test/`. pgTAP necesita Docker y el stack
-local activo. Los tests E2E contra Supabase además necesitan las variables documentadas en
+local activo. Los secretos de Edge Functions salen de la sección `[FUNCTIONS]` del `.env` de la
+raíz; para servirlas localmente usa `./scripts/supabase_secrets.sh serve` desde la raíz. Los tests
+E2E contra Supabase además necesitan las variables documentadas en
 [`quickstart.md`](../specs/002-agrocampo-functional-core/quickstart.md).
 
 La allowlist pública está en `lib/agrocampo_backend.dart`. No exportes repositorios, DAOs,

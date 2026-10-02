@@ -23,9 +23,8 @@ selección visual, errores mostrables y transformación de contratos para widget
 conoce páginas, widgets, navegación ni estado de una pantalla. Backend conserva reglas de
 negocio, validaciones, transacciones, persistencia, sincronización e integraciones.
 
-Toda UI sigue [`master.md`](../../master.md). La reorganización no agrega comportamiento y no
-modifica los requisitos aprobados de `001-agrocampo-android-mvp` ni
-`002-agrocampo-functional-core`.
+Toda UI sigue [`master.md`](../../master.md). La separación no agrega comportamiento ni modifica
+los requisitos aprobados en `specs/`. Visión general: [`overview.md`](./overview.md).
 
 ## Frontera pública
 
@@ -148,10 +147,3 @@ un emulador o dispositivo Android. Supabase se opera desde la raíz con
 entre features, ciclos de módulos, dominio acoplado a frameworks, `shared` acoplado a features o
 infraestructura, carpetas genéricas, entrypoints productivos inesperados y exportación accidental
 de infraestructura.
-
-## Evidencia histórica
-
-`migration-manifest.json`, `migration-files.md`, `migration-report.md` y
-`verify-migration.cjs` documentan la separación histórica desde el paquete raíz hacia
-`frontend/` y `backend/`. Sus destinos intermedios son evidencia de ese cambio anterior, no el
-mapa de la arquitectura vigente. Para validar la estructura actual se usa el checker Dart.

@@ -1,126 +1,80 @@
 # AgroCampo
 
-AgroCampo es un MVP Flutter/Android local-first para gestionar parcelas, sectores, labores, suelo,
-riego, producción, apicultura, fotografías y recordatorios. Clima y AgroIA son auxiliares: su
-indisponibilidad no bloquea el trabajo de campo.
+Aplicación Android personal y **offline-first** para el agricultor: parcelas y sectores, temporadas
+y cultivos, labores, suelo, riego por goteo, producción, apicultura, fotografías, recordatorios,
+historial y exportación. Todo se guarda primero en el teléfono y se sincroniza con Supabase cuando
+hay red. Clima y AgroIA son auxiliares: si fallan, el trabajo de campo continúa.
 
-| Propósito | Fuente |
+## Documentación
+
+| Documento | Contenido |
 |---|---|
-| Requisitos, plan, modelo, contratos y backlog | [`specs/001-agrocampo-android-mvp/`](./specs/001-agrocampo-android-mvp/) |
-| Extensión funcional aprobada | [`specs/002-agrocampo-functional-core/`](./specs/002-agrocampo-functional-core/) |
-| Design System UI/UX | [`master.md`](./master.md) |
-| Prototipo publicado en GitHub Pages | [`index.html`](./index.html) |
-| Prototipo visual de referencia | [`agrocampo-highfi.html`](./agrocampo-highfi.html) |
+| [`docs/architecture/overview.md`](./docs/architecture/overview.md) | Qué es, stack, módulos, sincronización y diagramas. |
+| [`docs/architecture/frontend-backend-boundary.md`](./docs/architecture/frontend-backend-boundary.md) | Reglas de imports y ownership entre `frontend/` y `backend/`. |
+| [`docs/deployment.md`](./docs/deployment.md) | Credenciales, Supabase, Firebase, Gemini, firma y CI/CD. |
+| [`docs/status.md`](./docs/status.md) | Avance, pendientes y última verificación. |
+| [`specs/`](./specs/) | Requisitos normativos: 001 (MVP), 002 (núcleo funcional), 003 (refinamiento). |
+| [`master.md`](./master.md) | Design System: única autoridad de UI/UX. |
 
-Los prototipos, `CONTEXTO.md` y `REPORTE_FUTURO.md` son evidencia histórica/no normativa: no amplían
-el MVP ni sustituyen la especificación canónica. El orden de implementación está en
-[`tasks.md`](./specs/001-agrocampo-android-mvp/tasks.md).
+`index.html` (GitHub Pages) y `agrocampo-highfi.html` son prototipos estáticos que sirven de
+evidencia visual; no definen arquitectura ni alcance.
 
-## Monorepo modular
-
-El mismo repositorio Git contiene dos áreas de desarrollo:
-
-| Directorio | Responsable | Contenido |
-|---|---|---|
-| [`frontend/`](./frontend/) | Frontend / UX | Aplicación Flutter Android: páginas, widgets, navegación, estado de presentación, tema, assets y pruebas visuales. |
-| [`backend/`](./backend/) | Lógica / Datos / Backend | Paquete Flutter local sin UI: contratos, facades, dominio, Drift, sincronización, integraciones y Supabase remoto. |
+## Estructura
 
 ```text
-AgroCampo/
-├── frontend/             # Aplicación agrocampo
-├── backend/              # Paquete agrocampo_backend + supabase/
-├── specs/                # Requisitos y contratos funcionales
-├── docs/                 # Arquitectura y evidencia
-├── master.md             # Autoridad visual
-├── pubspec.yaml          # Pub Workspace: frontend + backend
-├── pubspec.lock          # Único lockfile canónico
-├── README.md
-└── .github/              # CI global; prototipos HTML conservados en raíz
+├── frontend/   # App Flutter Android: páginas, widgets, navegación, estado de presentación
+├── backend/    # Paquete local sin UI (dominio, Drift, sync) + supabase/
+├── specs/      # Requisitos y contratos
+├── docs/       # Arquitectura, despliegue, estado
+├── scripts/    # Ejecución, build de release y secretos a partir del .env
+└── tool/       # Guard de arquitectura
 ```
 
-El `pubspec.yaml` raíz declara exactamente `frontend/` y `backend/` como miembros. Los dos
-pubspecs usan `resolution: workspace`; `frontend/pubspec.yaml` consume `agrocampo_backend`
-mediante `path: ../backend`.
-El flujo sigue siendo **Frontend → Backend local → Drift → Outbox → Supabase**.
-El backend local se compila dentro del APK y conserva el funcionamiento offline.
+Un único Pub Workspace (`pubspec.yaml` y `pubspec.lock` en la raíz). El backend se compila dentro
+del APK: el flujo es **Frontend → Backend local → Drift → Outbox → Supabase**.
 
-La [frontera de arquitectura](./docs/architecture/frontend-backend-boundary.md) define imports
-públicos, responsabilidades, ubicación de tests y la excepción de integraciones nativas en
-`frontend/android/`. Toda interfaz sigue [`master.md`](./master.md).
+## Requisitos
 
-## Requisitos y verificación
+Flutter 3.47.0 (Dart 3.13), Android SDK 36 con un emulador o dispositivo API 24+, y JDK 17
+(`flutter config --jdk-dir <jdk17>`). Para Supabase local, además Docker, Supabase CLI y Deno.
 
-Requiere Flutter 3.47, Dart 3.13, Android SDK 36 y Java 17.
+## Ejecutar
 
-```powershell
-flutter pub get
-dart pub workspace list
+```bash
+flutter pub get                 # en la raíz
+cp .env.example .env            # opcional; sin .env la app corre en modo local
+./scripts/run_app.sh            # flutter run con la sección [APP] del .env
+```
+
+El `.env` de la raíz centraliza todas las credenciales locales. Sólo la sección `[APP]` llega al
+APK; los secretos de Edge Functions van a Supabase con `./scripts/supabase_secrets.sh`. Detalle en
+[`docs/deployment.md`](./docs/deployment.md).
+
+## Verificar
+
+```bash
 dart run tool/check_architecture.dart
-cd backend
-dart run build_runner build
-flutter analyze
-flutter test
-cd ..
+cd backend && dart run build_runner build && flutter analyze && flutter test && cd ..
+cd frontend && flutter analyze && flutter test && flutter build apk --debug && cd ..
+cd frontend && flutter test integration_test && cd ..     # requiere emulador/dispositivo
+node agrocampo-acceptance.test.js                          # prototipo
 ```
 
-Aplicación Android, desde la raíz:
+Supabase local:
 
-```powershell
-cd frontend
-flutter analyze
-flutter test
-flutter build apk --debug
-cd ..
-```
-
-La suite instrumentada se ejecuta con `flutter test integration_test` dentro de `frontend/`
-y requiere un emulador/dispositivo Android configurado. Para un release, dentro de `frontend/`:
-
-```powershell
-flutter build appbundle --release
-```
-
-Supabase local, desde la raíz (requiere Docker y Supabase CLI):
-
-```powershell
+```bash
 supabase --workdir backend start
 supabase --workdir backend db reset
 supabase --workdir backend test db
-supabase --workdir backend functions serve
+./scripts/supabase_secrets.sh serve
 deno test --allow-env backend/supabase/functions/weather-proxy/tests
 deno test --allow-env backend/supabase/functions/agro-ai/tests
 ```
 
-`db reset` reinicia únicamente el stack local de desarrollo. Los comandos equivalentes desde
-`backend/supabase/` usan `supabase --workdir ..`; no se cambia el proyecto remoto por mover archivos.
+`db reset` sólo reinicia el stack local. Release firmado: `./scripts/build_android_release.sh`.
 
-Los prototipos se verifican desde la raíz con `node agrocampo-acceptance.test.js`.
-GitHub Pages publica `index.html` y copia `frontend/assets/` a `frontend/assets/` del sitio.
+## Seguridad
 
-No añada secretos al repositorio. OpenStreetMap no usa API key: el cliente identifica la aplicación
-con `cl.agrocampo.app`, usa el endpoint oficial de teselas y muestra atribución enlazada. Flutter
-inicializa Supabase con `SUPABASE_URL` y `SUPABASE_PUBLISHABLE_KEY`; esta última es una clave pública,
-no una credencial de servidor. El `weather-proxy` autenticado usa Open-Meteo y toma
-`OPEN_METEO_DEFAULT_LATITUDE`, `OPEN_METEO_DEFAULT_LONGITUDE` y opcionalmente
-`OPEN_METEO_FORECAST_URL` desde el entorno de la Edge Function. El endpoint público de Open-Meteo
-no requiere API key para evaluación/no comercial; una publicación comercial debe usar el endpoint
-y plan de cliente aplicable. AgroIA espera `GEMINI_API_KEY` y opcionalmente `GEMINI_MODEL`, siempre
-como secretos de Edge Functions. `.env`, `google-services.json`, keystores y `key.properties` están
-ignorados.
-
-Los tests pgTAP/Deno requieren sus CLIs y un proyecto Supabase local. La firma de producción exige
-un keystore aportado por el propietario. La evidencia de diseño, seguridad, resiliencia, aceptación
-y release está en [`docs/verification/`](./docs/verification/).
-
-## CI/CD y despliegue
-
-`.github/workflows/ci.yml` reproduce en cada push/PR, sin secretos, los comandos de esta sección
-(analyze/format/test de ambos paquetes, el architecture guard, la aceptación del prototipo, la
-verificación del manifiesto de migración y un stack Supabase local desechable con pgTAP + Edge
-Functions). `.github/workflows/android-release.yml` construye siempre un APK de depuración y,
-cuando los secretos de firma/Supabase están cargados, un release firmado apto para Play Store.
-
-Lo que sigue pendiente de credenciales reales (proyecto Supabase, Firebase/FCM, API key de Gemini,
-keystore de release y coordenadas reales de la parcela) está documentado paso a paso en
-[`docs/deployment/`](./docs/deployment/README.md), junto con `./scripts/check_deployment_readiness.sh`
-para verificar localmente qué falta sin exponer ningún secreto.
+No commitees `.env`, `google-services.json`, keystores ni `key.properties`: ya están en
+`.gitignore`. La publishable key de Supabase es pública por diseño; la `service_role` key, Gemini y
+la cuenta de servicio Firebase viven sólo como secretos de Edge Functions.

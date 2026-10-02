@@ -3,8 +3,7 @@ name: Android Build & Release
 # Pipeline de empaquetado Android. El build de depuración corre siempre y no
 # requiere secretos. El build de release sólo produce un artefacto firmado y
 # apto para Play Store cuando los secretos de firma y de Supabase de producción
-# están configurados en el repositorio (ver docs/deployment/04-android-release-signing.md
-# y docs/deployment/01-supabase-project.md). Si faltan, el job sigue ejecutándose
+# están configurados en el repositorio (ver docs/deployment.md). Si faltan, el job sigue ejecutándose
 # para no bloquear el pipeline, pero sube un artefacto firmado con la clave debug
 # y lo marca explícitamente como no apto para publicar — nunca se simula un
 # artefacto de producción.
@@ -111,7 +110,7 @@ jobs:
       - name: Flag artifacts that are not production-ready
         if: steps.check.outputs.has_keystore != 'true' || steps.check.outputs.has_supabase != 'true'
         run: |
-          echo "::warning::Este artefacto NO está listo para Play Store — keystore configurado: ${{ steps.check.outputs.has_keystore }}, Supabase de producción configurado: ${{ steps.check.outputs.has_supabase }}. Ver docs/deployment/04-android-release-signing.md y docs/deployment/01-supabase-project.md antes de publicar."
+          echo "::warning::Este artefacto NO está listo para Play Store — keystore configurado: ${{ steps.check.outputs.has_keystore }}, Supabase de producción configurado: ${{ steps.check.outputs.has_supabase }}. Ver docs/deployment.md antes de publicar."
 
       - uses: actions/upload-artifact@v4
         with:
