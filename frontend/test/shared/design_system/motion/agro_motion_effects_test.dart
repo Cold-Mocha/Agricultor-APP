@@ -99,6 +99,7 @@ void main() {
     for (final item in items) {
       expect(find.text((item as Text).data!), findsOneWidget);
     }
+    await tester.pumpAndSettle();
   });
 
   testWidgets(

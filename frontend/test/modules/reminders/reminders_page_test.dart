@@ -5,16 +5,34 @@ import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:agrocampo_backend/src/composition/backend_providers.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:agrocampo_backend/src/platform/network/connectivity_service.dart';
-import 'package:drift/drift.dart';
+import 'package:agrocampo_backend/src/platform/notifications/local_notification_scheduler.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../backend/test/helpers/in_memory_database.dart';
+import '../../../../backend/test/helpers/reminder_test_payload.dart';
 
 final class _OnlineConnectivity implements ConnectivityService {
   @override
   Stream<ConnectionSignal> watch() => Stream.value(ConnectionSignal.available);
+}
+
+final class _NoopScheduler implements LocalNotificationScheduler {
+  @override
+  Future<void> initialize() async {}
+  @override
+  Future<bool> requestPermission() async => true;
+  @override
+  Future<void> schedule({
+    required int id,
+    required String title,
+    required DateTime scheduledAt,
+    String? payload,
+  }) async {}
+  @override
+  Future<void> cancel(int id) async {}
 }
 
 Future<void> _pumpPage(
@@ -27,20 +45,20 @@ Future<void> _pumpPage(
       overrides: [
         appDatabaseProvider.overrideWithValue(database),
         connectivityServiceProvider.overrideWithValue(_OnlineConnectivity()),
-        sessionControllerProvider.overrideWithBuild(
-          (ref, notifier) => session,
+        localNotificationSchedulerProvider.overrideWithValue(_NoopScheduler()),
+        reminderNotificationPayloadBuilderProvider.overrideWithValue(
+          reminderTestPayload,
         ),
+        sessionControllerProvider.overrideWithBuild((ref, notifier) => session),
       ],
-      child: const MaterialApp(theme: AgroTheme.light, home: RemindersPage()),
+      child: MaterialApp(theme: AgroTheme.light, home: const RemindersPage()),
     ),
   );
   await tester.pumpAndSettle();
 }
 
 void main() {
-  testWidgets('disables scheduling without an active session', (
-    tester,
-  ) async {
+  testWidgets('disables scheduling without an active session', (tester) async {
     final database = createInMemoryDatabase();
     await _pumpPage(
       tester,
@@ -66,54 +84,53 @@ void main() {
     await database.close();
   });
 
-  testWidgets(
-    'lists reminders and only offers the menu on scheduled ones',
-    (tester) async {
-      final database = createInMemoryDatabase();
-      final now = DateTime.now().toUtc();
-      await database.batch((batch) {
-        batch.insertAll(database.reminders, [
-          RemindersCompanion.insert(
-            id: 'r1',
-            ownerId: 'owner-1',
-            title: 'Revisar riego goteo',
-            scheduledAt: now.add(const Duration(days: 1)),
-            updatedAt: now,
-          ),
-          RemindersCompanion.insert(
-            id: 'r2',
-            ownerId: 'owner-1',
-            title: 'Aplicar fungicida',
-            scheduledAt: now.add(const Duration(days: 2)),
-            status: const Value('completed'),
-            updatedAt: now,
-          ),
-          RemindersCompanion.insert(
-            id: 'r3',
-            ownerId: 'owner-1',
-            title: 'Rotar cuadrante 4',
-            scheduledAt: now.add(const Duration(days: 3)),
-            notificationState: const Value('permissionDenied'),
-            updatedAt: now,
-          ),
-        ]);
-      });
+  testWidgets('lists reminders and only offers the menu on scheduled ones', (
+    tester,
+  ) async {
+    final database = createInMemoryDatabase();
+    final now = DateTime.now().toUtc();
+    await database.batch((batch) {
+      batch.insertAll(database.reminders, [
+        RemindersCompanion.insert(
+          id: 'r1',
+          ownerId: 'owner-1',
+          title: 'Revisar riego goteo',
+          scheduledAt: now.add(const Duration(days: 1)),
+          updatedAt: now,
+        ),
+        RemindersCompanion.insert(
+          id: 'r2',
+          ownerId: 'owner-1',
+          title: 'Aplicar fungicida',
+          scheduledAt: now.add(const Duration(days: 2)),
+          status: const Value('completed'),
+          updatedAt: now,
+        ),
+        RemindersCompanion.insert(
+          id: 'r3',
+          ownerId: 'owner-1',
+          title: 'Rotar cuadrante 4',
+          scheduledAt: now.add(const Duration(days: 3)),
+          notificationState: const Value('permissionDenied'),
+          updatedAt: now,
+        ),
+      ]);
+    });
 
-      await _pumpPage(tester, database: database);
+    await _pumpPage(tester, database: database);
 
-      expect(find.text('Revisar riego goteo'), findsOneWidget);
-      expect(find.text('Aplicar fungicida'), findsOneWidget);
-      expect(find.text('Rotar cuadrante 4'), findsOneWidget);
-      expect(
-        find.textContaining('Permiso denegado; recordatorio conservado'),
-        findsOneWidget,
-      );
-      // Only the two "scheduled" reminders (r1, r3) expose the action menu;
-      // the completed one (r2) does not.
-      expect(find.byType(PopupMenuButton<String>), findsNWidgets(2));
-      await database.close();
-    },
-  );
+    expect(find.text('Revisar riego goteo'), findsOneWidget);
+    expect(find.text('Aplicar fungicida'), findsOneWidget);
+    expect(find.text('Rotar cuadrante 4'), findsOneWidget);
+    expect(
+      find.textContaining('Permiso denegado; recordatorio conservado'),
+      findsOneWidget,
+    );
+    // Only the two "scheduled" reminders (r1, r3) expose the action menu;
+    // the completed one (r2) does not.
+    expect(find.byType(PopupMenuButton<String>), findsNWidgets(2));
+    await database.close();
+  });
 
   testWidgets('editing a reminder preloads its title into the form', (
     tester,

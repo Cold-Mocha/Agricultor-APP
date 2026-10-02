@@ -5,7 +5,7 @@ import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:agrocampo_backend/src/composition/backend_providers.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:agrocampo_backend/src/platform/network/connectivity_service.dart';
-import 'package:drift/drift.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,7 +32,7 @@ void main() {
             (ref, notifier) => session,
           ),
         ],
-        child: const MaterialApp(theme: AgroTheme.light, home: AgroAiPage()),
+        child: MaterialApp(theme: AgroTheme.light, home: const AgroAiPage()),
       ),
     );
     await tester.pumpAndSettle();
@@ -100,30 +100,29 @@ void main() {
     await database.close();
   });
 
-  testWidgets(
-    'disables the send action until a question is typed',
-    (tester) async {
-      final database = createInMemoryDatabase();
-      await pumpPage(tester, database: database);
+  testWidgets('disables the send action until a question is typed', (
+    tester,
+  ) async {
+    final database = createInMemoryDatabase();
+    await pumpPage(tester, database: database);
 
-      final sendButton = tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, 'Enviar consulta'),
-      );
-      expect(sendButton.onPressed, isNull);
+    final sendButton = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Enviar consulta'),
+    );
+    expect(sendButton.onPressed, isNull);
 
-      await tester.enterText(
-        find.byType(TextField),
-        '¿Cuándo conviene fertilizar?',
-      );
-      await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byType(TextField),
+      '¿Cuándo conviene fertilizar?',
+    );
+    await tester.pumpAndSettle();
 
-      final enabledButton = tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, 'Enviar consulta'),
-      );
-      expect(enabledButton.onPressed, isNotNull);
-      await database.close();
-    },
-  );
+    final enabledButton = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Enviar consulta'),
+    );
+    expect(enabledButton.onPressed, isNotNull);
+    await database.close();
+  });
 
   testWidgets(
     'keeps offline degradation explicit when AgroIA is not configured',
@@ -139,8 +138,11 @@ void main() {
       await tester.tap(find.widgetWithText(FilledButton, 'Enviar consulta'));
       await tester.pumpAndSettle();
 
+      // The failed message is persisted and the question stays in the
+      // field so it can be resent.
+      expect(find.text('¿Cuándo conviene regar paltos?'), findsNWidgets(2));
       expect(
-        find.text('¿Cuándo conviene regar paltos?'),
+        find.widgetWithText(TextField, '¿Cuándo conviene regar paltos?'),
         findsOneWidget,
       );
       expect(find.text('Reintentar'), findsOneWidget);

@@ -20,6 +20,7 @@ void main() {
 
     final semantics = tester.getSemantics(find.byType(AgroStatusBanner));
     expect(semantics.getSemanticsData().flagsCollection.isLiveRegion, isTrue);
+    await tester.pumpAndSettle();
   });
 
   testWidgets('navigation cards expose one descriptive action', (tester) async {
