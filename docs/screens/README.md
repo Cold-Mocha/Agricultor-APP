@@ -3,17 +3,18 @@
 Inventario visual de la app Android, pantalla por pantalla. Sirve como punto de partida para revisar
 y cambiar la UI; la autoridad visual sigue siendo [`master.md`](../../master.md).
 
-**Captura:** 2026-10-02 · Samsung Galaxy S21 Ultra (720×1600 lógicos) · build debug con
-`AGROCAMPO_ONLINE=false` (modo local) · datos: una parcela "Frutillas" (Temuco) con un cuadrante sin
-cultivo ni temporada, y 2 cambios pendientes. Se recortaron la barra de estado y la de navegación de
-Android. La marca vertical delgada en el borde izquierdo de algunas capturas es el panel Edge de
-Samsung, no la app.
+**Captura:** 2026-10-02, después de corregir los issues I1–I8 · Samsung Galaxy S21 Ultra (720×1600
+lógicos) · build debug con `AGROCAMPO_ONLINE=false` (modo local) · datos: una parcela "Frutillas"
+(Temuco) con un cuadrante de cultivo sin cultivo ni temporada. Se recortaron la barra de estado y la
+de navegación de Android. La marca vertical delgada en el borde izquierdo de algunas capturas es el
+panel Edge de Samsung, no la app.
 
-Los hallazgos y su plan de corrección están en [`ISSUES.md`](./ISSUES.md).
+Las capturas de Revisión apícola y Fotografías (`12_*`, `13_foto`) son de la versión anterior: tras
+I8 sólo se abren desde un sector apícola y el escenario de captura no tiene uno.
 
 Cada ficha indica: **ruta** (`go_router`), **propósito**, **CTA** (call to action principal),
-**qué hace** y **qué debería mostrar** cuando hay datos. Las observaciones marcadas con ⚠️ están
-resumidas en [Hallazgos](#hallazgos).
+**qué hace** y **qué debería mostrar** cuando hay datos. Las marcas ✅ señalan comportamiento
+corregido; el detalle de cada corrección está en [`ISSUES.md`](./ISSUES.md).
 
 ## Índice
 
@@ -25,8 +26,9 @@ resumidas en [Hallazgos](#hallazgos).
 | AgroIA | [AgroIA](#14-agroia) |
 | Más | [Más](#15-más) · [Temporadas](#16-temporadas) · [Nueva temporada](#17-nueva-temporada) · [Catálogo](#18-catálogo-de-cultivos) · [Recordatorios](#19-recordatorios) · [Sincronización](#20-sincronización) · [Exportar](#21-exportar) · [Configuración](#22-configuración) |
 
-Todas las pantallas comparten la barra inferior de 5 pestañas y el banner global de estado de
-conexión/sincronización bajo el encabezado.
+Todas las pantallas comparten la barra inferior de 5 pestañas y el banner global bajo el
+encabezado. En modo local dice "Modo local · tus datos se guardan en este dispositivo." (✅ I1); en
+modo online muestra la conexión y los pendientes de sincronización.
 
 ---
 
@@ -42,7 +44,8 @@ conexión/sincronización bajo el encabezado.
   formulario de labor con el contexto ya fijado. El ícono superior abre el Perfil.
 - **Qué debería mostrar:** temperatura, humedad y riesgo de helada actualizados (online) o el último
   dato guardado con su antigüedad; sin parcela, el estado vacío "Crea tu primera parcela".
-  ⚠️ En modo local el clima nunca se obtiene y la tarjeta queda en "Clima sin datos".
+  ✅ En modo local la tarjeta explica "Disponible al activar el respaldo en la nube." y no ofrece
+  actualizar; sólo editar la localidad (I5).
 
 ## 2. Cuadrantes (Sectores)
 
@@ -131,7 +134,7 @@ Variantes del paso "3. Detalle":
 | Poda | Método de poda, Plantas intervenidas, Observaciones | Guardar actividad | [07_registrar_poda](07_registrar_poda.webp) |
 | Otra labor | Nombre de la labor, Descripción, Observaciones | Guardar actividad | [07_registrar_otra](07_registrar_otra.webp) |
 | Cosecha | Aviso: se registra junto con la producción | **Registrar cosecha y producción** → [Producción](#11-producción) | [07_registrar_cosecha](07_registrar_cosecha.webp) |
-| Apicultura | Observaciones | **Abrir revisión apícola** → [Revisión apícola](#12-revisión-apícola) | [07_registrar_apicultura](07_registrar_apicultura.webp) |
+| Apicultura | Sólo en sectores apícolas (✅ I8): el selector no la ofrece en sectores de cultivo | **Abrir revisión apícola** → [Revisión apícola](#12-revisión-apícola) | — |
 | Riego / Suelo | — | Derivan a [Riego](#8-riego) y [Suelo](#10-medición-de-suelo) | — |
 
 ## 8. Riego
@@ -145,7 +148,8 @@ Variantes del paso "3. Detalle":
 - **Qué hace:** con duración y caudal estima el volumen; usa la configuración de goteo del sector. Si
   no hay regla agronómica para el cultivo y suelo, lo avisa y permite el registro básico.
 - **Qué debería mostrar:** tipo de riego y suelo legibles, y el volumen estimado con su explicación.
-  ⚠️ Los selectores muestran valores internos en inglés: `drip` y `unknown`.
+  ✅ Los selectores muestran Goteo / Aspersión / Surco / Gravedad y Arenoso / Franco / Arcilloso /
+  No lo sé (I2).
 
 ## 9. Riego por goteo (configuración)
 
@@ -192,7 +196,7 @@ Variantes del paso "3. Detalle":
 - **Qué hace:** tipo de tarea, apicultor responsable (texto, no cuenta), cantidad de colmenas, estado
   de la reina, postura, alimentación, sanidad, plagas, alza instalada y observaciones.
 - **Qué debería mostrar:** sólo para cuadrantes de categoría apícola.
-  ⚠️ Se pudo abrir sobre un cuadrante de frutillas.
+  ✅ En un sector de cultivo muestra "Sector incompatible" en vez del formulario (I8).
 
 ## 13. Fotografías
 
@@ -213,7 +217,8 @@ Variantes del paso "3. Detalle":
 - **CTA:** **Enviar consulta** (deshabilitado sin texto).
 - **Qué hace:** envía sólo el texto escrito; no recibe datos de la parcela ni escribe registros.
 - **Qué debería mostrar:** la conversación con estado por mensaje y **Reintentar** en los fallidos.
-  ⚠️ En modo local invita a "Haz tu primera consulta" aunque AgroIA no está disponible.
+  ✅ En modo local muestra "AgroIA no disponible en modo local" sin compositor; el historial previo
+  sigue visible (I5).
 
 ## 15. Más
 
@@ -252,7 +257,7 @@ Variantes del paso "3. Detalle":
 - **CTA:** **+ Crear cultivo personalizado** (diálogo "Nuevo cultivo": Nombre, Notas → **Guardar**);
   buscador.
 - **Qué debería mostrar:** cada cultivo con nombre común, científico y tipo.
-  ⚠️ El tipo mezcla idiomas: "berry" junto a "frutal".
+  ✅ Las categorías se muestran como Berries, Frutal, Hortaliza, Cereal, Tubérculo o Apicultura (I4).
 
 ## 19. Recordatorios
 
@@ -264,7 +269,8 @@ Variantes del paso "3. Detalle":
 - **Qué hace:** título, descripción y fecha/hora en el contexto activo; la notificación funciona sin
   conexión.
 - **Qué debería mostrar:** la lista de recordatorios con su estado y menú en los programados.
-  ⚠️ La fecha aparece sin formato: `2026-10-02 01:00:28.688936`.
+  ✅ La fecha se muestra como "vie, 2 oct · 3:16" y los estados en español: Programado, Completado,
+  Cancelado; en modo local, "Guardado en este dispositivo" (I3).
 
 ## 20. Sincronización
 
@@ -275,7 +281,8 @@ Variantes del paso "3. Detalle":
 - **CTA:** **Sincronizar ahora**.
 - **Qué hace:** cambios pendientes, conflictos por resolver y último respaldo confirmado.
 - **Qué debería mostrar:** en modo online, la fecha del último respaldo y los conflictos con acceso a
-  su resolución. ⚠️ En modo local ofrece "Sincronizar ahora" aunque no hay nube.
+  su resolución. ✅ En modo local muestra "Respaldo en la nube desactivado" y remite a Exportar
+  XLSX, sin "Sincronizar ahora" (I5).
 
 ## 21. Exportar
 
@@ -308,11 +315,11 @@ Variantes del paso "3. Detalle":
 | 24 | Información personal | `/inicio/perfil/informacion` | Nombre visible y correo de acceso → **Guardar cambios** | [24](24_perfil_informacion.webp) |
 | 25 | Notificaciones | `/inicio/perfil/notificaciones` | Interruptor de alertas meteorológicas; recordatorios se gestionan en Más | [25](25_perfil_notificaciones.webp) |
 | 26 | Idioma | `/inicio/perfil/idioma` | Sólo Español (Chile); informativa | [26](26_perfil_idioma.webp) |
-| 27 | Seguridad | `/inicio/perfil/seguridad` | Interruptor de desbloqueo biométrico | [27](27_perfil_seguridad.webp) |
+| 27 | Seguridad | `/inicio/perfil/seguridad` | Interruptor de desbloqueo biométrico; en modo local habla sólo de este dispositivo (✅ I6) | [27](27_perfil_seguridad.webp) |
 | 28 | Tema | `/inicio/perfil/tema` | Sólo modo claro; informativa | [28](28_perfil_tema.webp) |
-| 29 | Ayuda y soporte | `/inicio/perfil/ayuda` | Preguntas frecuentes de uso en terreno | [29](29_perfil_ayuda.webp) |
+| 29 | Ayuda y soporte | `/inicio/perfil/ayuda` | Preguntas frecuentes; en modo local el respaldo se explica con Exportar XLSX (✅ I6) | [29](29_perfil_ayuda.webp) |
 | 30 | Contacto | `/inicio/perfil/contacto` | "Contacto no configurado" | [30](30_perfil_contacto.webp) |
-| 31 | Privacidad | `/inicio/perfil/privacidad` | Resumen de guardado local y respaldo | [31](31_perfil_privacidad.webp) |
+| 31 | Privacidad | `/inicio/perfil/privacidad` | En modo local: "Datos en este dispositivo", sin Supabase ni cuentas (✅ I6) | [31](31_perfil_privacidad.webp) |
 
 <img src="24_perfil_informacion.webp" width="160"> <img src="25_perfil_notificaciones.webp" width="160"> <img src="26_perfil_idioma.webp" width="160"> <img src="27_perfil_seguridad.webp" width="160"> <img src="28_perfil_tema.webp" width="160"> <img src="29_perfil_ayuda.webp" width="160"> <img src="30_perfil_contacto.webp" width="160"> <img src="31_perfil_privacidad.webp" width="160">
 
@@ -326,7 +333,7 @@ Variantes del paso "3. Detalle":
 - **CTA:** **+ Nueva parcela**; tocar una parcela para editarla; menú **⋮ → Archivar**. En el
   formulario: Nombre, Localidad, **Usar como parcela activa** → **Guardar sin conexión**.
 - **Qué debería mostrar:** todas las parcelas, marcando la activa.
-  ⚠️ Usan un encabezado distinto al resto (sin subtítulo y con otro alto).
+  ✅ Mismo encabezado que el resto, con subtítulo (I7).
 
 ## Pantallas no capturadas
 
@@ -337,15 +344,15 @@ Variantes del paso "3. Detalle":
 
 ## Hallazgos
 
-Observados durante la captura; ninguno se corrigió todavía.
+Detectados en la primera captura y resueltos; detalle en [`ISSUES.md`](./ISSUES.md).
 
-| # | Pantalla | Hallazgo |
-|---|---|---|
-| 1 | Todas | En modo local, el banner global sigue diciendo "N registros pendientes de sincronización." aunque nunca se sincronizará. |
-| 2 | Riego | Los selectores muestran valores internos en inglés (`drip`, `unknown`). |
-| 3 | Recordatorios | La fecha y hora se muestran sin formato (`2026-10-02 01:00:28.688936`). |
-| 4 | Catálogo | El tipo de cultivo mezcla idiomas ("berry" junto a "frutal"). |
-| 5 | AgroIA, Sincronización, Inicio (clima) | En modo local invitan a usar funciones no disponibles (consultar, sincronizar, actualizar clima). |
-| 6 | Seguridad, Privacidad | En modo local mencionan "Cerrar sesión", Supabase y "datos por cuenta", que no aplican. |
-| 7 | Parcelas | Encabezado distinto al de `AgroPage` usado en el resto de la app. |
-| 8 | Revisión apícola | Accesible sobre un cuadrante de cultivo vegetal. |
+| # | Pantalla | Hallazgo | Estado |
+|---|---|---|---|
+| I1 | Todas | En modo local, el banner global decía "N registros pendientes de sincronización." | ✅ Resuelto |
+| I2 | Riego | Los selectores mostraban valores internos en inglés (`drip`, `unknown`). | ✅ Resuelto |
+| I3 | Recordatorios, Sincronización | Fechas sin formato y estados internos (`scheduled`, `pending`). | ✅ Resuelto |
+| I4 | Catálogo | Códigos de categoría del seed ("berry" junto a "frutal"). | ✅ Resuelto |
+| I5 | AgroIA, Sincronización, Inicio (clima) | En modo local invitaban a usar funciones no disponibles. | ✅ Resuelto |
+| I6 | Seguridad, Ayuda, Privacidad | En modo local mencionaban "Cerrar sesión", Supabase y "datos por cuenta". | ✅ Resuelto |
+| I7 | Parcelas | Encabezado distinto al de `AgroPage`. | ✅ Resuelto |
+| I8 | Registrar labor, Revisión apícola | Apicultura ofrecida en sectores de cultivo. | ✅ Resuelto |

@@ -1,19 +1,19 @@
 # Issues de UI
 
-Hallazgos del [inventario de pantallas](./README.md) y cómo se resuelven. Toda corrección usa
-componentes y tokens existentes y cita [`master.md`](../../master.md). Las capturas se regeneran
-después de aplicar todas las correcciones.
+Hallazgos del [inventario de pantallas](./README.md) y cómo se resolvieron. Toda corrección usa
+componentes y tokens existentes y cita [`master.md`](../../master.md). Las capturas del inventario ya
+reflejan las correcciones (2026-10-02).
 
 | Id | Pestaña | Estado |
 |---|---|---|
-| [I1](#i1-banner-global-en-modo-local) | Global | Resuelto · captura pendiente |
-| [I2](#i2-riego-muestra-valores-internos) | Registrar | Resuelto · captura pendiente |
-| [I3](#i3-recordatorios-y-sincronización-muestran-datos-sin-formato) | Más | Resuelto · captura pendiente |
-| [I4](#i4-catálogo-muestra-códigos-de-categoría) | Más | Resuelto · captura pendiente |
-| [I5](#i5-funciones-con-red-en-modo-local) | Inicio, AgroIA, Más | Resuelto · captura pendiente |
-| [I6](#i6-perfil-habla-de-una-cuenta-en-modo-local) | Inicio (Perfil) | Resuelto · captura pendiente |
-| [I7](#i7-encabezado-distinto-en-parcelas) | Inicio (Parcelas) | Resuelto · captura pendiente |
-| [I8](#i8-apicultura-ofrecida-en-sectores-de-cultivo) | Registrar | Resuelto · captura pendiente |
+| [I1](#i1-banner-global-en-modo-local) | Global | Resuelto |
+| [I2](#i2-riego-muestra-valores-internos) | Registrar | Resuelto |
+| [I3](#i3-recordatorios-y-sincronización-muestran-datos-sin-formato) | Más | Resuelto |
+| [I4](#i4-catálogo-muestra-códigos-de-categoría) | Más | Resuelto |
+| [I5](#i5-funciones-con-red-en-modo-local) | Inicio, AgroIA, Más | Resuelto |
+| [I6](#i6-perfil-habla-de-una-cuenta-en-modo-local) | Inicio (Perfil) | Resuelto |
+| [I7](#i7-encabezado-distinto-en-parcelas) | Inicio (Parcelas) | Resuelto |
+| [I8](#i8-apicultura-ofrecida-en-sectores-de-cultivo) | Registrar | Resuelto |
 
 ## I1. Banner global en modo local
 
