@@ -6,14 +6,11 @@ insert into auth.users(id, aud, role, email, created_at, updated_at) values
   ('41000000-0000-4000-8000-000000000002','authenticated','authenticated','labor-b@test.local',now(),now());
 select set_config('request.jwt.claim.sub','41000000-0000-4000-8000-000000000001',true);
 
-insert into public.parcels(id,owner_id,name,is_active,boundary,updated_at)
-values('42000000-0000-4000-8000-000000000001','41000000-0000-4000-8000-000000000001','Campo',true,
-  extensions.st_geomfromtext('POLYGON((-72.7 -38.8,-72.5 -38.8,-72.5 -38.6,-72.7 -38.6,-72.7 -38.8))',4326),now());
-insert into public.sectors(id,owner_id,parcel_id,number,name,boundary,updated_at)
-values('43000000-0000-4000-8000-000000000001','41000000-0000-4000-8000-000000000001','42000000-0000-4000-8000-000000000001',1,'Norte',
+insert into public.sectors(id,owner_id,number,name,boundary,updated_at)
+values('43000000-0000-4000-8000-000000000001','41000000-0000-4000-8000-000000000001',1,'Norte',
   extensions.st_geomfromtext('POLYGON((-72.65 -38.75,-72.55 -38.75,-72.55 -38.65,-72.65 -38.65,-72.65 -38.75))',4326),now());
-insert into public.agricultural_seasons(id,owner_id,parcel_id,name,starts_on,status,updated_at)
-values('44000000-0000-4000-8000-000000000001','41000000-0000-4000-8000-000000000001','42000000-0000-4000-8000-000000000001','2026','2026-01-01','active',now());
+insert into public.agricultural_seasons(id,owner_id,sector_id,name,starts_on,status,updated_at)
+values('44000000-0000-4000-8000-000000000001','41000000-0000-4000-8000-000000000001','43000000-0000-4000-8000-000000000001','2026','2026-01-01','active',now());
 insert into public.custom_crops(id,owner_id,name,normalized_name,updated_at)
 values('45000000-0000-4000-8000-000000000001','41000000-0000-4000-8000-000000000001','Ají','aji',now());
 insert into public.crop_seasons(id,owner_id,sector_id,agricultural_season_id,crop_id,is_custom_crop,status,starts_on,updated_at)
@@ -21,7 +18,7 @@ values('46000000-0000-4000-8000-000000000001','41000000-0000-4000-8000-000000000
 
 create function pg_temp.labor_payload(id text, kind text default 'fertilization') returns jsonb
 language sql as $$ select jsonb_build_object(
-  'id',id,'parcel_id','42000000-0000-4000-8000-000000000001',
+  'id',id,
   'sector_id','43000000-0000-4000-8000-000000000001',
   'agricultural_season_id','44000000-0000-4000-8000-000000000001',
   'crop_assignment_id','46000000-0000-4000-8000-000000000001',

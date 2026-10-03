@@ -50,14 +50,14 @@ final class IrrigationFacade {
       );
     }
     final sectorId = input.sectorId;
-    if (sectorId == null) return null;
+    if (sectorId == null) return _unavailable('sector_required');
     final database = _ref.read(appDatabaseProvider);
     final sector =
         await (database.select(database.sectors)..where(
               (row) => row.ownerId.equals(ownerId) & row.id.equals(sectorId),
             ))
             .getSingleOrNull();
-    if (sector == null) return null;
+    if (sector == null) return _unavailable('sector_required');
     if (sector.kind != 'crop') {
       return const IrrigationCalculation._(
         unavailableCode: 'operation_not_valid_for_apiary',
@@ -76,18 +76,22 @@ final class IrrigationFacade {
             flowLitersPerHour > 0
         ? flowLitersPerHour * durationMinutes / 60
         : null;
-    final preview =
-        await IrrigationEstimateRepository(
-          database,
-          _ref.read(laborContextReaderProvider),
-        ).calculateForSector(
-          ownerId: ownerId,
-          parcelId: sector.parcelId,
-          sectorId: sector.id,
-          soilTypeCode: input.soilType.name,
-          occurredAt: DateTime.now().toUtc(),
-          performedDurationSeconds: (int.tryParse(input.duration) ?? 0) * 60,
-        );
+    final IrrigationPreview preview;
+    try {
+      preview =
+          await IrrigationEstimateRepository(
+            database,
+            _ref.read(laborContextReaderProvider),
+          ).calculateForSector(
+            ownerId: ownerId,
+            sectorId: sector.id,
+            soilTypeCode: input.soilType.name,
+            occurredAt: DateTime.now().toUtc(),
+            performedDurationSeconds: (int.tryParse(input.duration) ?? 0) * 60,
+          );
+    } on StateError catch (error) {
+      return _unavailable(error.message);
+    }
     return switch (preview.result) {
       IrrigationUnavailable(:final code) => IrrigationCalculation._(
         unavailableCode: code,
@@ -112,66 +116,80 @@ final class IrrigationFacade {
     };
   }
 
-  Future<bool> save({
+  /// Returns `null` when the irrigation was stored locally, otherwise the
+  /// failure code that explains what is missing.
+  Future<String?> save({
     required String ownerId,
     required IrrigationFormInput input,
     IrrigationCalculation? calculation,
   }) async {
     final sectorId = input.sectorId;
-    if (sectorId == null) return false;
+    if (sectorId == null) return 'sector_required';
     final database = _ref.read(appDatabaseProvider);
     final sector =
         await (database.select(database.sectors)..where(
               (row) => row.ownerId.equals(ownerId) & row.id.equals(sectorId),
             ))
             .getSingleOrNull();
-    if (sector == null) return false;
-    if (sector.kind != 'crop') return false;
+    if (sector == null) return 'sector_required';
+    if (sector.kind != 'crop') return 'operation_not_valid_for_apiary';
     final durationMinutes = int.tryParse(input.duration.trim());
     final flowLitersPerHour = double.tryParse(
       input.flow.trim().replaceAll(',', '.'),
     );
-    if (durationMinutes == null || durationMinutes <= 0) return false;
+    if (durationMinutes == null || durationMinutes <= 0) {
+      return 'duration_required';
+    }
     if (input.flow.trim().isNotEmpty &&
         (flowLitersPerHour == null || flowLitersPerHour <= 0)) {
-      return false;
+      return 'flow_invalid';
     }
-    var preview = calculation?._preview;
-    if (input.type == IrrigationType.drip && preview == null) {
-      preview =
-          await IrrigationEstimateRepository(
-            database,
-            _ref.read(laborContextReaderProvider),
-          ).calculateForSector(
-            ownerId: ownerId,
-            parcelId: sector.parcelId,
-            sectorId: sector.id,
-            soilTypeCode: input.soilType.name,
-            occurredAt: DateTime.now().toUtc(),
-            performedDurationSeconds: (int.tryParse(input.duration) ?? 0) * 60,
-          );
+    try {
+      var preview = calculation?._preview;
+      if (input.type == IrrigationType.drip && preview == null) {
+        preview =
+            await IrrigationEstimateRepository(
+              database,
+              _ref.read(laborContextReaderProvider),
+            ).calculateForSector(
+              ownerId: ownerId,
+              sectorId: sector.id,
+              soilTypeCode: input.soilType.name,
+              occurredAt: DateTime.now().toUtc(),
+              performedDurationSeconds:
+                  (int.tryParse(input.duration) ?? 0) * 60,
+            );
+      }
+      await IrrigationRepository(
+        database,
+        _ref.read(laborContextReaderProvider),
+      ).savePerformed(
+        ownerId: ownerId,
+        sectorId: sector.id,
+        occurredAt: DateTime.now().toUtc(),
+        preview: preview,
+        input: BasicIrrigationInput(
+          type: input.type,
+          soilType: input.soilType,
+          durationMinutes: durationMinutes,
+          flowLitersPerHour: flowLitersPerHour,
+          pressureKpa: input.pressure == null || input.pressure!.trim().isEmpty
+              ? null
+              : int.tryParse(input.pressure!.trim()),
+        ),
+      );
+    } on StateError catch (error) {
+      return error.message;
     }
-    await IrrigationRepository(
-      database,
-      _ref.read(laborContextReaderProvider),
-    ).savePerformed(
-      ownerId: ownerId,
-      parcelId: sector.parcelId,
-      sectorId: sector.id,
-      occurredAt: DateTime.now().toUtc(),
-      preview: preview,
-      input: BasicIrrigationInput(
-        type: input.type,
-        soilType: input.soilType,
-        durationMinutes: durationMinutes,
-        flowLitersPerHour: flowLitersPerHour,
-        pressureKpa: input.pressure == null || input.pressure!.trim().isEmpty
-            ? null
-            : int.tryParse(input.pressure!.trim()),
-      ),
-    );
-    return true;
+    return null;
   }
+
+  static IrrigationCalculation _unavailable(String code) =>
+      IrrigationCalculation._(
+        unavailableCode: code,
+        explanation: null,
+        preview: null,
+      );
 
   static String _fingerprint(IrrigationFormInput input) => [
     input.sectorId ?? '',

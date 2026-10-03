@@ -54,15 +54,13 @@ void main() {
 
       final map = container.read(territoryMapFacadeProvider);
       expect(
-        (await map.watchSectors(ownerId: 'owner-1', parcelId: 'parcel-1').first)
+        (await map.watchSectors('owner-1').first)
             .single
             .id,
         'sector-1',
       );
       expect(
-        await map
-            .watchSectors(ownerId: 'other-owner', parcelId: 'parcel-1')
-            .first,
+        await map.watchSectors('other-owner').first,
         isEmpty,
       );
     },

@@ -11,9 +11,6 @@ final class SectorHistoryDao {
       ..where(
         (row) => row.ownerId.equals(filter.ownerId) & row.deletedAt.isNull(),
       );
-    if (filter.parcelId != null) {
-      query.where((row) => row.parcelId.equals(filter.parcelId!));
-    }
     if (filter.sectorId != null) {
       query.where((row) => row.sectorId.equals(filter.sectorId!));
     }

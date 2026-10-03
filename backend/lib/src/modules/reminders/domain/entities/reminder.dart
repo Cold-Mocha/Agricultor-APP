@@ -3,7 +3,6 @@ final class ReminderInput {
     required this.title,
     required this.scheduledAt,
     this.sectorId,
-    this.parcelId,
     this.description,
     this.notes,
     this.sourceTimeZone = 'UTC',
@@ -12,7 +11,6 @@ final class ReminderInput {
   final String title;
   final DateTime scheduledAt;
   final String? sectorId;
-  final String? parcelId;
   final String? description;
   final String? notes;
   final String sourceTimeZone;

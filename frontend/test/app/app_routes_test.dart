@@ -8,10 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('context routes preserve ids and labor type', () {
-    expect(
-      AppRoutes.quadrantMap('parcel 1'),
-      '/sectores/parcela/parcel%201/mapa',
-    );
+    expect(AppRoutes.quadrantMap, '/sectores/mapa');
     expect(AppRoutes.sector('sector 1'), '/sectores/sector%201');
     expect(
       AppRoutes.labor(
@@ -47,8 +44,7 @@ void main() {
       final locations = [
         AppRoutes.profile,
         AppRoutes.profileNotifications,
-        AppRoutes.newParcel,
-        AppRoutes.quadrantMap('parcel-1'),
+        AppRoutes.quadrantMap,
         AppRoutes.sector('sector-1'),
         AppRoutes.sectorRotation('sector-1'),
         AppRoutes.sectorHistory('sector-1'),

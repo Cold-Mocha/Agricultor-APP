@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
 import 'package:agrocampo_backend/src/modules/territory/infrastructure/sync/sector_sync_codec.dart';
 import 'package:agrocampo_backend/src/platform/sync/protocol/sync_contract.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,16 +8,13 @@ import '../../helpers/in_memory_database.dart';
 
 void main() {
   test(
-    'sector pull requires parent and applies geometry/tombstone exactly',
+    'sector pull applies geometry/tombstone exactly without a parent',
     () async {
       final database = createInMemoryDatabase();
       addTearDown(database.close);
-      final parcelId = await ParcelRepository(database)
-          .save(ownerId: 'owner-1', name: 'Campo');
       final codec = SectorSyncCodec();
       final payload = {
         'id': 'sector-1',
-        'parcel_id': parcelId,
         'number': 1,
         'name': 'Norte',
         'kind': 'crop',
@@ -43,14 +39,13 @@ void main() {
         ),
       );
       final row = await database.select(database.sectors).getSingle();
-      expect(row.parcelId, parcelId);
       expect(row.version, 4);
       expect(row.syncState, 'synced');
       expect(row.deletedAt, isNotNull);
     },
   );
 
-  test('sector pull rejects missing parent without writing', () async {
+  test('sector pull rejects an invalid payload without writing', () async {
     final database = createInMemoryDatabase();
     addTearDown(database.close);
     await expectLater(
@@ -62,7 +57,7 @@ void main() {
           aggregateType: 'sector',
           aggregateId: 'sector-1',
           kind: 'create',
-          payloadJson: '{"id":"sector-1","parcel_id":"missing","number":1,"name":"Norte","polygon":[],"updated_at":"2026-08-29T12:00:00Z"}',
+          payloadJson: '{"id":"sector-1","number":1,"name":"Norte","polygon":[],"updated_at":"2026-08-29T12:00:00Z"}',
           remoteVersion: 1,
         ),
       ),

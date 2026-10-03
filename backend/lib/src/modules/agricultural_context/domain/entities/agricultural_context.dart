@@ -1,15 +1,8 @@
 import 'package:agrocampo_backend/src/shared/contracts/productive_domain.dart';
 
 final class ContextLabels {
-  const ContextLabels({
-    this.parcel,
-    this.sector,
-    this.category,
-    this.season,
-    this.crop,
-  });
+  const ContextLabels({this.sector, this.category, this.season, this.crop});
 
-  final String? parcel;
   final String? sector;
   final String? category;
   final String? season;
@@ -19,7 +12,6 @@ final class ContextLabels {
 final class AgriculturalContext {
   const AgriculturalContext({
     this.ownerId,
-    this.parcelId,
     this.sectorId,
     this.seasonId,
     this.assignmentId,
@@ -35,7 +27,6 @@ final class AgriculturalContext {
     : this(ownerId: ownerId, isRestoring: true);
 
   final String? ownerId;
-  final String? parcelId;
   final String? sectorId;
   final String? seasonId;
   final String? assignmentId;
@@ -47,8 +38,6 @@ final class AgriculturalContext {
   final DateTime? resolvedFor;
 
   AgriculturalContext copyWith({
-    String? parcelId,
-    bool clearParcel = false,
     String? sectorId,
     bool clearSector = false,
     String? seasonId,
@@ -63,7 +52,6 @@ final class AgriculturalContext {
     DateTime? resolvedFor,
   }) => AgriculturalContext(
     ownerId: ownerId,
-    parcelId: clearParcel ? null : parcelId ?? this.parcelId,
     sectorId: clearSector ? null : sectorId ?? this.sectorId,
     seasonId: clearSeason ? null : seasonId ?? this.seasonId,
     assignmentId: clearAssignment ? null : assignmentId ?? this.assignmentId,
@@ -79,7 +67,6 @@ final class AgriculturalContext {
 final class BoundAgriculturalContext {
   const BoundAgriculturalContext({
     required this.ownerId,
-    required this.parcelId,
     required this.sectorId,
     required this.seasonId,
     required this.assignmentId,
@@ -92,7 +79,6 @@ final class BoundAgriculturalContext {
 
   factory BoundAgriculturalContext.from(
     AgriculturalContext context, {
-    String? parcelId,
     String? sectorId,
     String? seasonId,
     String? assignmentId,
@@ -102,7 +88,6 @@ final class BoundAgriculturalContext {
     DateTime? resolvedFor,
   }) => BoundAgriculturalContext(
     ownerId: context.ownerId,
-    parcelId: parcelId ?? context.parcelId,
     sectorId: sectorId ?? context.sectorId,
     seasonId: seasonId ?? context.seasonId,
     assignmentId: assignmentId ?? context.assignmentId,
@@ -114,7 +99,6 @@ final class BoundAgriculturalContext {
   );
 
   final String? ownerId;
-  final String? parcelId;
   final String? sectorId;
   final String? seasonId;
   final String? assignmentId;
@@ -126,7 +110,6 @@ final class BoundAgriculturalContext {
 
   bool differsFrom(AgriculturalContext current) =>
       ownerId != current.ownerId ||
-      parcelId != current.parcelId ||
       sectorId != current.sectorId ||
       seasonId != current.seasonId ||
       assignmentId != current.assignmentId;

@@ -16,11 +16,11 @@ final class WeatherRepository {
   Future<WeatherSnapshot> refresh({
     required String ownerId,
     required String locality,
-    String? parcelId,
+    String? sectorId,
   }) async {
     WeatherSnapshot snapshot;
     try {
-      snapshot = await _gateway.fetch(locality: locality, parcelId: parcelId);
+      snapshot = await _gateway.fetch(locality: locality, sectorId: sectorId);
     } on Object {
       await (_database.update(
         _database.weatherCache,
@@ -35,7 +35,7 @@ final class WeatherRepository {
           WeatherCacheCompanion.insert(
             id: '$ownerId:$locality',
             ownerId: ownerId,
-            parcelId: Value(parcelId),
+            sectorId: Value(sectorId),
             locality: locality,
             provider: Value(snapshot.provider),
             payloadJson: jsonEncode(snapshot.toJson()),
@@ -55,17 +55,17 @@ final class WeatherRepository {
   Future<WeatherLoadResult> load({
     required String ownerId,
     required String locality,
-    String? parcelId,
+    String? sectorId,
     DateTime? now,
   }) async {
     try {
       return WeatherFresh(
-        await refresh(ownerId: ownerId, locality: locality, parcelId: parcelId),
+        await refresh(ownerId: ownerId, locality: locality, sectorId: sectorId),
       );
     } on Object {
       final snapshot = await cached(
         ownerId,
-        parcelId: parcelId,
+        sectorId: sectorId,
         locality: locality,
       );
       if (snapshot == null) {
@@ -79,7 +79,7 @@ final class WeatherRepository {
 
   Future<WeatherSnapshot?> cached(
     String ownerId, {
-    String? parcelId,
+    String? sectorId,
     String? locality,
   }) async {
     final row =
@@ -87,9 +87,9 @@ final class WeatherRepository {
               ..where(
                 (entry) =>
                     entry.ownerId.equals(ownerId) &
-                    (parcelId == null
+                    (sectorId == null
                         ? const Constant(true)
-                        : entry.parcelId.equals(parcelId)) &
+                        : entry.sectorId.equals(sectorId)) &
                     (locality == null
                         ? const Constant(true)
                         : entry.locality.equals(locality)),

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo_point.dart';
-import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
 import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:agrocampo_backend/src/platform/database/owner_transfer.dart';
@@ -20,11 +19,8 @@ void main() {
   ];
 
   Future<void> seedLocalData(AppDatabase database) async {
-    final parcelId = await ParcelRepository(database)
-        .save(ownerId: localOwner, name: 'Campo');
     await SectorRepository(database).saveConfirmed(
       ownerId: localOwner,
-      parcelId: parcelId,
       number: 1,
       name: 'Paltos',
       kind: 'crop',
@@ -50,11 +46,9 @@ void main() {
 
       await OwnerTransfer(database).transfer(from: localOwner, to: remoteOwner);
 
-      final parcels = await database.select(database.parcels).get();
       final sectors = await database.select(database.sectors).get();
       final outbox = await database.select(database.syncOutbox).get();
       final profiles = await database.select(database.localProfiles).get();
-      expect(parcels.map((row) => row.ownerId), everyElement(remoteOwner));
       expect(sectors.map((row) => row.ownerId), everyElement(remoteOwner));
       expect(profiles.single.id, remoteOwner);
       expect(outbox, isNotEmpty);
@@ -87,7 +81,7 @@ void main() {
           .insert(
             AppPreferencesCompanion.insert(
               ownerId: owner,
-              key: 'selected_parcel',
+              key: 'active_sector_id',
               value: value,
               updatedAt: DateTime.utc(2026),
             ),

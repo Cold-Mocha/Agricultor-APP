@@ -22,22 +22,11 @@ void main() {
     final database = AppDatabase.forTesting(NativeDatabase.memory());
     addTearDown(database.close);
     await database
-        .into(database.parcels)
-        .insert(
-          ParcelsCompanion.insert(
-            id: 'parcel-1',
-            ownerId: 'owner-1',
-            name: 'Campo',
-            updatedAt: DateTime.utc(2026),
-          ),
-        );
-    await database
         .into(database.sectors)
         .insert(
           SectorsCompanion.insert(
             id: 'sector-1',
             ownerId: 'owner-1',
-            parcelId: 'parcel-1',
             number: 1,
             name: 'Sector 1',
             polygonJson: '[]',
@@ -47,7 +36,7 @@ void main() {
         );
     final seasonId = await AgriculturalSeasonRepository(database).save(
       ownerId: 'owner-1',
-      parcelId: 'parcel-1',
+      sectorId: 'sector-1',
       name: 'Temporada 2026',
       startsOn: DateTime.utc(2026),
       endsOn: DateTime.utc(2027),
@@ -77,7 +66,6 @@ void main() {
     );
     await LaborRepository(database).save(
       ownerId: 'owner-1',
-      parcelId: 'parcel-1',
       sectorId: 'sector-1',
       seasonId: seasonId,
       cropAssignmentId: assignmentId,

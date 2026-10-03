@@ -15,38 +15,26 @@ void main() {
       addTearDown(database.close);
       await seedAgriculturalContextFixture(database);
       final now = DateTime.utc(2026, 8, 30);
-      final contexts = <(String, String)>[('parcel-1', 'sector-1')];
+      final contexts = <(String, String)>[('group-1', 'sector-1')];
       await database.batch((batch) {
-        for (var parcelIndex = 1; parcelIndex <= 20; parcelIndex++) {
-          final parcelId = 'parcel-$parcelIndex';
-          if (parcelIndex > 1) {
-            batch.insert(
-              database.parcels,
-              ParcelsCompanion.insert(
-                id: parcelId,
-                ownerId: 'owner-1',
-                name: 'Campo $parcelIndex',
-                updatedAt: now,
-              ),
-            );
-          }
+        for (var groupIndex = 1; groupIndex <= 20; groupIndex++) {
+          final groupId = 'group-$groupIndex';
           for (var sectorIndex = 1; sectorIndex <= 10; sectorIndex++) {
-            final sectorId = 'sector-$parcelIndex-$sectorIndex';
-            if (parcelIndex == 1 && sectorIndex == 1) continue;
+            final sectorId = 'sector-$groupIndex-$sectorIndex';
+            if (groupIndex == 1 && sectorIndex == 1) continue;
             batch.insert(
               database.sectors,
               SectorsCompanion.insert(
                 id: sectorId,
                 ownerId: 'owner-1',
-                parcelId: parcelId,
-                number: sectorIndex,
-                name: 'Sector $parcelIndex-$sectorIndex',
+                number: (groupIndex - 1) * 10 + sectorIndex,
+                name: 'Sector $groupIndex-$sectorIndex',
                 polygonJson: '[]',
                 areaSquareMeters: 100,
                 updatedAt: now,
               ),
             );
-            contexts.add((parcelId, sectorId));
+            contexts.add((groupId, sectorId));
           }
         }
       });
@@ -60,7 +48,6 @@ void main() {
             LaborsCompanion.insert(
               id: 'labor-$index',
               ownerId: 'owner-1',
-              parcelId: context.$1,
               sectorId: context.$2,
               seasonId: isTargetSector
                   ? const Value('season-1')
@@ -88,7 +75,6 @@ void main() {
           );
         }
       });
-      expect(await database.select(database.parcels).get(), hasLength(20));
       expect(await database.select(database.sectors).get(), hasLength(200));
       expect(await database.select(database.labors).get(), hasLength(10000));
       final durations = <Duration>[];
@@ -97,7 +83,6 @@ void main() {
         final events = await HistoryRepository(database).list(
           const HistoryFilter(
             ownerId: 'owner-1',
-            parcelId: 'parcel-1',
             sectorId: 'sector-1',
             limit: 50,
           ),

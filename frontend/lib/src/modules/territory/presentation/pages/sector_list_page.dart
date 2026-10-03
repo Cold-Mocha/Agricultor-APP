@@ -1,7 +1,6 @@
 import 'package:agrocampo/src/app/layout/agro_page.dart';
 import 'package:agrocampo/src/app/routing/app_routes.dart';
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
-import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
 import 'package:agrocampo/src/modules/territory/presentation/controllers/territory_controllers.dart';
 import 'package:agrocampo/src/modules/territory/presentation/widgets/quadrant_map_preview.dart';
 import 'package:agrocampo/src/modules/territory/presentation/widgets/sector_summary_card.dart';
@@ -18,17 +17,16 @@ final class SectorListPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(sectorListUiStateProvider);
-    final current = state.asData?.value;
-    final parcelId = current?.parcelId;
+    final signedIn = state.asData?.value.ownerId != null;
     return AgroPage(
       title: 'Cuadrantes',
-      subtitle: 'Sectores de la parcela activa',
+      subtitle: 'Tus sectores de cultivo y apicultura',
       actions: [
         IconButton(
           tooltip: 'Abrir mapa de cuadrantes',
-          onPressed: parcelId == null
-              ? null
-              : () => context.push(AppRoutes.quadrantMap(parcelId)),
+          onPressed: signedIn
+              ? () => context.push(AppRoutes.quadrantMap)
+              : null,
           icon: const Icon(LucideIcons.map),
         ),
       ],
@@ -54,20 +52,6 @@ final class SectorListPage extends ConsumerWidget {
           title: 'Sin sesión',
           message: 'Inicia sesión para ver tus cuadrantes.',
         );
-      case SectorListStatus.needsParcel:
-        return const Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            AgriculturalContextSelector(compact: true),
-            SizedBox(height: AgroSpacing.lg),
-            Expanded(
-              child: AgroEmptyState(
-                title: 'Selecciona una parcela',
-                message: 'Los cuadrantes se muestran por parcela activa.',
-              ),
-            ),
-          ],
-        );
       case SectorListStatus.error:
         return const AgroEmptyState(
           title: 'No se pudieron leer los cuadrantes',
@@ -83,12 +67,9 @@ final class SectorListPage extends ConsumerWidget {
     WidgetRef ref,
     SectorListUiState state,
   ) {
-    final parcelId = state.parcelId!;
     return ListView(
       key: const PageStorageKey('quadrants-scroll'),
       children: [
-        const AgriculturalContextSelector(compact: true),
-        const SizedBox(height: AgroSpacing.lg),
         const AgroSectionHeader(
           title: 'Tus cuadrantes',
           subtitle: 'Cultivo, estado y actividad reciente en un vistazo.',
@@ -99,7 +80,7 @@ final class SectorListPage extends ConsumerWidget {
             title: 'Aún no hay cuadrantes',
             message: 'Delimita el primero en el mapa para comenzar a registrar labores.',
             action: FilledButton.icon(
-              onPressed: () => context.push(AppRoutes.quadrantMap(parcelId)),
+              onPressed: () => context.push(AppRoutes.quadrantMap),
               icon: const Icon(LucideIcons.penTool),
               label: const Text('Delimitar en el mapa'),
             ),
@@ -129,81 +110,10 @@ final class SectorListPage extends ConsumerWidget {
         const SizedBox(height: AgroSpacing.sm),
         QuadrantMapPreview(
           sectors: state.sectors,
-          onTap: () => context.push(AppRoutes.quadrantMap(parcelId)),
+          onTap: () => context.push(AppRoutes.quadrantMap),
         ),
-        const SizedBox(height: AgroSpacing.lg),
-        AgroSectionHeader(
-          title: 'Resumen del historial',
-          subtitle: 'Últimos registros de esta parcela.',
-          actionLabel: 'Ver todo',
-          onAction: () => context.push(AppRoutes.history),
-        ),
-        const SizedBox(height: AgroSpacing.sm),
-        if (state.historyLoading)
-          const LinearProgressIndicator()
-        else if (state.history.isEmpty)
-          const Card(
-            child: Padding(
-              padding: EdgeInsets.all(AgroSpacing.md),
-              child: Text(
-                'Aún no hay actividades registradas en esta parcela.',
-              ),
-            ),
-          )
-        else
-          Column(
-            children: [
-              for (final event in state.history)
-                _HistoryPreviewRow(
-                  key: ValueKey(event.groupingKey),
-                  event: event,
-                  quadrantNumber: state.sectors
-                      .where((sector) => sector.id == event.sectorId)
-                      .map((sector) => sector.number)
-                      .firstOrNull,
-                  onTap: () =>
-                      context.push(AppRoutes.sectorHistory(event.sectorId)),
-                ),
-            ],
-          ),
         const SizedBox(height: AgroSpacing.lg),
       ],
     );
   }
-}
-
-final class _HistoryPreviewRow extends StatelessWidget {
-  const _HistoryPreviewRow({
-    required this.event,
-    required this.quadrantNumber,
-    required this.onTap,
-    super.key,
-  });
-
-  final SectorHistoryPreviewUiState event;
-  final int? quadrantNumber;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => Card(
-    child: ListTile(
-      minLeadingWidth: AgroSizes.touchTarget,
-      leading: Icon(switch (event.type) {
-        SectorHistoryType.labor => LucideIcons.circleCheckBig,
-        SectorHistoryType.soil => LucideIcons.flaskConical,
-        SectorHistoryType.cropAssignment => LucideIcons.leaf,
-      }),
-      title: Text(event.title),
-      subtitle: Text(
-        [
-          if (quadrantNumber != null) 'Cuadrante $quadrantNumber',
-          MaterialLocalizations.of(context)
-              .formatShortDate(event.occurredAt.toLocal()),
-          if (event.cropLabel != null) event.cropLabel!,
-        ].join(' · '),
-      ),
-      trailing: const ExcludeSemantics(child: Icon(LucideIcons.chevronRight)),
-      onTap: onTap,
-    ),
-  );
 }

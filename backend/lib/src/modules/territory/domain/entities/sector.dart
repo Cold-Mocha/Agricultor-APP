@@ -4,7 +4,6 @@ final class Sector {
   const Sector({
     required this.id,
     required this.ownerId,
-    required this.parcelId,
     required this.number,
     required this.name,
     required this.kind,
@@ -17,7 +16,6 @@ final class Sector {
 
   final String id;
   final String ownerId;
-  final String parcelId;
   final int number;
   final String name;
   final String kind;

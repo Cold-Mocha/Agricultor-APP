@@ -13,28 +13,21 @@ language sql as $$ select public.sync_push(jsonb_build_array(operation))->'resul
 select is(pg_temp.push_result(jsonb_build_object(
   'operation_id','21000000-0000-4000-8000-000000000001','aggregate_type','parcel',
   'aggregate_id','31000000-0000-4000-8000-000000000001','mutation_kind','create',
-  'protocol_version',2,'payload_schema_version',1,'request_hash','parcel-with-boundary',
-  'payload',jsonb_build_object(
-    'id','31000000-0000-4000-8000-000000000001','name','Campo territorio','is_active',true,
-    'polygon',jsonb_build_array(
-      jsonb_build_object('lat',-38.75,'lng',-72.61), jsonb_build_object('lat',-38.75,'lng',-72.57),
-      jsonb_build_object('lat',-38.71,'lng',-72.57), jsonb_build_object('lat',-38.71,'lng',-72.61)
-    ), 'updated_at','2026-08-29T00:00:00Z'
-  ))) ->> 'status', 'applied', 'parcel geometry applies');
-select ok((select boundary is not null from public.parcels where id='31000000-0000-4000-8000-000000000001'), 'parcel boundary persisted');
+  'protocol_version',2,'payload_schema_version',1,'request_hash','legacy-parcel',
+  'payload',jsonb_build_object('id','31000000-0000-4000-8000-000000000001','name','Campo')
+  )) ->> 'error_code', 'aggregate_unsupported', 'parcel aggregate is no longer accepted');
+select hasnt_table('public', 'parcels', 'module 004 removes parcels');
 
 select is(pg_temp.push_result(jsonb_build_object(
   'operation_id','21000000-0000-4000-8000-000000000002','aggregate_type','sector',
   'aggregate_id','32000000-0000-4000-8000-000000000001','mutation_kind','create',
   'protocol_version',2,'payload_schema_version',1,'request_hash','sector-create',
-  'depends_on_operation_id','21000000-0000-4000-8000-000000000001',
   'payload',jsonb_build_object(
-    'id','32000000-0000-4000-8000-000000000001','parcel_id','31000000-0000-4000-8000-000000000001',
-    'number',1,'name','Norte','kind','crop','polygon',jsonb_build_array(
+    'id','32000000-0000-4000-8000-000000000001',    'number',1,'name','Norte','kind','crop','polygon',jsonb_build_array(
       jsonb_build_object('lat',-38.74,'lng',-72.60), jsonb_build_object('lat',-38.74,'lng',-72.59),
       jsonb_build_object('lat',-38.73,'lng',-72.59), jsonb_build_object('lat',-38.73,'lng',-72.60)
     ), 'updated_at','2026-08-29T00:01:00Z'
-  ))) ->> 'status', 'applied', 'sector applies after parent');
+  ))) ->> 'status', 'applied', 'sector applies without a parent');
 select is((select count(*)::integer from public.sectors where id='32000000-0000-4000-8000-000000000001'), 1, 'sector business row exists before ACK');
 select ok((select area_square_meters > 0 from public.sectors where id='32000000-0000-4000-8000-000000000001'), 'PostGIS computes positive sector area');
 select is(pg_temp.push_result(jsonb_build_object(
@@ -46,26 +39,27 @@ select is(pg_temp.push_result(jsonb_build_object(
 select is(pg_temp.push_result(jsonb_build_object(
   'operation_id','21000000-0000-4000-8000-000000000003','aggregate_type','sector',
   'aggregate_id','32000000-0000-4000-8000-000000000002','mutation_kind','create',
-  'protocol_version',2,'payload_schema_version',1,'request_hash','missing-parent','payload',jsonb_build_object(
-    'id','32000000-0000-4000-8000-000000000002','parcel_id','31000000-0000-4000-8000-000000000099',
-    'number',2,'name','Huérfano','polygon',jsonb_build_array(1,2,3)
-  ))) ->> 'error_code', 'parent_missing', 'missing parent rejects without ACK');
-select is((select count(*)::integer from public.sync_operations where operation_id='21000000-0000-4000-8000-000000000003'), 0, 'rejected child has no success receipt');
+  'protocol_version',2,'payload_schema_version',1,'request_hash','duplicate-number','payload',jsonb_build_object(
+    'id','32000000-0000-4000-8000-000000000002',
+    'number',1,'name','Repetido','kind','crop','polygon',jsonb_build_array(
+      jsonb_build_object('lat',-38.70,'lng',-72.60), jsonb_build_object('lat',-38.70,'lng',-72.59),
+      jsonb_build_object('lat',-38.69,'lng',-72.59)
+    ), 'updated_at','2026-08-29T00:02:00Z'
+  ))) ->> 'error_code', 'uniqueness_conflict', 'sector numbers are unique per owner');
+select is((select count(*)::integer from public.sync_operations where operation_id='21000000-0000-4000-8000-000000000003'), 0, 'rejected sector has no success receipt');
 
 select is(pg_temp.push_result(jsonb_build_object(
   'operation_id','21000000-0000-4000-8000-000000000004','aggregate_type','sector',
   'aggregate_id','32000000-0000-4000-8000-000000000001','mutation_kind','update',
   'protocol_version',2,'payload_schema_version',1,'base_version',0,'request_hash','stale-sector','payload',jsonb_build_object(
-    'id','32000000-0000-4000-8000-000000000001','parcel_id','31000000-0000-4000-8000-000000000001',
-    'number',1,'name','Stale','polygon',jsonb_build_array(1,2,3)
+    'id','32000000-0000-4000-8000-000000000001',    'number',1,'name','Stale','polygon',jsonb_build_array(1,2,3)
   ))) ->> 'status', 'conflict', 'stale sector update conflicts');
 
 select is(pg_temp.push_result(jsonb_build_object(
   'operation_id','21000000-0000-4000-8000-000000000005','aggregate_type','sector',
   'aggregate_id','32000000-0000-4000-8000-000000000001','mutation_kind','delete',
   'protocol_version',2,'payload_schema_version',1,'base_version',1,'request_hash','delete-sector','payload',jsonb_build_object(
-    'id','32000000-0000-4000-8000-000000000001','parcel_id','31000000-0000-4000-8000-000000000001',
-    'number',1,'name','Norte','kind','crop','polygon',jsonb_build_array(
+    'id','32000000-0000-4000-8000-000000000001',    'number',1,'name','Norte','kind','crop','polygon',jsonb_build_array(
       jsonb_build_object('lat',-38.74,'lng',-72.60), jsonb_build_object('lat',-38.74,'lng',-72.59),
       jsonb_build_object('lat',-38.73,'lng',-72.59), jsonb_build_object('lat',-38.73,'lng',-72.60)
     ), 'deleted_at','2026-08-30T00:00:00Z','updated_at','2026-08-30T00:00:00Z'

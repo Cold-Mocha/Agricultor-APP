@@ -8,14 +8,14 @@ void main() {
   const requests = [
     PushMutation(
       operationId: 'one',
-      aggregateType: 'parcel',
+      aggregateType: 'sector',
       aggregateId: 'p1',
       kind: 'create',
       payloadJson: '{}',
     ),
     PushMutation(
       operationId: 'two',
-      aggregateType: 'parcel',
+      aggregateType: 'sector',
       aggregateId: 'p2',
       kind: 'create',
       payloadJson: '{}',
@@ -41,7 +41,7 @@ void main() {
     final result = pullParser.parse([
       {
         'change_seq': 8,
-        'aggregate_type': 'parcel',
+        'aggregate_type': 'sector',
         'aggregate_id': 'p1',
         'mutation_kind': 'update',
         'remote_version': 2,
@@ -54,7 +54,7 @@ void main() {
       () => pullParser.parse([
         {
           'change_seq': 7,
-          'aggregate_type': 'parcel',
+          'aggregate_type': 'sector',
           'aggregate_id': 'p1',
           'mutation_kind': 'update',
           'remote_version': 2,

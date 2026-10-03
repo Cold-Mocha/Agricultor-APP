@@ -4,7 +4,7 @@ final class AgriculturalSeason {
   const AgriculturalSeason({
     required this.id,
     required this.ownerId,
-    required this.parcelId,
+    required this.sectorId,
     required this.name,
     required this.startsOn,
     required this.status,
@@ -18,7 +18,7 @@ final class AgriculturalSeason {
 
   final String id;
   final String ownerId;
-  final String parcelId;
+  final String sectorId;
   final String name;
   final DateTime startsOn;
   final DateTime? endsOn;

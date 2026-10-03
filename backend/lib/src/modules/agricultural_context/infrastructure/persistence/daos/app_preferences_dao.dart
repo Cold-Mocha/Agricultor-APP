@@ -41,7 +41,6 @@ final class AppPreferencesDao {
 
   Future<void> clearAgriculturalContext(String ownerId) async {
     const keys = {
-      'active_parcel_id',
       'active_sector_id',
       'active_season_id',
       'active_assignment_id',

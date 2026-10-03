@@ -6,7 +6,6 @@ import 'package:agrocampo_backend/src/modules/crop_cycles/infrastructure/persist
 import 'package:agrocampo_backend/src/modules/crop_cycles/infrastructure/persistence/crop_repository.dart';
 import 'package:agrocampo_backend/src/modules/crop_cycles/infrastructure/persistence/sector_crop_assignment_repository.dart';
 import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo_point.dart';
-import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
 import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:agrocampo_backend/src/platform/sync/protocol/supabase_sync_gateway.dart';
@@ -43,23 +42,11 @@ void main() {
       await firstDb.close();
       await firstDirectory.delete(recursive: true);
     });
-    final parcelId = await ParcelRepository(firstDb).save(
-      ownerId: ownerId,
-      name: 'Campo rotaciones',
-      isActive: true,
-      boundary: const [
-        GeoPoint(-38.75, -72.61),
-        GeoPoint(-38.75, -72.57),
-        GeoPoint(-38.71, -72.57),
-        GeoPoint(-38.71, -72.61),
-      ],
-    );
     final sectorIds = <String>[];
     for (var number = 1; number <= 2; number++) {
       sectorIds.add(
         await SectorRepository(firstDb).save(
           ownerId: ownerId,
-          parcelId: parcelId,
           number: number,
           name: 'Sector $number',
           polygon: [
@@ -71,14 +58,18 @@ void main() {
         ),
       );
     }
-    final seasonId = await AgriculturalSeasonRepository(firstDb).save(
-      ownerId: ownerId,
-      parcelId: parcelId,
-      name: '2026-27',
-      startsOn: DateTime.utc(2026, 7),
-      endsOn: DateTime.utc(2027, 6),
-      status: AgriculturalSeasonStatus.active,
-    );
+    final seasonIds = [
+      for (final sectorId in sectorIds)
+        await AgriculturalSeasonRepository(firstDb).save(
+          ownerId: ownerId,
+          sectorId: sectorId,
+          name: '2026-27',
+          startsOn: DateTime.utc(2026, 7),
+          endsOn: DateTime.utc(2027, 6),
+          status: AgriculturalSeasonStatus.active,
+        ),
+    ];
+    final seasonId = seasonIds.first;
     final crops = CropRepository(firstDb);
     final maizeId = await crops.createCustom(
       ownerId: ownerId,
@@ -103,7 +94,7 @@ void main() {
     final secondAssignment = await assignments.plan(
       ownerId: ownerId,
       sectorId: sectorIds[1],
-      agriculturalSeasonId: seasonId,
+      agriculturalSeasonId: seasonIds.last,
       crop: await crops.getById(
         ownerId: ownerId,
         cropId: wheatId,

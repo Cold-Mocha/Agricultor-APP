@@ -11,7 +11,6 @@ void main() {
     for (final route in [
       '/inicio',
       '/inicio/perfil',
-      '/inicio/parcelas',
       '/sectores',
       '/registrar',
       '/registrar/suelo',
@@ -30,9 +29,21 @@ void main() {
     ]) {
       expect(routes, contains("'$route'"), reason: 'Ruta MVP ausente: $route');
     }
-    expect(router, contains("path: 'parcela/:parcelId/mapa'"));
+    expect(router, contains("path: 'mapa'"));
+    expect(
+      routes,
+      isNot(contains('parcela')),
+      reason: 'Módulo 004 sin parcelas',
+    );
     expect(router, contains("path: 'labor/:laborType'"));
     expect(router, contains("path: 'conflictos/:id'"));
     expect(router, isNot(contains('FoundationPlaceholderPage')));
+    final shell = File('lib/src/app/shell/agro_app_shell.dart')
+        .readAsStringSync();
+    expect(
+      shell,
+      isNot(contains("label: 'Registrar'")),
+      reason: 'Registrar ya no es una pestaña; se abre desde el cuadrante.',
+    );
   });
 }

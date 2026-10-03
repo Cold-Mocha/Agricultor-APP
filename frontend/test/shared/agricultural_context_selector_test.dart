@@ -2,7 +2,8 @@ import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
 import 'package:agrocampo/src/modules/auth/auth_ui.dart';
 import 'package:agrocampo_backend/src/composition/backend_providers.dart';
-import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
+import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo_point.dart';
+import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,13 +11,21 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../backend/test/helpers/in_memory_database.dart';
 
 void main() {
-  testWidgets('shows agricultural labels and never exposes raw ids', (
-    tester,
-  ) async {
+  testWidgets('shows sector labels and never exposes raw ids', (tester) async {
     final database = createInMemoryDatabase();
     addTearDown(database.close);
-    final parcelId = await ParcelRepository(database)
-        .save(ownerId: 'owner-1', name: 'Parcela El Molino', isActive: true);
+    final sectorId = await tester.runAsync(
+      () => SectorRepository(database).save(
+        ownerId: 'owner-1',
+        number: 1,
+        name: 'Cuadrante El Molino',
+        polygon: const [
+          GeoPoint(-38.74, -72.60),
+          GeoPoint(-38.74, -72.59),
+          GeoPoint(-38.73, -72.59),
+        ],
+      ),
+    );
 
     await tester.pumpWidget(
       ProviderScope(
@@ -30,21 +39,24 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    expect(
+      find.bySemanticsLabel(RegExp('^Contexto agrícola activo')),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const Key('active-sector-selector')));
+    await tester.pumpAndSettle();
 
-    expect(find.text('Parcela El Molino'), findsOneWidget);
-    expect(find.text(parcelId), findsNothing);
-    expect(find.bySemanticsLabel('Contexto agrícola activo'), findsOneWidget);
+    expect(find.text('Cuadrante El Molino'), findsWidgets);
+    expect(find.text(sectorId!), findsNothing);
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(milliseconds: 1));
   });
 
-  testWidgets('places parcel and sector side by side on a standard phone', (
+  testWidgets('offers only the sector selector on a standard phone', (
     tester,
   ) async {
     final database = createInMemoryDatabase();
     addTearDown(database.close);
-    await ParcelRepository(database)
-        .save(ownerId: 'owner-1', name: 'Parcela El Molino', isActive: true);
     await tester.binding.setSurfaceSize(const Size(360, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -66,65 +78,21 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('agricultural-context-row')), findsOneWidget);
-    final parcel = find.byKey(const Key('active-parcel-selector'));
     final sector = find.byKey(const Key('active-sector-selector'));
-    expect(tester.getTopLeft(parcel).dy, tester.getTopLeft(sector).dy);
-    expect(
-      tester.getTopLeft(parcel).dx,
-      lessThan(tester.getTopLeft(sector).dx),
-    );
-    expect(tester.getSize(parcel).height, greaterThanOrEqualTo(48));
-    expect(tester.getTopLeft(parcel).dy, AgroSpacing.xs);
+    expect(sector, findsOneWidget);
+    expect(find.byKey(const Key('active-parcel-selector')), findsNothing);
+    expect(tester.getSize(sector).height, greaterThanOrEqualTo(48));
+    expect(tester.getTopLeft(sector).dy, AgroSpacing.xs);
+    expect(find.text('Sector requerido'), findsOneWidget);
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(milliseconds: 1));
   });
 
-  testWidgets('stacks the selectors when the available width is too narrow', (
+  testWidgets('keeps the selector usable when system text is enlarged', (
     tester,
   ) async {
     final database = createInMemoryDatabase();
     addTearDown(database.close);
-    await ParcelRepository(database)
-        .save(ownerId: 'owner-1', name: 'Parcela El Molino', isActive: true);
-    await tester.binding.setSurfaceSize(const Size(300, 800));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          appDatabaseProvider.overrideWithValue(database),
-          unlockedOwnerIdProvider.overrideWithValue('owner-1'),
-        ],
-        child: const MaterialApp(
-          home: Scaffold(body: AgriculturalContextSelector()),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(
-      find.byKey(const Key('agricultural-context-column')),
-      findsOneWidget,
-    );
-    final parcelTop = tester.getTopLeft(
-      find.byKey(const Key('active-parcel-selector')),
-    );
-    final sectorTop = tester.getTopLeft(
-      find.byKey(const Key('active-sector-selector')),
-    );
-    expect(sectorTop.dy, greaterThan(parcelTop.dy));
-    await tester.pumpWidget(const SizedBox.shrink());
-    await tester.pump(const Duration(milliseconds: 1));
-  });
-
-  testWidgets('stacks the selectors when system text is enlarged', (
-    tester,
-  ) async {
-    final database = createInMemoryDatabase();
-    addTearDown(database.close);
-    await ParcelRepository(database)
-        .save(ownerId: 'owner-1', name: 'Parcela El Molino', isActive: true);
     await tester.binding.setSurfaceSize(const Size(412, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -149,10 +117,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(
-      find.byKey(const Key('agricultural-context-column')),
-      findsOneWidget,
-    );
+    expect(find.byKey(const Key('active-sector-selector')), findsOneWidget);
     expect(find.text('Sector requerido'), findsOneWidget);
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(milliseconds: 1));

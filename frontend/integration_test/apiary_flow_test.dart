@@ -1,7 +1,6 @@
 import 'package:agrocampo_backend/src/modules/apiary/domain/entities/apiary_inspection_input.dart';
 import 'package:agrocampo_backend/src/modules/apiary/infrastructure/persistence/apiary_repository.dart';
 import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo_point.dart';
-import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
 import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:drift/native.dart';
@@ -13,12 +12,8 @@ void main() {
   testWidgets('apiary inspection is readable offline', (tester) async {
     final database = AppDatabase.forTesting(NativeDatabase.memory());
     addTearDown(database.close);
-    final parcelId = await ParcelRepository(
-      database,
-    ).save(ownerId: 'owner-1', name: 'Campo apícola de prueba', isActive: true);
     final sectorId = await SectorRepository(database).save(
       ownerId: 'owner-1',
-      parcelId: parcelId,
       number: 1,
       name: 'Apiario de prueba',
       kind: 'apiary',

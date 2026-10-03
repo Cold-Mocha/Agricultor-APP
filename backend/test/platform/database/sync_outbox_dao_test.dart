@@ -19,8 +19,8 @@ void main() {
   }) => SyncOutboxCompanion.insert(
     operationId: id,
     ownerId: 'owner-1',
-    aggregateType: 'parcel',
-    aggregateId: 'parcel-1',
+    aggregateType: 'sector',
+    aggregateId: 'sector-1',
     mutationKind: kind,
     payloadJson: '{}',
     state: Value(state),

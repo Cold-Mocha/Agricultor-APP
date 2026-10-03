@@ -1,4 +1,4 @@
 abstract final class MigrationPolicy {
-  static const currentSchemaVersion = 11;
+  static const currentSchemaVersion = 12;
   static const snapshotsDirectory = 'drift_schemas';
 }

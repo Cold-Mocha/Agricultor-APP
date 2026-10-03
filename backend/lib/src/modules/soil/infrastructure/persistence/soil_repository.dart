@@ -48,7 +48,6 @@ final class SoilRepository {
     final payload = <String, Object?>{
       'id': laborId,
       'owner_id': ownerId,
-      'parcel_id': sector.parcelId,
       'sector_id': sectorId,
       'type': LaborType.soil.name,
       'domain_category': ProductiveCategory.crop.code,
@@ -66,7 +65,6 @@ final class SoilRepository {
               LaborsCompanion.insert(
                 id: laborId,
                 ownerId: ownerId,
-                parcelId: sector.parcelId,
                 sectorId: sectorId,
                 type: LaborType.soil.name,
                 detailsJson: Value(details.encode()),

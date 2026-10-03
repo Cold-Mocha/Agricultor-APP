@@ -7,7 +7,6 @@ void main() {
   test('sector mapper exposes a display contract without data models', () {
     final summary = SectorSummary(
       id: 'sector-1',
-      parcelId: 'parcel-1',
       number: 1,
       kind: 'crop',
       areaSquareMeters: 100,
@@ -48,7 +47,6 @@ void main() {
   test('category comes from the stored kind, never from a label', () {
     final summary = SectorSummary(
       id: 'sector-2',
-      parcelId: 'parcel-1',
       number: 2,
       kind: 'crop',
       areaSquareMeters: 100,

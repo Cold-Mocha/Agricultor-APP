@@ -36,7 +36,7 @@ void main() {
       addTearDown(() => directory.delete(recursive: true));
       await seedTerritoryFixture(database);
       await database.customUpdate(
-        "INSERT INTO labors (id, owner_id, parcel_id, sector_id, type, occurred_at, updated_at) VALUES ('apiary-labor','owner-1','parcel-1','sector-1','apiary',?,?)",
+        "INSERT INTO labors (id, owner_id, sector_id, type, occurred_at, updated_at) VALUES ('apiary-labor','owner-1','sector-1','apiary',?,?)",
         variables: [
           Variable<DateTime>(DateTime.utc(2026)),
           Variable<DateTime>(DateTime.utc(2026)),

@@ -8,7 +8,7 @@ select has_column('public', 'labors', 'crop_assignment_id', 'labor links assignm
 select has_column('public', 'labors', 'details_schema_version', 'labor details are versioned');
 select has_column('public', 'irrigation_records', 'labor_id', 'irrigation links labor');
 select has_column('public', 'production_records', 'labor_id', 'production links labor');
-select has_column('public', 'reminders', 'parcel_id', 'reminder links parcel');
+select hasnt_column('public', 'reminders', 'parcel_id', 'reminders no longer link parcels');
 select has_column('public', 'custom_crops', 'normalized_name', 'custom crop name normalized');
 select ok(
   (select relrowsecurity from pg_class where oid = 'public.agricultural_seasons'::regclass),

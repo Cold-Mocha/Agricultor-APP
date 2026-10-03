@@ -28,12 +28,6 @@ final class AgriculturalContextController
     if (state.ownerId == ownerId) state = restored;
   }
 
-  Future<void> selectParcel(String parcelId) async {
-    state = await ref
-        .read(agriculturalContextFacadeProvider)
-        .selectParcel(state, parcelId);
-  }
-
   Future<void> selectSector(String? sectorId) async {
     state = await ref
         .read(agriculturalContextFacadeProvider)

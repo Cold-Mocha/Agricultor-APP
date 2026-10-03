@@ -29,141 +29,121 @@ final class ProfilePage extends ConsumerWidget {
             )
           : StreamBuilder<ProfileUiState?>(
               stream: controller.watchProfile(ownerId),
-              builder: (context, profileSnapshot) => StreamBuilder<String?>(
-                stream: controller.watchActiveLocality(ownerId),
-                builder: (context, parcelSnapshot) {
-                  final profile = profileSnapshot.data;
-                  final activeLocality = parcelSnapshot.data;
-                  final displayName =
-                      profile?.displayName ?? 'Nombre no configurado';
-                  final locality = activeLocality?.trim().isNotEmpty == true
-                      ? activeLocality!
-                      : 'Ubicación no configurada';
-                  return ListView(
-                    key: const PageStorageKey('profile-scroll'),
-                    children: [
-                      _ProfileHeader(
-                        displayName: displayName,
-                        email: profile?.emailDisplay,
-                        locality: locality,
-                        onEdit: () =>
-                            context.push(AppRoutes.profilePersonalInformation),
-                      ),
-                      const SizedBox(height: AgroSpacing.lg),
-                      AgroSettingsGroup(
-                        title: 'Cuenta',
-                        children: [
-                          AgroSettingsTile(
-                            icon: LucideIcons.idCard,
-                            title: 'Información personal',
-                            subtitle: 'Nombre visible y dato de acceso',
-                            onTap: () => context.push(
-                              AppRoutes.profilePersonalInformation,
-                            ),
+              builder: (context, profileSnapshot) {
+                final profile = profileSnapshot.data;
+                final displayName =
+                    profile?.displayName ?? 'Nombre no configurado';
+                return ListView(
+                  key: const PageStorageKey('profile-scroll'),
+                  children: [
+                    _ProfileHeader(
+                      displayName: displayName,
+                      email: profile?.emailDisplay,
+                      onEdit: () =>
+                          context.push(AppRoutes.profilePersonalInformation),
+                    ),
+                    const SizedBox(height: AgroSpacing.lg),
+                    AgroSettingsGroup(
+                      title: 'Cuenta',
+                      children: [
+                        AgroSettingsTile(
+                          icon: LucideIcons.idCard,
+                          title: 'Información personal',
+                          subtitle: 'Nombre visible y dato de acceso',
+                          onTap: () => context.push(
+                            AppRoutes.profilePersonalInformation,
                           ),
-                          AgroSettingsTile(
-                            icon: LucideIcons.mapPin,
-                            title: 'Ubicación',
-                            subtitle: 'Parcela activa y localidad',
-                            value: locality,
-                            onTap: () => context.push(AppRoutes.parcels),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: AgroSpacing.lg),
-                      AgroSettingsGroup(
-                        title: 'Preferencias',
-                        children: [
-                          AgroSettingsTile(
-                            icon: LucideIcons.bell,
-                            title: 'Notificaciones',
-                            subtitle: 'Alertas meteorológicas y recordatorios',
-                            onTap: () =>
-                                context.push(AppRoutes.profileNotifications),
-                          ),
-                          AgroSettingsTile(
-                            icon: LucideIcons.languages,
-                            title: 'Idioma',
-                            subtitle: 'Idioma de la aplicación',
-                            value: 'Español (Chile)',
-                            onTap: () =>
-                                context.push(AppRoutes.profileLanguage),
-                          ),
-                          AgroSettingsTile(
-                            icon: LucideIcons.fingerprint,
-                            title: 'Seguridad y biometría',
-                            subtitle: 'Desbloqueo en este dispositivo',
-                            onTap: () =>
-                                context.push(AppRoutes.profileSecurity),
-                          ),
-                          AgroSettingsTile(
-                            icon: LucideIcons.sun,
-                            title: 'Tema',
-                            subtitle: 'Apariencia disponible',
-                            value: 'Claro',
-                            onTap: () => context.push(AppRoutes.profileTheme),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: AgroSpacing.lg),
-                      AgroSettingsGroup(
-                        title: 'Ayuda y privacidad',
-                        children: [
-                          AgroSettingsTile(
-                            icon: LucideIcons.circleHelp,
-                            title: 'Ayuda y soporte',
-                            subtitle: 'Uso en terreno y datos offline',
-                            onTap: () => context.push(AppRoutes.profileHelp),
-                          ),
-                          AgroSettingsTile(
-                            icon: LucideIcons.circleHelp,
-                            title: 'Contacto',
-                            subtitle: 'Estado del canal de atención',
-                            onTap: () => context.push(AppRoutes.profileContact),
-                          ),
-                          AgroSettingsTile(
-                            icon: LucideIcons.shieldCheck,
-                            title: 'Privacidad',
-                            subtitle: 'Guardado local y respaldo',
-                            onTap: () => context.push(AppRoutes.profilePrivacy),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: AgroSpacing.lg),
-                      AgroSettingsGroup(
-                        title: 'Datos',
-                        children: [
-                          AgroSettingsTile(
-                            icon: LucideIcons.cloudSync,
-                            title: 'Estado del respaldo',
-                            subtitle:
-                                'Pendientes, errores y última sincronización',
-                            onTap: () =>
-                                context.push(AppRoutes.synchronization),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: AgroSpacing.lg),
-                      if (!localMode) ...[
-                        OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Theme.of(context)
-                                .colorScheme
-                                .error,
-                            side: BorderSide(
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                          ),
-                          onPressed: () => _confirmSignOut(context, ref),
-                          icon: const Icon(LucideIcons.logOut),
-                          label: const Text('Cerrar sesión'),
                         ),
-                        const SizedBox(height: AgroSpacing.lg),
                       ],
+                    ),
+                    const SizedBox(height: AgroSpacing.lg),
+                    AgroSettingsGroup(
+                      title: 'Preferencias',
+                      children: [
+                        AgroSettingsTile(
+                          icon: LucideIcons.bell,
+                          title: 'Notificaciones',
+                          subtitle: 'Alertas meteorológicas y recordatorios',
+                          onTap: () =>
+                              context.push(AppRoutes.profileNotifications),
+                        ),
+                        AgroSettingsTile(
+                          icon: LucideIcons.languages,
+                          title: 'Idioma',
+                          subtitle: 'Idioma de la aplicación',
+                          value: 'Español (Chile)',
+                          onTap: () => context.push(AppRoutes.profileLanguage),
+                        ),
+                        AgroSettingsTile(
+                          icon: LucideIcons.fingerprint,
+                          title: 'Seguridad y biometría',
+                          subtitle: 'Desbloqueo en este dispositivo',
+                          onTap: () => context.push(AppRoutes.profileSecurity),
+                        ),
+                        AgroSettingsTile(
+                          icon: LucideIcons.sun,
+                          title: 'Tema',
+                          subtitle: 'Apariencia disponible',
+                          value: 'Claro',
+                          onTap: () => context.push(AppRoutes.profileTheme),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AgroSpacing.lg),
+                    AgroSettingsGroup(
+                      title: 'Ayuda y privacidad',
+                      children: [
+                        AgroSettingsTile(
+                          icon: LucideIcons.circleHelp,
+                          title: 'Ayuda y soporte',
+                          subtitle: 'Uso en terreno y datos offline',
+                          onTap: () => context.push(AppRoutes.profileHelp),
+                        ),
+                        AgroSettingsTile(
+                          icon: LucideIcons.circleHelp,
+                          title: 'Contacto',
+                          subtitle: 'Estado del canal de atención',
+                          onTap: () => context.push(AppRoutes.profileContact),
+                        ),
+                        AgroSettingsTile(
+                          icon: LucideIcons.shieldCheck,
+                          title: 'Privacidad',
+                          subtitle: 'Guardado local y respaldo',
+                          onTap: () => context.push(AppRoutes.profilePrivacy),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AgroSpacing.lg),
+                    AgroSettingsGroup(
+                      title: 'Datos',
+                      children: [
+                        AgroSettingsTile(
+                          icon: LucideIcons.cloudSync,
+                          title: 'Estado del respaldo',
+                          subtitle:
+                              'Pendientes, errores y última sincronización',
+                          onTap: () => context.push(AppRoutes.synchronization),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AgroSpacing.lg),
+                    if (!localMode) ...[
+                      OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Theme.of(context).colorScheme.error,
+                          side: BorderSide(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                        onPressed: () => _confirmSignOut(context, ref),
+                        icon: const Icon(LucideIcons.logOut),
+                        label: const Text('Cerrar sesión'),
+                      ),
+                      const SizedBox(height: AgroSpacing.lg),
                     ],
-                  );
-                },
-              ),
+                  ],
+                );
+              },
             ),
     );
   }
@@ -198,13 +178,11 @@ final class _ProfileHeader extends StatelessWidget {
   const _ProfileHeader({
     required this.displayName,
     required this.email,
-    required this.locality,
     required this.onEdit,
   });
 
   final String displayName;
   final String? email;
-  final String locality;
   final VoidCallback onEdit;
 
   @override
@@ -238,25 +216,11 @@ final class _ProfileHeader extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: AgroSpacing.xxs),
-                  const Text(
-                    'Uso personal · propietario/a de la parcela activa',
-                  ),
+                  const Text('Uso personal · propietario/a de los cuadrantes'),
                   if (email case final value?) ...[
                     const SizedBox(height: AgroSpacing.xxs),
                     Text(value),
                   ],
-                  const SizedBox(height: AgroSpacing.xs),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Icon(
-                        LucideIcons.mapPin,
-                        size: AgroSizes.iconStandard,
-                      ),
-                      const SizedBox(width: AgroSpacing.xxs),
-                      Expanded(child: Text(locality)),
-                    ],
-                  ),
                 ],
               ),
             ),

@@ -4,8 +4,6 @@ abstract final class AppRoutes {
   static const login = '/acceso';
   static const home = '/inicio';
   static const profile = '/inicio/perfil';
-  static const parcels = '/inicio/parcelas';
-  static const newParcel = '/inicio/parcelas/nueva';
 
   static const sectors = '/sectores';
 
@@ -35,11 +33,7 @@ abstract final class AppRoutes {
   static const profileContact = '/inicio/perfil/contacto';
   static const profilePrivacy = '/inicio/perfil/privacidad';
 
-  static String editParcel(String parcelId) =>
-      '$parcels/${Uri.encodeComponent(parcelId)}/editar';
-
-  static String quadrantMap(String parcelId) =>
-      '$sectors/parcela/${Uri.encodeComponent(parcelId)}/mapa';
+  static const quadrantMap = '$sectors/mapa';
 
   static String sector(String sectorId) =>
       '$sectors/${Uri.encodeComponent(sectorId)}';

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:agrocampo_backend/src/platform/database/daos/form_draft_dao.dart';
 import 'package:agrocampo_backend/src/platform/sync/persistence/daos/conflict_dao.dart';
 import 'package:agrocampo_backend/src/platform/sync/persistence/daos/sync_cursor_dao.dart';
@@ -25,7 +23,6 @@ part '../../modules/production/infrastructure/persistence/tables/production_reco
 part '../../modules/profile/infrastructure/persistence/tables/local_profiles.dart';
 part '../../modules/reminders/infrastructure/persistence/tables/reminders.dart';
 part '../../modules/soil/infrastructure/persistence/tables/soil_measurements.dart';
-part '../../modules/territory/infrastructure/persistence/tables/parcels.dart';
 part '../../modules/territory/infrastructure/persistence/tables/sectors.dart';
 part '../../modules/weather/infrastructure/persistence/tables/weather_cache.dart';
 part '../notifications/persistence/tables/device_installations.dart';
@@ -33,8 +30,7 @@ part '../sync/persistence/tables/sync_conflicts.dart';
 part '../sync/persistence/tables/sync_cursors.dart';
 part '../sync/persistence/tables/sync_outbox.dart';
 part 'app_database.g.dart';
-part 'migrations/functional_core_v10.dart';
-part 'migrations/functional_refinement_v11.dart';
+part 'migrations/sector_only_v12.dart';
 part 'tables/form_drafts.dart';
 
 @DriftDatabase(
@@ -45,7 +41,6 @@ part 'tables/form_drafts.dart';
     SyncCursors,
     SyncConflicts,
     FormDrafts,
-    Parcels,
     Sectors,
     OfficialCrops,
     CustomCrops,
@@ -74,74 +69,25 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (migrator) async {
       await migrator.createAll();
       await customStatement('PRAGMA foreign_keys = ON');
-      for (final statement in _functionalCoreV10Indexes) {
+      for (final statement in _sectorOnlyV12Indexes) {
         await customStatement(statement);
       }
     },
     onUpgrade: (migrator, from, to) async {
-      if (from < 2) {
-        await migrator.createTable(parcels);
-      }
-      if (from < 3) {
-        if (from == 2) {
-          await migrator.addColumn(parcels, parcels.polygonJson);
-          await migrator.addColumn(parcels, parcels.areaSquareMeters);
-        }
-        await migrator.createTable(sectors);
-        await migrator.createTable(officialCrops);
-        await migrator.createTable(customCrops);
-        await migrator.createTable(cropSeasons);
-      }
-      if (from < 4) {
-        await migrator.createTable(labors);
-        await migrator.createTable(soilMeasurements);
-        await migrator.createTable(irrigationRecords);
-      }
-      if (from < 5) {
-        await migrator.createTable(cropIrrigationRules);
-        await migrator.createTable(irrigationEstimates);
-      }
-      if (from < 6) {
-        await migrator.createTable(productionRecords);
-      }
-      if (from < 7) {
-        await migrator.createTable(photoAttachments);
-        await migrator.createTable(reminders);
-        await migrator.createTable(deviceInstallations);
-      }
-      if (from < 8) {
-        await migrator.createTable(apiaryInspections);
-      }
-      if (from < 9) {
-        await migrator.createTable(weatherCache);
-        await migrator.createTable(aiMessages);
-        await migrator.createTable(exportSnapshots);
-      }
-      if (from < 10) {
-        await transaction(() => _upgradeFunctionalCoreV10(this, migrator));
-      }
-      if (from < 11) {
-        await transaction(
-          () => _upgradeFunctionalRefinementV11(this, migrator),
-        );
+      if (from < 12) {
+        await _resetForSectorOnlyV12(this, migrator);
       }
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
-      // Idempotent so v10 databases created by earlier builds also receive
-      // the query indexes without a destructive schema bump.
-      for (final statement in _functionalCoreV10Indexes) {
-        await customStatement(statement);
-      }
-      await _ensureFunctionalRefinementV11Columns(this);
-      for (final statement in _functionalRefinementV11Indexes) {
+      for (final statement in _sectorOnlyV12Indexes) {
         await customStatement(statement);
       }
     },

@@ -17,7 +17,6 @@ void main() {
           LaborsCompanion.insert(
             id: 'labor-1',
             ownerId: 'owner-1',
-            parcelId: 'parcel-1',
             sectorId: 'sector-1',
             type: 'fertilization',
             occurredAt: DateTime.utc(2026, 8, 20),
@@ -51,7 +50,7 @@ void main() {
         );
 
     final summaries = await SectorSummaryRepository(database)
-        .watch(ownerId: 'owner-1', parcelId: 'parcel-1')
+        .watch('owner-1')
         .first;
     final summary = summaries.single;
 

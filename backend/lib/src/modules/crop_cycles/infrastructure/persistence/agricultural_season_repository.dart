@@ -12,15 +12,15 @@ final class AgriculturalSeasonRepository {
 
   final AppDatabase _database;
 
-  Stream<List<domain.AgriculturalSeason>> watchByParcel({
+  Stream<List<domain.AgriculturalSeason>> watchBySector({
     required String ownerId,
-    required String parcelId,
+    required String sectorId,
   }) =>
       (_database.select(_database.agriculturalSeasons)
             ..where(
               (row) =>
                   row.ownerId.equals(ownerId) &
-                  row.parcelId.equals(parcelId) &
+                  row.sectorId.equals(sectorId) &
                   row.deletedAt.isNull(),
             )
             ..orderBy([(row) => OrderingTerm.desc(row.startsOn)]))
@@ -29,7 +29,7 @@ final class AgriculturalSeasonRepository {
 
   Future<String> save({
     required String ownerId,
-    required String parcelId,
+    required String sectorId,
     required String name,
     required DateTime startsOn,
     required domain.AgriculturalSeasonStatus status,
@@ -45,16 +45,15 @@ final class AgriculturalSeasonRepository {
       endsOn: end,
       status: status,
     );
-    final parcel =
-        await (_database.select(_database.parcels)..where(
+    final sector =
+        await (_database.select(_database.sectors)..where(
               (row) =>
-                  row.id.equals(parcelId) &
+                  row.id.equals(sectorId) &
                   row.ownerId.equals(ownerId) &
-                  row.isArchived.equals(false) &
                   row.deletedAt.isNull(),
             ))
             .getSingleOrNull();
-    if (parcel == null) throw StateError('season_parent_invalid');
+    if (sector == null) throw StateError('season_parent_invalid');
     final seasonId = id ?? EntityId.generate().value;
     final existing = id == null
         ? null
@@ -62,7 +61,7 @@ final class AgriculturalSeasonRepository {
                 (row) =>
                     row.id.equals(id) &
                     row.ownerId.equals(ownerId) &
-                    row.parcelId.equals(parcelId),
+                    row.sectorId.equals(sectorId),
               ))
               .getSingleOrNull();
     if (id != null && existing == null) throw StateError('season_not_found');
@@ -76,11 +75,11 @@ final class AgriculturalSeasonRepository {
     final duplicate = await _database
         .customSelect(
           '''SELECT id FROM agricultural_seasons
-         WHERE owner_id = ? AND parcel_id = ? AND lower(trim(name)) = lower(trim(?))
+         WHERE owner_id = ? AND sector_id = ? AND lower(trim(name)) = lower(trim(?))
            AND id <> ? AND deleted_at IS NULL LIMIT 1''',
           variables: [
             Variable(ownerId),
-            Variable(parcelId),
+            Variable(sectorId),
             Variable(name),
             Variable(seasonId),
           ],
@@ -92,7 +91,7 @@ final class AgriculturalSeasonRepository {
           await (_database.select(_database.agriculturalSeasons)..where(
                 (row) =>
                     row.ownerId.equals(ownerId) &
-                    row.parcelId.equals(parcelId) &
+                    row.sectorId.equals(sectorId) &
                     row.status.equals('active') &
                     row.id.equals(seasonId).not() &
                     row.deletedAt.isNull(),
@@ -105,7 +104,7 @@ final class AgriculturalSeasonRepository {
     final payload = <String, Object?>{
       'id': seasonId,
       'owner_id': ownerId,
-      'parcel_id': parcelId,
+      'sector_id': sectorId,
       'name': name.trim(),
       'starts_on': start.toIso8601String(),
       'ends_on': end?.toIso8601String(),
@@ -120,8 +119,8 @@ final class AgriculturalSeasonRepository {
     final operationId = EntityId.generate().value;
     final dependency = await _pendingDependency(
       ownerId: ownerId,
-      aggregateType: 'parcel',
-      aggregateId: parcelId,
+      aggregateType: 'sector',
+      aggregateId: sectorId,
     );
     await _database.syncOutboxDao.transactionWithOutbox<void>(
       writeAggregate: () => _database
@@ -130,7 +129,7 @@ final class AgriculturalSeasonRepository {
             AgriculturalSeasonsCompanion.insert(
               id: seasonId,
               ownerId: ownerId,
-              parcelId: parcelId,
+              sectorId: sectorId,
               name: name.trim(),
               startsOn: start,
               endsOn: Value(end),
@@ -170,7 +169,7 @@ final class AgriculturalSeasonRepository {
             .getSingle();
     await save(
       ownerId: ownerId,
-      parcelId: row.parcelId,
+      sectorId: row.sectorId,
       id: id,
       name: row.name,
       startsOn: row.startsOn,
@@ -184,7 +183,7 @@ final class AgriculturalSeasonRepository {
       domain.AgriculturalSeason(
         id: row.id,
         ownerId: row.ownerId,
-        parcelId: row.parcelId,
+        sectorId: row.sectorId,
         name: row.name,
         startsOn: row.startsOn,
         endsOn: row.endsOn,

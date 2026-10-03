@@ -242,7 +242,7 @@ final class CropRepository {
         (await (_database.select(_database.agriculturalSeasons)..where(
                   (row) =>
                       row.ownerId.equals(ownerId) &
-                      row.parcelId.equals(sector.parcelId) &
+                      row.sectorId.equals(sector.id) &
                       row.status.equals('active') &
                       row.deletedAt.isNull(),
                 ))

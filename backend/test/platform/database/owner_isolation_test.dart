@@ -1,7 +1,14 @@
-import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
+import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo_point.dart';
+import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/file_backed_database.dart';
+
+const _triangle = [
+  GeoPoint(-38.74, -72.60),
+  GeoPoint(-38.74, -72.59),
+  GeoPoint(-38.73, -72.59),
+];
 
 void main() {
   test(
@@ -10,13 +17,19 @@ void main() {
       final fixture = await FileBackedDatabaseFixture.create();
       addTearDown(fixture.dispose);
       var database = fixture.open();
-      await ParcelRepository(database).save(ownerId: 'owner-a', name: 'A');
-      await ParcelRepository(database).save(ownerId: 'owner-b', name: 'B');
+      for (final owner in const ['owner-a', 'owner-b']) {
+        await SectorRepository(database).save(
+          ownerId: owner,
+          number: 1,
+          name: owner == 'owner-a' ? 'A' : 'B',
+          polygon: _triangle,
+        );
+      }
       await database.close();
 
       database = fixture.open();
       addTearDown(database.close);
-      final repository = ParcelRepository(database);
+      final repository = SectorRepository(database);
       expect(
         (await repository.watchAll('owner-a').first).map((row) => row.name),
         ['A'],

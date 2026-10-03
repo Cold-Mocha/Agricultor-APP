@@ -20,11 +20,11 @@ final class WeatherFacade {
   Future<WeatherLoadResult> load({
     required String ownerId,
     required String locality,
-    String? parcelId,
+    String? sectorId,
   }) => _repository.load(
     ownerId: ownerId,
     locality: locality,
-    parcelId: parcelId,
+    sectorId: sectorId,
   );
 
   Future<void> setAlertsEnabled(String ownerId, bool enabled) =>

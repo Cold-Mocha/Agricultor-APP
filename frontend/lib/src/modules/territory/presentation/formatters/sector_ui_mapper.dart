@@ -21,7 +21,6 @@ abstract final class SectorUiMapper {
           };
     return SectorCardUiState(
       id: summary.id,
-      parcelId: summary.parcelId,
       number: summary.number,
       kind: summary.kind,
       areaSquareMeters: summary.areaSquareMeters,

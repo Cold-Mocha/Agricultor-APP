@@ -147,8 +147,8 @@ final class _AgriculturalSeasonFormPageState
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     final ownerId = ref.read(unlockedOwnerIdProvider);
-    final parcelId = ref.read(agriculturalContextControllerProvider).parcelId;
-    if (ownerId == null || parcelId == null) return;
+    final sectorId = ref.read(agriculturalContextControllerProvider).sectorId;
+    if (ownerId == null || sectorId == null) return;
     setState(() => _saving = true);
     try {
       final id = await ref
@@ -156,7 +156,7 @@ final class _AgriculturalSeasonFormPageState
           .saveSeason(
             ownerId: ownerId,
             input: SeasonFormInput(
-              parcelId: parcelId,
+              sectorId: sectorId,
               id: widget.seasonId,
               name: _name.text,
               startsOn: _startsOn,

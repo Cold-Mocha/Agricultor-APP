@@ -14,7 +14,6 @@ void main() {
     await seedAgriculturalContextFixture(database);
     final payload = <String, Object?>{
       'id': 'labor-remote',
-      'parcel_id': 'parcel-1',
       'sector_id': 'sector-1',
       'agricultural_season_id': 'season-1',
       'crop_assignment_id': 'assignment-1',
@@ -63,7 +62,6 @@ void main() {
     await seedAgriculturalContextFixture(database);
     final payload = {
       'id': 'bad',
-      'parcel_id': 'parcel-1',
       'sector_id': 'sector-1',
       'agricultural_season_id': 'season-1',
       'crop_assignment_id': 'assignment-1',

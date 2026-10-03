@@ -16,7 +16,6 @@ final class IrrigationEstimateRepository {
 
   Future<IrrigationPreview> calculateForSector({
     required String ownerId,
-    required String parcelId,
     required String sectorId,
     required String soilTypeCode,
     required DateTime occurredAt,
@@ -28,7 +27,6 @@ final class IrrigationEstimateRepository {
                 (throw StateError('labor_context_reader_required')))
             .resolveContext(
               ownerId: ownerId,
-              parcelId: parcelId,
               sectorId: sectorId,
               occurredAt: occurredAt.toUtc(),
             );

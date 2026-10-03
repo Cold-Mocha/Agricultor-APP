@@ -4,14 +4,11 @@ insert into auth.users(id,aud,role,email,created_at,updated_at) values
 ('51000000-0000-4000-8000-000000000001','authenticated','authenticated','water-a@test.local',now(),now()),
 ('51000000-0000-4000-8000-000000000002','authenticated','authenticated','water-b@test.local',now(),now());
 select set_config('request.jwt.claim.sub','51000000-0000-4000-8000-000000000001',true);
-insert into public.parcels(id,owner_id,name,is_active,boundary,updated_at) values
-('52000000-0000-4000-8000-000000000001','51000000-0000-4000-8000-000000000001','Campo',true,
-extensions.st_geomfromtext('POLYGON((-72.7 -38.8,-72.5 -38.8,-72.5 -38.6,-72.7 -38.6,-72.7 -38.8))',4326),now());
-insert into public.sectors(id,owner_id,parcel_id,number,name,boundary,updated_at) values
-('53000000-0000-4000-8000-000000000001','51000000-0000-4000-8000-000000000001','52000000-0000-4000-8000-000000000001',1,'Norte',
+insert into public.sectors(id,owner_id,number,name,boundary,updated_at) values
+('53000000-0000-4000-8000-000000000001','51000000-0000-4000-8000-000000000001',1,'Norte',
 extensions.st_geomfromtext('POLYGON((-72.65 -38.75,-72.55 -38.75,-72.55 -38.65,-72.65 -38.65,-72.65 -38.75))',4326),now());
-insert into public.agricultural_seasons(id,owner_id,parcel_id,name,starts_on,status,updated_at) values
-('54000000-0000-4000-8000-000000000001','51000000-0000-4000-8000-000000000001','52000000-0000-4000-8000-000000000001','2026','2026-01-01','active',now());
+insert into public.agricultural_seasons(id,owner_id,sector_id,name,starts_on,status,updated_at) values
+('54000000-0000-4000-8000-000000000001','51000000-0000-4000-8000-000000000001','53000000-0000-4000-8000-000000000001','2026','2026-01-01','active',now());
 insert into public.custom_crops(id,owner_id,name,normalized_name,updated_at) values
 ('55000000-0000-4000-8000-000000000001','51000000-0000-4000-8000-000000000001','Ají','aji',now());
 insert into public.crop_seasons(id,owner_id,sector_id,agricultural_season_id,crop_id,is_custom_crop,status,starts_on,updated_at) values
@@ -45,7 +42,7 @@ select is(pg_temp.push(jsonb_build_object(
   'operation_id','57000000-0000-4000-8000-000000000003','aggregate_type','labor',
   'aggregate_id','59000000-0000-4000-8000-000000000001','mutation_kind','create','protocol_version',2,
   'payload_schema_version',1,'request_hash','irrigation-labor','payload',jsonb_build_object(
-    'id','59000000-0000-4000-8000-000000000001','parcel_id','52000000-0000-4000-8000-000000000001',
+    'id','59000000-0000-4000-8000-000000000001',
     'sector_id','53000000-0000-4000-8000-000000000001','agricultural_season_id','54000000-0000-4000-8000-000000000001',
     'crop_assignment_id','56000000-0000-4000-8000-000000000001','type','irrigation',
     'details',jsonb_build_object('schemaVersion',1,'type','irrigation','data',jsonb_build_object('method','drip','durationMinutes',30)),

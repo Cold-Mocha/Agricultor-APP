@@ -3436,843 +3436,6 @@ class FormDraftsCompanion extends UpdateCompanion<FormDraft> {
   }
 }
 
-class $ParcelsTable extends Parcels with TableInfo<$ParcelsTable, Parcel> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $ParcelsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _ownerIdMeta = const VerificationMeta(
-    'ownerId',
-  );
-  @override
-  late final GeneratedColumn<String> ownerId = GeneratedColumn<String>(
-    'owner_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-    'name',
-    aliasedName,
-    false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
-      maxTextLength: 120,
-    ),
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _localityMeta = const VerificationMeta(
-    'locality',
-  );
-  @override
-  late final GeneratedColumn<String> locality = GeneratedColumn<String>(
-    'locality',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _polygonJsonMeta = const VerificationMeta(
-    'polygonJson',
-  );
-  @override
-  late final GeneratedColumn<String> polygonJson = GeneratedColumn<String>(
-    'polygon_json',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _areaSquareMetersMeta = const VerificationMeta(
-    'areaSquareMeters',
-  );
-  @override
-  late final GeneratedColumn<double> areaSquareMeters = GeneratedColumn<double>(
-    'area_square_meters',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _isActiveMeta = const VerificationMeta(
-    'isActive',
-  );
-  @override
-  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
-    'is_active',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_active" IN (0, 1))',
-    ),
-    defaultValue: const Constant(false),
-  );
-  static const VerificationMeta _isArchivedMeta = const VerificationMeta(
-    'isArchived',
-  );
-  @override
-  late final GeneratedColumn<bool> isArchived = GeneratedColumn<bool>(
-    'is_archived',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_archived" IN (0, 1))',
-    ),
-    defaultValue: const Constant(false),
-  );
-  static const VerificationMeta _versionMeta = const VerificationMeta(
-    'version',
-  );
-  @override
-  late final GeneratedColumn<int> version = GeneratedColumn<int>(
-    'version',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(1),
-  );
-  static const VerificationMeta _syncStateMeta = const VerificationMeta(
-    'syncState',
-  );
-  @override
-  late final GeneratedColumn<String> syncState = GeneratedColumn<String>(
-    'sync_state',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant('pending'),
-  );
-  static const VerificationMeta _serverUpdatedAtMeta = const VerificationMeta(
-    'serverUpdatedAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> serverUpdatedAt =
-      GeneratedColumn<DateTime>(
-        'server_updated_at',
-        aliasedName,
-        true,
-        type: DriftSqlType.dateTime,
-        requiredDuringInsert: false,
-      );
-  static const VerificationMeta _lastSyncErrorCodeMeta = const VerificationMeta(
-    'lastSyncErrorCode',
-  );
-  @override
-  late final GeneratedColumn<String> lastSyncErrorCode =
-      GeneratedColumn<String>(
-        'last_sync_error_code',
-        aliasedName,
-        true,
-        type: DriftSqlType.string,
-        requiredDuringInsert: false,
-      );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
-    'deletedAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
-    'deleted_at',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    ownerId,
-    name,
-    locality,
-    polygonJson,
-    areaSquareMeters,
-    isActive,
-    isArchived,
-    version,
-    syncState,
-    serverUpdatedAt,
-    lastSyncErrorCode,
-    updatedAt,
-    deletedAt,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'parcels';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<Parcel> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
-    if (data.containsKey('owner_id')) {
-      context.handle(
-        _ownerIdMeta,
-        ownerId.isAcceptableOrUnknown(data['owner_id']!, _ownerIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_ownerIdMeta);
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('locality')) {
-      context.handle(
-        _localityMeta,
-        locality.isAcceptableOrUnknown(data['locality']!, _localityMeta),
-      );
-    }
-    if (data.containsKey('polygon_json')) {
-      context.handle(
-        _polygonJsonMeta,
-        polygonJson.isAcceptableOrUnknown(
-          data['polygon_json']!,
-          _polygonJsonMeta,
-        ),
-      );
-    }
-    if (data.containsKey('area_square_meters')) {
-      context.handle(
-        _areaSquareMetersMeta,
-        areaSquareMeters.isAcceptableOrUnknown(
-          data['area_square_meters']!,
-          _areaSquareMetersMeta,
-        ),
-      );
-    }
-    if (data.containsKey('is_active')) {
-      context.handle(
-        _isActiveMeta,
-        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
-      );
-    }
-    if (data.containsKey('is_archived')) {
-      context.handle(
-        _isArchivedMeta,
-        isArchived.isAcceptableOrUnknown(data['is_archived']!, _isArchivedMeta),
-      );
-    }
-    if (data.containsKey('version')) {
-      context.handle(
-        _versionMeta,
-        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
-      );
-    }
-    if (data.containsKey('sync_state')) {
-      context.handle(
-        _syncStateMeta,
-        syncState.isAcceptableOrUnknown(data['sync_state']!, _syncStateMeta),
-      );
-    }
-    if (data.containsKey('server_updated_at')) {
-      context.handle(
-        _serverUpdatedAtMeta,
-        serverUpdatedAt.isAcceptableOrUnknown(
-          data['server_updated_at']!,
-          _serverUpdatedAtMeta,
-        ),
-      );
-    }
-    if (data.containsKey('last_sync_error_code')) {
-      context.handle(
-        _lastSyncErrorCodeMeta,
-        lastSyncErrorCode.isAcceptableOrUnknown(
-          data['last_sync_error_code']!,
-          _lastSyncErrorCodeMeta,
-        ),
-      );
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(
-        _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_updatedAtMeta);
-    }
-    if (data.containsKey('deleted_at')) {
-      context.handle(
-        _deletedAtMeta,
-        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Parcel map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Parcel(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      ownerId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}owner_id'],
-      )!,
-      name: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name'],
-      )!,
-      locality: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}locality'],
-      ),
-      polygonJson: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}polygon_json'],
-      ),
-      areaSquareMeters: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}area_square_meters'],
-      ),
-      isActive: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_active'],
-      )!,
-      isArchived: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_archived'],
-      )!,
-      version: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}version'],
-      )!,
-      syncState: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}sync_state'],
-      )!,
-      serverUpdatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}server_updated_at'],
-      ),
-      lastSyncErrorCode: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}last_sync_error_code'],
-      ),
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
-      deletedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}deleted_at'],
-      ),
-    );
-  }
-
-  @override
-  $ParcelsTable createAlias(String alias) {
-    return $ParcelsTable(attachedDatabase, alias);
-  }
-}
-
-class Parcel extends DataClass implements Insertable<Parcel> {
-  final String id;
-  final String ownerId;
-  final String name;
-  final String? locality;
-  final String? polygonJson;
-  final double? areaSquareMeters;
-  final bool isActive;
-  final bool isArchived;
-  final int version;
-  final String syncState;
-  final DateTime? serverUpdatedAt;
-  final String? lastSyncErrorCode;
-  final DateTime updatedAt;
-  final DateTime? deletedAt;
-  const Parcel({
-    required this.id,
-    required this.ownerId,
-    required this.name,
-    this.locality,
-    this.polygonJson,
-    this.areaSquareMeters,
-    required this.isActive,
-    required this.isArchived,
-    required this.version,
-    required this.syncState,
-    this.serverUpdatedAt,
-    this.lastSyncErrorCode,
-    required this.updatedAt,
-    this.deletedAt,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['owner_id'] = Variable<String>(ownerId);
-    map['name'] = Variable<String>(name);
-    if (!nullToAbsent || locality != null) {
-      map['locality'] = Variable<String>(locality);
-    }
-    if (!nullToAbsent || polygonJson != null) {
-      map['polygon_json'] = Variable<String>(polygonJson);
-    }
-    if (!nullToAbsent || areaSquareMeters != null) {
-      map['area_square_meters'] = Variable<double>(areaSquareMeters);
-    }
-    map['is_active'] = Variable<bool>(isActive);
-    map['is_archived'] = Variable<bool>(isArchived);
-    map['version'] = Variable<int>(version);
-    map['sync_state'] = Variable<String>(syncState);
-    if (!nullToAbsent || serverUpdatedAt != null) {
-      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
-    }
-    if (!nullToAbsent || lastSyncErrorCode != null) {
-      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode);
-    }
-    map['updated_at'] = Variable<DateTime>(updatedAt);
-    if (!nullToAbsent || deletedAt != null) {
-      map['deleted_at'] = Variable<DateTime>(deletedAt);
-    }
-    return map;
-  }
-
-  ParcelsCompanion toCompanion(bool nullToAbsent) {
-    return ParcelsCompanion(
-      id: Value(id),
-      ownerId: Value(ownerId),
-      name: Value(name),
-      locality: locality == null && nullToAbsent
-          ? const Value.absent()
-          : Value(locality),
-      polygonJson: polygonJson == null && nullToAbsent
-          ? const Value.absent()
-          : Value(polygonJson),
-      areaSquareMeters: areaSquareMeters == null && nullToAbsent
-          ? const Value.absent()
-          : Value(areaSquareMeters),
-      isActive: Value(isActive),
-      isArchived: Value(isArchived),
-      version: Value(version),
-      syncState: Value(syncState),
-      serverUpdatedAt: serverUpdatedAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(serverUpdatedAt),
-      lastSyncErrorCode: lastSyncErrorCode == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastSyncErrorCode),
-      updatedAt: Value(updatedAt),
-      deletedAt: deletedAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(deletedAt),
-    );
-  }
-
-  factory Parcel.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Parcel(
-      id: serializer.fromJson<String>(json['id']),
-      ownerId: serializer.fromJson<String>(json['ownerId']),
-      name: serializer.fromJson<String>(json['name']),
-      locality: serializer.fromJson<String?>(json['locality']),
-      polygonJson: serializer.fromJson<String?>(json['polygonJson']),
-      areaSquareMeters: serializer.fromJson<double?>(json['areaSquareMeters']),
-      isActive: serializer.fromJson<bool>(json['isActive']),
-      isArchived: serializer.fromJson<bool>(json['isArchived']),
-      version: serializer.fromJson<int>(json['version']),
-      syncState: serializer.fromJson<String>(json['syncState']),
-      serverUpdatedAt: serializer.fromJson<DateTime?>(json['serverUpdatedAt']),
-      lastSyncErrorCode: serializer.fromJson<String?>(
-        json['lastSyncErrorCode'],
-      ),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'ownerId': serializer.toJson<String>(ownerId),
-      'name': serializer.toJson<String>(name),
-      'locality': serializer.toJson<String?>(locality),
-      'polygonJson': serializer.toJson<String?>(polygonJson),
-      'areaSquareMeters': serializer.toJson<double?>(areaSquareMeters),
-      'isActive': serializer.toJson<bool>(isActive),
-      'isArchived': serializer.toJson<bool>(isArchived),
-      'version': serializer.toJson<int>(version),
-      'syncState': serializer.toJson<String>(syncState),
-      'serverUpdatedAt': serializer.toJson<DateTime?>(serverUpdatedAt),
-      'lastSyncErrorCode': serializer.toJson<String?>(lastSyncErrorCode),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
-    };
-  }
-
-  Parcel copyWith({
-    String? id,
-    String? ownerId,
-    String? name,
-    Value<String?> locality = const Value.absent(),
-    Value<String?> polygonJson = const Value.absent(),
-    Value<double?> areaSquareMeters = const Value.absent(),
-    bool? isActive,
-    bool? isArchived,
-    int? version,
-    String? syncState,
-    Value<DateTime?> serverUpdatedAt = const Value.absent(),
-    Value<String?> lastSyncErrorCode = const Value.absent(),
-    DateTime? updatedAt,
-    Value<DateTime?> deletedAt = const Value.absent(),
-  }) => Parcel(
-    id: id ?? this.id,
-    ownerId: ownerId ?? this.ownerId,
-    name: name ?? this.name,
-    locality: locality.present ? locality.value : this.locality,
-    polygonJson: polygonJson.present ? polygonJson.value : this.polygonJson,
-    areaSquareMeters: areaSquareMeters.present
-        ? areaSquareMeters.value
-        : this.areaSquareMeters,
-    isActive: isActive ?? this.isActive,
-    isArchived: isArchived ?? this.isArchived,
-    version: version ?? this.version,
-    syncState: syncState ?? this.syncState,
-    serverUpdatedAt: serverUpdatedAt.present
-        ? serverUpdatedAt.value
-        : this.serverUpdatedAt,
-    lastSyncErrorCode: lastSyncErrorCode.present
-        ? lastSyncErrorCode.value
-        : this.lastSyncErrorCode,
-    updatedAt: updatedAt ?? this.updatedAt,
-    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
-  );
-  Parcel copyWithCompanion(ParcelsCompanion data) {
-    return Parcel(
-      id: data.id.present ? data.id.value : this.id,
-      ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
-      name: data.name.present ? data.name.value : this.name,
-      locality: data.locality.present ? data.locality.value : this.locality,
-      polygonJson: data.polygonJson.present
-          ? data.polygonJson.value
-          : this.polygonJson,
-      areaSquareMeters: data.areaSquareMeters.present
-          ? data.areaSquareMeters.value
-          : this.areaSquareMeters,
-      isActive: data.isActive.present ? data.isActive.value : this.isActive,
-      isArchived: data.isArchived.present
-          ? data.isArchived.value
-          : this.isArchived,
-      version: data.version.present ? data.version.value : this.version,
-      syncState: data.syncState.present ? data.syncState.value : this.syncState,
-      serverUpdatedAt: data.serverUpdatedAt.present
-          ? data.serverUpdatedAt.value
-          : this.serverUpdatedAt,
-      lastSyncErrorCode: data.lastSyncErrorCode.present
-          ? data.lastSyncErrorCode.value
-          : this.lastSyncErrorCode,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
-      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('Parcel(')
-          ..write('id: $id, ')
-          ..write('ownerId: $ownerId, ')
-          ..write('name: $name, ')
-          ..write('locality: $locality, ')
-          ..write('polygonJson: $polygonJson, ')
-          ..write('areaSquareMeters: $areaSquareMeters, ')
-          ..write('isActive: $isActive, ')
-          ..write('isArchived: $isArchived, ')
-          ..write('version: $version, ')
-          ..write('syncState: $syncState, ')
-          ..write('serverUpdatedAt: $serverUpdatedAt, ')
-          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('deletedAt: $deletedAt')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    ownerId,
-    name,
-    locality,
-    polygonJson,
-    areaSquareMeters,
-    isActive,
-    isArchived,
-    version,
-    syncState,
-    serverUpdatedAt,
-    lastSyncErrorCode,
-    updatedAt,
-    deletedAt,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Parcel &&
-          other.id == this.id &&
-          other.ownerId == this.ownerId &&
-          other.name == this.name &&
-          other.locality == this.locality &&
-          other.polygonJson == this.polygonJson &&
-          other.areaSquareMeters == this.areaSquareMeters &&
-          other.isActive == this.isActive &&
-          other.isArchived == this.isArchived &&
-          other.version == this.version &&
-          other.syncState == this.syncState &&
-          other.serverUpdatedAt == this.serverUpdatedAt &&
-          other.lastSyncErrorCode == this.lastSyncErrorCode &&
-          other.updatedAt == this.updatedAt &&
-          other.deletedAt == this.deletedAt);
-}
-
-class ParcelsCompanion extends UpdateCompanion<Parcel> {
-  final Value<String> id;
-  final Value<String> ownerId;
-  final Value<String> name;
-  final Value<String?> locality;
-  final Value<String?> polygonJson;
-  final Value<double?> areaSquareMeters;
-  final Value<bool> isActive;
-  final Value<bool> isArchived;
-  final Value<int> version;
-  final Value<String> syncState;
-  final Value<DateTime?> serverUpdatedAt;
-  final Value<String?> lastSyncErrorCode;
-  final Value<DateTime> updatedAt;
-  final Value<DateTime?> deletedAt;
-  final Value<int> rowid;
-  const ParcelsCompanion({
-    this.id = const Value.absent(),
-    this.ownerId = const Value.absent(),
-    this.name = const Value.absent(),
-    this.locality = const Value.absent(),
-    this.polygonJson = const Value.absent(),
-    this.areaSquareMeters = const Value.absent(),
-    this.isActive = const Value.absent(),
-    this.isArchived = const Value.absent(),
-    this.version = const Value.absent(),
-    this.syncState = const Value.absent(),
-    this.serverUpdatedAt = const Value.absent(),
-    this.lastSyncErrorCode = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-    this.deletedAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  ParcelsCompanion.insert({
-    required String id,
-    required String ownerId,
-    required String name,
-    this.locality = const Value.absent(),
-    this.polygonJson = const Value.absent(),
-    this.areaSquareMeters = const Value.absent(),
-    this.isActive = const Value.absent(),
-    this.isArchived = const Value.absent(),
-    this.version = const Value.absent(),
-    this.syncState = const Value.absent(),
-    this.serverUpdatedAt = const Value.absent(),
-    this.lastSyncErrorCode = const Value.absent(),
-    required DateTime updatedAt,
-    this.deletedAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : id = Value(id),
-       ownerId = Value(ownerId),
-       name = Value(name),
-       updatedAt = Value(updatedAt);
-  static Insertable<Parcel> custom({
-    Expression<String>? id,
-    Expression<String>? ownerId,
-    Expression<String>? name,
-    Expression<String>? locality,
-    Expression<String>? polygonJson,
-    Expression<double>? areaSquareMeters,
-    Expression<bool>? isActive,
-    Expression<bool>? isArchived,
-    Expression<int>? version,
-    Expression<String>? syncState,
-    Expression<DateTime>? serverUpdatedAt,
-    Expression<String>? lastSyncErrorCode,
-    Expression<DateTime>? updatedAt,
-    Expression<DateTime>? deletedAt,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (ownerId != null) 'owner_id': ownerId,
-      if (name != null) 'name': name,
-      if (locality != null) 'locality': locality,
-      if (polygonJson != null) 'polygon_json': polygonJson,
-      if (areaSquareMeters != null) 'area_square_meters': areaSquareMeters,
-      if (isActive != null) 'is_active': isActive,
-      if (isArchived != null) 'is_archived': isArchived,
-      if (version != null) 'version': version,
-      if (syncState != null) 'sync_state': syncState,
-      if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
-      if (lastSyncErrorCode != null) 'last_sync_error_code': lastSyncErrorCode,
-      if (updatedAt != null) 'updated_at': updatedAt,
-      if (deletedAt != null) 'deleted_at': deletedAt,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  ParcelsCompanion copyWith({
-    Value<String>? id,
-    Value<String>? ownerId,
-    Value<String>? name,
-    Value<String?>? locality,
-    Value<String?>? polygonJson,
-    Value<double?>? areaSquareMeters,
-    Value<bool>? isActive,
-    Value<bool>? isArchived,
-    Value<int>? version,
-    Value<String>? syncState,
-    Value<DateTime?>? serverUpdatedAt,
-    Value<String?>? lastSyncErrorCode,
-    Value<DateTime>? updatedAt,
-    Value<DateTime?>? deletedAt,
-    Value<int>? rowid,
-  }) {
-    return ParcelsCompanion(
-      id: id ?? this.id,
-      ownerId: ownerId ?? this.ownerId,
-      name: name ?? this.name,
-      locality: locality ?? this.locality,
-      polygonJson: polygonJson ?? this.polygonJson,
-      areaSquareMeters: areaSquareMeters ?? this.areaSquareMeters,
-      isActive: isActive ?? this.isActive,
-      isArchived: isArchived ?? this.isArchived,
-      version: version ?? this.version,
-      syncState: syncState ?? this.syncState,
-      serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
-      lastSyncErrorCode: lastSyncErrorCode ?? this.lastSyncErrorCode,
-      updatedAt: updatedAt ?? this.updatedAt,
-      deletedAt: deletedAt ?? this.deletedAt,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (ownerId.present) {
-      map['owner_id'] = Variable<String>(ownerId.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (locality.present) {
-      map['locality'] = Variable<String>(locality.value);
-    }
-    if (polygonJson.present) {
-      map['polygon_json'] = Variable<String>(polygonJson.value);
-    }
-    if (areaSquareMeters.present) {
-      map['area_square_meters'] = Variable<double>(areaSquareMeters.value);
-    }
-    if (isActive.present) {
-      map['is_active'] = Variable<bool>(isActive.value);
-    }
-    if (isArchived.present) {
-      map['is_archived'] = Variable<bool>(isArchived.value);
-    }
-    if (version.present) {
-      map['version'] = Variable<int>(version.value);
-    }
-    if (syncState.present) {
-      map['sync_state'] = Variable<String>(syncState.value);
-    }
-    if (serverUpdatedAt.present) {
-      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt.value);
-    }
-    if (lastSyncErrorCode.present) {
-      map['last_sync_error_code'] = Variable<String>(lastSyncErrorCode.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
-    if (deletedAt.present) {
-      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('ParcelsCompanion(')
-          ..write('id: $id, ')
-          ..write('ownerId: $ownerId, ')
-          ..write('name: $name, ')
-          ..write('locality: $locality, ')
-          ..write('polygonJson: $polygonJson, ')
-          ..write('areaSquareMeters: $areaSquareMeters, ')
-          ..write('isActive: $isActive, ')
-          ..write('isArchived: $isArchived, ')
-          ..write('version: $version, ')
-          ..write('syncState: $syncState, ')
-          ..write('serverUpdatedAt: $serverUpdatedAt, ')
-          ..write('lastSyncErrorCode: $lastSyncErrorCode, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('deletedAt: $deletedAt, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $SectorsTable extends Sectors with TableInfo<$SectorsTable, Sector> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -4297,20 +3460,6 @@ class $SectorsTable extends Sectors with TableInfo<$SectorsTable, Sector> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-  );
-  static const VerificationMeta _parcelIdMeta = const VerificationMeta(
-    'parcelId',
-  );
-  @override
-  late final GeneratedColumn<String> parcelId = GeneratedColumn<String>(
-    'parcel_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES parcels (id)',
-    ),
   );
   static const VerificationMeta _numberMeta = const VerificationMeta('number');
   @override
@@ -4442,7 +3591,6 @@ class $SectorsTable extends Sectors with TableInfo<$SectorsTable, Sector> {
   List<GeneratedColumn> get $columns => [
     id,
     ownerId,
-    parcelId,
     number,
     name,
     kind,
@@ -4479,14 +3627,6 @@ class $SectorsTable extends Sectors with TableInfo<$SectorsTable, Sector> {
       );
     } else if (isInserting) {
       context.missing(_ownerIdMeta);
-    }
-    if (data.containsKey('parcel_id')) {
-      context.handle(
-        _parcelIdMeta,
-        parcelId.isAcceptableOrUnknown(data['parcel_id']!, _parcelIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_parcelIdMeta);
     }
     if (data.containsKey('number')) {
       context.handle(
@@ -4583,7 +3723,7 @@ class $SectorsTable extends Sectors with TableInfo<$SectorsTable, Sector> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   List<Set<GeneratedColumn>> get uniqueKeys => [
-    {parcelId, number},
+    {ownerId, number},
   ];
   @override
   Sector map(Map<String, dynamic> data, {String? tablePrefix}) {
@@ -4596,10 +3736,6 @@ class $SectorsTable extends Sectors with TableInfo<$SectorsTable, Sector> {
       ownerId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}owner_id'],
-      )!,
-      parcelId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}parcel_id'],
       )!,
       number: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -4657,7 +3793,6 @@ class $SectorsTable extends Sectors with TableInfo<$SectorsTable, Sector> {
 class Sector extends DataClass implements Insertable<Sector> {
   final String id;
   final String ownerId;
-  final String parcelId;
   final int number;
   final String name;
   final String kind;
@@ -4672,7 +3807,6 @@ class Sector extends DataClass implements Insertable<Sector> {
   const Sector({
     required this.id,
     required this.ownerId,
-    required this.parcelId,
     required this.number,
     required this.name,
     required this.kind,
@@ -4690,7 +3824,6 @@ class Sector extends DataClass implements Insertable<Sector> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['owner_id'] = Variable<String>(ownerId);
-    map['parcel_id'] = Variable<String>(parcelId);
     map['number'] = Variable<int>(number);
     map['name'] = Variable<String>(name);
     map['kind'] = Variable<String>(kind);
@@ -4715,7 +3848,6 @@ class Sector extends DataClass implements Insertable<Sector> {
     return SectorsCompanion(
       id: Value(id),
       ownerId: Value(ownerId),
-      parcelId: Value(parcelId),
       number: Value(number),
       name: Value(name),
       kind: Value(kind),
@@ -4744,7 +3876,6 @@ class Sector extends DataClass implements Insertable<Sector> {
     return Sector(
       id: serializer.fromJson<String>(json['id']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
-      parcelId: serializer.fromJson<String>(json['parcelId']),
       number: serializer.fromJson<int>(json['number']),
       name: serializer.fromJson<String>(json['name']),
       kind: serializer.fromJson<String>(json['kind']),
@@ -4766,7 +3897,6 @@ class Sector extends DataClass implements Insertable<Sector> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'ownerId': serializer.toJson<String>(ownerId),
-      'parcelId': serializer.toJson<String>(parcelId),
       'number': serializer.toJson<int>(number),
       'name': serializer.toJson<String>(name),
       'kind': serializer.toJson<String>(kind),
@@ -4784,7 +3914,6 @@ class Sector extends DataClass implements Insertable<Sector> {
   Sector copyWith({
     String? id,
     String? ownerId,
-    String? parcelId,
     int? number,
     String? name,
     String? kind,
@@ -4799,7 +3928,6 @@ class Sector extends DataClass implements Insertable<Sector> {
   }) => Sector(
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
-    parcelId: parcelId ?? this.parcelId,
     number: number ?? this.number,
     name: name ?? this.name,
     kind: kind ?? this.kind,
@@ -4820,7 +3948,6 @@ class Sector extends DataClass implements Insertable<Sector> {
     return Sector(
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
-      parcelId: data.parcelId.present ? data.parcelId.value : this.parcelId,
       number: data.number.present ? data.number.value : this.number,
       name: data.name.present ? data.name.value : this.name,
       kind: data.kind.present ? data.kind.value : this.kind,
@@ -4848,7 +3975,6 @@ class Sector extends DataClass implements Insertable<Sector> {
     return (StringBuffer('Sector(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
-          ..write('parcelId: $parcelId, ')
           ..write('number: $number, ')
           ..write('name: $name, ')
           ..write('kind: $kind, ')
@@ -4868,7 +3994,6 @@ class Sector extends DataClass implements Insertable<Sector> {
   int get hashCode => Object.hash(
     id,
     ownerId,
-    parcelId,
     number,
     name,
     kind,
@@ -4887,7 +4012,6 @@ class Sector extends DataClass implements Insertable<Sector> {
       (other is Sector &&
           other.id == this.id &&
           other.ownerId == this.ownerId &&
-          other.parcelId == this.parcelId &&
           other.number == this.number &&
           other.name == this.name &&
           other.kind == this.kind &&
@@ -4904,7 +4028,6 @@ class Sector extends DataClass implements Insertable<Sector> {
 class SectorsCompanion extends UpdateCompanion<Sector> {
   final Value<String> id;
   final Value<String> ownerId;
-  final Value<String> parcelId;
   final Value<int> number;
   final Value<String> name;
   final Value<String> kind;
@@ -4920,7 +4043,6 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
   const SectorsCompanion({
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
-    this.parcelId = const Value.absent(),
     this.number = const Value.absent(),
     this.name = const Value.absent(),
     this.kind = const Value.absent(),
@@ -4937,7 +4059,6 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
   SectorsCompanion.insert({
     required String id,
     required String ownerId,
-    required String parcelId,
     required int number,
     required String name,
     this.kind = const Value.absent(),
@@ -4952,7 +4073,6 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        ownerId = Value(ownerId),
-       parcelId = Value(parcelId),
        number = Value(number),
        name = Value(name),
        polygonJson = Value(polygonJson),
@@ -4961,7 +4081,6 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
   static Insertable<Sector> custom({
     Expression<String>? id,
     Expression<String>? ownerId,
-    Expression<String>? parcelId,
     Expression<int>? number,
     Expression<String>? name,
     Expression<String>? kind,
@@ -4978,7 +4097,6 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
-      if (parcelId != null) 'parcel_id': parcelId,
       if (number != null) 'number': number,
       if (name != null) 'name': name,
       if (kind != null) 'kind': kind,
@@ -4997,7 +4115,6 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
   SectorsCompanion copyWith({
     Value<String>? id,
     Value<String>? ownerId,
-    Value<String>? parcelId,
     Value<int>? number,
     Value<String>? name,
     Value<String>? kind,
@@ -5014,7 +4131,6 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
     return SectorsCompanion(
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
-      parcelId: parcelId ?? this.parcelId,
       number: number ?? this.number,
       name: name ?? this.name,
       kind: kind ?? this.kind,
@@ -5038,9 +4154,6 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
     }
     if (ownerId.present) {
       map['owner_id'] = Variable<String>(ownerId.value);
-    }
-    if (parcelId.present) {
-      map['parcel_id'] = Variable<String>(parcelId.value);
     }
     if (number.present) {
       map['number'] = Variable<int>(number.value);
@@ -5086,7 +4199,6 @@ class SectorsCompanion extends UpdateCompanion<Sector> {
     return (StringBuffer('SectorsCompanion(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
-          ..write('parcelId: $parcelId, ')
           ..write('number: $number, ')
           ..write('name: $name, ')
           ..write('kind: $kind, ')
@@ -7318,18 +6430,18 @@ class $AgriculturalSeasonsTable extends AgriculturalSeasons
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _parcelIdMeta = const VerificationMeta(
-    'parcelId',
+  static const VerificationMeta _sectorIdMeta = const VerificationMeta(
+    'sectorId',
   );
   @override
-  late final GeneratedColumn<String> parcelId = GeneratedColumn<String>(
-    'parcel_id',
+  late final GeneratedColumn<String> sectorId = GeneratedColumn<String>(
+    'sector_id',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES parcels (id)',
+      'REFERENCES sectors (id)',
     ),
   );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
@@ -7472,7 +6584,7 @@ class $AgriculturalSeasonsTable extends AgriculturalSeasons
   List<GeneratedColumn> get $columns => [
     id,
     ownerId,
-    parcelId,
+    sectorId,
     name,
     startsOn,
     endsOn,
@@ -7511,13 +6623,13 @@ class $AgriculturalSeasonsTable extends AgriculturalSeasons
     } else if (isInserting) {
       context.missing(_ownerIdMeta);
     }
-    if (data.containsKey('parcel_id')) {
+    if (data.containsKey('sector_id')) {
       context.handle(
-        _parcelIdMeta,
-        parcelId.isAcceptableOrUnknown(data['parcel_id']!, _parcelIdMeta),
+        _sectorIdMeta,
+        sectorId.isAcceptableOrUnknown(data['sector_id']!, _sectorIdMeta),
       );
     } else if (isInserting) {
-      context.missing(_parcelIdMeta);
+      context.missing(_sectorIdMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -7623,9 +6735,9 @@ class $AgriculturalSeasonsTable extends AgriculturalSeasons
         DriftSqlType.string,
         data['${effectivePrefix}owner_id'],
       )!,
-      parcelId: attachedDatabase.typeMapping.read(
+      sectorId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}parcel_id'],
+        data['${effectivePrefix}sector_id'],
       )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -7688,7 +6800,7 @@ class AgriculturalSeason extends DataClass
     implements Insertable<AgriculturalSeason> {
   final String id;
   final String ownerId;
-  final String parcelId;
+  final String sectorId;
   final String name;
   final DateTime startsOn;
   final DateTime? endsOn;
@@ -7704,7 +6816,7 @@ class AgriculturalSeason extends DataClass
   const AgriculturalSeason({
     required this.id,
     required this.ownerId,
-    required this.parcelId,
+    required this.sectorId,
     required this.name,
     required this.startsOn,
     this.endsOn,
@@ -7723,7 +6835,7 @@ class AgriculturalSeason extends DataClass
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['owner_id'] = Variable<String>(ownerId);
-    map['parcel_id'] = Variable<String>(parcelId);
+    map['sector_id'] = Variable<String>(sectorId);
     map['name'] = Variable<String>(name);
     map['starts_on'] = Variable<DateTime>(startsOn);
     if (!nullToAbsent || endsOn != null) {
@@ -7753,7 +6865,7 @@ class AgriculturalSeason extends DataClass
     return AgriculturalSeasonsCompanion(
       id: Value(id),
       ownerId: Value(ownerId),
-      parcelId: Value(parcelId),
+      sectorId: Value(sectorId),
       name: Value(name),
       startsOn: Value(startsOn),
       endsOn: endsOn == null && nullToAbsent
@@ -7787,7 +6899,7 @@ class AgriculturalSeason extends DataClass
     return AgriculturalSeason(
       id: serializer.fromJson<String>(json['id']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
-      parcelId: serializer.fromJson<String>(json['parcelId']),
+      sectorId: serializer.fromJson<String>(json['sectorId']),
       name: serializer.fromJson<String>(json['name']),
       startsOn: serializer.fromJson<DateTime>(json['startsOn']),
       endsOn: serializer.fromJson<DateTime?>(json['endsOn']),
@@ -7812,7 +6924,7 @@ class AgriculturalSeason extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'ownerId': serializer.toJson<String>(ownerId),
-      'parcelId': serializer.toJson<String>(parcelId),
+      'sectorId': serializer.toJson<String>(sectorId),
       'name': serializer.toJson<String>(name),
       'startsOn': serializer.toJson<DateTime>(startsOn),
       'endsOn': serializer.toJson<DateTime?>(endsOn),
@@ -7831,7 +6943,7 @@ class AgriculturalSeason extends DataClass
   AgriculturalSeason copyWith({
     String? id,
     String? ownerId,
-    String? parcelId,
+    String? sectorId,
     String? name,
     DateTime? startsOn,
     Value<DateTime?> endsOn = const Value.absent(),
@@ -7847,7 +6959,7 @@ class AgriculturalSeason extends DataClass
   }) => AgriculturalSeason(
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
-    parcelId: parcelId ?? this.parcelId,
+    sectorId: sectorId ?? this.sectorId,
     name: name ?? this.name,
     startsOn: startsOn ?? this.startsOn,
     endsOn: endsOn.present ? endsOn.value : this.endsOn,
@@ -7869,7 +6981,7 @@ class AgriculturalSeason extends DataClass
     return AgriculturalSeason(
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
-      parcelId: data.parcelId.present ? data.parcelId.value : this.parcelId,
+      sectorId: data.sectorId.present ? data.sectorId.value : this.sectorId,
       name: data.name.present ? data.name.value : this.name,
       startsOn: data.startsOn.present ? data.startsOn.value : this.startsOn,
       endsOn: data.endsOn.present ? data.endsOn.value : this.endsOn,
@@ -7896,7 +7008,7 @@ class AgriculturalSeason extends DataClass
     return (StringBuffer('AgriculturalSeason(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
-          ..write('parcelId: $parcelId, ')
+          ..write('sectorId: $sectorId, ')
           ..write('name: $name, ')
           ..write('startsOn: $startsOn, ')
           ..write('endsOn: $endsOn, ')
@@ -7917,7 +7029,7 @@ class AgriculturalSeason extends DataClass
   int get hashCode => Object.hash(
     id,
     ownerId,
-    parcelId,
+    sectorId,
     name,
     startsOn,
     endsOn,
@@ -7937,7 +7049,7 @@ class AgriculturalSeason extends DataClass
       (other is AgriculturalSeason &&
           other.id == this.id &&
           other.ownerId == this.ownerId &&
-          other.parcelId == this.parcelId &&
+          other.sectorId == this.sectorId &&
           other.name == this.name &&
           other.startsOn == this.startsOn &&
           other.endsOn == this.endsOn &&
@@ -7955,7 +7067,7 @@ class AgriculturalSeason extends DataClass
 class AgriculturalSeasonsCompanion extends UpdateCompanion<AgriculturalSeason> {
   final Value<String> id;
   final Value<String> ownerId;
-  final Value<String> parcelId;
+  final Value<String> sectorId;
   final Value<String> name;
   final Value<DateTime> startsOn;
   final Value<DateTime?> endsOn;
@@ -7972,7 +7084,7 @@ class AgriculturalSeasonsCompanion extends UpdateCompanion<AgriculturalSeason> {
   const AgriculturalSeasonsCompanion({
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
-    this.parcelId = const Value.absent(),
+    this.sectorId = const Value.absent(),
     this.name = const Value.absent(),
     this.startsOn = const Value.absent(),
     this.endsOn = const Value.absent(),
@@ -7990,7 +7102,7 @@ class AgriculturalSeasonsCompanion extends UpdateCompanion<AgriculturalSeason> {
   AgriculturalSeasonsCompanion.insert({
     required String id,
     required String ownerId,
-    required String parcelId,
+    required String sectorId,
     required String name,
     required DateTime startsOn,
     this.endsOn = const Value.absent(),
@@ -8006,14 +7118,14 @@ class AgriculturalSeasonsCompanion extends UpdateCompanion<AgriculturalSeason> {
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        ownerId = Value(ownerId),
-       parcelId = Value(parcelId),
+       sectorId = Value(sectorId),
        name = Value(name),
        startsOn = Value(startsOn),
        updatedAt = Value(updatedAt);
   static Insertable<AgriculturalSeason> custom({
     Expression<String>? id,
     Expression<String>? ownerId,
-    Expression<String>? parcelId,
+    Expression<String>? sectorId,
     Expression<String>? name,
     Expression<DateTime>? startsOn,
     Expression<DateTime>? endsOn,
@@ -8031,7 +7143,7 @@ class AgriculturalSeasonsCompanion extends UpdateCompanion<AgriculturalSeason> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
-      if (parcelId != null) 'parcel_id': parcelId,
+      if (sectorId != null) 'sector_id': sectorId,
       if (name != null) 'name': name,
       if (startsOn != null) 'starts_on': startsOn,
       if (endsOn != null) 'ends_on': endsOn,
@@ -8052,7 +7164,7 @@ class AgriculturalSeasonsCompanion extends UpdateCompanion<AgriculturalSeason> {
   AgriculturalSeasonsCompanion copyWith({
     Value<String>? id,
     Value<String>? ownerId,
-    Value<String>? parcelId,
+    Value<String>? sectorId,
     Value<String>? name,
     Value<DateTime>? startsOn,
     Value<DateTime?>? endsOn,
@@ -8070,7 +7182,7 @@ class AgriculturalSeasonsCompanion extends UpdateCompanion<AgriculturalSeason> {
     return AgriculturalSeasonsCompanion(
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
-      parcelId: parcelId ?? this.parcelId,
+      sectorId: sectorId ?? this.sectorId,
       name: name ?? this.name,
       startsOn: startsOn ?? this.startsOn,
       endsOn: endsOn ?? this.endsOn,
@@ -8096,8 +7208,8 @@ class AgriculturalSeasonsCompanion extends UpdateCompanion<AgriculturalSeason> {
     if (ownerId.present) {
       map['owner_id'] = Variable<String>(ownerId.value);
     }
-    if (parcelId.present) {
-      map['parcel_id'] = Variable<String>(parcelId.value);
+    if (sectorId.present) {
+      map['sector_id'] = Variable<String>(sectorId.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -8146,7 +7258,7 @@ class AgriculturalSeasonsCompanion extends UpdateCompanion<AgriculturalSeason> {
     return (StringBuffer('AgriculturalSeasonsCompanion(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
-          ..write('parcelId: $parcelId, ')
+          ..write('sectorId: $sectorId, ')
           ..write('name: $name, ')
           ..write('startsOn: $startsOn, ')
           ..write('endsOn: $endsOn, ')
@@ -9304,17 +8416,6 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _parcelIdMeta = const VerificationMeta(
-    'parcelId',
-  );
-  @override
-  late final GeneratedColumn<String> parcelId = GeneratedColumn<String>(
-    'parcel_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
   static const VerificationMeta _sectorIdMeta = const VerificationMeta(
     'sectorId',
   );
@@ -9521,7 +8622,6 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
   List<GeneratedColumn> get $columns => [
     id,
     ownerId,
-    parcelId,
     sectorId,
     seasonId,
     cropAssignmentId,
@@ -9565,14 +8665,6 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
       );
     } else if (isInserting) {
       context.missing(_ownerIdMeta);
-    }
-    if (data.containsKey('parcel_id')) {
-      context.handle(
-        _parcelIdMeta,
-        parcelId.isAcceptableOrUnknown(data['parcel_id']!, _parcelIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_parcelIdMeta);
     }
     if (data.containsKey('sector_id')) {
       context.handle(
@@ -9728,10 +8820,6 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
         DriftSqlType.string,
         data['${effectivePrefix}owner_id'],
       )!,
-      parcelId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}parcel_id'],
-      )!,
       sectorId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}sector_id'],
@@ -9816,7 +8904,6 @@ class $LaborsTable extends Labors with TableInfo<$LaborsTable, Labor> {
 class Labor extends DataClass implements Insertable<Labor> {
   final String id;
   final String ownerId;
-  final String parcelId;
   final String sectorId;
   final String? seasonId;
   final String? cropAssignmentId;
@@ -9838,7 +8925,6 @@ class Labor extends DataClass implements Insertable<Labor> {
   const Labor({
     required this.id,
     required this.ownerId,
-    required this.parcelId,
     required this.sectorId,
     this.seasonId,
     this.cropAssignmentId,
@@ -9863,7 +8949,6 @@ class Labor extends DataClass implements Insertable<Labor> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['owner_id'] = Variable<String>(ownerId);
-    map['parcel_id'] = Variable<String>(parcelId);
     map['sector_id'] = Variable<String>(sectorId);
     if (!nullToAbsent || seasonId != null) {
       map['season_id'] = Variable<String>(seasonId);
@@ -9907,7 +8992,6 @@ class Labor extends DataClass implements Insertable<Labor> {
     return LaborsCompanion(
       id: Value(id),
       ownerId: Value(ownerId),
-      parcelId: Value(parcelId),
       sectorId: Value(sectorId),
       seasonId: seasonId == null && nullToAbsent
           ? const Value.absent()
@@ -9955,7 +9039,6 @@ class Labor extends DataClass implements Insertable<Labor> {
     return Labor(
       id: serializer.fromJson<String>(json['id']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
-      parcelId: serializer.fromJson<String>(json['parcelId']),
       sectorId: serializer.fromJson<String>(json['sectorId']),
       seasonId: serializer.fromJson<String?>(json['seasonId']),
       cropAssignmentId: serializer.fromJson<String?>(json['cropAssignmentId']),
@@ -9988,7 +9071,6 @@ class Labor extends DataClass implements Insertable<Labor> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'ownerId': serializer.toJson<String>(ownerId),
-      'parcelId': serializer.toJson<String>(parcelId),
       'sectorId': serializer.toJson<String>(sectorId),
       'seasonId': serializer.toJson<String?>(seasonId),
       'cropAssignmentId': serializer.toJson<String?>(cropAssignmentId),
@@ -10013,7 +9095,6 @@ class Labor extends DataClass implements Insertable<Labor> {
   Labor copyWith({
     String? id,
     String? ownerId,
-    String? parcelId,
     String? sectorId,
     Value<String?> seasonId = const Value.absent(),
     Value<String?> cropAssignmentId = const Value.absent(),
@@ -10035,7 +9116,6 @@ class Labor extends DataClass implements Insertable<Labor> {
   }) => Labor(
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
-    parcelId: parcelId ?? this.parcelId,
     sectorId: sectorId ?? this.sectorId,
     seasonId: seasonId.present ? seasonId.value : this.seasonId,
     cropAssignmentId: cropAssignmentId.present
@@ -10069,7 +9149,6 @@ class Labor extends DataClass implements Insertable<Labor> {
     return Labor(
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
-      parcelId: data.parcelId.present ? data.parcelId.value : this.parcelId,
       sectorId: data.sectorId.present ? data.sectorId.value : this.sectorId,
       seasonId: data.seasonId.present ? data.seasonId.value : this.seasonId,
       cropAssignmentId: data.cropAssignmentId.present
@@ -10114,7 +9193,6 @@ class Labor extends DataClass implements Insertable<Labor> {
     return (StringBuffer('Labor(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
-          ..write('parcelId: $parcelId, ')
           ..write('sectorId: $sectorId, ')
           ..write('seasonId: $seasonId, ')
           ..write('cropAssignmentId: $cropAssignmentId, ')
@@ -10138,10 +9216,9 @@ class Labor extends DataClass implements Insertable<Labor> {
   }
 
   @override
-  int get hashCode => Object.hashAll([
+  int get hashCode => Object.hash(
     id,
     ownerId,
-    parcelId,
     sectorId,
     seasonId,
     cropAssignmentId,
@@ -10160,14 +9237,13 @@ class Labor extends DataClass implements Insertable<Labor> {
     lastSyncErrorCode,
     deletedAt,
     updatedAt,
-  ]);
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Labor &&
           other.id == this.id &&
           other.ownerId == this.ownerId &&
-          other.parcelId == this.parcelId &&
           other.sectorId == this.sectorId &&
           other.seasonId == this.seasonId &&
           other.cropAssignmentId == this.cropAssignmentId &&
@@ -10191,7 +9267,6 @@ class Labor extends DataClass implements Insertable<Labor> {
 class LaborsCompanion extends UpdateCompanion<Labor> {
   final Value<String> id;
   final Value<String> ownerId;
-  final Value<String> parcelId;
   final Value<String> sectorId;
   final Value<String?> seasonId;
   final Value<String?> cropAssignmentId;
@@ -10214,7 +9289,6 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
   const LaborsCompanion({
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
-    this.parcelId = const Value.absent(),
     this.sectorId = const Value.absent(),
     this.seasonId = const Value.absent(),
     this.cropAssignmentId = const Value.absent(),
@@ -10238,7 +9312,6 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
   LaborsCompanion.insert({
     required String id,
     required String ownerId,
-    required String parcelId,
     required String sectorId,
     this.seasonId = const Value.absent(),
     this.cropAssignmentId = const Value.absent(),
@@ -10260,7 +9333,6 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        ownerId = Value(ownerId),
-       parcelId = Value(parcelId),
        sectorId = Value(sectorId),
        type = Value(type),
        occurredAt = Value(occurredAt),
@@ -10268,7 +9340,6 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
   static Insertable<Labor> custom({
     Expression<String>? id,
     Expression<String>? ownerId,
-    Expression<String>? parcelId,
     Expression<String>? sectorId,
     Expression<String>? seasonId,
     Expression<String>? cropAssignmentId,
@@ -10292,7 +9363,6 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
-      if (parcelId != null) 'parcel_id': parcelId,
       if (sectorId != null) 'sector_id': sectorId,
       if (seasonId != null) 'season_id': seasonId,
       if (cropAssignmentId != null) 'crop_assignment_id': cropAssignmentId,
@@ -10319,7 +9389,6 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
   LaborsCompanion copyWith({
     Value<String>? id,
     Value<String>? ownerId,
-    Value<String>? parcelId,
     Value<String>? sectorId,
     Value<String?>? seasonId,
     Value<String?>? cropAssignmentId,
@@ -10343,7 +9412,6 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
     return LaborsCompanion(
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
-      parcelId: parcelId ?? this.parcelId,
       sectorId: sectorId ?? this.sectorId,
       seasonId: seasonId ?? this.seasonId,
       cropAssignmentId: cropAssignmentId ?? this.cropAssignmentId,
@@ -10374,9 +9442,6 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
     }
     if (ownerId.present) {
       map['owner_id'] = Variable<String>(ownerId.value);
-    }
-    if (parcelId.present) {
-      map['parcel_id'] = Variable<String>(parcelId.value);
     }
     if (sectorId.present) {
       map['sector_id'] = Variable<String>(sectorId.value);
@@ -10443,7 +9508,6 @@ class LaborsCompanion extends UpdateCompanion<Labor> {
     return (StringBuffer('LaborsCompanion(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
-          ..write('parcelId: $parcelId, ')
           ..write('sectorId: $sectorId, ')
           ..write('seasonId: $seasonId, ')
           ..write('cropAssignmentId: $cropAssignmentId, ')
@@ -14376,17 +13440,6 @@ class $ProductionRecordsTable extends ProductionRecords
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _parcelIdMeta = const VerificationMeta(
-    'parcelId',
-  );
-  @override
-  late final GeneratedColumn<String> parcelId = GeneratedColumn<String>(
-    'parcel_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
   static const VerificationMeta _sectorIdMeta = const VerificationMeta(
     'sectorId',
   );
@@ -14489,7 +13542,6 @@ class $ProductionRecordsTable extends ProductionRecords
   List<GeneratedColumn> get $columns => [
     id,
     ownerId,
-    parcelId,
     sectorId,
     laborId,
     seasonId,
@@ -14524,14 +13576,6 @@ class $ProductionRecordsTable extends ProductionRecords
       );
     } else if (isInserting) {
       context.missing(_ownerIdMeta);
-    }
-    if (data.containsKey('parcel_id')) {
-      context.handle(
-        _parcelIdMeta,
-        parcelId.isAcceptableOrUnknown(data['parcel_id']!, _parcelIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_parcelIdMeta);
     }
     if (data.containsKey('sector_id')) {
       context.handle(
@@ -14626,10 +13670,6 @@ class $ProductionRecordsTable extends ProductionRecords
         DriftSqlType.string,
         data['${effectivePrefix}owner_id'],
       )!,
-      parcelId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}parcel_id'],
-      )!,
       sectorId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}sector_id'],
@@ -14679,7 +13719,6 @@ class ProductionRecord extends DataClass
     implements Insertable<ProductionRecord> {
   final String id;
   final String ownerId;
-  final String parcelId;
   final String sectorId;
   final String? laborId;
   final String? seasonId;
@@ -14692,7 +13731,6 @@ class ProductionRecord extends DataClass
   const ProductionRecord({
     required this.id,
     required this.ownerId,
-    required this.parcelId,
     required this.sectorId,
     this.laborId,
     this.seasonId,
@@ -14708,7 +13746,6 @@ class ProductionRecord extends DataClass
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['owner_id'] = Variable<String>(ownerId);
-    map['parcel_id'] = Variable<String>(parcelId);
     map['sector_id'] = Variable<String>(sectorId);
     if (!nullToAbsent || laborId != null) {
       map['labor_id'] = Variable<String>(laborId);
@@ -14731,7 +13768,6 @@ class ProductionRecord extends DataClass
     return ProductionRecordsCompanion(
       id: Value(id),
       ownerId: Value(ownerId),
-      parcelId: Value(parcelId),
       sectorId: Value(sectorId),
       laborId: laborId == null && nullToAbsent
           ? const Value.absent()
@@ -14758,7 +13794,6 @@ class ProductionRecord extends DataClass
     return ProductionRecord(
       id: serializer.fromJson<String>(json['id']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
-      parcelId: serializer.fromJson<String>(json['parcelId']),
       sectorId: serializer.fromJson<String>(json['sectorId']),
       laborId: serializer.fromJson<String?>(json['laborId']),
       seasonId: serializer.fromJson<String?>(json['seasonId']),
@@ -14776,7 +13811,6 @@ class ProductionRecord extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'ownerId': serializer.toJson<String>(ownerId),
-      'parcelId': serializer.toJson<String>(parcelId),
       'sectorId': serializer.toJson<String>(sectorId),
       'laborId': serializer.toJson<String?>(laborId),
       'seasonId': serializer.toJson<String?>(seasonId),
@@ -14792,7 +13826,6 @@ class ProductionRecord extends DataClass
   ProductionRecord copyWith({
     String? id,
     String? ownerId,
-    String? parcelId,
     String? sectorId,
     Value<String?> laborId = const Value.absent(),
     Value<String?> seasonId = const Value.absent(),
@@ -14805,7 +13838,6 @@ class ProductionRecord extends DataClass
   }) => ProductionRecord(
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
-    parcelId: parcelId ?? this.parcelId,
     sectorId: sectorId ?? this.sectorId,
     laborId: laborId.present ? laborId.value : this.laborId,
     seasonId: seasonId.present ? seasonId.value : this.seasonId,
@@ -14820,7 +13852,6 @@ class ProductionRecord extends DataClass
     return ProductionRecord(
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
-      parcelId: data.parcelId.present ? data.parcelId.value : this.parcelId,
       sectorId: data.sectorId.present ? data.sectorId.value : this.sectorId,
       laborId: data.laborId.present ? data.laborId.value : this.laborId,
       seasonId: data.seasonId.present ? data.seasonId.value : this.seasonId,
@@ -14842,7 +13873,6 @@ class ProductionRecord extends DataClass
     return (StringBuffer('ProductionRecord(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
-          ..write('parcelId: $parcelId, ')
           ..write('sectorId: $sectorId, ')
           ..write('laborId: $laborId, ')
           ..write('seasonId: $seasonId, ')
@@ -14860,7 +13890,6 @@ class ProductionRecord extends DataClass
   int get hashCode => Object.hash(
     id,
     ownerId,
-    parcelId,
     sectorId,
     laborId,
     seasonId,
@@ -14877,7 +13906,6 @@ class ProductionRecord extends DataClass
       (other is ProductionRecord &&
           other.id == this.id &&
           other.ownerId == this.ownerId &&
-          other.parcelId == this.parcelId &&
           other.sectorId == this.sectorId &&
           other.laborId == this.laborId &&
           other.seasonId == this.seasonId &&
@@ -14892,7 +13920,6 @@ class ProductionRecord extends DataClass
 class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
   final Value<String> id;
   final Value<String> ownerId;
-  final Value<String> parcelId;
   final Value<String> sectorId;
   final Value<String?> laborId;
   final Value<String?> seasonId;
@@ -14906,7 +13933,6 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
   const ProductionRecordsCompanion({
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
-    this.parcelId = const Value.absent(),
     this.sectorId = const Value.absent(),
     this.laborId = const Value.absent(),
     this.seasonId = const Value.absent(),
@@ -14921,7 +13947,6 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
   ProductionRecordsCompanion.insert({
     required String id,
     required String ownerId,
-    required String parcelId,
     required String sectorId,
     this.laborId = const Value.absent(),
     this.seasonId = const Value.absent(),
@@ -14934,7 +13959,6 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        ownerId = Value(ownerId),
-       parcelId = Value(parcelId),
        sectorId = Value(sectorId),
        cropId = Value(cropId),
        quantity = Value(quantity),
@@ -14944,7 +13968,6 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
   static Insertable<ProductionRecord> custom({
     Expression<String>? id,
     Expression<String>? ownerId,
-    Expression<String>? parcelId,
     Expression<String>? sectorId,
     Expression<String>? laborId,
     Expression<String>? seasonId,
@@ -14959,7 +13982,6 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
-      if (parcelId != null) 'parcel_id': parcelId,
       if (sectorId != null) 'sector_id': sectorId,
       if (laborId != null) 'labor_id': laborId,
       if (seasonId != null) 'season_id': seasonId,
@@ -14976,7 +13998,6 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
   ProductionRecordsCompanion copyWith({
     Value<String>? id,
     Value<String>? ownerId,
-    Value<String>? parcelId,
     Value<String>? sectorId,
     Value<String?>? laborId,
     Value<String?>? seasonId,
@@ -14991,7 +14012,6 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
     return ProductionRecordsCompanion(
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
-      parcelId: parcelId ?? this.parcelId,
       sectorId: sectorId ?? this.sectorId,
       laborId: laborId ?? this.laborId,
       seasonId: seasonId ?? this.seasonId,
@@ -15013,9 +14033,6 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
     }
     if (ownerId.present) {
       map['owner_id'] = Variable<String>(ownerId.value);
-    }
-    if (parcelId.present) {
-      map['parcel_id'] = Variable<String>(parcelId.value);
     }
     if (sectorId.present) {
       map['sector_id'] = Variable<String>(sectorId.value);
@@ -15055,7 +14072,6 @@ class ProductionRecordsCompanion extends UpdateCompanion<ProductionRecord> {
     return (StringBuffer('ProductionRecordsCompanion(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
-          ..write('parcelId: $parcelId, ')
           ..write('sectorId: $sectorId, ')
           ..write('laborId: $laborId, ')
           ..write('seasonId: $seasonId, ')
@@ -15732,17 +14748,6 @@ class $RemindersTable extends Reminders
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _parcelIdMeta = const VerificationMeta(
-    'parcelId',
-  );
-  @override
-  late final GeneratedColumn<String> parcelId = GeneratedColumn<String>(
-    'parcel_id',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
   static const VerificationMeta _sectorIdMeta = const VerificationMeta(
     'sectorId',
   );
@@ -15950,7 +14955,6 @@ class $RemindersTable extends Reminders
   List<GeneratedColumn> get $columns => [
     id,
     ownerId,
-    parcelId,
     sectorId,
     title,
     notes,
@@ -15994,12 +14998,6 @@ class $RemindersTable extends Reminders
       );
     } else if (isInserting) {
       context.missing(_ownerIdMeta);
-    }
-    if (data.containsKey('parcel_id')) {
-      context.handle(
-        _parcelIdMeta,
-        parcelId.isAcceptableOrUnknown(data['parcel_id']!, _parcelIdMeta),
-      );
     }
     if (data.containsKey('sector_id')) {
       context.handle(
@@ -16162,10 +15160,6 @@ class $RemindersTable extends Reminders
         DriftSqlType.string,
         data['${effectivePrefix}owner_id'],
       )!,
-      parcelId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}parcel_id'],
-      ),
       sectorId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}sector_id'],
@@ -16250,7 +15244,6 @@ class $RemindersTable extends Reminders
 class Reminder extends DataClass implements Insertable<Reminder> {
   final String id;
   final String ownerId;
-  final String? parcelId;
   final String? sectorId;
   final String title;
   final String? notes;
@@ -16272,7 +15265,6 @@ class Reminder extends DataClass implements Insertable<Reminder> {
   const Reminder({
     required this.id,
     required this.ownerId,
-    this.parcelId,
     this.sectorId,
     required this.title,
     this.notes,
@@ -16297,9 +15289,6 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['owner_id'] = Variable<String>(ownerId);
-    if (!nullToAbsent || parcelId != null) {
-      map['parcel_id'] = Variable<String>(parcelId);
-    }
     if (!nullToAbsent || sectorId != null) {
       map['sector_id'] = Variable<String>(sectorId);
     }
@@ -16343,9 +15332,6 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     return RemindersCompanion(
       id: Value(id),
       ownerId: Value(ownerId),
-      parcelId: parcelId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(parcelId),
       sectorId: sectorId == null && nullToAbsent
           ? const Value.absent()
           : Value(sectorId),
@@ -16393,7 +15379,6 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     return Reminder(
       id: serializer.fromJson<String>(json['id']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
-      parcelId: serializer.fromJson<String?>(json['parcelId']),
       sectorId: serializer.fromJson<String?>(json['sectorId']),
       title: serializer.fromJson<String>(json['title']),
       notes: serializer.fromJson<String?>(json['notes']),
@@ -16424,7 +15409,6 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'ownerId': serializer.toJson<String>(ownerId),
-      'parcelId': serializer.toJson<String?>(parcelId),
       'sectorId': serializer.toJson<String?>(sectorId),
       'title': serializer.toJson<String>(title),
       'notes': serializer.toJson<String?>(notes),
@@ -16449,7 +15433,6 @@ class Reminder extends DataClass implements Insertable<Reminder> {
   Reminder copyWith({
     String? id,
     String? ownerId,
-    Value<String?> parcelId = const Value.absent(),
     Value<String?> sectorId = const Value.absent(),
     String? title,
     Value<String?> notes = const Value.absent(),
@@ -16471,7 +15454,6 @@ class Reminder extends DataClass implements Insertable<Reminder> {
   }) => Reminder(
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
-    parcelId: parcelId.present ? parcelId.value : this.parcelId,
     sectorId: sectorId.present ? sectorId.value : this.sectorId,
     title: title ?? this.title,
     notes: notes.present ? notes.value : this.notes,
@@ -16501,7 +15483,6 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     return Reminder(
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
-      parcelId: data.parcelId.present ? data.parcelId.value : this.parcelId,
       sectorId: data.sectorId.present ? data.sectorId.value : this.sectorId,
       title: data.title.present ? data.title.value : this.title,
       notes: data.notes.present ? data.notes.value : this.notes,
@@ -16548,7 +15529,6 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     return (StringBuffer('Reminder(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
-          ..write('parcelId: $parcelId, ')
           ..write('sectorId: $sectorId, ')
           ..write('title: $title, ')
           ..write('notes: $notes, ')
@@ -16572,10 +15552,9 @@ class Reminder extends DataClass implements Insertable<Reminder> {
   }
 
   @override
-  int get hashCode => Object.hashAll([
+  int get hashCode => Object.hash(
     id,
     ownerId,
-    parcelId,
     sectorId,
     title,
     notes,
@@ -16594,14 +15573,13 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     lastSyncErrorCode,
     deletedAt,
     updatedAt,
-  ]);
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Reminder &&
           other.id == this.id &&
           other.ownerId == this.ownerId &&
-          other.parcelId == this.parcelId &&
           other.sectorId == this.sectorId &&
           other.title == this.title &&
           other.notes == this.notes &&
@@ -16625,7 +15603,6 @@ class Reminder extends DataClass implements Insertable<Reminder> {
 class RemindersCompanion extends UpdateCompanion<Reminder> {
   final Value<String> id;
   final Value<String> ownerId;
-  final Value<String?> parcelId;
   final Value<String?> sectorId;
   final Value<String> title;
   final Value<String?> notes;
@@ -16648,7 +15625,6 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
   const RemindersCompanion({
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
-    this.parcelId = const Value.absent(),
     this.sectorId = const Value.absent(),
     this.title = const Value.absent(),
     this.notes = const Value.absent(),
@@ -16672,7 +15648,6 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
   RemindersCompanion.insert({
     required String id,
     required String ownerId,
-    this.parcelId = const Value.absent(),
     this.sectorId = const Value.absent(),
     required String title,
     this.notes = const Value.absent(),
@@ -16700,7 +15675,6 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
   static Insertable<Reminder> custom({
     Expression<String>? id,
     Expression<String>? ownerId,
-    Expression<String>? parcelId,
     Expression<String>? sectorId,
     Expression<String>? title,
     Expression<String>? notes,
@@ -16724,7 +15698,6 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
-      if (parcelId != null) 'parcel_id': parcelId,
       if (sectorId != null) 'sector_id': sectorId,
       if (title != null) 'title': title,
       if (notes != null) 'notes': notes,
@@ -16751,7 +15724,6 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
   RemindersCompanion copyWith({
     Value<String>? id,
     Value<String>? ownerId,
-    Value<String?>? parcelId,
     Value<String?>? sectorId,
     Value<String>? title,
     Value<String?>? notes,
@@ -16775,7 +15747,6 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
     return RemindersCompanion(
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
-      parcelId: parcelId ?? this.parcelId,
       sectorId: sectorId ?? this.sectorId,
       title: title ?? this.title,
       notes: notes ?? this.notes,
@@ -16807,9 +15778,6 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
     }
     if (ownerId.present) {
       map['owner_id'] = Variable<String>(ownerId.value);
-    }
-    if (parcelId.present) {
-      map['parcel_id'] = Variable<String>(parcelId.value);
     }
     if (sectorId.present) {
       map['sector_id'] = Variable<String>(sectorId.value);
@@ -16878,7 +15846,6 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
     return (StringBuffer('RemindersCompanion(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
-          ..write('parcelId: $parcelId, ')
           ..write('sectorId: $sectorId, ')
           ..write('title: $title, ')
           ..write('notes: $notes, ')
@@ -18235,12 +17202,12 @@ class $WeatherCacheTable extends WeatherCache
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _parcelIdMeta = const VerificationMeta(
-    'parcelId',
+  static const VerificationMeta _sectorIdMeta = const VerificationMeta(
+    'sectorId',
   );
   @override
-  late final GeneratedColumn<String> parcelId = GeneratedColumn<String>(
-    'parcel_id',
+  late final GeneratedColumn<String> sectorId = GeneratedColumn<String>(
+    'sector_id',
     aliasedName,
     true,
     type: DriftSqlType.string,
@@ -18339,7 +17306,7 @@ class $WeatherCacheTable extends WeatherCache
   List<GeneratedColumn> get $columns => [
     id,
     ownerId,
-    parcelId,
+    sectorId,
     locality,
     provider,
     payloadJson,
@@ -18374,10 +17341,10 @@ class $WeatherCacheTable extends WeatherCache
     } else if (isInserting) {
       context.missing(_ownerIdMeta);
     }
-    if (data.containsKey('parcel_id')) {
+    if (data.containsKey('sector_id')) {
       context.handle(
-        _parcelIdMeta,
-        parcelId.isAcceptableOrUnknown(data['parcel_id']!, _parcelIdMeta),
+        _sectorIdMeta,
+        sectorId.isAcceptableOrUnknown(data['sector_id']!, _sectorIdMeta),
       );
     }
     if (data.containsKey('locality')) {
@@ -18457,9 +17424,9 @@ class $WeatherCacheTable extends WeatherCache
         DriftSqlType.string,
         data['${effectivePrefix}owner_id'],
       )!,
-      parcelId: attachedDatabase.typeMapping.read(
+      sectorId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}parcel_id'],
+        data['${effectivePrefix}sector_id'],
       ),
       locality: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -18506,7 +17473,7 @@ class WeatherCacheData extends DataClass
     implements Insertable<WeatherCacheData> {
   final String id;
   final String ownerId;
-  final String? parcelId;
+  final String? sectorId;
   final String locality;
   final String provider;
   final String payloadJson;
@@ -18518,7 +17485,7 @@ class WeatherCacheData extends DataClass
   const WeatherCacheData({
     required this.id,
     required this.ownerId,
-    this.parcelId,
+    this.sectorId,
     required this.locality,
     required this.provider,
     required this.payloadJson,
@@ -18533,8 +17500,8 @@ class WeatherCacheData extends DataClass
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['owner_id'] = Variable<String>(ownerId);
-    if (!nullToAbsent || parcelId != null) {
-      map['parcel_id'] = Variable<String>(parcelId);
+    if (!nullToAbsent || sectorId != null) {
+      map['sector_id'] = Variable<String>(sectorId);
     }
     map['locality'] = Variable<String>(locality);
     map['provider'] = Variable<String>(provider);
@@ -18559,9 +17526,9 @@ class WeatherCacheData extends DataClass
     return WeatherCacheCompanion(
       id: Value(id),
       ownerId: Value(ownerId),
-      parcelId: parcelId == null && nullToAbsent
+      sectorId: sectorId == null && nullToAbsent
           ? const Value.absent()
-          : Value(parcelId),
+          : Value(sectorId),
       locality: Value(locality),
       provider: Value(provider),
       payloadJson: Value(payloadJson),
@@ -18589,7 +17556,7 @@ class WeatherCacheData extends DataClass
     return WeatherCacheData(
       id: serializer.fromJson<String>(json['id']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
-      parcelId: serializer.fromJson<String?>(json['parcelId']),
+      sectorId: serializer.fromJson<String?>(json['sectorId']),
       locality: serializer.fromJson<String>(json['locality']),
       provider: serializer.fromJson<String>(json['provider']),
       payloadJson: serializer.fromJson<String>(json['payloadJson']),
@@ -18606,7 +17573,7 @@ class WeatherCacheData extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'ownerId': serializer.toJson<String>(ownerId),
-      'parcelId': serializer.toJson<String?>(parcelId),
+      'sectorId': serializer.toJson<String?>(sectorId),
       'locality': serializer.toJson<String>(locality),
       'provider': serializer.toJson<String>(provider),
       'payloadJson': serializer.toJson<String>(payloadJson),
@@ -18621,7 +17588,7 @@ class WeatherCacheData extends DataClass
   WeatherCacheData copyWith({
     String? id,
     String? ownerId,
-    Value<String?> parcelId = const Value.absent(),
+    Value<String?> sectorId = const Value.absent(),
     String? locality,
     String? provider,
     String? payloadJson,
@@ -18633,7 +17600,7 @@ class WeatherCacheData extends DataClass
   }) => WeatherCacheData(
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
-    parcelId: parcelId.present ? parcelId.value : this.parcelId,
+    sectorId: sectorId.present ? sectorId.value : this.sectorId,
     locality: locality ?? this.locality,
     provider: provider ?? this.provider,
     payloadJson: payloadJson ?? this.payloadJson,
@@ -18647,7 +17614,7 @@ class WeatherCacheData extends DataClass
     return WeatherCacheData(
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
-      parcelId: data.parcelId.present ? data.parcelId.value : this.parcelId,
+      sectorId: data.sectorId.present ? data.sectorId.value : this.sectorId,
       locality: data.locality.present ? data.locality.value : this.locality,
       provider: data.provider.present ? data.provider.value : this.provider,
       payloadJson: data.payloadJson.present
@@ -18670,7 +17637,7 @@ class WeatherCacheData extends DataClass
     return (StringBuffer('WeatherCacheData(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
-          ..write('parcelId: $parcelId, ')
+          ..write('sectorId: $sectorId, ')
           ..write('locality: $locality, ')
           ..write('provider: $provider, ')
           ..write('payloadJson: $payloadJson, ')
@@ -18687,7 +17654,7 @@ class WeatherCacheData extends DataClass
   int get hashCode => Object.hash(
     id,
     ownerId,
-    parcelId,
+    sectorId,
     locality,
     provider,
     payloadJson,
@@ -18703,7 +17670,7 @@ class WeatherCacheData extends DataClass
       (other is WeatherCacheData &&
           other.id == this.id &&
           other.ownerId == this.ownerId &&
-          other.parcelId == this.parcelId &&
+          other.sectorId == this.sectorId &&
           other.locality == this.locality &&
           other.provider == this.provider &&
           other.payloadJson == this.payloadJson &&
@@ -18717,7 +17684,7 @@ class WeatherCacheData extends DataClass
 class WeatherCacheCompanion extends UpdateCompanion<WeatherCacheData> {
   final Value<String> id;
   final Value<String> ownerId;
-  final Value<String?> parcelId;
+  final Value<String?> sectorId;
   final Value<String> locality;
   final Value<String> provider;
   final Value<String> payloadJson;
@@ -18730,7 +17697,7 @@ class WeatherCacheCompanion extends UpdateCompanion<WeatherCacheData> {
   const WeatherCacheCompanion({
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
-    this.parcelId = const Value.absent(),
+    this.sectorId = const Value.absent(),
     this.locality = const Value.absent(),
     this.provider = const Value.absent(),
     this.payloadJson = const Value.absent(),
@@ -18744,7 +17711,7 @@ class WeatherCacheCompanion extends UpdateCompanion<WeatherCacheData> {
   WeatherCacheCompanion.insert({
     required String id,
     required String ownerId,
-    this.parcelId = const Value.absent(),
+    this.sectorId = const Value.absent(),
     required String locality,
     this.provider = const Value.absent(),
     required String payloadJson,
@@ -18762,7 +17729,7 @@ class WeatherCacheCompanion extends UpdateCompanion<WeatherCacheData> {
   static Insertable<WeatherCacheData> custom({
     Expression<String>? id,
     Expression<String>? ownerId,
-    Expression<String>? parcelId,
+    Expression<String>? sectorId,
     Expression<String>? locality,
     Expression<String>? provider,
     Expression<String>? payloadJson,
@@ -18776,7 +17743,7 @@ class WeatherCacheCompanion extends UpdateCompanion<WeatherCacheData> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
-      if (parcelId != null) 'parcel_id': parcelId,
+      if (sectorId != null) 'sector_id': sectorId,
       if (locality != null) 'locality': locality,
       if (provider != null) 'provider': provider,
       if (payloadJson != null) 'payload_json': payloadJson,
@@ -18792,7 +17759,7 @@ class WeatherCacheCompanion extends UpdateCompanion<WeatherCacheData> {
   WeatherCacheCompanion copyWith({
     Value<String>? id,
     Value<String>? ownerId,
-    Value<String?>? parcelId,
+    Value<String?>? sectorId,
     Value<String>? locality,
     Value<String>? provider,
     Value<String>? payloadJson,
@@ -18806,7 +17773,7 @@ class WeatherCacheCompanion extends UpdateCompanion<WeatherCacheData> {
     return WeatherCacheCompanion(
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
-      parcelId: parcelId ?? this.parcelId,
+      sectorId: sectorId ?? this.sectorId,
       locality: locality ?? this.locality,
       provider: provider ?? this.provider,
       payloadJson: payloadJson ?? this.payloadJson,
@@ -18828,8 +17795,8 @@ class WeatherCacheCompanion extends UpdateCompanion<WeatherCacheData> {
     if (ownerId.present) {
       map['owner_id'] = Variable<String>(ownerId.value);
     }
-    if (parcelId.present) {
-      map['parcel_id'] = Variable<String>(parcelId.value);
+    if (sectorId.present) {
+      map['sector_id'] = Variable<String>(sectorId.value);
     }
     if (locality.present) {
       map['locality'] = Variable<String>(locality.value);
@@ -18866,7 +17833,7 @@ class WeatherCacheCompanion extends UpdateCompanion<WeatherCacheData> {
     return (StringBuffer('WeatherCacheCompanion(')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
-          ..write('parcelId: $parcelId, ')
+          ..write('sectorId: $sectorId, ')
           ..write('locality: $locality, ')
           ..write('provider: $provider, ')
           ..write('payloadJson: $payloadJson, ')
@@ -19943,7 +18910,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SyncCursorsTable syncCursors = $SyncCursorsTable(this);
   late final $SyncConflictsTable syncConflicts = $SyncConflictsTable(this);
   late final $FormDraftsTable formDrafts = $FormDraftsTable(this);
-  late final $ParcelsTable parcels = $ParcelsTable(this);
   late final $SectorsTable sectors = $SectorsTable(this);
   late final $OfficialCropsTable officialCrops = $OfficialCropsTable(this);
   late final $CustomCropsTable customCrops = $CustomCropsTable(this);
@@ -19992,7 +18958,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     syncCursors,
     syncConflicts,
     formDrafts,
-    parcels,
     sectors,
     officialCrops,
     customCrops,
@@ -21691,596 +20656,9 @@ typedef $$FormDraftsTableProcessedTableManager =
       FormDraft,
       PrefetchHooks Function()
     >;
-typedef $$ParcelsTableCreateCompanionBuilder = ParcelsCompanion Function({
-  required String id,
-  required String ownerId,
-  required String name,
-  Value<String?> locality,
-  Value<String?> polygonJson,
-  Value<double?> areaSquareMeters,
-  Value<bool> isActive,
-  Value<bool> isArchived,
-  Value<int> version,
-  Value<String> syncState,
-  Value<DateTime?> serverUpdatedAt,
-  Value<String?> lastSyncErrorCode,
-  required DateTime updatedAt,
-  Value<DateTime?> deletedAt,
-  Value<int> rowid,
-});
-typedef $$ParcelsTableUpdateCompanionBuilder = ParcelsCompanion Function({
-  Value<String> id,
-  Value<String> ownerId,
-  Value<String> name,
-  Value<String?> locality,
-  Value<String?> polygonJson,
-  Value<double?> areaSquareMeters,
-  Value<bool> isActive,
-  Value<bool> isArchived,
-  Value<int> version,
-  Value<String> syncState,
-  Value<DateTime?> serverUpdatedAt,
-  Value<String?> lastSyncErrorCode,
-  Value<DateTime> updatedAt,
-  Value<DateTime?> deletedAt,
-  Value<int> rowid,
-});
-
-final class $$ParcelsTableReferences
-    extends BaseReferences<_$AppDatabase, $ParcelsTable, Parcel> {
-  $$ParcelsTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static MultiTypedResultKey<$SectorsTable, List<Sector>> _sectorsRefsTable(
-    _$AppDatabase db,
-  ) => MultiTypedResultKey.fromTable(
-    db.sectors,
-    aliasName: 'parcels__id__sectors__parcel_id',
-  );
-
-  $$SectorsTableProcessedTableManager get sectorsRefs {
-    final manager = $$SectorsTableTableManager(
-      $_db,
-      $_db.sectors,
-    ).filter((f) => f.parcelId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_sectorsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<
-    $AgriculturalSeasonsTable,
-    List<AgriculturalSeason>
-  >
-  _agriculturalSeasonsRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.agriculturalSeasons,
-        aliasName: 'parcels__id__agricultural_seasons__parcel_id',
-      );
-
-  $$AgriculturalSeasonsTableProcessedTableManager get agriculturalSeasonsRefs {
-    final manager = $$AgriculturalSeasonsTableTableManager(
-      $_db,
-      $_db.agriculturalSeasons,
-    ).filter((f) => f.parcelId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _agriculturalSeasonsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
-class $$ParcelsTableFilterComposer
-    extends Composer<_$AppDatabase, $ParcelsTable> {
-  $$ParcelsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get ownerId => $composableBuilder(
-    column: $table.ownerId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get locality => $composableBuilder(
-    column: $table.locality,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get polygonJson => $composableBuilder(
-    column: $table.polygonJson,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get areaSquareMeters => $composableBuilder(
-    column: $table.areaSquareMeters,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isActive => $composableBuilder(
-    column: $table.isActive,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isArchived => $composableBuilder(
-    column: $table.isArchived,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get version => $composableBuilder(
-    column: $table.version,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get syncState => $composableBuilder(
-    column: $table.syncState,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get serverUpdatedAt => $composableBuilder(
-    column: $table.serverUpdatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get lastSyncErrorCode => $composableBuilder(
-    column: $table.lastSyncErrorCode,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
-    column: $table.deletedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  Expression<bool> sectorsRefs(
-    Expression<bool> Function($$SectorsTableFilterComposer f) f,
-  ) {
-    final $$SectorsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.sectors,
-      getReferencedColumn: (t) => t.parcelId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SectorsTableFilterComposer(
-            $db: $db,
-            $table: $db.sectors,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> agriculturalSeasonsRefs(
-    Expression<bool> Function($$AgriculturalSeasonsTableFilterComposer f) f,
-  ) {
-    final $$AgriculturalSeasonsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.agriculturalSeasons,
-      getReferencedColumn: (t) => t.parcelId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$AgriculturalSeasonsTableFilterComposer(
-            $db: $db,
-            $table: $db.agriculturalSeasons,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$ParcelsTableOrderingComposer
-    extends Composer<_$AppDatabase, $ParcelsTable> {
-  $$ParcelsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get ownerId => $composableBuilder(
-    column: $table.ownerId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get locality => $composableBuilder(
-    column: $table.locality,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get polygonJson => $composableBuilder(
-    column: $table.polygonJson,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get areaSquareMeters => $composableBuilder(
-    column: $table.areaSquareMeters,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isActive => $composableBuilder(
-    column: $table.isActive,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isArchived => $composableBuilder(
-    column: $table.isArchived,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get version => $composableBuilder(
-    column: $table.version,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get syncState => $composableBuilder(
-    column: $table.syncState,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get serverUpdatedAt => $composableBuilder(
-    column: $table.serverUpdatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get lastSyncErrorCode => $composableBuilder(
-    column: $table.lastSyncErrorCode,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
-    column: $table.deletedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$ParcelsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $ParcelsTable> {
-  $$ParcelsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get ownerId =>
-      $composableBuilder(column: $table.ownerId, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<String> get locality =>
-      $composableBuilder(column: $table.locality, builder: (column) => column);
-
-  GeneratedColumn<String> get polygonJson => $composableBuilder(
-    column: $table.polygonJson,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get areaSquareMeters => $composableBuilder(
-    column: $table.areaSquareMeters,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<bool> get isActive =>
-      $composableBuilder(column: $table.isActive, builder: (column) => column);
-
-  GeneratedColumn<bool> get isArchived => $composableBuilder(
-    column: $table.isArchived,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get version =>
-      $composableBuilder(column: $table.version, builder: (column) => column);
-
-  GeneratedColumn<String> get syncState =>
-      $composableBuilder(column: $table.syncState, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get serverUpdatedAt => $composableBuilder(
-    column: $table.serverUpdatedAt,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get lastSyncErrorCode => $composableBuilder(
-    column: $table.lastSyncErrorCode,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get deletedAt =>
-      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
-
-  Expression<T> sectorsRefs<T extends Object>(
-    Expression<T> Function($$SectorsTableAnnotationComposer a) f,
-  ) {
-    final $$SectorsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.sectors,
-      getReferencedColumn: (t) => t.parcelId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SectorsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.sectors,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> agriculturalSeasonsRefs<T extends Object>(
-    Expression<T> Function($$AgriculturalSeasonsTableAnnotationComposer a) f,
-  ) {
-    final $$AgriculturalSeasonsTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.agriculturalSeasons,
-          getReferencedColumn: (t) => t.parcelId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$AgriculturalSeasonsTableAnnotationComposer(
-                $db: $db,
-                $table: $db.agriculturalSeasons,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-}
-
-class $$ParcelsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $ParcelsTable,
-          Parcel,
-          $$ParcelsTableFilterComposer,
-          $$ParcelsTableOrderingComposer,
-          $$ParcelsTableAnnotationComposer,
-          $$ParcelsTableCreateCompanionBuilder,
-          $$ParcelsTableUpdateCompanionBuilder,
-          (Parcel, $$ParcelsTableReferences),
-          Parcel,
-          PrefetchHooks Function({
-            bool sectorsRefs,
-            bool agriculturalSeasonsRefs,
-          })
-        > {
-  $$ParcelsTableTableManager(_$AppDatabase db, $ParcelsTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$ParcelsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$ParcelsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$ParcelsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> ownerId = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<String?> locality = const Value.absent(),
-                Value<String?> polygonJson = const Value.absent(),
-                Value<double?> areaSquareMeters = const Value.absent(),
-                Value<bool> isActive = const Value.absent(),
-                Value<bool> isArchived = const Value.absent(),
-                Value<int> version = const Value.absent(),
-                Value<String> syncState = const Value.absent(),
-                Value<DateTime?> serverUpdatedAt = const Value.absent(),
-                Value<String?> lastSyncErrorCode = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
-                Value<DateTime?> deletedAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => ParcelsCompanion(
-                id: id,
-                ownerId: ownerId,
-                name: name,
-                locality: locality,
-                polygonJson: polygonJson,
-                areaSquareMeters: areaSquareMeters,
-                isActive: isActive,
-                isArchived: isArchived,
-                version: version,
-                syncState: syncState,
-                serverUpdatedAt: serverUpdatedAt,
-                lastSyncErrorCode: lastSyncErrorCode,
-                updatedAt: updatedAt,
-                deletedAt: deletedAt,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required String id,
-                required String ownerId,
-                required String name,
-                Value<String?> locality = const Value.absent(),
-                Value<String?> polygonJson = const Value.absent(),
-                Value<double?> areaSquareMeters = const Value.absent(),
-                Value<bool> isActive = const Value.absent(),
-                Value<bool> isArchived = const Value.absent(),
-                Value<int> version = const Value.absent(),
-                Value<String> syncState = const Value.absent(),
-                Value<DateTime?> serverUpdatedAt = const Value.absent(),
-                Value<String?> lastSyncErrorCode = const Value.absent(),
-                required DateTime updatedAt,
-                Value<DateTime?> deletedAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => ParcelsCompanion.insert(
-                id: id,
-                ownerId: ownerId,
-                name: name,
-                locality: locality,
-                polygonJson: polygonJson,
-                areaSquareMeters: areaSquareMeters,
-                isActive: isActive,
-                isArchived: isArchived,
-                version: version,
-                syncState: syncState,
-                serverUpdatedAt: serverUpdatedAt,
-                lastSyncErrorCode: lastSyncErrorCode,
-                updatedAt: updatedAt,
-                deletedAt: deletedAt,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$ParcelsTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback:
-              ({sectorsRefs = false, agriculturalSeasonsRefs = false}) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (sectorsRefs) db.sectors,
-                    if (agriculturalSeasonsRefs) db.agriculturalSeasons,
-                  ],
-                  addJoins: null,
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (sectorsRefs)
-                        await $_getPrefetchedData<
-                          Parcel,
-                          $ParcelsTable,
-                          Sector
-                        >(
-                          currentTable: table,
-                          referencedTable: $$ParcelsTableReferences
-                              ._sectorsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$ParcelsTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).sectorsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.parcelId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (agriculturalSeasonsRefs)
-                        await $_getPrefetchedData<
-                          Parcel,
-                          $ParcelsTable,
-                          AgriculturalSeason
-                        >(
-                          currentTable: table,
-                          referencedTable: $$ParcelsTableReferences
-                              ._agriculturalSeasonsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$ParcelsTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).agriculturalSeasonsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.parcelId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
-                  },
-                );
-              },
-        ),
-      );
-}
-
-typedef $$ParcelsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $ParcelsTable,
-      Parcel,
-      $$ParcelsTableFilterComposer,
-      $$ParcelsTableOrderingComposer,
-      $$ParcelsTableAnnotationComposer,
-      $$ParcelsTableCreateCompanionBuilder,
-      $$ParcelsTableUpdateCompanionBuilder,
-      (Parcel, $$ParcelsTableReferences),
-      Parcel,
-      PrefetchHooks Function({bool sectorsRefs, bool agriculturalSeasonsRefs})
-    >;
 typedef $$SectorsTableCreateCompanionBuilder = SectorsCompanion Function({
   required String id,
   required String ownerId,
-  required String parcelId,
   required int number,
   required String name,
   Value<String> kind,
@@ -22297,7 +20675,6 @@ typedef $$SectorsTableCreateCompanionBuilder = SectorsCompanion Function({
 typedef $$SectorsTableUpdateCompanionBuilder = SectorsCompanion Function({
   Value<String> id,
   Value<String> ownerId,
-  Value<String> parcelId,
   Value<int> number,
   Value<String> name,
   Value<String> kind,
@@ -22316,23 +20693,6 @@ final class $$SectorsTableReferences
     extends BaseReferences<_$AppDatabase, $SectorsTable, Sector> {
   $$SectorsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $ParcelsTable _parcelIdTable(_$AppDatabase db) =>
-      db.parcels.createAlias('sectors__parcel_id__parcels__id');
-
-  $$ParcelsTableProcessedTableManager get parcelId {
-    final $_column = $_itemColumn<String>('parcel_id')!;
-
-    final manager = $$ParcelsTableTableManager(
-      $_db,
-      $_db.parcels,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_parcelIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
   static MultiTypedResultKey<$CropSeasonsTable, List<CropSeason>>
   _cropSeasonsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.cropSeasons,
@@ -22346,6 +20706,30 @@ final class $$SectorsTableReferences
     ).filter((f) => f.sectorId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_cropSeasonsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $AgriculturalSeasonsTable,
+    List<AgriculturalSeason>
+  >
+  _agriculturalSeasonsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.agriculturalSeasons,
+        aliasName: 'sectors__id__agricultural_seasons__sector_id',
+      );
+
+  $$AgriculturalSeasonsTableProcessedTableManager get agriculturalSeasonsRefs {
+    final manager = $$AgriculturalSeasonsTableTableManager(
+      $_db,
+      $_db.agriculturalSeasons,
+    ).filter((f) => f.sectorId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _agriculturalSeasonsRefsTable($_db),
+    );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -22532,29 +20916,6 @@ class $$SectorsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$ParcelsTableFilterComposer get parcelId {
-    final $$ParcelsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.parcelId,
-      referencedTable: $db.parcels,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ParcelsTableFilterComposer(
-            $db: $db,
-            $table: $db.parcels,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
   Expression<bool> cropSeasonsRefs(
     Expression<bool> Function($$CropSeasonsTableFilterComposer f) f,
   ) {
@@ -22571,6 +20932,31 @@ class $$SectorsTableFilterComposer
           }) => $$CropSeasonsTableFilterComposer(
             $db: $db,
             $table: $db.cropSeasons,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> agriculturalSeasonsRefs(
+    Expression<bool> Function($$AgriculturalSeasonsTableFilterComposer f) f,
+  ) {
+    final $$AgriculturalSeasonsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.agriculturalSeasons,
+      getReferencedColumn: (t) => t.sectorId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AgriculturalSeasonsTableFilterComposer(
+            $db: $db,
+            $table: $db.agriculturalSeasons,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -22780,29 +21166,6 @@ class $$SectorsTableOrderingComposer
     column: $table.deletedAt,
     builder: (column) => ColumnOrderings(column),
   );
-
-  $$ParcelsTableOrderingComposer get parcelId {
-    final $$ParcelsTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.parcelId,
-      referencedTable: $db.parcels,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ParcelsTableOrderingComposer(
-            $db: $db,
-            $table: $db.parcels,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$SectorsTableAnnotationComposer
@@ -22861,29 +21224,6 @@ class $$SectorsTableAnnotationComposer
   GeneratedColumn<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 
-  $$ParcelsTableAnnotationComposer get parcelId {
-    final $$ParcelsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.parcelId,
-      referencedTable: $db.parcels,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ParcelsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.parcels,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
   Expression<T> cropSeasonsRefs<T extends Object>(
     Expression<T> Function($$CropSeasonsTableAnnotationComposer a) f,
   ) {
@@ -22906,6 +21246,32 @@ class $$SectorsTableAnnotationComposer
                 $removeJoinBuilderFromRootComposer,
           ),
     );
+    return f(composer);
+  }
+
+  Expression<T> agriculturalSeasonsRefs<T extends Object>(
+    Expression<T> Function($$AgriculturalSeasonsTableAnnotationComposer a) f,
+  ) {
+    final $$AgriculturalSeasonsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.agriculturalSeasons,
+          getReferencedColumn: (t) => t.sectorId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$AgriculturalSeasonsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.agriculturalSeasons,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 
@@ -23053,8 +21419,8 @@ class $$SectorsTableTableManager
           (Sector, $$SectorsTableReferences),
           Sector,
           PrefetchHooks Function({
-            bool parcelId,
             bool cropSeasonsRefs,
+            bool agriculturalSeasonsRefs,
             bool sectorIrrigationConfigsRefs,
             bool laborsRefs,
             bool soilMeasurementsRefs,
@@ -23077,7 +21443,6 @@ class $$SectorsTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> ownerId = const Value.absent(),
-                Value<String> parcelId = const Value.absent(),
                 Value<int> number = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> kind = const Value.absent(),
@@ -23093,7 +21458,6 @@ class $$SectorsTableTableManager
               }) => SectorsCompanion(
                 id: id,
                 ownerId: ownerId,
-                parcelId: parcelId,
                 number: number,
                 name: name,
                 kind: kind,
@@ -23111,7 +21475,6 @@ class $$SectorsTableTableManager
               ({
                 required String id,
                 required String ownerId,
-                required String parcelId,
                 required int number,
                 required String name,
                 Value<String> kind = const Value.absent(),
@@ -23127,7 +21490,6 @@ class $$SectorsTableTableManager
               }) => SectorsCompanion.insert(
                 id: id,
                 ownerId: ownerId,
-                parcelId: parcelId,
                 number: number,
                 name: name,
                 kind: kind,
@@ -23151,8 +21513,8 @@ class $$SectorsTableTableManager
               .toList(),
           prefetchHooksCallback:
               ({
-                parcelId = false,
                 cropSeasonsRefs = false,
+                agriculturalSeasonsRefs = false,
                 sectorIrrigationConfigsRefs = false,
                 laborsRefs = false,
                 soilMeasurementsRefs = false,
@@ -23163,42 +21525,14 @@ class $$SectorsTableTableManager
                   db: db,
                   explicitlyWatchedTables: [
                     if (cropSeasonsRefs) db.cropSeasons,
+                    if (agriculturalSeasonsRefs) db.agriculturalSeasons,
                     if (sectorIrrigationConfigsRefs) db.sectorIrrigationConfigs,
                     if (laborsRefs) db.labors,
                     if (soilMeasurementsRefs) db.soilMeasurements,
                     if (irrigationRecordsRefs) db.irrigationRecords,
                     if (productionRecordsRefs) db.productionRecords,
                   ],
-                  addJoins:
-                      <
-                        T extends TableManagerState<
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic
-                        >
-                      >(state) {
-                        if (parcelId) {
-                          state = state.withJoin(
-                            currentTable: table,
-                            currentColumn: table.parcelId,
-                            referencedTable: $$SectorsTableReferences
-                                ._parcelIdTable(db),
-                            referencedColumn: $$SectorsTableReferences
-                                ._parcelIdTable(db)
-                                .id,
-                          ) as T;
-                        }
-
-                        return state;
-                      },
+                  addJoins: null,
                   getPrefetchedDataCallback: (items) async {
                     return [
                       if (cropSeasonsRefs)
@@ -23216,6 +21550,27 @@ class $$SectorsTableTableManager
                                 table,
                                 p0,
                               ).cropSeasonsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.sectorId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (agriculturalSeasonsRefs)
+                        await $_getPrefetchedData<
+                          Sector,
+                          $SectorsTable,
+                          AgriculturalSeason
+                        >(
+                          currentTable: table,
+                          referencedTable: $$SectorsTableReferences
+                              ._agriculturalSeasonsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$SectorsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).agriculturalSeasonsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.sectorId == item.id,
@@ -23344,8 +21699,8 @@ typedef $$SectorsTableProcessedTableManager =
       (Sector, $$SectorsTableReferences),
       Sector,
       PrefetchHooks Function({
-        bool parcelId,
         bool cropSeasonsRefs,
+        bool agriculturalSeasonsRefs,
         bool sectorIrrigationConfigsRefs,
         bool laborsRefs,
         bool soilMeasurementsRefs,
@@ -24497,7 +22852,7 @@ typedef $$AgriculturalSeasonsTableCreateCompanionBuilder =
     AgriculturalSeasonsCompanion Function({
       required String id,
       required String ownerId,
-      required String parcelId,
+      required String sectorId,
       required String name,
       required DateTime startsOn,
       Value<DateTime?> endsOn,
@@ -24516,7 +22871,7 @@ typedef $$AgriculturalSeasonsTableUpdateCompanionBuilder =
     AgriculturalSeasonsCompanion Function({
       Value<String> id,
       Value<String> ownerId,
-      Value<String> parcelId,
+      Value<String> sectorId,
       Value<String> name,
       Value<DateTime> startsOn,
       Value<DateTime?> endsOn,
@@ -24545,17 +22900,17 @@ final class $$AgriculturalSeasonsTableReferences
     super.$_typedResult,
   );
 
-  static $ParcelsTable _parcelIdTable(_$AppDatabase db) =>
-      db.parcels.createAlias('agricultural_seasons__parcel_id__parcels__id');
+  static $SectorsTable _sectorIdTable(_$AppDatabase db) =>
+      db.sectors.createAlias('agricultural_seasons__sector_id__sectors__id');
 
-  $$ParcelsTableProcessedTableManager get parcelId {
-    final $_column = $_itemColumn<String>('parcel_id')!;
+  $$SectorsTableProcessedTableManager get sectorId {
+    final $_column = $_itemColumn<String>('sector_id')!;
 
-    final manager = $$ParcelsTableTableManager(
+    final manager = $$SectorsTableTableManager(
       $_db,
-      $_db.parcels,
+      $_db.sectors,
     ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_parcelIdTable($_db));
+    final item = $_typedResult.readTableOrNull(_sectorIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -24642,20 +22997,20 @@ class $$AgriculturalSeasonsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$ParcelsTableFilterComposer get parcelId {
-    final $$ParcelsTableFilterComposer composer = $composerBuilder(
+  $$SectorsTableFilterComposer get sectorId {
+    final $$SectorsTableFilterComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.parcelId,
-      referencedTable: $db.parcels,
+      getCurrentColumn: (t) => t.sectorId,
+      referencedTable: $db.sectors,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$ParcelsTableFilterComposer(
+          }) => $$SectorsTableFilterComposer(
             $db: $db,
-            $table: $db.parcels,
+            $table: $db.sectors,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -24745,20 +23100,20 @@ class $$AgriculturalSeasonsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$ParcelsTableOrderingComposer get parcelId {
-    final $$ParcelsTableOrderingComposer composer = $composerBuilder(
+  $$SectorsTableOrderingComposer get sectorId {
+    final $$SectorsTableOrderingComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.parcelId,
-      referencedTable: $db.parcels,
+      getCurrentColumn: (t) => t.sectorId,
+      referencedTable: $db.sectors,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$ParcelsTableOrderingComposer(
+          }) => $$SectorsTableOrderingComposer(
             $db: $db,
-            $table: $db.parcels,
+            $table: $db.sectors,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -24826,20 +23181,20 @@ class $$AgriculturalSeasonsTableAnnotationComposer
   GeneratedColumn<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 
-  $$ParcelsTableAnnotationComposer get parcelId {
-    final $$ParcelsTableAnnotationComposer composer = $composerBuilder(
+  $$SectorsTableAnnotationComposer get sectorId {
+    final $$SectorsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.parcelId,
-      referencedTable: $db.parcels,
+      getCurrentColumn: (t) => t.sectorId,
+      referencedTable: $db.sectors,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$ParcelsTableAnnotationComposer(
+          }) => $$SectorsTableAnnotationComposer(
             $db: $db,
-            $table: $db.parcels,
+            $table: $db.sectors,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -24863,7 +23218,7 @@ class $$AgriculturalSeasonsTableTableManager
           $$AgriculturalSeasonsTableUpdateCompanionBuilder,
           (AgriculturalSeason, $$AgriculturalSeasonsTableReferences),
           AgriculturalSeason,
-          PrefetchHooks Function({bool parcelId})
+          PrefetchHooks Function({bool sectorId})
         > {
   $$AgriculturalSeasonsTableTableManager(
     _$AppDatabase db,
@@ -24888,7 +23243,7 @@ class $$AgriculturalSeasonsTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> ownerId = const Value.absent(),
-                Value<String> parcelId = const Value.absent(),
+                Value<String> sectorId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<DateTime> startsOn = const Value.absent(),
                 Value<DateTime?> endsOn = const Value.absent(),
@@ -24905,7 +23260,7 @@ class $$AgriculturalSeasonsTableTableManager
               }) => AgriculturalSeasonsCompanion(
                 id: id,
                 ownerId: ownerId,
-                parcelId: parcelId,
+                sectorId: sectorId,
                 name: name,
                 startsOn: startsOn,
                 endsOn: endsOn,
@@ -24924,7 +23279,7 @@ class $$AgriculturalSeasonsTableTableManager
               ({
                 required String id,
                 required String ownerId,
-                required String parcelId,
+                required String sectorId,
                 required String name,
                 required DateTime startsOn,
                 Value<DateTime?> endsOn = const Value.absent(),
@@ -24941,7 +23296,7 @@ class $$AgriculturalSeasonsTableTableManager
               }) => AgriculturalSeasonsCompanion.insert(
                 id: id,
                 ownerId: ownerId,
-                parcelId: parcelId,
+                sectorId: sectorId,
                 name: name,
                 startsOn: startsOn,
                 endsOn: endsOn,
@@ -24964,7 +23319,7 @@ class $$AgriculturalSeasonsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({parcelId = false}) {
+          prefetchHooksCallback: ({sectorId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -24984,14 +23339,14 @@ class $$AgriculturalSeasonsTableTableManager
                       dynamic
                     >
                   >(state) {
-                    if (parcelId) {
+                    if (sectorId) {
                       state = state.withJoin(
                         currentTable: table,
-                        currentColumn: table.parcelId,
+                        currentColumn: table.sectorId,
                         referencedTable: $$AgriculturalSeasonsTableReferences
-                            ._parcelIdTable(db),
+                            ._sectorIdTable(db),
                         referencedColumn: $$AgriculturalSeasonsTableReferences
-                            ._parcelIdTable(db)
+                            ._sectorIdTable(db)
                             .id,
                       ) as T;
                     }
@@ -25019,7 +23374,7 @@ typedef $$AgriculturalSeasonsTableProcessedTableManager =
       $$AgriculturalSeasonsTableUpdateCompanionBuilder,
       (AgriculturalSeason, $$AgriculturalSeasonsTableReferences),
       AgriculturalSeason,
-      PrefetchHooks Function({bool parcelId})
+      PrefetchHooks Function({bool sectorId})
     >;
 typedef $$SectorIrrigationConfigsTableCreateCompanionBuilder =
     SectorIrrigationConfigsCompanion Function({
@@ -25647,7 +24002,6 @@ typedef $$SectorIrrigationConfigsTableProcessedTableManager =
 typedef $$LaborsTableCreateCompanionBuilder = LaborsCompanion Function({
   required String id,
   required String ownerId,
-  required String parcelId,
   required String sectorId,
   Value<String?> seasonId,
   Value<String?> cropAssignmentId,
@@ -25671,7 +24025,6 @@ typedef $$LaborsTableCreateCompanionBuilder = LaborsCompanion Function({
 typedef $$LaborsTableUpdateCompanionBuilder = LaborsCompanion Function({
   Value<String> id,
   Value<String> ownerId,
-  Value<String> parcelId,
   Value<String> sectorId,
   Value<String?> seasonId,
   Value<String?> cropAssignmentId,
@@ -25772,11 +24125,6 @@ class $$LaborsTableFilterComposer
 
   ColumnFilters<String> get ownerId => $composableBuilder(
     column: $table.ownerId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get parcelId => $composableBuilder(
-    column: $table.parcelId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -25958,11 +24306,6 @@ class $$LaborsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get parcelId => $composableBuilder(
-    column: $table.parcelId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get seasonId => $composableBuilder(
     column: $table.seasonId,
     builder: (column) => ColumnOrderings(column),
@@ -26086,9 +24429,6 @@ class $$LaborsTableAnnotationComposer
 
   GeneratedColumn<String> get ownerId =>
       $composableBuilder(column: $table.ownerId, builder: (column) => column);
-
-  GeneratedColumn<String> get parcelId =>
-      $composableBuilder(column: $table.parcelId, builder: (column) => column);
 
   GeneratedColumn<String> get seasonId =>
       $composableBuilder(column: $table.seasonId, builder: (column) => column);
@@ -26268,7 +24608,6 @@ class $$LaborsTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> ownerId = const Value.absent(),
-                Value<String> parcelId = const Value.absent(),
                 Value<String> sectorId = const Value.absent(),
                 Value<String?> seasonId = const Value.absent(),
                 Value<String?> cropAssignmentId = const Value.absent(),
@@ -26291,7 +24630,6 @@ class $$LaborsTableTableManager
               }) => LaborsCompanion(
                 id: id,
                 ownerId: ownerId,
-                parcelId: parcelId,
                 sectorId: sectorId,
                 seasonId: seasonId,
                 cropAssignmentId: cropAssignmentId,
@@ -26316,7 +24654,6 @@ class $$LaborsTableTableManager
               ({
                 required String id,
                 required String ownerId,
-                required String parcelId,
                 required String sectorId,
                 Value<String?> seasonId = const Value.absent(),
                 Value<String?> cropAssignmentId = const Value.absent(),
@@ -26339,7 +24676,6 @@ class $$LaborsTableTableManager
               }) => LaborsCompanion.insert(
                 id: id,
                 ownerId: ownerId,
-                parcelId: parcelId,
                 sectorId: sectorId,
                 seasonId: seasonId,
                 cropAssignmentId: cropAssignmentId,
@@ -28582,7 +26918,6 @@ typedef $$ProductionRecordsTableCreateCompanionBuilder =
     ProductionRecordsCompanion Function({
       required String id,
       required String ownerId,
-      required String parcelId,
       required String sectorId,
       Value<String?> laborId,
       Value<String?> seasonId,
@@ -28598,7 +26933,6 @@ typedef $$ProductionRecordsTableUpdateCompanionBuilder =
     ProductionRecordsCompanion Function({
       Value<String> id,
       Value<String> ownerId,
-      Value<String> parcelId,
       Value<String> sectorId,
       Value<String?> laborId,
       Value<String?> seasonId,
@@ -28658,11 +26992,6 @@ class $$ProductionRecordsTableFilterComposer
 
   ColumnFilters<String> get ownerId => $composableBuilder(
     column: $table.ownerId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get parcelId => $composableBuilder(
-    column: $table.parcelId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -28749,11 +27078,6 @@ class $$ProductionRecordsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get parcelId => $composableBuilder(
-    column: $table.parcelId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get laborId => $composableBuilder(
     column: $table.laborId,
     builder: (column) => ColumnOrderings(column),
@@ -28832,9 +27156,6 @@ class $$ProductionRecordsTableAnnotationComposer
 
   GeneratedColumn<String> get ownerId =>
       $composableBuilder(column: $table.ownerId, builder: (column) => column);
-
-  GeneratedColumn<String> get parcelId =>
-      $composableBuilder(column: $table.parcelId, builder: (column) => column);
 
   GeneratedColumn<String> get laborId =>
       $composableBuilder(column: $table.laborId, builder: (column) => column);
@@ -28923,7 +27244,6 @@ class $$ProductionRecordsTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> ownerId = const Value.absent(),
-                Value<String> parcelId = const Value.absent(),
                 Value<String> sectorId = const Value.absent(),
                 Value<String?> laborId = const Value.absent(),
                 Value<String?> seasonId = const Value.absent(),
@@ -28937,7 +27257,6 @@ class $$ProductionRecordsTableTableManager
               }) => ProductionRecordsCompanion(
                 id: id,
                 ownerId: ownerId,
-                parcelId: parcelId,
                 sectorId: sectorId,
                 laborId: laborId,
                 seasonId: seasonId,
@@ -28953,7 +27272,6 @@ class $$ProductionRecordsTableTableManager
               ({
                 required String id,
                 required String ownerId,
-                required String parcelId,
                 required String sectorId,
                 Value<String?> laborId = const Value.absent(),
                 Value<String?> seasonId = const Value.absent(),
@@ -28967,7 +27285,6 @@ class $$ProductionRecordsTableTableManager
               }) => ProductionRecordsCompanion.insert(
                 id: id,
                 ownerId: ownerId,
-                parcelId: parcelId,
                 sectorId: sectorId,
                 laborId: laborId,
                 seasonId: seasonId,
@@ -29360,7 +27677,6 @@ typedef $$PhotoAttachmentsTableProcessedTableManager =
 typedef $$RemindersTableCreateCompanionBuilder = RemindersCompanion Function({
   required String id,
   required String ownerId,
-  Value<String?> parcelId,
   Value<String?> sectorId,
   required String title,
   Value<String?> notes,
@@ -29384,7 +27700,6 @@ typedef $$RemindersTableCreateCompanionBuilder = RemindersCompanion Function({
 typedef $$RemindersTableUpdateCompanionBuilder = RemindersCompanion Function({
   Value<String> id,
   Value<String> ownerId,
-  Value<String?> parcelId,
   Value<String?> sectorId,
   Value<String> title,
   Value<String?> notes,
@@ -29422,11 +27737,6 @@ class $$RemindersTableFilterComposer
 
   ColumnFilters<String> get ownerId => $composableBuilder(
     column: $table.ownerId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get parcelId => $composableBuilder(
-    column: $table.parcelId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -29540,11 +27850,6 @@ class $$RemindersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get parcelId => $composableBuilder(
-    column: $table.parcelId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get sectorId => $composableBuilder(
     column: $table.sectorId,
     builder: (column) => ColumnOrderings(column),
@@ -29651,9 +27956,6 @@ class $$RemindersTableAnnotationComposer
   GeneratedColumn<String> get ownerId =>
       $composableBuilder(column: $table.ownerId, builder: (column) => column);
 
-  GeneratedColumn<String> get parcelId =>
-      $composableBuilder(column: $table.parcelId, builder: (column) => column);
-
   GeneratedColumn<String> get sectorId =>
       $composableBuilder(column: $table.sectorId, builder: (column) => column);
 
@@ -29759,7 +28061,6 @@ class $$RemindersTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> ownerId = const Value.absent(),
-                Value<String?> parcelId = const Value.absent(),
                 Value<String?> sectorId = const Value.absent(),
                 Value<String> title = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
@@ -29782,7 +28083,6 @@ class $$RemindersTableTableManager
               }) => RemindersCompanion(
                 id: id,
                 ownerId: ownerId,
-                parcelId: parcelId,
                 sectorId: sectorId,
                 title: title,
                 notes: notes,
@@ -29807,7 +28107,6 @@ class $$RemindersTableTableManager
               ({
                 required String id,
                 required String ownerId,
-                Value<String?> parcelId = const Value.absent(),
                 Value<String?> sectorId = const Value.absent(),
                 required String title,
                 Value<String?> notes = const Value.absent(),
@@ -29830,7 +28129,6 @@ class $$RemindersTableTableManager
               }) => RemindersCompanion.insert(
                 id: id,
                 ownerId: ownerId,
-                parcelId: parcelId,
                 sectorId: sectorId,
                 title: title,
                 notes: notes,
@@ -30647,7 +28945,7 @@ typedef $$WeatherCacheTableCreateCompanionBuilder =
     WeatherCacheCompanion Function({
       required String id,
       required String ownerId,
-      Value<String?> parcelId,
+      Value<String?> sectorId,
       required String locality,
       Value<String> provider,
       required String payloadJson,
@@ -30662,7 +28960,7 @@ typedef $$WeatherCacheTableUpdateCompanionBuilder =
     WeatherCacheCompanion Function({
       Value<String> id,
       Value<String> ownerId,
-      Value<String?> parcelId,
+      Value<String?> sectorId,
       Value<String> locality,
       Value<String> provider,
       Value<String> payloadJson,
@@ -30693,8 +28991,8 @@ class $$WeatherCacheTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get parcelId => $composableBuilder(
-    column: $table.parcelId,
+  ColumnFilters<String> get sectorId => $composableBuilder(
+    column: $table.sectorId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -30758,8 +29056,8 @@ class $$WeatherCacheTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get parcelId => $composableBuilder(
-    column: $table.parcelId,
+  ColumnOrderings<String> get sectorId => $composableBuilder(
+    column: $table.sectorId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -30819,8 +29117,8 @@ class $$WeatherCacheTableAnnotationComposer
   GeneratedColumn<String> get ownerId =>
       $composableBuilder(column: $table.ownerId, builder: (column) => column);
 
-  GeneratedColumn<String> get parcelId =>
-      $composableBuilder(column: $table.parcelId, builder: (column) => column);
+  GeneratedColumn<String> get sectorId =>
+      $composableBuilder(column: $table.sectorId, builder: (column) => column);
 
   GeneratedColumn<String> get locality =>
       $composableBuilder(column: $table.locality, builder: (column) => column);
@@ -30886,7 +29184,7 @@ class $$WeatherCacheTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> ownerId = const Value.absent(),
-                Value<String?> parcelId = const Value.absent(),
+                Value<String?> sectorId = const Value.absent(),
                 Value<String> locality = const Value.absent(),
                 Value<String> provider = const Value.absent(),
                 Value<String> payloadJson = const Value.absent(),
@@ -30899,7 +29197,7 @@ class $$WeatherCacheTableTableManager
               }) => WeatherCacheCompanion(
                 id: id,
                 ownerId: ownerId,
-                parcelId: parcelId,
+                sectorId: sectorId,
                 locality: locality,
                 provider: provider,
                 payloadJson: payloadJson,
@@ -30914,7 +29212,7 @@ class $$WeatherCacheTableTableManager
               ({
                 required String id,
                 required String ownerId,
-                Value<String?> parcelId = const Value.absent(),
+                Value<String?> sectorId = const Value.absent(),
                 required String locality,
                 Value<String> provider = const Value.absent(),
                 required String payloadJson,
@@ -30927,7 +29225,7 @@ class $$WeatherCacheTableTableManager
               }) => WeatherCacheCompanion.insert(
                 id: id,
                 ownerId: ownerId,
-                parcelId: parcelId,
+                sectorId: sectorId,
                 locality: locality,
                 provider: provider,
                 payloadJson: payloadJson,
@@ -31504,8 +29802,6 @@ class $AppDatabaseManager {
       $$SyncConflictsTableTableManager(_db, _db.syncConflicts);
   $$FormDraftsTableTableManager get formDrafts =>
       $$FormDraftsTableTableManager(_db, _db.formDrafts);
-  $$ParcelsTableTableManager get parcels =>
-      $$ParcelsTableTableManager(_db, _db.parcels);
   $$SectorsTableTableManager get sectors =>
       $$SectorsTableTableManager(_db, _db.sectors);
   $$OfficialCropsTableTableManager get officialCrops =>

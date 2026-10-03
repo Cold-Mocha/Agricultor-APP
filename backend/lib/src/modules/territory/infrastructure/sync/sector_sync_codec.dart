@@ -24,7 +24,6 @@ final class SectorSyncCodec implements AggregateSyncCodec {
       throw const FormatException('sector_payload_not_object');
     }
     final id = decoded['id'];
-    final parcelId = decoded['parcel_id'];
     final name = decoded['name'];
     final number = decoded['number'];
     final kind = decoded['kind'];
@@ -32,7 +31,6 @@ final class SectorSyncCodec implements AggregateSyncCodec {
     final updatedAt = decoded['updated_at'];
     if (id is! String ||
         id != change.aggregateId ||
-        parcelId is! String ||
         name is! String ||
         number is! int ||
         kind is! String ||
@@ -41,12 +39,6 @@ final class SectorSyncCodec implements AggregateSyncCodec {
         updatedAt is! String) {
       throw const FormatException('sector_payload_invalid');
     }
-    final parcel =
-        await (database.select(database.parcels)..where(
-              (row) => row.id.equals(parcelId) & row.ownerId.equals(ownerId),
-            ))
-            .getSingleOrNull();
-    if (parcel == null) throw const FormatException('sector_parent_missing');
     final local =
         await (database.select(database.sectors)
               ..where((row) => row.id.equals(id) & row.ownerId.equals(ownerId)))
@@ -76,7 +68,6 @@ final class SectorSyncCodec implements AggregateSyncCodec {
           SectorsCompanion.insert(
             id: id,
             ownerId: ownerId,
-            parcelId: parcelId,
             number: number,
             name: name,
             kind: Value(kind),

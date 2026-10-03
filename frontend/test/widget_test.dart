@@ -10,14 +10,17 @@ void main() {
         theme: AgroTheme.light,
         home: const Scaffold(
           body: AgroEmptyState(
-            title: 'Sin parcelas',
-            message: 'Crea tu primera parcela para comenzar.',
+            title: 'Sin cuadrantes',
+            message: 'Dibuja tu primer cuadrante para comenzar.',
           ),
         ),
       ),
     );
 
-    expect(find.text('Sin parcelas'), findsOneWidget);
-    expect(find.text('Crea tu primera parcela para comenzar.'), findsOneWidget);
+    expect(find.text('Sin cuadrantes'), findsOneWidget);
+    expect(
+      find.text('Dibuja tu primer cuadrante para comenzar.'),
+      findsOneWidget,
+    );
   });
 }

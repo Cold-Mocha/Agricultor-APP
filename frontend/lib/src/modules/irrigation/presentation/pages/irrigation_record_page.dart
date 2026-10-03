@@ -162,25 +162,60 @@ final class _IrrigationRecordPageState
 
   Future<void> _calculate() async {
     final input = _input();
-    final calculation = await ref
-        .read(irrigationFormControllerProvider)
-        .calculate(input);
-    if (!mounted || calculation == null) return;
-    setState(() {
-      _calculationMessage = calculation.message;
-      _hasCalculated = true;
-      if (_type == IrrigationType.drip) _preview = calculation;
-    });
+    try {
+      final calculation = await ref
+          .read(irrigationFormControllerProvider)
+          .calculate(input);
+      if (!mounted) return;
+      if (calculation == null) {
+        _notify('Inicia sesión o desbloquea la app para calcular el riego.');
+        return;
+      }
+      setState(() {
+        _calculationMessage = calculation.message;
+        _hasCalculated = true;
+        if (_type == IrrigationType.drip) _preview = calculation;
+      });
+      if (calculation.isUnavailable) {
+        _notify(calculation.message, needsCrop: calculation.needsCrop);
+      }
+    } on Object catch (error) {
+      if (mounted) _notify('No se pudo calcular el riego: $error');
+    }
   }
 
   Future<void> _save() async {
     final input = _input();
-    final saved = await ref
-        .read(irrigationFormControllerProvider)
-        .save(input, calculation: _preview);
-    if (!mounted || !saved) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Riego guardado localmente.')));
+    try {
+      final failure = await ref
+          .read(irrigationFormControllerProvider)
+          .save(input, calculation: _preview);
+      if (!mounted) return;
+      if (failure == null) {
+        _notify('Riego guardado localmente.');
+      } else {
+        _notify(failure.message, needsCrop: failure.needsCrop);
+      }
+    } on Object catch (error) {
+      if (mounted) _notify('No se pudo guardar el riego: $error');
+    }
+  }
+
+  void _notify(String message, {bool needsCrop = false}) {
+    final sectorId = _bound?.sectorId;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          action: needsCrop && sectorId != null
+              ? SnackBarAction(
+                  label: 'Asignar cultivo',
+                  onPressed: () =>
+                      context.push(AppRoutes.sectorRotation(sectorId)),
+                )
+              : null,
+        ),
+      );
   }
 }

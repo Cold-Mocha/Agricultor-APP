@@ -20,17 +20,17 @@ final class AgriculturalSeasonSyncCodec implements AggregateSyncCodec {
     final payload = jsonDecode(change.payloadJson);
     if (payload is! Map<String, Object?> ||
         payload['id'] != change.aggregateId ||
-        payload['parcel_id'] is! String ||
+        payload['sector_id'] is! String ||
         payload['name'] is! String ||
         payload['starts_on'] is! String ||
         payload['status'] is! String ||
         payload['updated_at'] is! String) {
       throw const FormatException('agricultural_season_payload_invalid');
     }
-    final parcelId = payload['parcel_id']! as String;
+    final sectorId = payload['sector_id']! as String;
     final parent =
-        await (database.select(database.parcels)..where(
-              (row) => row.id.equals(parcelId) & row.ownerId.equals(ownerId),
+        await (database.select(database.sectors)..where(
+              (row) => row.id.equals(sectorId) & row.ownerId.equals(ownerId),
             ))
             .getSingleOrNull();
     if (parent == null) throw const FormatException('season_parent_missing');
@@ -41,7 +41,7 @@ final class AgriculturalSeasonSyncCodec implements AggregateSyncCodec {
           AgriculturalSeasonsCompanion.insert(
             id: change.aggregateId,
             ownerId: ownerId,
-            parcelId: parcelId,
+            sectorId: sectorId,
             name: payload['name']! as String,
             startsOn: DateTime.parse(payload['starts_on']! as String).toUtc(),
             endsOn: Value(

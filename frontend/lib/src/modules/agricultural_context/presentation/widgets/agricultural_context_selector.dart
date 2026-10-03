@@ -23,128 +23,50 @@ final class AgriculturalContextSelector extends ConsumerWidget {
     final ownerId = agriculturalContext.ownerId;
     if (ownerId == null) return const SizedBox.shrink();
     return StreamBuilder(
-      stream: controller.watchParcels(ownerId),
-      builder: (context, parcelSnapshot) {
-        final parcels = parcelSnapshot.data ?? const [];
-        return StreamBuilder(
-          stream: controller.watchSectors(
-            ownerId,
-            agriculturalContext.parcelId,
-          ),
-          builder: (context, sectorSnapshot) {
-            final sectors = sectorSnapshot.data ?? const [];
-            return Semantics(
-              label: 'Contexto agrícola activo',
-              container: true,
-              child: Padding(
-                padding: const EdgeInsets.only(top: AgroSpacing.xs),
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 600),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final textScale = MediaQuery.textScalerOf(context)
-                            .scale(1);
-                        final useHorizontalLayout =
-                            constraints.hasBoundedWidth &&
-                            constraints.maxWidth >= (compact ? 304 : 320) &&
-                            textScale <= 1.3;
-                        final parcelSelector = _selector(
-                          key: const Key('active-parcel-selector'),
-                          initialValue:
-                              parcels.any(
-                                (row) => row.id == agriculturalContext.parcelId,
-                              )
-                              ? agriculturalContext.parcelId
-                              : null,
-                          label: 'Parcela',
-                          hint: 'Selecciona una parcela',
-                          icon: LucideIcons.mountain,
-                          showLeadingIcon: !useHorizontalLayout,
-                          items: [
-                            for (final parcel in parcels)
-                              DropdownMenuItem(
-                                value: parcel.id,
-                                child: Text(
-                                  parcel.name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                          ],
-                          onChanged: (value) {
-                            if (value != null) {
-                              ref
-                                  .read(
-                                    agriculturalContextControllerProvider
-                                        .notifier,
-                                  )
-                                  .selectParcel(value);
-                            }
-                          },
-                        );
-                        final sectorSelector = _selector(
-                          key: const Key('active-sector-selector'),
-                          initialValue:
-                              sectors.any(
-                                (row) => row.id == agriculturalContext.sectorId,
-                              )
-                              ? agriculturalContext.sectorId
-                              : null,
-                          label: requireSector ? 'Sector requerido' : 'Sector',
-                          hint: agriculturalContext.parcelId == null
-                              ? 'Primero elige parcela'
-                              : 'Selecciona un sector',
-                          icon: LucideIcons.layoutGrid,
-                          showLeadingIcon: !useHorizontalLayout,
-                          items: [
-                            for (final sector in sectors)
-                              DropdownMenuItem(
-                                value: sector.id,
-                                child: Text(
-                                  sector.name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                          ],
-                          onChanged: agriculturalContext.parcelId == null
-                              ? null
-                              : (value) => ref
-                                    .read(
-                                      agriculturalContextControllerProvider
-                                          .notifier,
-                                    )
-                                    .selectSector(value),
-                        );
-                        if (useHorizontalLayout) {
-                          return Row(
-                            key: const Key('agricultural-context-row'),
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(child: parcelSelector),
-                              const SizedBox(width: AgroSpacing.sm),
-                              Expanded(child: sectorSelector),
-                            ],
-                          );
-                        }
-                        return Column(
-                          key: const Key('agricultural-context-column'),
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            parcelSelector,
-                            const SizedBox(height: AgroSpacing.sm),
-                            sectorSelector,
-                          ],
-                        );
-                      },
-                    ),
-                  ),
+      stream: controller.watchSectors(ownerId),
+      builder: (context, sectorSnapshot) {
+        final sectors = sectorSnapshot.data ?? const [];
+        return Semantics(
+          label: 'Contexto agrícola activo',
+          container: true,
+          child: Padding(
+            padding: const EdgeInsets.only(top: AgroSpacing.xs),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 600),
+                child: _selector(
+                  key: const Key('active-sector-selector'),
+                  initialValue:
+                      sectors.any(
+                        (row) => row.id == agriculturalContext.sectorId,
+                      )
+                      ? agriculturalContext.sectorId
+                      : null,
+                  label: requireSector ? 'Sector requerido' : 'Sector',
+                  hint: sectors.isEmpty
+                      ? 'Aún no hay cuadrantes'
+                      : 'Selecciona un sector',
+                  icon: LucideIcons.layoutGrid,
+                  showLeadingIcon: true,
+                  items: [
+                    for (final sector in sectors)
+                      DropdownMenuItem(
+                        value: sector.id,
+                        child: Text(
+                          sector.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                  ],
+                  onChanged: (value) => ref
+                      .read(agriculturalContextControllerProvider.notifier)
+                      .selectSector(value),
                 ),
               ),
-            );
-          },
+            ),
+          ),
         );
       },
     );

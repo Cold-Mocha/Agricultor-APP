@@ -2,14 +2,14 @@ import 'package:agrocampo_backend/src/modules/weather/domain/entities/weather_sn
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract interface class WeatherGateway {
-  Future<WeatherSnapshot> fetch({required String locality, String? parcelId});
+  Future<WeatherSnapshot> fetch({required String locality, String? sectorId});
 }
 
 final class UnavailableWeatherGateway implements WeatherGateway {
   const UnavailableWeatherGateway();
 
   @override
-  Future<WeatherSnapshot> fetch({required String locality, String? parcelId}) =>
+  Future<WeatherSnapshot> fetch({required String locality, String? sectorId}) =>
       Future.error(StateError('weather_unavailable'));
 }
 
@@ -20,13 +20,13 @@ final class SupabaseWeatherGateway implements WeatherGateway {
   @override
   Future<WeatherSnapshot> fetch({
     required String locality,
-    String? parcelId,
+    String? sectorId,
   }) async {
     final response = await _client.functions.invoke(
       'weather-proxy',
       body: {
         'locality': locality,
-        if (parcelId != null && parcelId.isNotEmpty) 'parcelId': parcelId,
+        if (sectorId != null && sectorId.isNotEmpty) 'sectorId': sectorId,
       },
     );
     if (response.status != 200 || response.data is! Map) {

@@ -11,7 +11,7 @@ final class _Gateway implements WeatherGateway {
   @override
   Future<WeatherSnapshot> fetch({
     required String locality,
-    String? parcelId,
+    String? sectorId,
   }) async {
     if (fail) throw StateError('offline');
     return WeatherSnapshot(

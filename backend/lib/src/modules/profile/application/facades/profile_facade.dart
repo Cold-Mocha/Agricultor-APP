@@ -30,16 +30,6 @@ final class ProfileFacade {
               ),
       );
 
-  Stream<String?> watchActiveLocality(String ownerId) =>
-      (_database.select(_database.parcels)..where(
-            (row) =>
-                row.ownerId.equals(ownerId) &
-                row.isActive.equals(true) &
-                row.deletedAt.isNull(),
-          ))
-          .watchSingleOrNull()
-          .map((parcel) => parcel?.locality);
-
   Future<ProfileSaveResult> save(String ownerId, ProfileFormInput input) async {
     final name = input.displayName.trim();
     if (name.isEmpty) return ProfileSaveResult.nameRequired;

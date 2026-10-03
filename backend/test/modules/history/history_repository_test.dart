@@ -40,14 +40,13 @@ void main() {
     },
   );
 
-  test('history filters events by parcel and orders newest first', () async {
+  test('history filters events by owner and orders newest first', () async {
     final database = createInMemoryDatabase();
     addTearDown(database.close);
     await seedAgriculturalContextFixture(database);
     final labors = LaborRepository(database);
     await labors.save(
       ownerId: 'owner-1',
-      parcelId: 'parcel-1',
       sectorId: 'sector-1',
       type: LaborType.pruning,
       occurredAt: DateTime.utc(2026, 1),
@@ -55,7 +54,6 @@ void main() {
     );
     await labors.save(
       ownerId: 'owner-1',
-      parcelId: 'parcel-1',
       sectorId: 'sector-1',
       type: LaborType.fertilization,
       occurredAt: DateTime.utc(2026, 2),
@@ -69,7 +67,6 @@ void main() {
     final events = await HistoryRepository(database).list(
       const HistoryFilter(
         ownerId: 'owner-1',
-        parcelId: 'parcel-1',
         sectorId: 'sector-1',
         type: HistoryEventType.labor,
       ),
@@ -87,7 +84,6 @@ void main() {
       await seedAgriculturalContextFixture(database);
       await ProductionRepository(database, LaborRepository(database)).save(
         ownerId: 'owner-1',
-        parcelId: 'parcel-1',
         sectorId: 'sector-1',
         input: HarvestInput(
           cropId: 'trigo',

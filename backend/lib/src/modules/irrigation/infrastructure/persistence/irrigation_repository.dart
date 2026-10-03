@@ -17,7 +17,6 @@ final class IrrigationRepository {
 
   Future<String> savePerformed({
     required String ownerId,
-    required String parcelId,
     required String sectorId,
     required BasicIrrigationInput input,
     required DateTime occurredAt,
@@ -42,7 +41,6 @@ final class IrrigationRepository {
                 (throw StateError('labor_context_reader_required')))
             .resolveContext(
               ownerId: ownerId,
-              parcelId: parcelId,
               sectorId: sectorId,
               occurredAt: instant,
             );
@@ -141,7 +139,6 @@ final class IrrigationRepository {
     final payload = <String, Object?>{
       'id': rootId,
       'owner_id': ownerId,
-      'parcel_id': parcelId,
       'sector_id': sectorId,
       'agricultural_season_id': context.seasonId,
       'crop_assignment_id': context.assignmentId,
@@ -164,7 +161,6 @@ final class IrrigationRepository {
               LaborsCompanion.insert(
                 id: rootId,
                 ownerId: ownerId,
-                parcelId: parcelId,
                 sectorId: sectorId,
                 seasonId: Value(context.seasonId),
                 cropAssignmentId: Value(context.assignmentId),

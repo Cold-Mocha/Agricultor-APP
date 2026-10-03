@@ -29,12 +29,7 @@ final class BoundAgriculturalContextCard extends ConsumerWidget {
               : null,
           child: ListTile(
             leading: Icon(changed ? LucideIcons.info : LucideIcons.mapPin),
-            title: Text(
-              [
-                value?.parcelName,
-                value?.sectorName,
-              ].whereType<String>().join(' · '),
-            ),
+            title: Text(value?.sectorName ?? ''),
             subtitle: Text(
               changed
                   ? 'La selección global cambió; este formulario conserva su contexto.'

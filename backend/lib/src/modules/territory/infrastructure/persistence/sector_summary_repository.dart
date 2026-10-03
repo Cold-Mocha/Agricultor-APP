@@ -7,15 +7,11 @@ final class SectorSummaryRepository {
 
   final AppDatabase _database;
 
-  Stream<List<SectorSummary>> watch({
-    required String ownerId,
-    required String parcelId,
-  }) => _database
+  Stream<List<SectorSummary>> watch(String ownerId) => _database
       .customSelect(
         '''
         SELECT
           s.id,
-          s.parcel_id,
           s.number,
           s.kind,
           s.area_square_meters,
@@ -87,11 +83,10 @@ final class SectorSummaryRepository {
         LEFT JOIN agricultural_seasons ag
           ON ag.id = ca.agricultural_season_id
         WHERE s.owner_id = ?
-          AND s.parcel_id = ?
           AND s.deleted_at IS NULL
         ORDER BY s.number ASC
         ''',
-        variables: [Variable(ownerId), Variable(parcelId)],
+        variables: [Variable(ownerId)],
         readsFrom: {
           _database.sectors,
           _database.cropSeasons,
@@ -109,7 +104,6 @@ final class SectorSummaryRepository {
             .map(
               (row) => SectorSummary(
                 id: row.read<String>('id'),
-                parcelId: row.read<String>('parcel_id'),
                 number: row.read<int>('number'),
                 kind: row.read<String>('kind'),
                 areaSquareMeters: row.read<double>('area_square_meters'),

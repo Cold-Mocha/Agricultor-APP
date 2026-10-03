@@ -22,7 +22,6 @@ import 'package:agrocampo_backend/src/modules/production/infrastructure/persiste
 import 'package:agrocampo_backend/src/modules/reminders/domain/entities/reminder.dart';
 import 'package:agrocampo_backend/src/modules/reminders/infrastructure/persistence/reminder_repository.dart';
 import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo_point.dart';
-import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
 import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:agrocampo_backend/src/platform/notifications/local_notification_scheduler.dart';
@@ -62,20 +61,8 @@ void main() {
         await database.close();
         await directory.delete(recursive: true);
       });
-      final parcelId = await ParcelRepository(database).save(
-        ownerId: ownerId,
-        name: 'Campo labores',
-        isActive: true,
-        boundary: const [
-          GeoPoint(-38.75, -72.61),
-          GeoPoint(-38.75, -72.57),
-          GeoPoint(-38.71, -72.57),
-          GeoPoint(-38.71, -72.61),
-        ],
-      );
       final sectorId = await SectorRepository(database).save(
         ownerId: ownerId,
-        parcelId: parcelId,
         number: 1,
         name: 'Norte',
         polygon: const [
@@ -87,7 +74,7 @@ void main() {
       );
       final seasonId = await AgriculturalSeasonRepository(database).save(
         ownerId: ownerId,
-        parcelId: parcelId,
+        sectorId: sectorId,
         name: '2026',
         startsOn: DateTime.utc(2026),
         endsOn: DateTime.utc(2027),
@@ -129,7 +116,6 @@ void main() {
       final occurredAt = DateTime.utc(2026, 3);
       final fertilizerId = await labors.save(
         ownerId: ownerId,
-        parcelId: parcelId,
         sectorId: sectorId,
         type: LaborType.fertilization,
         occurredAt: occurredAt,
@@ -142,7 +128,6 @@ void main() {
       );
       await labors.save(
         ownerId: ownerId,
-        parcelId: parcelId,
         sectorId: sectorId,
         type: LaborType.diseaseAndPestControl,
         occurredAt: occurredAt,
@@ -155,7 +140,6 @@ void main() {
       );
       await labors.save(
         ownerId: ownerId,
-        parcelId: parcelId,
         sectorId: sectorId,
         type: LaborType.sowing,
         occurredAt: occurredAt,
@@ -163,7 +147,6 @@ void main() {
       );
       await labors.save(
         ownerId: ownerId,
-        parcelId: parcelId,
         sectorId: sectorId,
         type: LaborType.pruning,
         occurredAt: occurredAt,
@@ -174,7 +157,6 @@ void main() {
       );
       await labors.save(
         ownerId: ownerId,
-        parcelId: parcelId,
         sectorId: sectorId,
         type: LaborType.irrigation,
         occurredAt: occurredAt,
@@ -185,7 +167,6 @@ void main() {
       );
       await labors.save(
         ownerId: ownerId,
-        parcelId: parcelId,
         sectorId: sectorId,
         type: LaborType.other,
         occurredAt: occurredAt,
@@ -208,7 +189,6 @@ void main() {
       );
       await ProductionRepository(database, LaborRepository(database)).save(
         ownerId: ownerId,
-        parcelId: parcelId,
         sectorId: sectorId,
         seasonId: seasonId,
         cropAssignmentId: assignmentId,
@@ -225,7 +205,6 @@ void main() {
             LaborRepository(database),
           ).calculateForSector(
             ownerId: ownerId,
-            parcelId: parcelId,
             sectorId: sectorId,
             soilTypeCode: 'loamy',
             occurredAt: occurredAt,
@@ -236,7 +215,6 @@ void main() {
         LaborRepository(database),
       ).savePerformed(
         ownerId: ownerId,
-        parcelId: parcelId,
         sectorId: sectorId,
         occurredAt: occurredAt,
         preview: waterPreview,
@@ -255,7 +233,6 @@ void main() {
         input: ReminderInput(
           title: 'Revisar riego',
           scheduledAt: DateTime.utc(2027, 1),
-          parcelId: parcelId,
           sectorId: sectorId,
         ),
       );

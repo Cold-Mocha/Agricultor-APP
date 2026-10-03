@@ -15,12 +15,15 @@ void main() {
         theme: AgroTheme.light,
         home: const FoundationPlaceholderPage(
           title: 'Inicio',
-          message: 'Crea tu primera parcela para comenzar.',
+          message: 'Dibuja tu primer cuadrante para comenzar.',
         ),
       ),
     );
 
     expect(find.text('Inicio'), findsOneWidget);
-    expect(find.text('Crea tu primera parcela para comenzar.'), findsOneWidget);
+    expect(
+      find.text('Dibuja tu primer cuadrante para comenzar.'),
+      findsOneWidget,
+    );
   });
 }

@@ -41,9 +41,7 @@ final class SectorCropAssignmentSyncCodec implements AggregateSyncCodec {
               (row) => row.id.equals(seasonId) & row.ownerId.equals(ownerId),
             ))
             .getSingleOrNull();
-    if (sector == null ||
-        season == null ||
-        sector.parcelId != season.parcelId) {
+    if (sector == null || season == null || season.sectorId != sector.id) {
       throw const FormatException('crop_assignment_parent_missing');
     }
     if (sector.kind != 'crop') {

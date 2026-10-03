@@ -10,19 +10,10 @@ create function pg_temp.push_result(operation jsonb) returns jsonb
 language sql as $$ select public.sync_push(jsonb_build_array(operation))->'results'->0 $$;
 
 select pg_temp.push_result(jsonb_build_object(
-  'operation_id','22000000-0000-4000-8000-000000000001','aggregate_type','parcel',
-  'aggregate_id','32000000-0000-4000-8000-000000000001','mutation_kind','create',
-  'protocol_version',2,'payload_schema_version',1,'request_hash','crop-parcel',
-  'payload',jsonb_build_object('id','32000000-0000-4000-8000-000000000001','name','Campo cultivos','is_active',true,
-    'polygon',jsonb_build_array(
-      jsonb_build_object('lat',-38.75,'lng',-72.61),jsonb_build_object('lat',-38.75,'lng',-72.57),
-      jsonb_build_object('lat',-38.71,'lng',-72.57),jsonb_build_object('lat',-38.71,'lng',-72.61)),
-    'updated_at','2026-08-01T00:00:00Z')));
-select pg_temp.push_result(jsonb_build_object(
   'operation_id','22000000-0000-4000-8000-000000000002','aggregate_type','sector',
   'aggregate_id','33000000-0000-4000-8000-000000000001','mutation_kind','create',
   'protocol_version',2,'payload_schema_version',1,'request_hash','crop-sector',
-  'payload',jsonb_build_object('id','33000000-0000-4000-8000-000000000001','parcel_id','32000000-0000-4000-8000-000000000001',
+  'payload',jsonb_build_object('id','33000000-0000-4000-8000-000000000001',
     'number',1,'name','Norte','polygon',jsonb_build_array(
       jsonb_build_object('lat',-38.74,'lng',-72.60),jsonb_build_object('lat',-38.74,'lng',-72.59),
       jsonb_build_object('lat',-38.73,'lng',-72.59),jsonb_build_object('lat',-38.73,'lng',-72.60)),
@@ -32,7 +23,7 @@ select is(pg_temp.push_result(jsonb_build_object(
   'operation_id','22000000-0000-4000-8000-000000000003','aggregate_type','agriculturalSeason',
   'aggregate_id','34000000-0000-4000-8000-000000000001','mutation_kind','create','protocol_version',2,
   'payload_schema_version',1,'request_hash','season-create','payload',jsonb_build_object(
-    'id','34000000-0000-4000-8000-000000000001','parcel_id','32000000-0000-4000-8000-000000000001',
+    'id','34000000-0000-4000-8000-000000000001','sector_id','33000000-0000-4000-8000-000000000001',
     'name','2026-27','starts_on','2026-08-01','ends_on','2027-06-30','status','active',
     'updated_at','2026-08-01T00:02:00Z'))) ->> 'status','applied','season applies');
 select is((select count(*)::integer from public.agricultural_seasons where id='34000000-0000-4000-8000-000000000001'),1,'season row exists before ACK');
@@ -63,7 +54,7 @@ select is(pg_temp.push_result(jsonb_build_object(
   'operation_id','22000000-0000-4000-8000-000000000006','aggregate_type','agriculturalSeason',
   'aggregate_id','34000000-0000-4000-8000-000000000001','mutation_kind','update','protocol_version',2,
   'payload_schema_version',1,'base_version',0,'request_hash','season-stale','payload',jsonb_build_object(
-    'id','34000000-0000-4000-8000-000000000001','parcel_id','32000000-0000-4000-8000-000000000001',
+    'id','34000000-0000-4000-8000-000000000001','sector_id','33000000-0000-4000-8000-000000000001',
     'name','Stale','starts_on','2026-08-01','status','active','updated_at','2026-08-02T00:00:00Z'))) ->> 'status','conflict','stale season conflicts');
 
 select is(pg_temp.push_result(jsonb_build_object(

@@ -1,5 +1,4 @@
 import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo_point.dart';
-import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
 import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -17,12 +16,9 @@ void main() {
     () async {
       final database = createInMemoryDatabase();
       addTearDown(database.close);
-      final parcelId = await ParcelRepository(database)
-          .save(ownerId: 'owner-1', name: 'Campo');
       final repository = SectorRepository(database);
       final id = await repository.saveConfirmed(
         ownerId: 'owner-1',
-        parcelId: parcelId,
         number: 1,
         name: 'Apiario',
         kind: 'apiary',
@@ -35,7 +31,6 @@ void main() {
       await expectLater(
         repository.saveConfirmed(
           ownerId: 'owner-1',
-          parcelId: parcelId,
           number: 1,
           name: 'Apiario',
           kind: 'crop',
@@ -48,7 +43,6 @@ void main() {
       await expectLater(
         repository.saveConfirmed(
           ownerId: 'owner-1',
-          parcelId: parcelId,
           number: 1,
           name: 'Apiario',
           kind: 'apiary',

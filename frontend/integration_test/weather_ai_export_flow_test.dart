@@ -15,7 +15,7 @@ final class _Weather implements WeatherGateway {
   @override
   Future<WeatherSnapshot> fetch({
     required String locality,
-    String? parcelId,
+    String? sectorId,
   }) async => WeatherSnapshot(
     locality: locality,
     temperatureC: 14,

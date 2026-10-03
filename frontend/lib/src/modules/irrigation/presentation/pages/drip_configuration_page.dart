@@ -106,7 +106,10 @@ final class _DripConfigurationPageState
 
   Future<void> _save() async {
     final sectorId = _bound?.sectorId;
-    if (sectorId == null) return;
+    if (sectorId == null) {
+      _notify('Selecciona un sector antes de guardar la configuración.');
+      return;
+    }
     try {
       final saved = await ref
           .read(irrigationFormControllerProvider)
@@ -122,20 +125,24 @@ final class _DripConfigurationPageState
               distributionNotes: _notes.text,
             ),
           );
-      if (!mounted || !saved) return;
+      if (!mounted) return;
+      if (!saved) {
+        _notify(
+          'Inicia sesión o desbloquea la app para guardar la configuración.',
+        );
+        return;
+      }
       setState(() {});
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Configuración guardada localmente.')),
-      );
+      _notify('Configuración guardada localmente.');
     } on Object {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Completa plantas, goteros y caudal con valores positivos.',
-          ),
-        ),
-      );
+      _notify('Completa plantas, goteros y caudal con valores positivos.');
     }
+  }
+
+  void _notify(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 }

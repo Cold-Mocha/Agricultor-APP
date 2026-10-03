@@ -11,50 +11,12 @@ typedef TerritoryMapController = TerritoryMapFacade;
 
 final territoryMapControllerProvider = territoryMapFacadeProvider;
 
-final parcelControllerProvider = Provider.autoDispose<ParcelController>(
-  (ref) => ParcelController(ref, ref.watch(parcelFacadeProvider)),
-);
-
-final class ParcelController {
-  ParcelController(this._ref, this._facade);
-
-  final Ref _ref;
-  final ParcelFacade _facade;
-
-  Stream<List<ParcelSummary>> watchAll(String ownerId) =>
-      _facade.watchAll(ownerId);
-
-  Stream<ParcelSummary?> watchActive(String ownerId) =>
-      _facade.watchActive(ownerId);
-
-  Future<ParcelSummary?> load(String id) => _facade.load(id);
-
-  Future<String> save(ParcelFormInput input) async {
-    final id = await _facade.save(input);
-    if (input.isActive) {
-      await _ref
-          .read(agriculturalContextControllerProvider.notifier)
-          .selectParcel(id);
-    }
-    return id;
-  }
-
-  Future<void> archive({
-    required String ownerId,
-    required String id,
-    required bool archived,
-  }) => _facade.archive(ownerId: ownerId, id: id, archived: archived);
-}
-
 final sectorListUiStateProvider = StreamProvider.autoDispose<SectorListUiState>(
   (ref) {
     final ownerId = ref.watch(unlockedOwnerIdProvider);
     final context = ref.watch(agriculturalContextControllerProvider);
-    return SectorListController(ref).watch(
-      ownerId: ownerId,
-      parcelId: context.parcelId,
-      selectedSectorId: context.sectorId,
-    );
+    return SectorListController(ref)
+        .watch(ownerId: ownerId, selectedSectorId: context.sectorId);
   },
 );
 
@@ -69,40 +31,31 @@ final class SectorListController {
 
   Stream<SectorListUiState> watch({
     required String? ownerId,
-    required String? parcelId,
     required String? selectedSectorId,
   }) async* {
     if (ownerId == null) {
       yield const SectorListUiState.signedOut();
       return;
     }
-    if (parcelId == null) {
-      yield SectorListUiState.needsParcel(ownerId: ownerId);
-      return;
-    }
     try {
       await for (final summaries
-          in _ref
-              .read(sectorListFacadeProvider)
-              .watchSummaries(ownerId: ownerId, parcelId: parcelId)) {
+          in _ref.read(sectorListFacadeProvider).watchSummaries(ownerId)) {
         final sectors = summaries
             .map(SectorUiMapper.fromSummary)
             .toList(growable: false);
         yield SectorListUiState(
           status: SectorListStatus.ready,
           ownerId: ownerId,
-          parcelId: parcelId,
           selectedSectorId: selectedSectorId,
           sectors: sectors,
           historyLoading: true,
         );
         final history = await _ref
             .read(sectorListFacadeProvider)
-            .recentHistory(ownerId: ownerId, parcelId: parcelId);
+            .recentHistory(ownerId);
         yield SectorListUiState(
           status: SectorListStatus.ready,
           ownerId: ownerId,
-          parcelId: parcelId,
           selectedSectorId: selectedSectorId,
           sectors: sectors,
           history: history
@@ -114,7 +67,6 @@ final class SectorListController {
       yield SectorListUiState(
         status: SectorListStatus.error,
         ownerId: ownerId,
-        parcelId: parcelId,
         selectedSectorId: selectedSectorId,
         errorMessage: error.toString(),
       );
@@ -164,10 +116,7 @@ final class SectorDetailController {
           yield SectorDetailUiState.notFound(ownerId: ownerId);
           continue;
         }
-        await for (final summaries in facade.watchSummaries(
-          ownerId: ownerId,
-          parcelId: sector.parcelId,
-        )) {
+        await for (final summaries in facade.watchSummaries(ownerId)) {
           final summary = summaries
               .where((item) => item.id == sector.id)
               .map(SectorUiMapper.fromSummary)
@@ -178,7 +127,6 @@ final class SectorDetailController {
             selectedSectorId: selectedSectorId,
             detail: SectorDetailRecordUiState(
               id: sector.id,
-              parcelId: sector.parcelId,
               number: sector.number,
               kind: sector.kind,
               areaSquareMeters: sector.areaSquareMeters,
@@ -195,6 +143,27 @@ final class SectorDetailController {
         errorMessage: error.toString(),
       );
     }
+  }
+
+  Future<String?> loadName(String ownerId) async =>
+      (await _ref
+              .read(sectorDetailFacadeProvider(sectorId))
+              .loadSector(ownerId))
+          ?.name;
+
+  Future<void> rename({required String ownerId, required String name}) => _ref
+      .read(sectorDetailFacadeProvider(sectorId))
+      .rename(ownerId: ownerId, name: name);
+
+  Future<void> delete(String ownerId) async {
+    // Deleting makes the detail page stop watching this auto-disposed
+    // provider, so everything is read before the first await.
+    final facade = _ref.read(sectorDetailFacadeProvider(sectorId));
+    final context = _ref.read(agriculturalContextControllerProvider.notifier);
+    final wasActive =
+        _ref.read(agriculturalContextControllerProvider).sectorId == sectorId;
+    await facade.delete(ownerId);
+    if (wasActive) await context.selectSector(null);
   }
 
   Future<void> ensureContextSelected() async {

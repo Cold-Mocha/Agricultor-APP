@@ -49,7 +49,6 @@ final class ApiaryRepository {
     final now = DateTime.now().toUtc();
     final payload = <String, Object?>{
       'id': laborId,
-      'parcel_id': sector.parcelId,
       'agricultural_season_id': null,
       'crop_assignment_id': null,
       'type': LaborType.apiary.name,
@@ -87,7 +86,6 @@ final class ApiaryRepository {
               LaborsCompanion.insert(
                 id: laborId,
                 ownerId: ownerId,
-                parcelId: sector.parcelId,
                 sectorId: sectorId,
                 type: LaborType.apiary.name,
                 detailsJson: Value(details.encode()),

@@ -18,12 +18,15 @@ import 'package:agrocampo/src/modules/soil/soil_ui.dart';
 import 'package:agrocampo/src/modules/sync_status/sync_status_ui.dart';
 import 'package:agrocampo/src/modules/territory/territory_ui.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final session = ref.watch(sessionControllerProvider);
+  final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: AppRoutes.home,
     restorationScopeId: 'router',
     redirect: (context, state) {
@@ -48,6 +51,54 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/recordatorios/:id',
         redirect: (context, state) =>
             '${AppRoutes.reminders}/${state.pathParameters['id']!}',
+      ),
+      // Records open full screen from a quadrant; they are no longer a tab.
+      GoRoute(
+        path: AppRoutes.register,
+        builder: (_, state) => LaborFormPage(
+          initialSectorId: state.uri.queryParameters['sectorId'],
+        ),
+        routes: [
+          GoRoute(
+            path: 'labor/:laborType',
+            builder: (_, state) => LaborFormPage(
+              initialSectorId: state.uri.queryParameters['sectorId'],
+              initialLaborType: _laborType(state.pathParameters['laborType']),
+            ),
+          ),
+          GoRoute(
+            path: 'suelo',
+            builder: (_, state) => SoilMeasurementPage(
+              initialSectorId: state.uri.queryParameters['sectorId'],
+            ),
+          ),
+          GoRoute(
+            path: 'riego',
+            builder: (_, state) => IrrigationRecordPage(
+              initialSectorId: state.uri.queryParameters['sectorId'],
+            ),
+            routes: [
+              GoRoute(
+                path: 'configuracion',
+                builder: (_, state) => DripConfigurationPage(
+                  initialSectorId: state.uri.queryParameters['sectorId'],
+                ),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: 'produccion',
+            builder: (_, state) => ProductionPage(
+              initialSectorId: state.uri.queryParameters['sectorId'],
+            ),
+          ),
+          GoRoute(
+            path: 'foto',
+            builder: (_, state) => PhotoAttachmentPage(
+              initialSectorId: state.uri.queryParameters['sectorId'],
+            ),
+          ),
+        ],
       ),
       StatefulShellRoute.indexedStack(
         restorationScopeId: 'main-shell',
@@ -109,22 +160,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                       ),
                     ],
                   ),
-                  GoRoute(
-                    path: 'parcelas',
-                    builder: (_, _) => const ParcelListPage(),
-                    routes: [
-                      GoRoute(
-                        path: 'nueva',
-                        builder: (_, _) => const ParcelFormPage(),
-                      ),
-                      GoRoute(
-                        path: ':id/editar',
-                        builder: (_, state) => ParcelFormPage(
-                          parcelId: state.pathParameters['id'],
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ],
@@ -136,10 +171,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (_, _) => const SectorListPage(),
                 routes: [
                   GoRoute(
-                    path: 'parcela/:parcelId/mapa',
-                    builder: (_, state) => TerritoryMapPage(
-                      initialParcelId: state.pathParameters['parcelId'],
-                    ),
+                    path: 'mapa',
+                    // Full screen: the map opens above the bottom navigation.
+                    parentNavigatorKey: rootNavigatorKey,
+                    builder: (_, _) => const TerritoryMapPage(),
                   ),
                   GoRoute(
                     path: ':id',
@@ -164,60 +199,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                         ),
                       ),
                     ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: AppRoutes.register,
-                builder: (_, state) => LaborFormPage(
-                  initialSectorId: state.uri.queryParameters['sectorId'],
-                ),
-                routes: [
-                  GoRoute(
-                    path: 'labor/:laborType',
-                    builder: (_, state) => LaborFormPage(
-                      initialSectorId: state.uri.queryParameters['sectorId'],
-                      initialLaborType: _laborType(
-                        state.pathParameters['laborType'],
-                      ),
-                    ),
-                  ),
-                  GoRoute(
-                    path: 'suelo',
-                    builder: (_, state) => SoilMeasurementPage(
-                      initialSectorId: state.uri.queryParameters['sectorId'],
-                    ),
-                  ),
-                  GoRoute(
-                    path: 'riego',
-                    builder: (_, state) => IrrigationRecordPage(
-                      initialSectorId: state.uri.queryParameters['sectorId'],
-                    ),
-                    routes: [
-                      GoRoute(
-                        path: 'configuracion',
-                        builder: (_, state) => DripConfigurationPage(
-                          initialSectorId:
-                              state.uri.queryParameters['sectorId'],
-                        ),
-                      ),
-                    ],
-                  ),
-                  GoRoute(
-                    path: 'produccion',
-                    builder: (_, state) => ProductionPage(
-                      initialSectorId: state.uri.queryParameters['sectorId'],
-                    ),
-                  ),
-                  GoRoute(
-                    path: 'foto',
-                    builder: (_, state) => PhotoAttachmentPage(
-                      initialSectorId: state.uri.queryParameters['sectorId'],
-                    ),
                   ),
                 ],
               ),

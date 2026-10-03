@@ -25,7 +25,7 @@ final class CustomCropFormInput {
 
 final class SeasonFormInput {
   const SeasonFormInput({
-    required this.parcelId,
+    required this.sectorId,
     required this.name,
     required this.startsOn,
     required this.status,
@@ -33,7 +33,7 @@ final class SeasonFormInput {
     this.endsOn,
     this.notes,
   });
-  final String parcelId;
+  final String sectorId;
   final String name;
   final DateTime startsOn;
   final AgriculturalSeasonStatus status;
@@ -97,10 +97,10 @@ final class CropCyclesFacade {
 
   Stream<List<AgriculturalSeason>> watchSeasons({
     required String ownerId,
-    required String parcelId,
+    required String sectorId,
   }) =>
       AgriculturalSeasonRepository(_database)
-          .watchByParcel(ownerId: ownerId, parcelId: parcelId);
+          .watchBySector(ownerId: ownerId, sectorId: sectorId);
 
   Future<AgriculturalSeason?> loadSeason({
     required String ownerId,
@@ -122,7 +122,7 @@ final class CropCyclesFacade {
     required SeasonFormInput input,
   }) => AgriculturalSeasonRepository(_database).save(
     ownerId: ownerId,
-    parcelId: input.parcelId,
+    sectorId: input.sectorId,
     id: input.id,
     name: input.name,
     startsOn: input.startsOn,
@@ -154,6 +154,14 @@ final class CropCyclesFacade {
     effectiveAt: effectiveAt,
   );
 
+  Future<void> end({
+    required String ownerId,
+    required String assignmentId,
+    required DateTime effectiveAt,
+  }) => SectorCropAssignmentRepository(
+    _database,
+  ).end(ownerId: ownerId, assignmentId: assignmentId, effectiveAt: effectiveAt);
+
   Future<void> cancel({
     required String ownerId,
     required String assignmentId,
@@ -179,7 +187,7 @@ final class CropCyclesFacade {
         await (_database.select(_database.agriculturalSeasons)..where(
               (row) =>
                   row.ownerId.equals(ownerId) &
-                  row.parcelId.equals(sector.parcelId) &
+                  row.sectorId.equals(sector.id) &
                   row.status.equals('active') &
                   row.deletedAt.isNull(),
             ))
@@ -205,23 +213,92 @@ final class CropCyclesFacade {
     effectiveFrom: effectiveFrom,
   );
 
+  /// Plans and activates [crop] in one step so it becomes the sector's current
+  /// crop from [effectiveFrom].
+  Future<String> assign({
+    required String ownerId,
+    required String sectorId,
+    required String agriculturalSeasonId,
+    required CropRef crop,
+    required DateTime effectiveFrom,
+  }) => _database.transaction(() async {
+    final assignmentId = await plan(
+      ownerId: ownerId,
+      sectorId: sectorId,
+      agriculturalSeasonId: agriculturalSeasonId,
+      crop: crop,
+      effectiveFrom: effectiveFrom,
+    );
+    await activate(
+      ownerId: ownerId,
+      assignmentId: assignmentId,
+      effectiveAt: effectiveFrom,
+    );
+    return assignmentId;
+  });
+
+  /// Non-archived crops a farmer can pick for a quadrant.
+  Future<List<CropRef>> availableCrops(String ownerId) async {
+    await ensureCatalog();
+    return (await CropRepository(_database).watchCatalog(ownerId).first)
+        .where((crop) => !crop.archived)
+        .toList(growable: false);
+  }
+
+  /// First crop of a new quadrant. Seasons belong to one quadrant, so when it
+  /// has no active season a `Temporada {año}` starting today is opened first.
+  Future<String> assignInitialCrop({
+    required String ownerId,
+    required String sectorId,
+    required CropRef crop,
+    DateTime? effectiveFrom,
+  }) {
+    final start = effectiveFrom ?? DateTime.now();
+    return _database.transaction(() async {
+      final active =
+          await (_database.select(_database.agriculturalSeasons)..where(
+                (row) =>
+                    row.ownerId.equals(ownerId) &
+                    row.sectorId.equals(sectorId) &
+                    row.status.equals('active') &
+                    row.deletedAt.isNull(),
+              ))
+              .getSingleOrNull();
+      final seasonId =
+          active?.id ??
+          await AgriculturalSeasonRepository(_database).save(
+            ownerId: ownerId,
+            sectorId: sectorId,
+            name: 'Temporada ${start.year}',
+            startsOn: start,
+            status: AgriculturalSeasonStatus.active,
+          );
+      return assign(
+        ownerId: ownerId,
+        sectorId: sectorId,
+        agriculturalSeasonId: seasonId,
+        crop: crop,
+        effectiveFrom: start,
+      );
+    });
+  }
+
   Future<List<CropExchangeOption>> exchangeOptions({
     required String ownerId,
     required String sectorId,
   }) async {
-    final sector =
-        await (_database.select(_database.sectors)..where(
-              (row) =>
-                  row.id.equals(sectorId) &
-                  row.ownerId.equals(ownerId) &
-                  row.deletedAt.isNull(),
-            ))
-            .getSingle();
+    // Fails fast when the source sector is missing or foreign.
+    await (_database.select(_database.sectors)..where(
+          (row) =>
+              row.id.equals(sectorId) &
+              row.ownerId.equals(ownerId) &
+              row.deletedAt.isNull(),
+        ))
+        .getSingle();
     final alternatives =
         await (_database.select(_database.sectors)..where(
               (row) =>
                   row.ownerId.equals(ownerId) &
-                  row.parcelId.equals(sector.parcelId) &
                   row.kind.equals('crop') &
                   row.id.equals(sectorId).not() &
                   row.deletedAt.isNull(),
@@ -249,7 +326,7 @@ final class CropCyclesFacade {
   AgriculturalSeason _season(db.AgriculturalSeason row) => AgriculturalSeason(
     id: row.id,
     ownerId: row.ownerId,
-    parcelId: row.parcelId,
+    sectorId: row.sectorId,
     name: row.name,
     startsOn: row.startsOn,
     endsOn: row.endsOn,

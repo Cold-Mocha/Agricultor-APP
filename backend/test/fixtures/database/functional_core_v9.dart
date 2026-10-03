@@ -6,6 +6,11 @@ import 'package:drift/native.dart';
 
 import '../../generated/migrations/schema_v9.dart' as v9;
 
+/// Tables of the current (v12) schema, which no longer has `parcels`.
+List<String> get currentSchemaTableNames => functionalCoreV9TableNames
+    .where((name) => name != 'parcels')
+    .toList(growable: false);
+
 const functionalCoreV9TableNames = <String>[
   'local_profiles',
   'app_preferences',
@@ -102,7 +107,8 @@ Future<({int version, bool hasAgriculturalSeasons})> inspectV9File(
   }
 }
 
-Future<void> populateFunctionalCoreV9(AppDatabase database) async {
+/// Fills one row per table of the current (v12) schema.
+Future<void> populateCurrentSchema(AppDatabase database) async {
   final now = DateTime.utc(2026, 1, 2, 12);
   await database.batch((batch) {
     batch.insert(
@@ -117,18 +123,8 @@ Future<void> populateFunctionalCoreV9(AppDatabase database) async {
       database.appPreferences,
       AppPreferencesCompanion.insert(
         ownerId: 'owner-1',
-        key: 'activeParcelId',
-        value: 'parcel-1',
-        updatedAt: now,
-      ),
-    );
-    batch.insert(
-      database.parcels,
-      ParcelsCompanion.insert(
-        id: 'parcel-1',
-        ownerId: 'owner-1',
-        name: 'Parcela fixture',
-        isActive: const Value(true),
+        key: 'active_sector_id',
+        value: 'sector-1',
         updatedAt: now,
       ),
     );
@@ -137,7 +133,6 @@ Future<void> populateFunctionalCoreV9(AppDatabase database) async {
       SectorsCompanion.insert(
         id: 'sector-1',
         ownerId: 'owner-1',
-        parcelId: 'parcel-1',
         number: 1,
         name: 'Sector fixture',
         polygonJson: '[{"latitude":-33.4,"longitude":-70.6},{"latitude":-33.4,"longitude":-70.59},{"latitude":-33.39,"longitude":-70.59}]',
@@ -180,7 +175,6 @@ Future<void> populateFunctionalCoreV9(AppDatabase database) async {
       LaborsCompanion.insert(
         id: 'labor-1',
         ownerId: 'owner-1',
-        parcelId: 'parcel-1',
         sectorId: 'sector-1',
         type: 'other',
         occurredAt: now,
@@ -244,7 +238,6 @@ Future<void> populateFunctionalCoreV9(AppDatabase database) async {
       ProductionRecordsCompanion.insert(
         id: 'production-1',
         ownerId: 'owner-1',
-        parcelId: 'parcel-1',
         sectorId: 'sector-1',
         cropId: 'crop-official-1',
         quantity: 10,
@@ -357,8 +350,8 @@ Future<void> populateFunctionalCoreV9(AppDatabase database) async {
       SyncConflictsCompanion.insert(
         conflictId: 'conflict-1',
         ownerId: 'owner-1',
-        aggregateType: 'parcel',
-        aggregateId: 'parcel-1',
+        aggregateType: 'sector',
+        aggregateId: 'sector-1',
         localJson: '{}',
         remoteJson: '{}',
         detectedAt: now,
@@ -369,8 +362,8 @@ Future<void> populateFunctionalCoreV9(AppDatabase database) async {
       SyncOutboxCompanion.insert(
         operationId: 'operation-1',
         ownerId: 'owner-1',
-        aggregateType: 'parcel',
-        aggregateId: 'parcel-1',
+        aggregateType: 'sector',
+        aggregateId: 'sector-1',
         mutationKind: 'update',
         payloadJson: '{}',
         createdAt: now,

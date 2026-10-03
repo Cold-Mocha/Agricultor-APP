@@ -14,16 +14,10 @@ final class SectorRepository {
 
   final AppDatabase _database;
 
-  Stream<List<domain.Sector>> watchByParcel({
-    required String ownerId,
-    required String parcelId,
-  }) =>
+  Stream<List<domain.Sector>> watchAll(String ownerId) =>
       (_database.select(_database.sectors)
             ..where(
-              (row) =>
-                  row.ownerId.equals(ownerId) &
-                  row.parcelId.equals(parcelId) &
-                  row.deletedAt.isNull(),
+              (row) => row.ownerId.equals(ownerId) & row.deletedAt.isNull(),
             )
             ..orderBy([(row) => OrderingTerm.asc(row.number)]))
           .watch()
@@ -61,7 +55,6 @@ final class SectorRepository {
   domain.Sector _toDomain(Sector row) => domain.Sector(
     id: row.id,
     ownerId: row.ownerId,
-    parcelId: row.parcelId,
     number: row.number,
     name: row.name,
     kind: row.kind,
@@ -74,7 +67,6 @@ final class SectorRepository {
 
   Future<String> save({
     required String ownerId,
-    required String parcelId,
     required int number,
     required String name,
     required List<GeoPoint> polygon,
@@ -90,33 +82,12 @@ final class SectorRepository {
     if (geometryError != null) {
       throw ArgumentError.value(polygon, 'polygon', geometryError);
     }
-    final parcel =
-        await (_database.select(_database.parcels)..where(
-              (row) =>
-                  row.id.equals(parcelId) &
-                  row.ownerId.equals(ownerId) &
-                  row.deletedAt.isNull() &
-                  row.isArchived.equals(false),
-            ))
-            .getSingleOrNull();
-    if (parcel == null) {
-      throw StateError('owner_mismatch');
-    }
-    if (parcel.polygonJson case final parentJson?) {
-      final parent = _decodePolygon(parentJson);
-      if (!PolygonGeometry.isContained(normalizedPolygon, parent)) {
-        throw StateError('sector_outside_parcel');
-      }
-    }
     final sectorId = id ?? EntityId.generate().value;
     final now = DateTime.now().toUtc();
     final existing = id == null
         ? null
         : await (_database.select(_database.sectors)..where(
-                (row) =>
-                    row.id.equals(id) &
-                    row.ownerId.equals(ownerId) &
-                    row.parcelId.equals(parcelId),
+                (row) => row.id.equals(id) & row.ownerId.equals(ownerId),
               ))
               .getSingleOrNull();
     if (id != null && existing == null) throw StateError('sector_not_found');
@@ -136,7 +107,6 @@ final class SectorRepository {
     final payload = jsonEncode({
       'id': sectorId,
       'owner_id': ownerId,
-      'parcel_id': parcelId,
       'number': number,
       'name': name.trim(),
       'kind': kind,
@@ -147,7 +117,6 @@ final class SectorRepository {
       'deleted_at': null,
     });
     final operationId = EntityId.generate().value;
-    final dependency = await _parcelDependency(ownerId, parcelId);
     final mutationKind = existing == null ? 'create' : 'update';
     await _database.syncOutboxDao.transactionWithOutbox<void>(
       writeAggregate: () => _database
@@ -156,7 +125,6 @@ final class SectorRepository {
             SectorsCompanion.insert(
               id: sectorId,
               ownerId: ownerId,
-              parcelId: parcelId,
               number: number,
               name: name.trim(),
               kind: Value(kind),
@@ -184,7 +152,6 @@ final class SectorRepository {
             payload: jsonDecode(payload) as Map<String, Object?>,
           ),
         ),
-        dependencyOperationId: Value(dependency),
         createdAt: now,
       ),
     );
@@ -195,7 +162,6 @@ final class SectorRepository {
   /// version they edited; `save` remains for existing fixtures.
   Future<String> saveConfirmed({
     required String ownerId,
-    required String parcelId,
     required int number,
     required String name,
     required String kind,
@@ -204,7 +170,6 @@ final class SectorRepository {
     int? expectedVersion,
   }) => save(
     ownerId: ownerId,
-    parcelId: parcelId,
     number: number,
     name: name,
     kind: kind,
@@ -239,7 +204,6 @@ final class SectorRepository {
     final payload = <String, Object?>{
       'id': row.id,
       'owner_id': row.ownerId,
-      'parcel_id': row.parcelId,
       'number': row.number,
       'name': row.name,
       'kind': row.kind,
@@ -282,21 +246,6 @@ final class SectorRepository {
         createdAt: now,
       ),
     );
-  }
-
-  Future<String?> _parcelDependency(String ownerId, String parcelId) async {
-    final operations =
-        await (_database.select(_database.syncOutbox)
-              ..where(
-                (row) =>
-                    row.ownerId.equals(ownerId) &
-                    row.aggregateType.equals('parcel') &
-                    row.aggregateId.equals(parcelId) &
-                    row.state.isNotIn(const ['done']),
-              )
-              ..orderBy([(row) => OrderingTerm.desc(row.createdAt)]))
-            .get();
-    return operations.isEmpty ? null : operations.first.operationId;
   }
 
   List<GeoPoint> _decodePolygon(String source) =>

@@ -9,9 +9,6 @@ final class ExportRepository {
   final AppDatabase _database;
 
   Future<AgroExportSnapshot> snapshot(String ownerId) async {
-    final parcels = await (_database.select(
-      _database.parcels,
-    )..where((row) => row.ownerId.equals(ownerId))).get();
     final sectors = await (_database.select(
       _database.sectors,
     )..where((row) => row.ownerId.equals(ownerId))).get();
@@ -30,26 +27,14 @@ final class ExportRepository {
     final apiary = await (_database.select(
       _database.apiaryInspections,
     )..where((row) => row.ownerId.equals(ownerId))).get();
-    final pending = await (_database.select(
-      _database.syncOutbox,
-    )..where((row) => row.ownerId.equals(ownerId))).get();
     final snapshot = AgroExportSnapshot(
       generatedAt: DateTime.now().toUtc(),
       sheets: {
-        'parcelas': [
-          for (final row in parcels)
-            {
-              'id': row.id,
-              'nombre': row.name,
-              'localidad': row.locality,
-              'pendiente': pending.any((item) => item.aggregateId == row.id),
-            },
-        ],
         'sectores': [
           for (final row in sectors)
             {
               'id': row.id,
-              'parcela_id': row.parcelId,
+              'numero': row.number,
               'nombre': row.name,
               'area_m2': row.areaSquareMeters,
             },

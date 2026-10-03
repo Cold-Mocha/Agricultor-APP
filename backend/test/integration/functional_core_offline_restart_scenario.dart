@@ -1,4 +1,5 @@
-import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
+import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo_point.dart';
+import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/file_backed_database.dart';
@@ -11,11 +12,16 @@ void main() {
       addTearDown(fixture.dispose);
       var database = fixture.open();
       for (var index = 0; index < 100; index++) {
-        await ParcelRepository(database).save(
+        final offset = index * .002;
+        await SectorRepository(database).save(
           ownerId: 'owner-1',
-          id: 'offline-parcel-$index',
-          name: 'Parcela offline $index',
-          isActive: index == 0,
+          number: index + 1,
+          name: 'Sector offline $index',
+          polygon: [
+            GeoPoint(-38.74 + offset, -72.60),
+            GeoPoint(-38.74 + offset, -72.59),
+            GeoPoint(-38.739 + offset, -72.59),
+          ],
         );
         if (index == 33 || index == 66) {
           await database.close();
@@ -25,10 +31,10 @@ void main() {
       await database.close();
       database = fixture.open();
       addTearDown(database.close);
-      final parcels = await database.select(database.parcels).get();
+      final sectors = await database.select(database.sectors).get();
       final outbox = await database.select(database.syncOutbox).get();
-      expect(parcels, hasLength(100));
-      expect(parcels.map((row) => row.id).toSet(), hasLength(100));
+      expect(sectors, hasLength(100));
+      expect(sectors.map((row) => row.id).toSet(), hasLength(100));
       expect(outbox, hasLength(100));
       expect(outbox.every((row) => row.state == 'pending'), isTrue);
       expect(

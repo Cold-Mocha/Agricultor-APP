@@ -20,7 +20,7 @@ final class ReminderRepository {
     String? id,
   }) async {
     input.validate(DateTime.now());
-    await _validateContext(ownerId, input.parcelId, input.sectorId);
+    await _validateContext(ownerId, input.sectorId);
     final reminderId = id ?? EntityId.generate().value;
     final existing =
         await (_database.select(_database.reminders)..where(
@@ -32,7 +32,6 @@ final class ReminderRepository {
     final notificationId = stableNotificationId(reminderId);
     final payload = <String, Object?>{
       'id': reminderId,
-      'parcel_id': input.parcelId,
       'sector_id': input.sectorId,
       'title': input.title.trim(),
       'description': input.description?.trim(),
@@ -56,7 +55,6 @@ final class ReminderRepository {
             RemindersCompanion.insert(
               id: reminderId,
               ownerId: ownerId,
-              parcelId: Value(input.parcelId),
               sectorId: Value(input.sectorId),
               title: input.title.trim(),
               description: Value(input.description?.trim()),
@@ -103,7 +101,6 @@ final class ReminderRepository {
     final version = row.version + 1;
     final payload = <String, Object?>{
       'id': row.id,
-      'parcel_id': row.parcelId,
       'sector_id': row.sectorId,
       'title': row.title,
       'description': row.description,
@@ -204,37 +201,19 @@ final class ReminderRepository {
     createdAt: now,
   );
 
-  Future<void> _validateContext(
-    String ownerId,
-    String? parcelId,
-    String? sectorId,
-  ) async {
-    if (parcelId == null && sectorId == null) return;
-    if (parcelId == null) throw StateError('reminder_parcel_context_required');
-    final parcel =
-        await (_database.select(_database.parcels)..where(
-              (row) => row.id.equals(parcelId) & row.ownerId.equals(ownerId),
+  Future<void> _validateContext(String ownerId, String? sectorId) async {
+    if (sectorId == null) return;
+    final sector =
+        await (_database.select(_database.sectors)..where(
+              (row) => row.id.equals(sectorId) & row.ownerId.equals(ownerId),
             ))
             .getSingleOrNull();
-    if (parcel == null) throw StateError('reminder_parcel_context_invalid');
-    if (sectorId != null) {
-      final sector =
-          await (_database.select(_database.sectors)..where(
-                (row) =>
-                    row.id.equals(sectorId) &
-                    row.ownerId.equals(ownerId) &
-                    row.parcelId.equals(parcelId),
-              ))
-              .getSingleOrNull();
-      if (sector == null) throw StateError('reminder_sector_context_invalid');
-    }
+    if (sector == null) throw StateError('reminder_sector_context_invalid');
   }
 
   Future<String?> _contextDependency(String ownerId, ReminderInput input) =>
       input.sectorId != null
       ? _pending(ownerId, 'sector', input.sectorId!)
-      : input.parcelId != null
-      ? _pending(ownerId, 'parcel', input.parcelId!)
       : Future.value();
 
   Future<String?> _pending(String ownerId, String type, String id) async {

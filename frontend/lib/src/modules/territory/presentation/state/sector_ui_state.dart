@@ -1,6 +1,6 @@
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 
-enum SectorListStatus { signedOut, needsParcel, ready, error }
+enum SectorListStatus { signedOut, ready, error }
 
 enum SectorDetailStatus { signedOut, notFound, ready, error }
 
@@ -9,7 +9,6 @@ enum SectorHistoryType { labor, soil, cropAssignment }
 final class SectorCardUiState {
   const SectorCardUiState({
     required this.id,
-    required this.parcelId,
     required this.number,
     required this.kind,
     required this.areaSquareMeters,
@@ -29,7 +28,6 @@ final class SectorCardUiState {
   });
 
   final String id;
-  final String parcelId;
   final int number;
   final String kind;
   final double areaSquareMeters;
@@ -85,7 +83,6 @@ final class SectorListUiState {
   const SectorListUiState({
     required this.status,
     this.ownerId,
-    this.parcelId,
     this.selectedSectorId,
     this.sectors = const [],
     this.history = const [],
@@ -96,12 +93,8 @@ final class SectorListUiState {
   const SectorListUiState.signedOut()
     : this(status: SectorListStatus.signedOut);
 
-  const SectorListUiState.needsParcel({required String ownerId})
-    : this(status: SectorListStatus.needsParcel, ownerId: ownerId);
-
   final SectorListStatus status;
   final String? ownerId;
-  final String? parcelId;
   final String? selectedSectorId;
   final List<SectorCardUiState> sectors;
   final List<SectorHistoryPreviewUiState> history;
@@ -112,14 +105,12 @@ final class SectorListUiState {
 final class SectorDetailRecordUiState {
   const SectorDetailRecordUiState({
     required this.id,
-    required this.parcelId,
     required this.number,
     required this.kind,
     required this.areaSquareMeters,
   });
 
   final String id;
-  final String parcelId;
   final int number;
   final String kind;
   final double areaSquareMeters;

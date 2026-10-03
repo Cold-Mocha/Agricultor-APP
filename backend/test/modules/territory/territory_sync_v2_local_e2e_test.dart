@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo_point.dart';
-import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
 import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:agrocampo_backend/src/platform/sync/protocol/supabase_sync_gateway.dart';
@@ -15,7 +14,7 @@ import '../../helpers/sync_test_coordinator.dart';
 
 void main() {
   test(
-    'parcel and dependent sector sync exact-once into a second DB',
+    'sector syncs exact-once into a second DB without a parent',
     () async {
       const url = String.fromEnvironment('SUPABASE_URL');
       const anonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
@@ -47,20 +46,8 @@ void main() {
         await firstDb.close();
         await firstDirectory.delete(recursive: true);
       });
-      final parcelId = await ParcelRepository(firstDb).save(
-        ownerId: ownerId,
-        name: 'Campo local',
-        isActive: true,
-        boundary: const [
-          GeoPoint(-38.75, -72.61),
-          GeoPoint(-38.75, -72.57),
-          GeoPoint(-38.71, -72.57),
-          GeoPoint(-38.71, -72.61),
-        ],
-      );
       final sectorId = await SectorRepository(firstDb).save(
         ownerId: ownerId,
-        parcelId: parcelId,
         number: 1,
         name: 'Norte',
         polygon: const [
@@ -71,31 +58,13 @@ void main() {
         ],
       );
       final queued = await firstDb.select(firstDb.syncOutbox).get();
-      expect(queued, hasLength(2));
-      expect(
-        queued
-            .singleWhere((row) => row.aggregateType == 'sector')
-            .dependencyOperationId,
-        queued.singleWhere((row) => row.aggregateType == 'parcel').operationId,
-      );
+      expect(queued, hasLength(1));
+      expect(queued.single.aggregateType, 'sector');
+      expect(queued.single.dependencyOperationId, isNull);
 
       await firstDb.close();
       firstDb = AppDatabase.forTesting(NativeDatabase(firstFile));
       final realGateway = SupabaseSyncGateway(client);
-      await createTestSyncCoordinator(
-        firstDb,
-        realGateway,
-      ).synchronize(ownerId);
-      expect(
-        await client.from('parcels').select('id').eq('id', parcelId),
-        hasLength(1),
-      );
-      expect(
-        await client.from('sectors').select('id').eq('id', sectorId),
-        isEmpty,
-        reason: 'the dependent sector waits for the parcel ACK',
-      );
-
       final lostAckGateway = _LoseFirstAckGateway(realGateway);
       await expectLater(
         createTestSyncCoordinator(firstDb, lostAckGateway).synchronize(ownerId),
@@ -142,15 +111,10 @@ void main() {
         secondDb,
         realGateway,
       ).synchronize(ownerId);
-      final downloadedParcel = await secondDb
-          .select(secondDb.parcels)
-          .getSingle();
       final downloadedSector = await secondDb
           .select(secondDb.sectors)
           .getSingle();
-      expect(downloadedParcel.id, parcelId);
       expect(downloadedSector.id, sectorId);
-      expect(downloadedSector.parcelId, parcelId);
       expect(downloadedSector.areaSquareMeters, greaterThan(0));
     },
   );

@@ -5,11 +5,9 @@ import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_
 import 'package:agrocampo/src/modules/auth/auth_ui.dart';
 import 'package:agrocampo/src/modules/territory/territory_ui.dart';
 import 'package:agrocampo/src/modules/weather/weather_ui.dart';
-import 'package:agrocampo/src/shared/design_system/components/agro_action_tile.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_navigation_card.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_section_header.dart';
-import 'package:agrocampo/src/shared/design_system/motion/agro_motion_effects.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,7 +23,7 @@ final class HomePage extends ConsumerWidget {
     final agriculturalContext = ref.watch(
       agriculturalContextControllerProvider,
     );
-    final controller = ref.watch(parcelControllerProvider);
+    final controller = ref.watch(contextOptionsControllerProvider);
     return AgroPage(
       title: 'Inicio',
       subtitle: 'Tu cuaderno de campo',
@@ -38,108 +36,61 @@ final class HomePage extends ConsumerWidget {
       ],
       child: ownerId == null
           ? const AgroEmptyState(
-              title: 'Sin parcela activa',
+              title: 'Sin sesión activa',
               message: 'Inicia sesión para recuperar tu espacio local.',
             )
-          : StreamBuilder(
-              stream: controller.watchActive(ownerId),
+          : StreamBuilder<List<ContextOption>>(
+              stream: controller.watchSectors(ownerId),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting &&
                     !snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                final parcel = snapshot.data;
-                if (parcel == null) {
+                final sectors = snapshot.data ?? const <ContextOption>[];
+                if (sectors.isEmpty) {
                   return AgroEmptyState(
-                    title: 'Crea tu primera parcela',
-                    message: 'La parcela activa organiza cuadrantes, cultivos y registros.',
+                    title: 'Dibuja tu primer cuadrante',
+                    message: 'Los cuadrantes organizan cultivos, colmenas y registros.',
                     action: FilledButton(
-                      onPressed: () => context.push(AppRoutes.newParcel),
-                      child: const Text('Crear parcela'),
+                      onPressed: () => context.push(AppRoutes.quadrantMap),
+                      child: const Text('Abrir mapa'),
                     ),
                   );
                 }
-                final locality = parcel.locality?.trim();
                 final sectorId = agriculturalContext.sectorId;
+                final activeSector = sectors
+                    .where((sector) => sector.id == sectorId)
+                    .firstOrNull;
                 return ListView(
                   key: const PageStorageKey('home-scroll'),
                   children: [
                     const AgroSectionHeader(
-                      title: 'Tu parcela hoy',
+                      title: 'Tu campo hoy',
                       subtitle: 'Condiciones y accesos principales para trabajar en terreno.',
                     ),
                     const SizedBox(height: AgroSpacing.sm),
-                    if (locality == null || locality.isEmpty)
-                      _MissingLocalityCard(
-                        parcelName: parcel.name,
-                        onTap: () =>
-                            context.push(AppRoutes.editParcel(parcel.id)),
-                      )
+                    if (activeSector == null)
+                      const AgriculturalContextSelector(compact: true)
                     else
                       WeatherSummaryCard(
                         ownerId: ownerId,
-                        parcelId: parcel.id,
-                        locality: locality,
-                        onEditLocality: () =>
-                            context.push(AppRoutes.editParcel(parcel.id)),
+                        sectorId: activeSector.id,
+                        locality: activeSector.name,
                       ),
                     const SizedBox(height: AgroSpacing.sm),
                     AgroNavigationCard(
                       icon: LucideIcons.layoutGrid,
                       title: 'Ver cuadrantes',
-                      subtitle:
-                          '${parcel.name} · ${locality == null || locality.isEmpty ? 'sin ubicación configurada' : locality}',
+                      subtitle: [
+                        sectors.length == 1
+                            ? '1 cuadrante'
+                            : '${sectors.length} cuadrantes',
+                        activeSector?.name ?? 'ninguno seleccionado',
+                      ].join(' · '),
                       onTap: () => context.go(AppRoutes.sectors),
                     ),
                     const SizedBox(height: AgroSpacing.lg),
-                    const AgroSectionHeader(
-                      title: 'Labores',
-                      subtitle:
-                          'Registra directamente la tarea que realizaste.',
-                    ),
-                    const SizedBox(height: AgroSpacing.sm),
-                    AgroAdaptiveGrid(
-                      children: [
-                        AgroActionTile(
-                          icon: LucideIcons.droplet,
-                          label: 'Riego',
-                          description: 'Registrar o calcular',
-                          onTap: () => context.push(
-                            AppRoutes.irrigationFor(sectorId: sectorId),
-                          ),
-                        ),
-                        AgroActionTile(
-                          icon: LucideIcons.flaskConical,
-                          label: 'Suelo',
-                          description: 'Ingresar mediciones',
-                          onTap: () => context.push(
-                            AppRoutes.soilFor(sectorId: sectorId),
-                          ),
-                        ),
-                        AgroActionTile(
-                          icon: LucideIcons.sprout,
-                          label: 'Fertilización',
-                          description: 'Producto, dosis y método',
-                          onTap: () => context.push(
-                            AppRoutes.labor(
-                              LaborType.fertilization.name,
-                              sectorId: sectorId,
-                            ),
-                          ),
-                        ),
-                        AgroActionTile(
-                          icon: LucideIcons.bug,
-                          label: 'Control de enfermedades y plagas',
-                          description: 'Tratamiento y objetivo',
-                          onTap: () => context.push(
-                            AppRoutes.labor(
-                              LaborType.diseaseAndPestControl.name,
-                              sectorId: sectorId,
-                            ),
-                          ),
-                        ),
-                      ].agroStaggeredEntrance(context),
-                    ),
+                    const RecentHistorySection(),
                     const SizedBox(height: AgroSpacing.lg),
                   ],
                 );
@@ -147,48 +98,4 @@ final class HomePage extends ConsumerWidget {
             ),
     );
   }
-}
-
-final class _MissingLocalityCard extends StatelessWidget {
-  const _MissingLocalityCard({required this.parcelName, required this.onTap});
-
-  final String parcelName;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => Card(
-    child: Padding(
-      padding: const EdgeInsets.all(AgroSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Icon(
-                LucideIcons.mapPinOff,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(width: AgroSpacing.sm),
-              Expanded(
-                child: Text(
-                  parcelName,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AgroSpacing.xs),
-          const Text(
-            'Agrega la localidad de la parcela para consultar el clima. Tus labores siguen disponibles sin conexión.',
-          ),
-          const SizedBox(height: AgroSpacing.sm),
-          OutlinedButton.icon(
-            onPressed: onTap,
-            icon: const Icon(LucideIcons.mapPinPen),
-            label: const Text('Agregar ubicación'),
-          ),
-        ],
-      ),
-    ),
-  );
 }

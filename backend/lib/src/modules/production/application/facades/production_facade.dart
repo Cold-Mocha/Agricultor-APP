@@ -31,7 +31,6 @@ final class ProductionFacade {
           .read(laborContextReaderProvider)
           .resolveContext(
             ownerId: ownerId,
-            parcelId: sector.parcelId,
             sectorId: sector.id,
             occurredAt: DateTime.now().toUtc(),
           );
@@ -75,7 +74,6 @@ final class ProductionFacade {
       _ref.read(laborContextReaderProvider),
     ).save(
       ownerId: ownerId,
-      parcelId: context.parcelId,
       sectorId: context.sectorId,
       seasonId: context.seasonId,
       cropAssignmentId: context.assignmentId,

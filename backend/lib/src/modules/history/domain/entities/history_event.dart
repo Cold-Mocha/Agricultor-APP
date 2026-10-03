@@ -42,7 +42,6 @@ final class HistoryEvent {
 final class HistoryFilter {
   const HistoryFilter({
     required this.ownerId,
-    this.parcelId,
     this.sectorId,
     this.seasonId,
     this.type,
@@ -54,7 +53,6 @@ final class HistoryFilter {
   });
 
   final String ownerId;
-  final String? parcelId;
   final String? sectorId;
   final String? seasonId;
   final HistoryEventType? type;

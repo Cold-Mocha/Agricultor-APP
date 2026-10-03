@@ -21,7 +21,7 @@ final class _Gateway implements WeatherGateway {
   @override
   Future<WeatherSnapshot> fetch({
     required String locality,
-    String? parcelId,
+    String? sectorId,
   }) async {
     if (fail) throw StateError('offline');
     return snapshot;
@@ -62,7 +62,7 @@ void main() {
           home: Scaffold(
             body: WeatherSummaryCard(
               ownerId: 'owner-1',
-              parcelId: 'parcel-1',
+              sectorId: 'sector-1',
               locality: 'Curicó',
             ),
           ),
@@ -71,10 +71,16 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('18.5 °C'), findsOneWidget);
+    expect(find.text('19°'), findsOneWidget);
     expect(find.text('Nublado'), findsOneWidget);
-    expect(find.text('74 %'), findsOneWidget);
-    expect(find.text('Alerta vigente'), findsOneWidget);
+    expect(find.text('24°/9°'), findsOneWidget, reason: 'today max/min');
+    expect(find.text('Curicó'), findsOneWidget);
+    expect(find.text('Alerta de helada vigente'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel(RegExp(r'^[A-ZÁÉ]{3}: Lluvia ligera')),
+      findsNWidgets(2),
+      reason: 'the strip lists only the days after today',
+    );
     expect(
       find.byWidgetPredicate(
         (widget) =>
@@ -112,7 +118,7 @@ void main() {
     );
     await cachedRepository.refresh(
       ownerId: 'owner-1',
-      parcelId: 'parcel-1',
+      sectorId: 'sector-1',
       locality: 'Curicó',
     );
     final offlineRepository = WeatherRepository(
@@ -133,7 +139,7 @@ void main() {
           home: const Scaffold(
             body: WeatherSummaryCard(
               ownerId: 'owner-1',
-              parcelId: 'parcel-1',
+              sectorId: 'sector-1',
               locality: 'Curicó',
             ),
           ),
@@ -143,8 +149,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('por actualizar'), findsOneWidget);
-    expect(find.text('Por actualizar'), findsOneWidget);
-    expect(find.text('Alerta vigente'), findsNothing);
+    expect(find.text('Alerta de helada vigente'), findsNothing);
   });
 
   testWidgets('keeps local work understandable when no weather exists', (
@@ -169,7 +174,7 @@ void main() {
           home: const Scaffold(
             body: WeatherSummaryCard(
               ownerId: 'owner-1',
-              parcelId: 'parcel-1',
+              sectorId: 'sector-1',
               locality: 'Curicó',
             ),
           ),
@@ -180,7 +185,7 @@ void main() {
 
     expect(find.text('Clima sin datos'), findsOneWidget);
     expect(find.byTooltip('Actualizar clima'), findsOneWidget);
-    expect(find.text('Sin datos'), findsNWidgets(2));
+    expect(find.text('—'), findsOneWidget);
   });
 
   testWidgets('local mode explains weather needs the cloud and hides refresh', (
@@ -208,7 +213,7 @@ void main() {
           home: const Scaffold(
             body: WeatherSummaryCard(
               ownerId: 'owner-1',
-              parcelId: 'parcel-1',
+              sectorId: 'sector-1',
               locality: 'Curicó',
             ),
           ),
@@ -240,5 +245,15 @@ WeatherSnapshot _snapshot({
   provider: 'open-meteo',
   attribution: 'Datos meteorológicos por Open-Meteo.com',
   attributionUrl: 'https://open-meteo.com/',
+  forecast: [
+    for (var offset = 0; offset < 3; offset++)
+      WeatherForecastDay(
+        date: DateTime.now().add(Duration(days: offset)),
+        minimumC: 9,
+        maximumC: 24,
+        rainChancePercent: 40,
+        summary: offset == 0 ? 'Nublado' : 'Lluvia ligera',
+      ),
+  ],
   alerts: alerts,
 );

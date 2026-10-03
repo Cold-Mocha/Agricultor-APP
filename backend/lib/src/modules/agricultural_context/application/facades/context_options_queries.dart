@@ -6,56 +6,37 @@ import 'package:agrocampo_backend/src/shared/contracts/productive_domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final contextOptionsQueriesProvider = Provider<ContextOptionsQueries>(
-  (ref) => ContextOptionsQueries(
-    ref.watch(parcelFacadeProvider),
-    ref.watch(territoryMapFacadeProvider),
-  ),
+  (ref) => ContextOptionsQueries(ref.watch(territoryMapFacadeProvider)),
 );
 
 final class ContextOptionsQueries {
-  ContextOptionsQueries(this._parcels, this._territory);
+  ContextOptionsQueries(this._territory);
 
-  final ParcelFacade _parcels;
   final TerritoryMapFacade _territory;
 
-  Stream<List<ContextOption>> watchParcels(String ownerId) => _parcels
-      .watchAll(ownerId)
+  Stream<List<ContextOption>> watchSectors(String ownerId) => _territory
+      .watchContextSectors(ownerId)
       .map(
-        (parcels) => parcels
-            .where((parcel) => !parcel.isArchived)
-            .map((parcel) => ContextOption(id: parcel.id, name: parcel.name))
+        (sectors) => sectors
+            .map(
+              (sector) => ContextOption(
+                id: sector.id,
+                name: sector.name,
+                category: ProductiveCategory.fromCode(sector.kind),
+              ),
+            )
             .toList(growable: false),
       );
 
-  Stream<List<ContextOption>> watchSectors(String ownerId, String? parcelId) =>
-      _territory
-          .watchContextSectors(ownerId: ownerId, parcelId: parcelId ?? '')
-          .map(
-            (sectors) => sectors
-                .map(
-                  (sector) => ContextOption(
-                    id: sector.id,
-                    name: sector.name,
-                    category: ProductiveCategory.fromCode(sector.kind),
-                  ),
-                )
-                .toList(growable: false),
-          );
-
   Future<BoundContextSummary> loadBound(BoundAgriculturalContext bound) async {
     final ownerId = bound.ownerId;
-    final parcel = ownerId == null || bound.parcelId == null
-        ? null
-        : await _parcels.loadOwned(ownerId: ownerId, id: bound.parcelId!);
     final sector = ownerId == null || bound.sectorId == null
         ? null
         : await _territory.loadContextSector(
             ownerId: ownerId,
             sectorId: bound.sectorId!,
-            parcelId: bound.parcelId,
           );
     return BoundContextSummary(
-      parcelName: parcel?.name,
       sectorName: sector?.name,
       category: sector == null
           ? null

@@ -1,6 +1,5 @@
 import 'package:agrocampo_backend/src/modules/territory/domain/entities/sector_geometry_draft.dart';
 import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo_point.dart';
-import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
 import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -16,21 +15,14 @@ void main() {
     final fixture = await FileBackedDatabaseFixture.create();
     addTearDown(fixture.dispose);
     var database = fixture.open();
-    final parcels = <String>[];
-    for (var parcelIndex = 0; parcelIndex < 3; parcelIndex++) {
-      final parcelId = await ParcelRepository(database).save(
-        ownerId: 'owner-1',
-        name: 'Campo ${parcelIndex + 1}',
-        isActive: parcelIndex == 0,
-      );
-      parcels.add(parcelId);
+    for (var groupIndex = 0; groupIndex < 3; groupIndex++) {
       for (var sectorIndex = 0; sectorIndex < 3; sectorIndex++) {
-        final offset = sectorIndex * .002;
+        final offset = groupIndex * .01 + sectorIndex * .002;
+        final number = groupIndex * 3 + sectorIndex + 1;
         await SectorRepository(database).save(
           ownerId: 'owner-1',
-          parcelId: parcelId,
-          number: sectorIndex + 1,
-          name: 'Sector ${sectorIndex + 1}',
+          number: number,
+          name: 'Sector $number',
           polygon: [
             GeoPoint(-38.74 + offset, -72.60),
             GeoPoint(-38.74 + offset, -72.59),
@@ -41,7 +33,7 @@ void main() {
     }
     final originalRows = await (database.select(
       database.sectors,
-    )..where((row) => row.parcelId.equals(parcels.first))).get();
+    )..where((row) => row.ownerId.equals('owner-1'))).get();
     final original = originalRows.first;
     final draft = SectorGeometryDraft(const [
       GeoPoint(-38.74, -72.60),
@@ -56,7 +48,6 @@ void main() {
     await database.close();
     database = fixture.open();
     addTearDown(database.close);
-    expect(await database.select(database.parcels).get(), hasLength(3));
     expect(await database.select(database.sectors).get(), hasLength(9));
     final reopened = await (database.select(
       database.sectors,

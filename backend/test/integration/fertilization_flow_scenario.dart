@@ -18,7 +18,6 @@ void main() {
       final repository = LaborRepository(database);
       final irrigationId = await repository.save(
         ownerId: 'owner-1',
-        parcelId: 'parcel-1',
         sectorId: 'sector-1',
         type: LaborType.irrigation,
         occurredAt: DateTime.utc(2026, 1),
@@ -29,7 +28,6 @@ void main() {
       );
       final fertilizationId = await repository.save(
         ownerId: 'owner-1',
-        parcelId: 'parcel-1',
         sectorId: 'sector-1',
         type: LaborType.fertilization,
         occurredAt: DateTime.utc(2026, 2),

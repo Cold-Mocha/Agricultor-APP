@@ -13,7 +13,6 @@ void main() {
     await seedAgriculturalContextFixture(database);
     await ProductionRepository(database, LaborRepository(database)).save(
       ownerId: 'owner-1',
-      parcelId: 'parcel-1',
       sectorId: 'sector-1',
       input: HarvestInput(
         cropId: 'trigo',

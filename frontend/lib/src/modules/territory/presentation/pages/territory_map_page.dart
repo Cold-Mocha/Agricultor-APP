@@ -3,6 +3,7 @@ import 'package:agrocampo/src/app/routing/app_routes.dart';
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
 import 'package:agrocampo/src/modules/auth/auth_ui.dart';
+import 'package:agrocampo/src/modules/crop_cycles/crop_cycles_ui.dart';
 import 'package:agrocampo/src/modules/territory/presentation/controllers/territory_controllers.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +14,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 final class TerritoryMapPage extends ConsumerStatefulWidget {
-  const TerritoryMapPage({super.key, this.initialParcelId, this.tileProvider});
+  const TerritoryMapPage({super.key, this.tileProvider});
 
-  final String? initialParcelId;
   final TileProvider? tileProvider;
 
   @override
@@ -52,26 +52,6 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
   bool _tileLoadFailed = false;
 
   @override
-  void initState() {
-    super.initState();
-    final parcelId = widget.initialParcelId;
-    if (parcelId != null) {
-      Future<void>.microtask(() async {
-        final current = ref.read(agriculturalContextControllerProvider);
-        if (current.parcelId == parcelId) return;
-        try {
-          await ref
-              .read(agriculturalContextControllerProvider.notifier)
-              .selectParcel(parcelId);
-        } on Object {
-          // The existing context remains usable if a stale deep link targets a
-          // parcel that no longer exists locally.
-        }
-      });
-    }
-  }
-
-  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -88,6 +68,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
           ? 'Selecciona un cuadrante o crea uno nuevo.'
           : 'La geometría cambia solo al confirmar.',
       padding: EdgeInsets.zero,
+      showGlobalStatus: false,
       child: Column(
         children: [
           const Padding(
@@ -95,18 +76,16 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
             child: AgriculturalContextSelector(compact: true),
           ),
           Expanded(
-            child: ownerId == null || scope.parcelId == null
-                ? const Center(child: Text('Selecciona una parcela activa.'))
+            child: ownerId == null
+                ? const Center(
+                    child: Text('Inicia sesión para ver tus cuadrantes.'),
+                  )
                 : StreamBuilder<List<MapSectorGeometry>>(
-                    stream: controller.watchSectors(
-                      ownerId: ownerId,
-                      parcelId: scope.parcelId!,
-                    ),
+                    stream: controller.watchSectors(ownerId),
                     builder: (context, snapshot) {
                       final sectors = snapshot.data ?? const [];
                       return Column(
                         children: [
-                          _sectorTextAlternative(sectors, scope.sectorId),
                           Expanded(
                             child: Stack(
                               children: [
@@ -138,7 +117,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                                       ),
                                     ),
                                   ),
-                                _toolbar(sectors, ownerId, scope.parcelId!),
+                                _toolbar(sectors, ownerId),
                               ],
                             ),
                           ),
@@ -148,44 +127,6 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                   ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _sectorTextAlternative(
-    List<MapSectorGeometry> sectors,
-    String? selectedId,
-  ) {
-    if (sectors.isEmpty) {
-      return const SizedBox(
-        height: AgroSizes.sectorSelectorRow,
-        child: Center(
-          child: Text('Aún no hay cuadrantes. Puedes dibujar el primero.'),
-        ),
-      );
-    }
-    return Semantics(
-      container: true,
-      label: 'Lista textual de cuadrantes guardados',
-      child: SizedBox(
-        height: AgroSizes.sectorSelectorRow,
-        child: ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: AgroSpacing.md),
-          scrollDirection: Axis.horizontal,
-          itemCount: sectors.length,
-          separatorBuilder: (_, _) => const SizedBox(width: AgroSpacing.xs),
-          itemBuilder: (context, index) {
-            final sector = sectors[index];
-            return ChoiceChip(
-              key: ValueKey(sector.id),
-              label: Text('Cuadrante ${sector.number}'),
-              selected: sector.id == selectedId,
-              onSelected: (_) => ref
-                  .read(agriculturalContextControllerProvider.notifier)
-                  .selectSector(sector.id),
-            );
-          },
-        ),
       ),
     );
   }
@@ -384,17 +325,34 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
     }
   }
 
-  Widget _toolbar(
-    List<MapSectorGeometry> sectors,
-    String ownerId,
-    String parcelId,
-  ) {
+  /// Fine vertex nudging is an editing aid; new quadrants are drawn by tap.
+  bool get _canNudgeVertex =>
+      _draft != null &&
+      _editingId != null &&
+      _selectedVertex != null &&
+      _selectedVertex! < _draft!.points.length;
+
+  Widget _toolbar(List<MapSectorGeometry> sectors, String ownerId) {
     final selectedId = ref
         .watch(agriculturalContextControllerProvider)
         .sectorId;
     final matches = sectors.where((row) => row.id == selectedId).toList();
     final selected = matches.isEmpty ? null : matches.first;
     final error = _draft?.validationError;
+    if (_draft == null && selected == null) {
+      // Nothing to describe yet: only the primary action floats on the map.
+      return Positioned(
+        left: AgroSpacing.md,
+        right: AgroSpacing.md,
+        bottom: AgroSpacing.md,
+        child: Center(
+          child: FilledButton(
+            onPressed: _startNewQuadrant,
+            child: const Text('Nuevo cuadrante'),
+          ),
+        ),
+      );
+    }
     return Positioned(
       left: AgroSpacing.md,
       right: AgroSpacing.md,
@@ -405,21 +363,21 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                _draft == null
-                    ? selected == null
-                          ? 'Ningún cuadrante seleccionado'
-                          : 'Cuadrante ${selected.number}'
-                    : error == null
-                    ? '${PolygonGeometry.areaSquareMeters(_draft!.points).toStringAsFixed(0)} m²'
-                    : _errorLabel(error),
-              ),
+              // While fewer than three points exist the drawing itself is the
+              // guidance, so no status line is shown.
+              if (error != 'polygon_requires_three_points' &&
+                  (_draft != null || selected != null))
+                Text(
+                  _draft == null
+                      ? 'Cuadrante ${selected!.number}'
+                      : error == null
+                      ? 'Tamaño cuadrante: ${PolygonGeometry.areaSquareMeters(_draft!.points).toStringAsFixed(0)} m²'
+                      : _errorLabel(error),
+                ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (_draft != null &&
-                      _selectedVertex != null &&
-                      _selectedVertex! < _draft!.points.length)
+                  if (_canNudgeVertex)
                     Expanded(
                       child: Text(
                         'Vértice ${_selectedVertex! + 1} seleccionado · ajuste aproximado de 1 m',
@@ -428,9 +386,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                     ),
                 ],
               ),
-              if (_draft != null &&
-                  _selectedVertex != null &&
-                  _selectedVertex! < _draft!.points.length)
+              if (_canNudgeVertex)
                 Wrap(
                   alignment: WrapAlignment.center,
                   spacing: AgroSpacing.xs,
@@ -469,30 +425,22 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                     ),
                   ],
                 ),
-              if (_draft != null && _editingId == null)
-                DropdownButton<String>(
-                  value: _newKind,
-                  hint: const Text('Categoría obligatoria'),
-                  items: const [
-                    DropdownMenuItem(value: 'crop', child: Text('Vegetal')),
-                    DropdownMenuItem(value: 'apiary', child: Text('Apícola')),
-                  ],
-                  onChanged: (value) => setState(() => _newKind = value),
-                ),
-              Wrap(
-                alignment: WrapAlignment.center,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: AgroSpacing.xs,
-                runSpacing: AgroSpacing.xs,
-                children: [
-                  IconButton(
-                    tooltip: 'Usar mi ubicación',
-                    onPressed: _locate,
-                    icon: const Icon(LucideIcons.locateFixed),
-                  ),
-                  if (_draft != null) ...[
+              if (_draft != null) ...[
+                // Drawing tools first, then the category and the decision.
+                // Smaller glyphs, but each keeps the 48 dp touch target.
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: AgroSpacing.xl,
+                  children: [
+                    IconButton(
+                      tooltip: 'Usar mi ubicación',
+                      iconSize: AgroSizes.iconStandard,
+                      onPressed: _locate,
+                      icon: const Icon(LucideIcons.locateFixed),
+                    ),
                     IconButton(
                       tooltip: 'Deshacer',
+                      iconSize: AgroSizes.iconStandard,
                       onPressed: _draft!.canUndo
                           ? () => setState(_draft!.undo)
                           : null,
@@ -500,52 +448,77 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                     ),
                     IconButton(
                       tooltip: 'Quitar último punto',
+                      iconSize: AgroSizes.iconStandard,
                       onPressed: _draft!.points.isEmpty
                           ? null
                           : _removeLastPoint,
                       icon: const Icon(LucideIcons.circleMinus),
                     ),
+                  ],
+                ),
+                if (_editingId == null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AgroSpacing.xs,
+                    ),
+                    child: _KindSegmentedControl(
+                      value: _newKind,
+                      onChanged: (value) => setState(() => _newKind = value),
+                    ),
+                  ),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: AgroSpacing.xs,
+                  runSpacing: AgroSpacing.xs,
+                  children: [
+                    FilledButton(
+                      onPressed:
+                          error == null &&
+                              (_editingId != null || _newKind != null)
+                          ? () => _save(sectors, ownerId)
+                          : null,
+                      child: const Text('Confirmar'),
+                    ),
                     TextButton(
                       onPressed: _cancel,
                       child: const Text('Cancelar'),
                     ),
-                  ] else ...[
-                    OutlinedButton.icon(
-                      onPressed: selected == null
-                          ? null
-                          : () => context.push(AppRoutes.sector(selected.id)),
-                      icon: const Icon(LucideIcons.externalLink),
-                      label: const Text('Ver cuadrante'),
-                    ),
-                    TextButton.icon(
-                      onPressed: selected == null
-                          ? null
-                          : () => setState(() {
-                              final points = selected.polygon;
-                              _editingId = selected.id;
-                              _selectedVertex = points.isEmpty ? null : 0;
-                              _draft = SectorGeometryDraft(points);
-                            }),
-                      icon: const Icon(LucideIcons.pencil),
-                      label: const Text('Editar'),
+                  ],
+                ),
+              ] else
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: AgroSpacing.xs,
+                  runSpacing: AgroSpacing.xs,
+                  children: [
+                    if (selected != null) ...[
+                      // Hidden instead of disabled: without a selected
+                      // quadrant there is nothing to open or edit.
+                      OutlinedButton.icon(
+                        onPressed: () =>
+                            context.push(AppRoutes.sector(selected.id)),
+                        icon: const Icon(LucideIcons.externalLink),
+                        label: const Text('Ver cuadrante'),
+                      ),
+                      TextButton.icon(
+                        onPressed: () => setState(() {
+                          final points = selected.polygon;
+                          _editingId = selected.id;
+                          _selectedVertex = points.isEmpty ? null : 0;
+                          _draft = SectorGeometryDraft(points);
+                        }),
+                        icon: const Icon(LucideIcons.pencil),
+                        label: const Text('Editar'),
+                      ),
+                    ],
+                    FilledButton(
+                      onPressed: _startNewQuadrant,
+                      child: const Text('Nuevo cuadrante'),
                     ),
                   ],
-                  FilledButton(
-                    onPressed: _draft == null
-                        ? () => setState(() {
-                            _selectedVertex = null;
-                            _draft = SectorGeometryDraft();
-                          })
-                        : error == null &&
-                              (_editingId != null || _newKind != null)
-                        ? () => _save(sectors, ownerId, parcelId)
-                        : null,
-                    child: Text(
-                      _draft == null ? 'Nuevo cuadrante' : 'Confirmar',
-                    ),
-                  ),
-                ],
-              ),
+                ),
             ],
           ),
         ),
@@ -553,17 +526,14 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
     );
   }
 
-  Future<void> _save(
-    List<MapSectorGeometry> sectors,
-    String ownerId,
-    String parcelId,
-  ) async {
+  Future<void> _save(List<MapSectorGeometry> sectors, String ownerId) async {
+    final created = _editingId == null;
+    final createdCrop = created && _newKind == 'crop';
     final id = await ref
         .read(territoryMapControllerProvider)
         .saveGeometry(
           ownerId: ownerId,
           input: MapGeometryFormInput(
-            parcelId: parcelId,
             sectorId: _editingId,
             kind: _editingId == null ? _newKind : null,
             polygon: _draft!.confirm(),
@@ -574,10 +544,35 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
         .selectSector(id);
     if (!mounted) return;
     _cancel();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Geometría guardada en este dispositivo.')),
-    );
+    var message = 'Geometría guardada en este dispositivo.';
+    if (createdCrop) {
+      try {
+        final crop = await askInitialCrop(
+          context,
+          ref,
+          ownerId: ownerId,
+          sectorId: id,
+        );
+        if (crop != null) {
+          message = 'Cuadrante guardado con ${crop.label} como cultivo.';
+        }
+      } on Object {
+        message = 'Cuadrante guardado. No se pudo asignar el cultivo; hazlo desde Cambiar cultivo.';
+      }
+    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+    // A new quadrant lands in "Tus cuadrantes"; edits stay on the map.
+    if (created) context.go(AppRoutes.sectors);
   }
+
+  void _startNewQuadrant() => setState(() {
+    _selectedVertex = null;
+    // Most quadrants are crops; apiary stays one tap away.
+    _newKind = 'crop';
+    _draft = SectorGeometryDraft();
+  });
 
   void _cancel() => setState(() {
     _draft?.cancel();
@@ -647,4 +642,91 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
 
   static LatLng _latLngPoint(GeoPoint point) =>
       LatLng(point.latitude, point.longitude);
+}
+
+/// Pill-shaped category switch for a new quadrant (`master.md`, chips y
+/// selectores): the selected segment uses `brand` with white text.
+final class _KindSegmentedControl extends StatelessWidget {
+  const _KindSegmentedControl({required this.value, required this.onChanged});
+
+  static const _options = [('crop', 'Vegetal'), ('apiary', 'Apícola')];
+
+  final String? value;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final index = _options.indexWhere((option) => option.$1 == value);
+    return Semantics(
+      label: 'Categoría del cuadrante',
+      container: true,
+      child: Container(
+        height: AgroSizes.touchTarget,
+        constraints: const BoxConstraints(maxWidth: 320),
+        padding: const EdgeInsets.all(AgroSpacing.xxs),
+        decoration: BoxDecoration(
+          color: AgroColors.greenSoft,
+          borderRadius: BorderRadius.circular(AgroRadii.full),
+          border: Border.all(color: AgroColors.line, width: 1.5),
+        ),
+        child: Stack(
+          children: [
+            if (index >= 0)
+              AnimatedAlign(
+                duration: AgroMotion.standard,
+                curve: Curves.easeOutCubic,
+                alignment: index == 0
+                    ? Alignment.centerLeft
+                    : Alignment.centerRight,
+                child: FractionallySizedBox(
+                  widthFactor: 1 / _options.length,
+                  heightFactor: 1,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: AgroColors.brand,
+                      borderRadius: BorderRadius.circular(AgroRadii.full),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: AgroColors.mapOverlayShadow,
+                          blurRadius: 8,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            Row(
+              children: [
+                for (final (code, label) in _options)
+                  Expanded(
+                    child: Semantics(
+                      button: true,
+                      selected: code == value,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(AgroRadii.full),
+                        onTap: () => onChanged(code),
+                        child: Center(
+                          child: AnimatedDefaultTextStyle(
+                            duration: AgroMotion.quick,
+                            style: Theme.of(context).textTheme.labelLarge!
+                                .copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  color: code == value
+                                      ? Colors.white
+                                      : AgroColors.ink,
+                                ),
+                            child: Text(label),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

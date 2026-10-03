@@ -22,7 +22,6 @@ void main() {
       await expectLater(
         repository.save(
           ownerId: 'owner-1',
-          parcelId: 'parcel-1',
           sectorId: 'sector-1',
           type: LaborType.fertilization,
           occurredAt: DateTime.utc(2026),

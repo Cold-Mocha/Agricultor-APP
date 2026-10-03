@@ -3,7 +3,7 @@ part of 'package:agrocampo_backend/src/platform/database/app_database.dart';
 class WeatherCache extends Table {
   TextColumn get id => text()();
   TextColumn get ownerId => text()();
-  TextColumn get parcelId => text().nullable()();
+  TextColumn get sectorId => text().nullable()();
   TextColumn get locality => text()();
   TextColumn get provider => text().withDefault(const Constant('weatherapi'))();
   TextColumn get payloadJson => text()();

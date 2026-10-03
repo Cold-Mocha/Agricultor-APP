@@ -46,7 +46,12 @@ void main() {
     expect(find.text('Trigo'), findsOneWidget);
     expect(find.text('Cultivo activo'), findsOneWidget);
     expect(find.text('Mapa de cuadrantes'), findsWidgets);
-    expect(find.text('Resumen del historial'), findsOneWidget);
+    expect(
+      find.text('Resumen del historial'),
+      findsNothing,
+      reason: 'the history summary lives on Inicio',
+    );
+    expect(find.byKey(const Key('active-sector-selector')), findsNothing);
     expect(find.textContaining('sector-1'), findsNothing);
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(milliseconds: 1));

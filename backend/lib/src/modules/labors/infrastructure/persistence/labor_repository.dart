@@ -16,7 +16,6 @@ final class LaborRepository implements LaborContextReader {
 
   Future<String> save({
     required String ownerId,
-    required String parcelId,
     required String sectorId,
     required LaborType type,
     required DateTime occurredAt,
@@ -51,7 +50,6 @@ final class LaborRepository implements LaborContextReader {
     final instant = occurredAt.toUtc();
     final context = await resolveContext(
       ownerId: ownerId,
-      parcelId: parcelId,
       sectorId: sectorId,
       occurredAt: instant,
       seasonId: seasonId,
@@ -112,7 +110,6 @@ final class LaborRepository implements LaborContextReader {
     final payload = <String, Object?>{
       'id': laborId,
       'owner_id': ownerId,
-      'parcel_id': context.parcelId,
       'sector_id': context.sectorId,
       'agricultural_season_id': context.seasonId,
       'crop_assignment_id': context.assignmentId,
@@ -142,7 +139,6 @@ final class LaborRepository implements LaborContextReader {
               LaborsCompanion.insert(
                 id: laborId,
                 ownerId: ownerId,
-                parcelId: context.parcelId,
                 sectorId: context.sectorId,
                 seasonId: Value(context.seasonId),
                 cropAssignmentId: Value(context.assignmentId),
@@ -195,7 +191,6 @@ final class LaborRepository implements LaborContextReader {
     return _database.transaction(() async {
       final replacementId = await save(
         ownerId: ownerId,
-        parcelId: original.parcelId,
         sectorId: original.sectorId,
         seasonId: original.seasonId,
         cropAssignmentId: original.cropAssignmentId,
@@ -227,7 +222,6 @@ final class LaborRepository implements LaborContextReader {
   @override
   Future<LaborContext> resolveContext({
     required String ownerId,
-    required String parcelId,
     required String sectorId,
     required DateTime occurredAt,
     String? seasonId,
@@ -239,7 +233,6 @@ final class LaborRepository implements LaborContextReader {
               (row) =>
                   row.id.equals(sectorId) &
                   row.ownerId.equals(ownerId) &
-                  row.parcelId.equals(parcelId) &
                   row.deletedAt.isNull(),
             ))
             .getSingleOrNull();
@@ -291,7 +284,6 @@ final class LaborRepository implements LaborContextReader {
               (row) =>
                   row.id.equals(resolvedSeasonId) &
                   row.ownerId.equals(ownerId) &
-                  row.parcelId.equals(parcelId) &
                   row.deletedAt.isNull(),
             ))
             .getSingleOrNull();
@@ -299,7 +291,6 @@ final class LaborRepository implements LaborContextReader {
       throw StateError('labor_season_closed_or_missing');
     }
     return LaborContext(
-      parcelId: parcelId,
       sectorId: sectorId,
       seasonId: resolvedSeasonId,
       assignmentId: assignment.id,
@@ -316,7 +307,6 @@ final class LaborRepository implements LaborContextReader {
     final payload = <String, Object?>{
       'id': row.id,
       'owner_id': row.ownerId,
-      'parcel_id': row.parcelId,
       'sector_id': row.sectorId,
       'agricultural_season_id': row.seasonId,
       'crop_assignment_id': row.cropAssignmentId,

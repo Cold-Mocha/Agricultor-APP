@@ -22,6 +22,13 @@ abstract final class AgroColors {
   static const violet = Color(0xFF6657A6);
   static const violetSoft = Color(0xFFE8E4FF);
   static const mapCanvas = Color(0xFFEEF2E8);
+
+  /// Weather hero sky and forecast strip; darker than the reference warm
+  /// palette so white text keeps about 4.5:1 contrast.
+  static const weatherSkyStart = Color(0xFFC2473C);
+  static const weatherSkyEnd = Color(0xFFBE5A2A);
+  static const weatherStrip = Color(0xFF8E3B4F);
+
   static const mapPolygonActive = Color(0x884B7F52);
   static const mapPolygonSaved = Color(0x554B7F52);
   static const mapPolygonStroke = Color(0xFF2F6338);

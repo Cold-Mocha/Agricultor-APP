@@ -71,7 +71,6 @@ void main() {
           LaborRepository(database),
         ).calculateForSector(
           ownerId: 'owner-1',
-          parcelId: 'parcel-1',
           sectorId: 'sector-1',
           soilTypeCode: 'loamy',
           occurredAt: DateTime.utc(2026, 2),
@@ -83,7 +82,6 @@ void main() {
       LaborRepository(database),
     ).savePerformed(
       ownerId: 'owner-1',
-      parcelId: 'parcel-1',
       sectorId: 'sector-1',
       occurredAt: DateTime.utc(2026, 2),
       preview: preview,
@@ -132,14 +130,12 @@ void main() {
     );
     final laborId = await repository.savePerformed(
       ownerId: 'owner-1',
-      parcelId: 'parcel-1',
       sectorId: 'sector-1',
       occurredAt: DateTime.utc(2026, 2),
       input: input,
     );
     await repository.savePerformed(
       ownerId: 'owner-1',
-      parcelId: 'parcel-1',
       sectorId: 'sector-1',
       occurredAt: DateTime.utc(2026, 2),
       laborId: laborId,
@@ -157,7 +153,6 @@ void main() {
     await expectLater(
       repository.savePerformed(
         ownerId: 'owner-1',
-        parcelId: 'parcel-1',
         sectorId: 'sector-1',
         occurredAt: DateTime.utc(2026, 2),
         input: input,

@@ -25,9 +25,6 @@ final class ProfileController {
             summary == null ? null : ProfileUiState.fromSummary(summary),
       );
 
-  Stream<String?> watchActiveLocality(String ownerId) =>
-      _facade.watchActiveLocality(ownerId);
-
   Future<ProfileSaveResult> save(String ownerId, ProfileFormInput input) =>
       _facade.save(ownerId, input);
 

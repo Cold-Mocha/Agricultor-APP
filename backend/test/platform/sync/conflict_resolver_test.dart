@@ -16,7 +16,7 @@ void main() {
     SyncConflictsCompanion.insert(
       conflictId: id,
       ownerId: 'owner-1',
-      aggregateType: 'parcel',
+      aggregateType: 'sector',
       aggregateId: '11111111-1111-4111-8111-111111111111',
       localJson: '{"id":"11111111-1111-4111-8111-111111111111","name":"Local","updated_at":"2026-01-01T00:00:00Z"}',
       remoteJson: '{"id":"11111111-1111-4111-8111-111111111111","name":"Remota","version":2,"updated_at":"2026-01-02T00:00:00Z"}',
@@ -41,19 +41,18 @@ void main() {
     expect(conflict.resolvedAt, isNotNull);
   });
 
-  test('keep remote applies snapshot but retains audit until ACK', () async {
+  test('keep remote is rejected for aggregates without a remote apply', () async {
     await insertConflict('conflict-remote');
-    await ConflictResolver(database)
-        .resolve('conflict-remote', ConflictChoice.keepRemote);
-    expect(
-      (await database.select(database.parcels).getSingle()).name,
-      'Remota',
+    await expectLater(
+      ConflictResolver(database)
+          .resolve('conflict-remote', ConflictChoice.keepRemote),
+      throwsStateError,
     );
     expect(
       (await database.select(database.syncConflicts).getSingle()).state,
-      'resolving',
+      isNot('resolving'),
     );
-    expect(await database.select(database.syncOutbox).get(), hasLength(1));
+    expect(await database.select(database.syncOutbox).get(), isEmpty);
   });
 }
 

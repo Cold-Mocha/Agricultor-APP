@@ -3,7 +3,6 @@ part of 'package:agrocampo_backend/src/platform/database/app_database.dart';
 class Sectors extends Table {
   TextColumn get id => text()();
   TextColumn get ownerId => text()();
-  TextColumn get parcelId => text().references(Parcels, #id)();
   IntColumn get number =>
       integer().customConstraint('NOT NULL CHECK (number > 0)')();
   TextColumn get name => text().withLength(min: 1, max: 120)();
@@ -23,6 +22,6 @@ class Sectors extends Table {
 
   @override
   List<Set<Column<Object>>> get uniqueKeys => [
-    {parcelId, number},
+    {ownerId, number},
   ];
 }

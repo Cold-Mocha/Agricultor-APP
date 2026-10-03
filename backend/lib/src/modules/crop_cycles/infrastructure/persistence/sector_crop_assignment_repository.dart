@@ -231,6 +231,34 @@ final class SectorCropAssignmentRepository {
     });
   }
 
+  /// Ends the current crop at [effectiveAt]; the row stays in the history.
+  Future<void> end({
+    required String ownerId,
+    required String assignmentId,
+    required DateTime effectiveAt,
+  }) async {
+    final row =
+        await (_database.select(_database.cropSeasons)..where(
+              (item) =>
+                  item.id.equals(assignmentId) & item.ownerId.equals(ownerId),
+            ))
+            .getSingle();
+    if (row.status != 'active') throw StateError('only_active_can_end');
+    final instant = effectiveAt.toUtc();
+    if (instant.isBefore(row.startsOn)) {
+      throw StateError('assignment_end_before_start');
+    }
+    await _database.transaction(
+      () => _writeStatus(
+        row,
+        domain.SectorCropAssignmentStatus.ended,
+        startsOn: row.startsOn,
+        endsOn: instant,
+        now: DateTime.now().toUtc(),
+      ),
+    );
+  }
+
   Future<void> cancel({
     required String ownerId,
     required String assignmentId,
@@ -334,9 +362,7 @@ final class SectorCropAssignmentRepository {
                   row.deletedAt.isNull(),
             ))
             .getSingleOrNull();
-    if (sector == null ||
-        season == null ||
-        season.parcelId != sector.parcelId) {
+    if (sector == null || season == null || season.sectorId != sector.id) {
       throw StateError('assignment_context_invalid');
     }
     if (sector.kind != 'crop') {

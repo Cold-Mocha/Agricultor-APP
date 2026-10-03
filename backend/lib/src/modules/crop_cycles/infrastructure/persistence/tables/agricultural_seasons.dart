@@ -3,7 +3,7 @@ part of 'package:agrocampo_backend/src/platform/database/app_database.dart';
 class AgriculturalSeasons extends Table {
   TextColumn get id => text()();
   TextColumn get ownerId => text()();
-  TextColumn get parcelId => text().references(Parcels, #id)();
+  TextColumn get sectorId => text().references(Sectors, #id)();
   TextColumn get name => text().withLength(min: 1, max: 120)();
   DateTimeColumn get startsOn => dateTime()();
   DateTimeColumn get endsOn => dateTime().nullable()();

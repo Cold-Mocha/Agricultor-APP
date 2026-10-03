@@ -24,7 +24,7 @@ final class AgriculturalSeasonsPage extends ConsumerWidget {
       actions: [
         IconButton(
           tooltip: 'Nueva temporada',
-          onPressed: ownerId == null || scope.parcelId == null
+          onPressed: ownerId == null || scope.sectorId == null
               ? null
               : () => context.push('${AppRoutes.seasons}/nueva'),
           icon: const Icon(LucideIcons.plus),
@@ -36,22 +36,22 @@ final class AgriculturalSeasonsPage extends ConsumerWidget {
           const AgriculturalContextSelector(compact: true),
           const SizedBox(height: 12),
           Expanded(
-            child: ownerId == null || scope.parcelId == null
+            child: ownerId == null || scope.sectorId == null
                 ? const AgroEmptyState(
-                    title: 'Selecciona una parcela',
-                    message: 'Cada temporada pertenece a una parcela.',
+                    title: 'Selecciona un cuadrante',
+                    message: 'Cada temporada pertenece a un cuadrante.',
                   )
                 : StreamBuilder<List<AgriculturalSeason>>(
                     stream: controller.watchSeasons(
                       ownerId: ownerId,
-                      parcelId: scope.parcelId!,
+                      sectorId: scope.sectorId!,
                     ),
                     builder: (context, snapshot) {
                       final seasons = snapshot.data ?? const [];
                       if (seasons.isEmpty) {
                         return const AgroEmptyState(
                           title: 'Sin temporadas',
-                          message: 'Crea una temporada para asociar cultivos a tus sectores.',
+                          message: 'Crea una temporada para asociar cultivos a este cuadrante.',
                         );
                       }
                       return ListView(

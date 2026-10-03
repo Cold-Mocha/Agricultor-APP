@@ -17,7 +17,7 @@ final class _OnlineConnectivity implements ConnectivityService {
 }
 
 void main() {
-  testWidgets('Perfil shows stored identity, location and coherent groups', (
+  testWidgets('Perfil shows stored identity and coherent groups', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(430, 1500);
@@ -32,18 +32,6 @@ void main() {
             id: 'owner-1',
             displayName: 'María Soto',
             emailDisplay: const Value('maria@example.com'),
-            updatedAt: DateTime.now().toUtc(),
-          ),
-        );
-    await database
-        .into(database.parcels)
-        .insert(
-          ParcelsCompanion.insert(
-            id: 'parcel-1',
-            ownerId: 'owner-1',
-            name: 'Parcela',
-            locality: const Value('Curicó'),
-            isActive: const Value(true),
             updatedAt: DateTime.now().toUtc(),
           ),
         );
@@ -62,7 +50,8 @@ void main() {
 
     expect(find.text('María Soto'), findsOneWidget);
     expect(find.text('maria@example.com'), findsOneWidget);
-    expect(find.text('Curicó'), findsWidgets);
+    expect(find.text('Ubicación'), findsNothing);
+    expect(find.textContaining('parcela'), findsNothing);
     expect(find.text('Información personal'), findsOneWidget);
     expect(find.text('Notificaciones'), findsOneWidget);
     expect(find.text('Seguridad y biometría'), findsOneWidget);

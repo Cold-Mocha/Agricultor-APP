@@ -1,5 +1,6 @@
 import 'package:agrocampo/src/app/theme/agro_theme.dart';
 import 'package:agrocampo/src/modules/irrigation/presentation/pages/irrigation_record_page.dart';
+import 'package:agrocampo/src/shared/design_system/components/agro_status_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -43,9 +44,8 @@ void main() {
       await tester.pump();
       await tester.tap(calculateButton);
       await tester.pumpAndSettle();
-      expect(
-        find.text('Sólo se calculan recomendaciones para riego por goteo.'),
-        findsOneWidget,
+      expectBannerAndNotice(
+        'Sólo se calculan recomendaciones para riego por goteo.',
       );
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pump(const Duration(milliseconds: 1));
@@ -94,7 +94,7 @@ void main() {
       await tester.pump();
       await tester.tap(calculateButton);
       await tester.pumpAndSettle();
-      expect(find.textContaining('Configura plantas, goteros'), findsOneWidget);
+      expectBannerAndNotice('Configura plantas, goteros');
 
       await tester.scrollUntilVisible(
         find.byKey(const ValueKey('irrigation-type')),
@@ -114,12 +114,28 @@ void main() {
       await tester.pump();
       await tester.tap(calculateButton);
       await tester.pumpAndSettle();
-      expect(
-        find.textContaining('Sólo se calculan recomendaciones'),
-        findsOneWidget,
-      );
+      expectBannerAndNotice('Sólo se calculan recomendaciones');
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pump(const Duration(milliseconds: 1));
     },
+  );
+}
+
+void expectBannerAndNotice(String message) {
+  expect(
+    find.descendant(
+      of: find.byType(AgroStatusBanner),
+      matching: find.textContaining(message),
+    ),
+    findsOneWidget,
+    reason: 'the status banner keeps the calculation message visible',
+  );
+  expect(
+    find.descendant(
+      of: find.byType(SnackBar),
+      matching: find.textContaining(message),
+    ),
+    findsOneWidget,
+    reason: 'a bottom notice tells the user what is missing',
   );
 }

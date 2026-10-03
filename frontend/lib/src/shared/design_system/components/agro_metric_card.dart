@@ -42,7 +42,11 @@ final class AgroMetricCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AgroSpacing.xs),
-            Text(value, style: Theme.of(context).textTheme.headlineMedium),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w800),
+            ),
             if (supportingText case final text?) ...[
               const SizedBox(height: AgroSpacing.xxs),
               Text(

@@ -32,7 +32,7 @@ void main() {
           body: AgroNavigationCard(
             icon: LucideIcons.map,
             title: 'Mapa de cuadrantes',
-            subtitle: 'Revisa la distribución de la parcela.',
+            subtitle: 'Revisa la distribución de los cuadrantes.',
             onTap: () => taps += 1,
           ),
         ),

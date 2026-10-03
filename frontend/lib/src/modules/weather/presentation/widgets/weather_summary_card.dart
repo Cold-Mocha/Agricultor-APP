@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/weather/presentation/controllers/weather_controller.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
@@ -5,23 +7,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-/// Parcel-level weather hero from the canonical visual specification.
+/// Sector-level weather hero from the canonical visual specification.
 ///
 /// It renders explicit fresh, cached, stale and unavailable states and never
 /// derives agronomic risk from temperature thresholds.
 final class WeatherSummaryCard extends ConsumerStatefulWidget {
   const WeatherSummaryCard({
     required this.ownerId,
-    required this.parcelId,
+    required this.sectorId,
     required this.locality,
-    this.onEditLocality,
     super.key,
   });
 
   final String ownerId;
-  final String parcelId;
+  final String sectorId;
   final String locality;
-  final VoidCallback? onEditLocality;
 
   @override
   ConsumerState<WeatherSummaryCard> createState() => _WeatherSummaryCardState();
@@ -40,7 +40,7 @@ final class _WeatherSummaryCardState extends ConsumerState<WeatherSummaryCard> {
   void didUpdateWidget(covariant WeatherSummaryCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.ownerId != widget.ownerId ||
-        oldWidget.parcelId != widget.parcelId ||
+        oldWidget.sectorId != widget.sectorId ||
         oldWidget.locality != widget.locality) {
       _result = _load();
     }
@@ -50,7 +50,7 @@ final class _WeatherSummaryCardState extends ConsumerState<WeatherSummaryCard> {
       .read(weatherControllerProvider)
       .load(
         ownerId: widget.ownerId,
-        parcelId: widget.parcelId,
+        sectorId: widget.sectorId,
         locality: widget.locality,
       );
 
@@ -66,8 +66,6 @@ final class _WeatherSummaryCardState extends ConsumerState<WeatherSummaryCard> {
           status: 'Actualizando clima…',
           temperature: '—',
           summary: 'Consultando condiciones',
-          humidity: '—',
-          frost: 'Por actualizar',
           attribution: null,
           attributionUrl: null,
           busy: true,
@@ -82,12 +80,9 @@ final class _WeatherSummaryCardState extends ConsumerState<WeatherSummaryCard> {
               : 'No hay información climática guardada',
           temperature: '—',
           summary: 'Clima sin datos',
-          humidity: 'Sin datos',
-          frost: 'Sin datos',
           attribution: null,
           attributionUrl: null,
           onRetry: localMode ? null : _retry,
-          onEditLocality: widget.onEditLocality,
         );
       }
       final result = snapshot.data!;
@@ -99,6 +94,9 @@ final class _WeatherSummaryCardState extends ConsumerState<WeatherSummaryCard> {
       final stale = result is WeatherStale;
       final fromCache = result is WeatherFresh && result.fromCache;
       final now = DateTime.now();
+      final today = weather.forecast
+          .where((day) => DateUtils.isSameDay(day.date.toLocal(), now))
+          .firstOrNull;
       final activeFrost =
           !stale &&
           weather.alerts.any((alert) => alert.isFrost && alert.isActiveAt(now));
@@ -109,224 +107,330 @@ final class _WeatherSummaryCardState extends ConsumerState<WeatherSummaryCard> {
             : fromCache
             ? 'Datos guardados · ${_dateTime(context, weather.fetchedAt)}'
             : 'Actualizado ${_dateTime(context, weather.fetchedAt)}',
-        temperature: '${weather.temperatureC.toStringAsFixed(1)} °C',
+        temperature: '${weather.temperatureC.round()}°',
         summary: weather.summary,
-        humidity: '${weather.humidityPercent} %',
-        frost: stale
-            ? 'Por actualizar'
-            : activeFrost
-            ? 'Alerta vigente'
-            : 'Sin alerta vigente',
+        range: today == null
+            ? null
+            : '${today.maximumC.round()}°/${today.minimumC.round()}°',
+        forecast: [
+          for (final day in weather.forecast)
+            if (_isAfter(day.date, now)) day,
+        ].take(4).toList(growable: false),
+        frostAlert: activeFrost,
         attribution: weather.attribution,
         attributionUrl: weather.attributionUrl,
-        warning: activeFrost,
         onRetry: stale || fromCache ? _retry : null,
       );
     },
   );
 }
 
-final class _WeatherHero extends StatelessWidget {
+/// Weather hero styled after the approved card reference: warm sky with a
+/// concentric sun, condition and temperature on the left, clock, date and
+/// quadrant on the right, and a forecast strip along the bottom.
+final class _WeatherHero extends StatefulWidget {
   const _WeatherHero({
     required this.locality,
     required this.status,
     required this.temperature,
     required this.summary,
-    required this.humidity,
-    required this.frost,
     required this.attribution,
     required this.attributionUrl,
-    this.warning = false,
+    this.range,
+    this.forecast = const [],
+    this.frostAlert = false,
     this.busy = false,
     this.onRetry,
-    this.onEditLocality,
   });
 
   final String locality;
   final String status;
   final String temperature;
   final String summary;
-  final String humidity;
-  final String frost;
+  final String? range;
+  final List<WeatherForecastDay> forecast;
+  final bool frostAlert;
   final String? attribution;
   final String? attributionUrl;
-  final bool warning;
   final bool busy;
   final VoidCallback? onRetry;
-  final VoidCallback? onEditLocality;
+
+  @override
+  State<_WeatherHero> createState() => _WeatherHeroState();
+}
+
+final class _WeatherHeroState extends State<_WeatherHero> {
+  static const _white = Colors.white;
+
+  late DateTime _now = DateTime.now();
+  Timer? _clock;
+
+  @override
+  void initState() {
+    super.initState();
+    _scheduleTick();
+  }
+
+  void _scheduleTick() {
+    final now = DateTime.now();
+    final nextMinute = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      now.hour,
+      now.minute + 1,
+    );
+    _clock = Timer(nextMinute.difference(now), () {
+      if (!mounted) return;
+      setState(() => _now = DateTime.now());
+      _scheduleTick();
+    });
+  }
+
+  @override
+  void dispose() {
+    _clock?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+    final time =
+        '${_now.hour.toString().padLeft(2, '0')}:'
+        '${_now.minute.toString().padLeft(2, '0')}';
+    final date =
+        '${_weekday(_now)} ${_now.day.toString().padLeft(2, '0')}-'
+        '${_now.month.toString().padLeft(2, '0')}';
     return Semantics(
       container: true,
       explicitChildNodes: true,
-      label: 'Resumen climático de $locality',
+      label: 'Resumen climático de ${widget.locality}',
       child: Container(
-        constraints: const BoxConstraints(minHeight: 188),
         decoration: BoxDecoration(
-          color: colors.primary,
           borderRadius: BorderRadius.circular(AgroRadii.hero),
-          border: Border.all(color: AgroColors.brandDark),
+          gradient: const LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [AgroColors.weatherSkyStart, AgroColors.weatherSkyEnd],
+          ),
         ),
         clipBehavior: Clip.antiAlias,
-        child: Stack(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Positioned(
-              right: -38,
-              top: -50,
-              child: ExcludeSemantics(
-                child: Transform.rotate(
-                  angle: .18,
-                  child: Container(
-                    width: 142,
-                    height: 176,
-                    decoration: BoxDecoration(
-                      color: colors.secondary.withValues(alpha: .92),
-                      borderRadius: BorderRadius.circular(AgroRadii.hero),
-                    ),
+            Stack(
+              children: [
+                const Positioned(
+                  right: -70,
+                  top: -90,
+                  child: ExcludeSemantics(child: _ConcentricSun()),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AgroSpacing.md,
+                    AgroSpacing.md,
+                    AgroSpacing.md,
+                    AgroSpacing.sm,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      _conditionIcon(widget.summary),
+                                      color: _white,
+                                      size: AgroSizes.iconStandard,
+                                    ),
+                                    const SizedBox(width: AgroSpacing.xs),
+                                    Flexible(
+                                      child: Text(
+                                        widget.summary,
+                                        style: text.titleSmall?.copyWith(
+                                          color: _white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  widget.temperature,
+                                  style: text.displayLarge?.copyWith(
+                                    color: _white,
+                                    fontSize: 56,
+                                    height: 1.1,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                if (widget.range case final value?)
+                                  Text(
+                                    value,
+                                    style: text.titleMedium?.copyWith(
+                                      color: _white,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                time,
+                                style: text.headlineMedium?.copyWith(
+                                  color: _white,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              Text(
+                                date,
+                                style: text.titleSmall?.copyWith(color: _white),
+                              ),
+                              const SizedBox(height: AgroSpacing.lg),
+                              ConstrainedBox(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 150,
+                                ),
+                                child: Text(
+                                  widget.locality,
+                                  textAlign: TextAlign.end,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: text.titleMedium?.copyWith(
+                                    color: _white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AgroSpacing.xs),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              widget.status,
+                              style: text.bodySmall?.copyWith(color: _white),
+                            ),
+                          ),
+                          if (widget.busy)
+                            const SizedBox.square(
+                              dimension: AgroSizes.iconAction,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: _white,
+                              ),
+                            )
+                          else if (widget.onRetry != null)
+                            IconButton(
+                              tooltip: 'Actualizar clima',
+                              onPressed: widget.onRetry,
+                              color: _white,
+                              icon: const Icon(LucideIcons.refreshCw),
+                            ),
+                        ],
+                      ),
+                      if (widget.frostAlert) ...[
+                        const SizedBox(height: AgroSpacing.xs),
+                        _FrostAlert(),
+                      ],
+                      if (widget.attribution case final value?)
+                        _Attribution(label: value, url: widget.attributionUrl),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (widget.forecast.isNotEmpty)
+              ColoredBox(
+                color: AgroColors.weatherStrip,
+                child: IntrinsicHeight(
+                  child: Row(
+                    children: [
+                      for (final (index, day) in widget.forecast.indexed) ...[
+                        if (index > 0)
+                          VerticalDivider(
+                            width: 1,
+                            thickness: 1,
+                            color: _white.withValues(alpha: .18),
+                          ),
+                        Expanded(child: _ForecastCell(day: day)),
+                      ],
+                    ],
                   ),
                 ),
               ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+final class _ConcentricSun extends StatelessWidget {
+  const _ConcentricSun();
+
+  @override
+  Widget build(BuildContext context) => SizedBox.square(
+    dimension: 260,
+    child: Stack(
+      alignment: Alignment.center,
+      children: [
+        for (final (size, alpha) in const [
+          (260.0, .16),
+          (190.0, .22),
+          (120.0, .55),
+        ])
+          Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AgroColors.accent.withValues(alpha: alpha),
             ),
-            Padding(
-              padding: const EdgeInsets.all(AgroSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        LucideIcons.mapPin,
-                        color: colors.onPrimary,
-                        size: AgroSizes.iconStandard,
-                      ),
-                      const SizedBox(width: AgroSpacing.xs),
-                      Expanded(
-                        child: Text(
-                          locality,
-                          style: Theme.of(context).textTheme.titleSmall
-                              ?.copyWith(color: colors.onPrimary),
-                        ),
-                      ),
-                      if (busy)
-                        SizedBox.square(
-                          dimension: AgroSizes.iconAction,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: colors.onPrimary,
-                          ),
-                        )
-                      else if (onRetry != null)
-                        IconButton(
-                          tooltip: 'Actualizar clima',
-                          onPressed: onRetry,
-                          color: colors.onPrimary,
-                          icon: const Icon(LucideIcons.refreshCw),
-                        )
-                      else if (onEditLocality != null)
-                        IconButton(
-                          tooltip: 'Editar localidad de la parcela',
-                          onPressed: onEditLocality,
-                          color: colors.onPrimary,
-                          icon: const Icon(LucideIcons.mapPinPen),
-                        ),
-                    ],
-                  ),
-                  Text(
-                    temperature,
-                    style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                      color: colors.onPrimary,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  Text(
-                    summary,
-                    style: Theme.of(context).textTheme.titleMedium
-                        ?.copyWith(color: colors.onPrimary),
-                  ),
-                  const SizedBox(height: AgroSpacing.xxs),
-                  Text(
-                    status,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: colors.onPrimary.withValues(alpha: .9),
-                    ),
-                  ),
-                  const SizedBox(height: AgroSpacing.sm),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      final oneColumn =
-                          constraints.maxWidth < 320 ||
-                          MediaQuery.textScalerOf(context).scale(1) > 1.35;
-                      final metricWidth = oneColumn
-                          ? constraints.maxWidth
-                          : (constraints.maxWidth - AgroSpacing.xs) / 2;
-                      return Wrap(
-                        spacing: AgroSpacing.xs,
-                        runSpacing: AgroSpacing.xs,
-                        children: [
-                          SizedBox(
-                            width: metricWidth,
-                            child: _HeroMetric(
-                              icon: LucideIcons.droplet,
-                              label: 'Humedad ambiental',
-                              value: humidity,
-                            ),
-                          ),
-                          SizedBox(
-                            width: metricWidth,
-                            child: _HeroMetric(
-                              icon: warning
-                                  ? LucideIcons.triangleAlert
-                                  : LucideIcons.snowflake,
-                              label: 'Helada',
-                              value: frost,
-                              warning: warning,
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                  if (attribution case final value?) ...[
-                    const SizedBox(height: AgroSpacing.xs),
-                    if (attributionUrl case final url?)
-                      Semantics(
-                        container: true,
-                        link: true,
-                        label: 'Abrir fuente meteorológica: $value',
-                        child: InkWell(
-                          onTap: () => _openExternalUrl(context, url),
-                          borderRadius: BorderRadius.circular(AgroRadii.medium),
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(
-                              minHeight: AgroSizes.touchTarget,
-                            ),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                value,
-                                style: Theme.of(context).textTheme.labelSmall
-                                    ?.copyWith(
-                                      color: colors.onPrimary,
-                                      decoration: TextDecoration.underline,
-                                      decorationColor: colors.onPrimary,
-                                    ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                    else
-                      Text(
-                        value,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: colors.onPrimary.withValues(alpha: .82),
-                        ),
-                      ),
-                  ],
-                ],
-              ),
+          ),
+      ],
+    ),
+  );
+}
+
+final class _ForecastCell extends StatelessWidget {
+  const _ForecastCell({required this.day});
+
+  final WeatherForecastDay day;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = _weekday(day.date.toLocal());
+    return Semantics(
+      label:
+          '$label: ${day.summary}, '
+          'máxima ${day.maximumC.round()}°, mínima ${day.minimumC.round()}°',
+      excludeSemantics: true,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: AgroSizes.touchTarget),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: Theme.of(context).textTheme.labelLarge
+                  ?.copyWith(color: Colors.white),
+            ),
+            const SizedBox(width: AgroSpacing.xxs),
+            Icon(
+              _conditionIcon(day.summary),
+              color: Colors.white,
+              size: AgroSizes.iconStandard,
             ),
           ],
         ),
@@ -335,77 +439,109 @@ final class _WeatherHero extends StatelessWidget {
   }
 }
 
-Future<void> _openExternalUrl(BuildContext context, String rawUrl) async {
-  final opened = await WeatherController.openAttribution(rawUrl);
-  if (!opened && context.mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('No fue posible abrir el enlace.')),
-    );
-  }
-}
-
-final class _HeroMetric extends StatelessWidget {
-  const _HeroMetric({
-    required this.icon,
-    required this.label,
-    required this.value,
-    this.warning = false,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-  final bool warning;
-
+final class _FrostAlert extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Container(
-      constraints: const BoxConstraints(minHeight: AgroSizes.touchTarget),
       padding: const EdgeInsets.symmetric(
         horizontal: AgroSpacing.sm,
         vertical: AgroSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: warning
-            ? colors.secondaryContainer
-            : colors.onPrimary.withValues(alpha: .13),
+        color: colors.secondaryContainer,
         borderRadius: BorderRadius.circular(AgroRadii.large),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            icon,
+            LucideIcons.triangleAlert,
             size: AgroSizes.iconStandard,
-            color: warning ? colors.onSecondaryContainer : colors.onPrimary,
+            color: colors.onSecondaryContainer,
           ),
           const SizedBox(width: AgroSpacing.xs),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: warning
-                        ? colors.onSecondaryContainer
-                        : colors.onPrimary,
-                  ),
-                ),
-                Text(
-                  value,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: warning
-                        ? colors.onSecondaryContainer
-                        : colors.onPrimary,
-                  ),
-                ),
-              ],
-            ),
+          Text(
+            'Alerta de helada vigente',
+            style: Theme.of(context).textTheme.labelLarge
+                ?.copyWith(color: colors.onSecondaryContainer),
           ),
         ],
       ),
+    );
+  }
+}
+
+final class _Attribution extends StatelessWidget {
+  const _Attribution({required this.label, required this.url});
+
+  final String label;
+  final String? url;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = Theme.of(context).textTheme.labelSmall?.copyWith(
+      color: Colors.white,
+      decoration: url == null ? null : TextDecoration.underline,
+      decorationColor: Colors.white,
+    );
+    if (url case final target?) {
+      return Semantics(
+        container: true,
+        link: true,
+        label: 'Abrir fuente meteorológica: $label',
+        child: InkWell(
+          onTap: () => _openExternalUrl(context, target),
+          borderRadius: BorderRadius.circular(AgroRadii.medium),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: AgroSizes.touchTarget),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(label, style: style),
+            ),
+          ),
+        ),
+      );
+    }
+    return Text(label, style: style);
+  }
+}
+
+IconData _conditionIcon(String summary) {
+  final value = summary.toLowerCase();
+  if (value.contains('tormenta')) return LucideIcons.cloudLightning;
+  if (value.contains('niev') || value.contains('nieve')) {
+    return LucideIcons.snowflake;
+  }
+  if (value.contains('lluvia') ||
+      value.contains('llovizna') ||
+      value.contains('chubasco')) {
+    return LucideIcons.cloudRain;
+  }
+  if (value.contains('niebla')) return LucideIcons.cloudFog;
+  if (value.contains('parcialmente')) return LucideIcons.cloudSun;
+  if (value.contains('nublado')) return LucideIcons.cloud;
+  if (value.contains('despejado')) return LucideIcons.sun;
+  return LucideIcons.cloudSun;
+}
+
+String _weekday(DateTime value) =>
+    const ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'][value.weekday - 1];
+
+bool _isAfter(DateTime day, DateTime now) {
+  final local = day.toLocal();
+  return DateTime(
+    local.year,
+    local.month,
+    local.day,
+  ).isAfter(DateTime(now.year, now.month, now.day));
+}
+
+Future<void> _openExternalUrl(BuildContext context, String rawUrl) async {
+  final opened = await WeatherController.openAttribution(rawUrl);
+  if (!opened && context.mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('No fue posible abrir el enlace.')),
     );
   }
 }

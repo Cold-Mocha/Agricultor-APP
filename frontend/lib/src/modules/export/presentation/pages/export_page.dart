@@ -25,7 +25,7 @@ final class _ExportPageState extends ConsumerState<ExportPage> {
             leading: Icon(LucideIcons.table),
             title: Text('Snapshot local XLSX v1'),
             subtitle: Text(
-              'Incluye parcelas, sectores, labores, suelo, riego, producción y apicultura, incluso si hay respaldo pendiente.',
+              'Incluye sectores, labores, suelo, riego, producción y apicultura, incluso si hay respaldo pendiente.',
             ),
           ),
         ),

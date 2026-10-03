@@ -5,7 +5,7 @@ import 'package:agrocampo_backend/src/composition/sync_scheduler.dart';
 import 'package:agrocampo_backend/src/modules/auth/application/facades/auth_session_facade.dart';
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/auth_repository.dart';
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/biometric_unlock_gateway.dart';
-import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
+import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:agrocampo_backend/src/platform/network/connectivity_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,12 +21,7 @@ void main() {
       addTearDown(fixture.dispose);
       var database = fixture.open();
       addTearDown(() => database.close());
-      await ParcelRepository(database).save(
-        ownerId: 'owner-a',
-        id: 'parcel-a',
-        name: 'Campo A pendiente',
-        isActive: true,
-      );
+      await _seedSector(database, ownerId: 'owner-a', id: 'sector-a');
 
       final auth = _DurableAuthRepository(
         ownerId: 'owner-a',
@@ -66,10 +61,10 @@ void main() {
       );
       expect(container.read(unlockedOwnerIdProvider), 'owner-a');
       expect(
-        (await ParcelRepository(
+        (await SectorRepository(
           database,
         ).watchAll('owner-a').first).map((row) => row.id),
-        ['parcel-a'],
+        ['sector-a'],
       );
 
       container.dispose();
@@ -103,8 +98,8 @@ void main() {
       expect(container.read(unlockedOwnerIdProvider), isNull);
       expect(scheduler.cancelledOwners, contains('owner-a'));
       expect(
-        (await database.select(database.parcels).get()).map((row) => row.id),
-        contains('parcel-a'),
+        (await database.select(database.sectors).get()).map((row) => row.id),
+        contains('sector-a'),
         reason: 'Cerrar sesión debe bloquear, no borrar datos pendientes.',
       );
       await container
@@ -124,10 +119,10 @@ void main() {
           );
       expect(container.read(unlockedOwnerIdProvider), 'owner-a');
       expect(
-        (await ParcelRepository(
+        (await SectorRepository(
           database,
         ).watchAll('owner-a').first).map((row) => row.id),
-        ['parcel-a'],
+        ['sector-a'],
       );
 
       await container.read(sessionControllerProvider.notifier).signOut();
@@ -138,18 +133,13 @@ void main() {
             email: 'owner-b@agrocampo.local',
             password: 'valid-test-password',
           );
-      await ParcelRepository(database).save(
-        ownerId: 'owner-b',
-        id: 'parcel-b',
-        name: 'Campo B',
-        isActive: true,
-      );
+      await _seedSector(database, ownerId: 'owner-b', id: 'sector-b');
       expect(container.read(unlockedOwnerIdProvider), 'owner-b');
       expect(
-        (await ParcelRepository(
+        (await SectorRepository(
           database,
         ).watchAll('owner-b').first).map((row) => row.id),
-        ['parcel-b'],
+        ['sector-b'],
       );
       expect(
         (await database.syncOutboxDao.eligibleBatch('owner-b'))
@@ -264,3 +254,21 @@ final class _OfflineConnectivity implements ConnectivityService {
   @override
   Stream<ConnectionSignal> watch() => Stream.value(ConnectionSignal.offline);
 }
+
+Future<void> _seedSector(
+  AppDatabase database, {
+  required String ownerId,
+  required String id,
+}) => database
+    .into(database.sectors)
+    .insert(
+      SectorsCompanion.insert(
+        id: id,
+        ownerId: ownerId,
+        number: 1,
+        name: 'Cuadrante $id',
+        polygonJson: '[]',
+        areaSquareMeters: 100,
+        updatedAt: DateTime.utc(2026),
+      ),
+    );

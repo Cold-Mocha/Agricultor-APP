@@ -15,7 +15,6 @@ final class ProductionRepository {
 
   Future<String> save({
     required String ownerId,
-    required String parcelId,
     required String sectorId,
     String? seasonId,
     String? cropAssignmentId,
@@ -25,7 +24,6 @@ final class ProductionRepository {
     input.validate();
     final context = await _laborContextReader.resolveContext(
       ownerId: ownerId,
-      parcelId: parcelId,
       sectorId: sectorId,
       occurredAt: input.harvestedAt.toUtc(),
       seasonId: seasonId,
@@ -59,7 +57,6 @@ final class ProductionRepository {
     final payload = <String, Object?>{
       'id': rootId,
       'owner_id': ownerId,
-      'parcel_id': parcelId,
       'sector_id': sectorId,
       'agricultural_season_id': context.seasonId,
       'crop_assignment_id': context.assignmentId,
@@ -74,7 +71,6 @@ final class ProductionRepository {
       'production': {
         'id': productionId,
         'labor_id': rootId,
-        'parcel_id': parcelId,
         'sector_id': sectorId,
         'season_id': context.seasonId,
         'crop_id': context.cropId,
@@ -97,7 +93,6 @@ final class ProductionRepository {
               LaborsCompanion.insert(
                 id: rootId,
                 ownerId: ownerId,
-                parcelId: parcelId,
                 sectorId: sectorId,
                 seasonId: Value(context.seasonId),
                 cropAssignmentId: Value(context.assignmentId),
@@ -117,7 +112,6 @@ final class ProductionRepository {
               ProductionRecordsCompanion.insert(
                 id: productionId,
                 ownerId: ownerId,
-                parcelId: parcelId,
                 sectorId: sectorId,
                 laborId: Value(rootId),
                 seasonId: Value(context.seasonId),

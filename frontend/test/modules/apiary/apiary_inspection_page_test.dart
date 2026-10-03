@@ -29,7 +29,6 @@ void main() {
       agriculturalContextControllerProvider.notifier,
     );
     await contextController.restore('owner-1');
-    await contextController.selectParcel('parcel-1');
     await contextController.selectSector('sector-1');
     await tester.pumpWidget(
       UncontrolledProviderScope(

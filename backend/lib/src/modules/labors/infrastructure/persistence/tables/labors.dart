@@ -3,7 +3,6 @@ part of 'package:agrocampo_backend/src/platform/database/app_database.dart';
 class Labors extends Table {
   TextColumn get id => text()();
   TextColumn get ownerId => text()();
-  TextColumn get parcelId => text()();
   TextColumn get sectorId => text().references(Sectors, #id)();
   TextColumn get seasonId => text().nullable()();
   TextColumn get cropAssignmentId => text().nullable()();

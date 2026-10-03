@@ -63,7 +63,6 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
                               .list(
                                 HistoryFilter(
                                   ownerId: ownerId,
-                                  parcelId: agriculturalContext.parcelId,
                                   sectorId: sectorId,
                                   seasonId: agriculturalContext.seasonId,
                                   type: _type,

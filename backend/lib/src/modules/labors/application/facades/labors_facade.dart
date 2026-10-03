@@ -52,7 +52,6 @@ final class LaborsFacade {
               .getSingle();
       await LaborRepository(database).save(
         ownerId: ownerId,
-        parcelId: sector.parcelId,
         sectorId: sector.id,
         type: input.type,
         occurredAt: input.occurredAt.toUtc(),

@@ -9,24 +9,25 @@ void main() {
       AgroExportSnapshot(
         generatedAt: DateTime.utc(2026, 8, 28),
         sheets: {
-          'parcelas': [
-            {'id': 'parcel-1', 'nombre': 'Campo', 'pendiente': true},
-          ],
           'sectores': [
-            {'id': 'sector-1', 'parcela_id': 'parcel-1', 'nombre': 'Norte'},
+            {'id': 'sector-1', 'numero': 1, 'nombre': 'Norte'},
+          ],
+          'labores': [
+            {'id': 'labor-1', 'sector_id': 'sector-1', 'tipo': 'pruning'},
           ],
         },
       ),
     );
     final decoded = Excel.decodeBytes(bytes);
-    expect(decoded.tables.keys, containsAll(['parcelas', 'sectores']));
+    expect(decoded.tables.keys, containsAll(['sectores', 'labores']));
+    expect(decoded.tables.keys, isNot(contains('parcelas')));
     expect(
-      decoded.tables['parcelas']!.rows[1][0]!.value.toString(),
-      'parcel-1',
+      decoded.tables['sectores']!.rows[1][0]!.value.toString(),
+      'sector-1',
     );
     expect(
-      decoded.tables['sectores']!.rows[1][1]!.value.toString(),
-      'parcel-1',
+      decoded.tables['labores']!.rows[1][1]!.value.toString(),
+      'sector-1',
     );
     expect(bytes.take(2), [80, 75]);
   });

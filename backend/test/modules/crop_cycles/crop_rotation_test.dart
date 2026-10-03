@@ -117,7 +117,7 @@ void main() {
       final second = await repository.plan(
         ownerId: 'owner-1',
         sectorId: 'sector-2',
-        agriculturalSeasonId: fixture.seasonId,
+        agriculturalSeasonId: fixture.secondSeasonId,
         crop: fixture.wheat,
         effectiveFrom: DateTime.utc(2026, 8, 1),
       );
@@ -188,7 +188,6 @@ void main() {
         final effectiveAt = start.add(Duration(days: rotation + 1));
         final before = await labors.save(
           ownerId: 'owner-1',
-          parcelId: 'parcel-1',
           sectorId: 'sector-1',
           seasonId: fixture.seasonId,
           cropAssignmentId: activeAssignment,
@@ -217,7 +216,6 @@ void main() {
         );
         final after = await labors.save(
           ownerId: 'owner-1',
-          parcelId: 'parcel-1',
           sectorId: 'sector-1',
           seasonId: fixture.seasonId,
           cropAssignmentId: nextAssignment,
@@ -248,7 +246,6 @@ void main() {
       expect(laborRows, hasLength(40));
       for (final labor in laborRows) {
         final expectedAssignment = expectedAssignmentByLabor[labor.id];
-        expect(labor.parcelId, 'parcel-1');
         expect(labor.sectorId, 'sector-1');
         expect(labor.seasonId, fixture.seasonId);
         expect(labor.cropAssignmentId, expectedAssignment);
@@ -265,28 +262,20 @@ final class _CropFixture {
   const _CropFixture({
     required this.database,
     required this.seasonId,
+    required this.secondSeasonId,
     required this.maize,
     required this.wheat,
   });
 
   final db.AppDatabase database;
   final String seasonId;
+  final String secondSeasonId;
   final CropRef maize;
   final CropRef wheat;
 }
 
 Future<_CropFixture> _fixture() async {
   final database = createInMemoryDatabase();
-  await database
-      .into(database.parcels)
-      .insert(
-        db.ParcelsCompanion.insert(
-          id: 'parcel-1',
-          ownerId: 'owner-1',
-          name: 'Campo',
-          updatedAt: DateTime.utc(2026),
-        ),
-      );
   for (var number = 1; number <= 2; number++) {
     await database
         .into(database.sectors)
@@ -294,7 +283,6 @@ Future<_CropFixture> _fixture() async {
           db.SectorsCompanion.insert(
             id: 'sector-$number',
             ownerId: 'owner-1',
-            parcelId: 'parcel-1',
             number: number,
             name: 'Sector $number',
             polygonJson: '[]',
@@ -316,17 +304,21 @@ Future<_CropFixture> _fixture() async {
           ),
         );
   }
-  final seasonId = await AgriculturalSeasonRepository(database).save(
-    ownerId: 'owner-1',
-    parcelId: 'parcel-1',
-    name: '2026-27',
-    startsOn: DateTime.utc(2026, 7),
-    endsOn: DateTime.utc(2027, 6),
-    status: AgriculturalSeasonStatus.active,
-  );
+  final seasonIds = [
+    for (final sectorId in const ['sector-1', 'sector-2'])
+      await AgriculturalSeasonRepository(database).save(
+        ownerId: 'owner-1',
+        sectorId: sectorId,
+        name: '2026-27',
+        startsOn: DateTime.utc(2026, 7),
+        endsOn: DateTime.utc(2027, 6),
+        status: AgriculturalSeasonStatus.active,
+      ),
+  ];
   return _CropFixture(
     database: database,
-    seasonId: seasonId,
+    seasonId: seasonIds.first,
+    secondSeasonId: seasonIds.last,
     maize: const CropRef(
       id: 'maiz',
       label: 'Maíz',

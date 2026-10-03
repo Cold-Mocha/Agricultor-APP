@@ -38,7 +38,6 @@ void main() {
     );
     final labor = <String, Object?>{
       'id': 'labor-water',
-      'parcel_id': 'parcel-1',
       'sector_id': 'sector-1',
       'agricultural_season_id': 'season-1',
       'crop_assignment_id': 'assignment-1',

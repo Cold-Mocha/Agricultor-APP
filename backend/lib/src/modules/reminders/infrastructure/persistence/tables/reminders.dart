@@ -3,7 +3,6 @@ part of 'package:agrocampo_backend/src/platform/database/app_database.dart';
 class Reminders extends Table {
   TextColumn get id => text()();
   TextColumn get ownerId => text()();
-  TextColumn get parcelId => text().nullable()();
   TextColumn get sectorId => text().nullable()();
   TextColumn get title => text()();
   TextColumn get notes => text().nullable()();

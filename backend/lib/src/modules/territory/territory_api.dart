@@ -1,9 +1,7 @@
-export 'application/facades/parcel_facade.dart';
 export 'application/facades/sector_detail_facade.dart';
 export 'application/facades/sector_list_facade.dart';
 export 'application/facades/territory_map_facade.dart';
 export 'contracts/dto/map_contracts.dart';
-export 'contracts/dto/parcel_summary.dart';
 export 'contracts/dto/sector_summary.dart';
 export 'domain/entities/sector.dart';
 export 'domain/entities/sector_geometry_draft.dart';

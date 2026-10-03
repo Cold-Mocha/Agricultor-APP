@@ -44,10 +44,30 @@ final class SectorDetailFacade {
         .loadById(ownerId: ownerId, sectorId: sectorId);
   }
 
-  Stream<List<SectorSummary>> watchSummaries({
-    required String ownerId,
-    required String parcelId,
-  }) =>
-      SectorSummaryRepository(_database)
-          .watch(ownerId: ownerId, parcelId: parcelId);
+  Future<void> rename({required String ownerId, required String name}) async {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) throw StateError('sector_name_required');
+    final repository = SectorRepository(_database);
+    final sector = await repository.loadById(
+      ownerId: ownerId,
+      sectorId: sectorId,
+    );
+    if (sector == null) throw StateError('sector_not_found');
+    await repository.saveConfirmed(
+      ownerId: ownerId,
+      id: sector.id,
+      number: sector.number,
+      name: trimmed,
+      kind: sector.kind,
+      polygon: sector.polygon,
+      expectedVersion: sector.version,
+    );
+  }
+
+  /// Soft delete: the tombstone syncs and historical records keep their rows.
+  Future<void> delete(String ownerId) =>
+      SectorRepository(_database).delete(ownerId: ownerId, id: sectorId);
+
+  Stream<List<SectorSummary>> watchSummaries(String ownerId) =>
+      SectorSummaryRepository(_database).watch(ownerId);
 }

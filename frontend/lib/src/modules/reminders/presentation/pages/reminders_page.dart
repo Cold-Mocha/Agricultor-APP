@@ -175,7 +175,6 @@ final class _RemindersPageState extends ConsumerState<RemindersPage> {
             title: _title.text,
             description: _description.text,
             scheduledAt: _scheduledAt,
-            parcelId: context.parcelId,
             sectorId: context.sectorId,
             sourceTimeZone: DateTime.now().timeZoneName,
           ),

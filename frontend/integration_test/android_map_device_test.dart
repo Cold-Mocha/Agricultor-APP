@@ -6,7 +6,6 @@ import 'package:agrocampo_backend/src/composition/backend_providers.dart';
 import 'package:agrocampo_backend/src/modules/agricultural_context/infrastructure/persistence/daos/app_preferences_dao.dart';
 import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo_point.dart';
 import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/location_gateway.dart';
-import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
 import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:flutter/material.dart';
@@ -50,14 +49,8 @@ void main() {
 
       final database = createInMemoryDatabase();
       addTearDown(database.close);
-      final parcelId = await ParcelRepository(database).save(
-        ownerId: 'owner-device-test',
-        name: 'Campo prueba Android',
-        isActive: true,
-      );
       final sectorId = await SectorRepository(database).save(
         ownerId: 'owner-device-test',
-        parcelId: parcelId,
         number: 1,
         name: 'Sector prueba Android',
         polygon: const [
@@ -66,7 +59,7 @@ void main() {
           GeoPoint(-38.73, -72.59),
         ],
       );
-      await _selectContext(database, parcelId, sectorId);
+      await _selectContext(database, sectorId);
       final original = await database.select(database.sectors).getSingle();
 
       await tester.pumpWidget(
@@ -97,6 +90,10 @@ void main() {
         findsNothing,
       );
 
+      // Locating is a drawing aid, available only while drafting.
+      expect(find.byTooltip('Usar mi ubicación'), findsNothing);
+      await tester.tap(find.text('Nuevo cuadrante'));
+      await tester.pumpAndSettle();
       await tester.tap(find.byTooltip('Usar mi ubicación'));
       await tester.pump();
       await tester.pump(const Duration(seconds: 3));
@@ -105,6 +102,8 @@ void main() {
         find.textContaining('Permiso de ubicación denegado'),
         findsNothing,
       );
+      await tester.tap(find.text('Cancelar'));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Editar'));
       await tester.pump();
@@ -132,12 +131,7 @@ void main() {
   );
 }
 
-Future<void> _selectContext(
-  AppDatabase database,
-  String parcelId,
-  String sectorId,
-) async {
+Future<void> _selectContext(AppDatabase database, String sectorId) async {
   final preferences = AppPreferencesDao(database);
-  await preferences.write('owner-device-test', 'active_parcel_id', parcelId);
   await preferences.write('owner-device-test', 'active_sector_id', sectorId);
 }

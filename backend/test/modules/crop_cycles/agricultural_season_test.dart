@@ -1,10 +1,10 @@
 import 'package:agrocampo_backend/src/modules/crop_cycles/domain/entities/agricultural_season.dart'
     as domain;
 import 'package:agrocampo_backend/src/modules/crop_cycles/infrastructure/persistence/agricultural_season_repository.dart';
-import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/in_memory_database.dart';
+import '../../helpers/territory_fixture.dart';
 
 void main() {
   test('season validates ranges and irreversible closed transition', () {
@@ -27,24 +27,15 @@ void main() {
   });
 
   test(
-    'only one active season exists per parcel and every save has outbox',
+    'only one active season exists per sector and every save has outbox',
     () async {
       final database = createInMemoryDatabase();
       addTearDown(database.close);
-      await database
-          .into(database.parcels)
-          .insert(
-            ParcelsCompanion.insert(
-              id: 'parcel-1',
-              ownerId: 'owner-1',
-              name: 'Campo',
-              updatedAt: DateTime.utc(2026),
-            ),
-          );
+      await seedTerritoryFixture(database);
       final repository = AgriculturalSeasonRepository(database);
       await repository.save(
         ownerId: 'owner-1',
-        parcelId: 'parcel-1',
+        sectorId: 'sector-1',
         name: 'Temporada 2026',
         startsOn: DateTime.utc(2026, 8),
         status: domain.AgriculturalSeasonStatus.active,
@@ -52,7 +43,7 @@ void main() {
       await expectLater(
         repository.save(
           ownerId: 'owner-1',
-          parcelId: 'parcel-1',
+          sectorId: 'sector-1',
           name: 'Temporada alternativa',
           startsOn: DateTime.utc(2026, 9),
           status: domain.AgriculturalSeasonStatus.active,

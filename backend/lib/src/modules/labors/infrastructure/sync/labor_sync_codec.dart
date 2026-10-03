@@ -29,24 +29,21 @@ final class LaborSyncCodec implements AggregateSyncCodec {
     }
     final type = decoded['type']! as String;
     final isApiary = type == 'apiary';
-    final parcelId = decoded['parcel_id'] as String?;
     final sectorId = decoded['sector_id']! as String;
     final seasonId = decoded['agricultural_season_id'] as String?;
     final assignmentId = decoded['crop_assignment_id'] as String?;
-    if (!isApiary &&
-        (parcelId == null || seasonId == null || assignmentId == null)) {
+    if (!isApiary && (seasonId == null || assignmentId == null)) {
       throw const FormatException('labor_parent_missing');
     }
     final sectorRow = await database
         .customSelect(
-          'SELECT parcel_id, kind FROM sectors WHERE id = ? AND owner_id = ?',
+          'SELECT kind FROM sectors WHERE id = ? AND owner_id = ?',
           variables: [Variable<String>(sectorId), Variable<String>(ownerId)],
         )
         .getSingleOrNull();
     if (sectorRow == null) {
       throw const FormatException('labor_parent_missing');
     }
-    final sectorParcelId = sectorRow.read<String>('parcel_id');
     final sectorKind = sectorRow.read<String>('kind');
     if (isApiary && sectorKind != 'apiary') {
       throw const FormatException('operation_not_valid_for_crop');
@@ -61,7 +58,7 @@ final class LaborSyncCodec implements AggregateSyncCodec {
                 (row) =>
                     row.id.equals(seasonId!) &
                     row.ownerId.equals(ownerId) &
-                    row.parcelId.equals(parcelId!),
+                    row.sectorId.equals(sectorId),
               ))
               .getSingleOrNull();
       final assignment =
@@ -90,7 +87,6 @@ final class LaborSyncCodec implements AggregateSyncCodec {
             LaborsCompanion.insert(
               id: change.aggregateId,
               ownerId: ownerId,
-              parcelId: parcelId ?? sectorParcelId,
               sectorId: sectorId,
               seasonId: Value(seasonId),
               cropAssignmentId: Value(assignmentId),
@@ -135,7 +131,6 @@ final class LaborSyncCodec implements AggregateSyncCodec {
               ProductionRecordsCompanion.insert(
                 id: production['id']! as String,
                 ownerId: ownerId,
-                parcelId: parcelId ?? sectorParcelId,
                 sectorId: sectorId,
                 laborId: Value(change.aggregateId),
                 seasonId: Value(seasonId),

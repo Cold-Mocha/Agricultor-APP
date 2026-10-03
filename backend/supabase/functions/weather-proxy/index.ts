@@ -229,24 +229,25 @@ export async function handleWeatherRequest(request: Request) {
     return new Response("Invalid request", { status: 400 });
   }
   const locality = body.locality;
-  const parcelId = body.parcelId;
+  const sectorId = body.sectorId;
   if (typeof locality !== "string" || locality.trim().length < 2) {
     return new Response("Invalid locality", { status: 400 });
   }
-  if (parcelId != null && typeof parcelId !== "string") {
-    return new Response("Invalid parcel", { status: 400 });
+  if (sectorId != null && typeof sectorId !== "string") {
+    return new Response("Invalid sector", { status: 400 });
   }
 
   let coordinate: Coordinate | null = null;
-  if (typeof parcelId === "string" && parcelId.length > 0) {
-    const { data: parcel, error } = await client
-      .from("parcels")
+  if (typeof sectorId === "string" && sectorId.length > 0) {
+    // RLS limits the lookup to the caller's own sectors.
+    const { data: sector, error } = await client
+      .from("sectors")
       .select("boundary")
-      .eq("id", parcelId)
+      .eq("id", sectorId)
       .maybeSingle();
-    if (error) return new Response("Parcel unavailable", { status: 502 });
-    if (!parcel) return new Response("Parcel unavailable", { status: 404 });
-    coordinate = coordinateFromGeometry(parcel?.boundary);
+    if (error) return new Response("Sector unavailable", { status: 502 });
+    if (!sector) return new Response("Sector unavailable", { status: 404 });
+    coordinate = coordinateFromGeometry(sector?.boundary);
   }
   coordinate ??= defaultCoordinate();
   if (!coordinate) {

@@ -59,18 +59,23 @@ final class AgroActionTile extends StatelessWidget {
 }
 
 final class AgroAdaptiveGrid extends StatelessWidget {
-  const AgroAdaptiveGrid({required this.children, super.key});
+  const AgroAdaptiveGrid({required this.children, this.columns, super.key});
 
   final List<Widget> children;
+
+  /// Fixed column count; when null the grid adapts to width and text scale.
+  final int? columns;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final textScale = MediaQuery.textScalerOf(context).scale(1);
-      final columns = constraints.maxWidth >= 360 && textScale <= 1.35 ? 2 : 1;
+      final columns =
+          this.columns ??
+          (constraints.maxWidth >= 360 && textScale <= 1.35 ? 2 : 1);
       final width = columns == 1
           ? constraints.maxWidth
-          : (constraints.maxWidth - AgroSpacing.xs) / 2;
+          : (constraints.maxWidth - AgroSpacing.xs * (columns - 1)) / columns;
       return Wrap(
         spacing: AgroSpacing.xs,
         runSpacing: AgroSpacing.xs,

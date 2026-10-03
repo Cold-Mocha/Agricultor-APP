@@ -1,4 +1,5 @@
-import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
+import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo_point.dart';
+import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:agrocampo_backend/src/platform/sync/protocol/sync_contract.dart';
 import 'package:agrocampo_backend/src/platform/sync/sync_coordinator.dart';
@@ -22,9 +23,19 @@ void main() {
   test(
     'lost ACK retries 100 operations without duplicate business rows',
     () async {
-      final repository = ParcelRepository(database);
+      final repository = SectorRepository(database);
       for (var index = 0; index < 100; index++) {
-        await repository.save(ownerId: 'owner-1', name: 'Parcela $index');
+        final offset = index * .002;
+        await repository.save(
+          ownerId: 'owner-1',
+          number: index + 1,
+          name: 'Sector $index',
+          polygon: [
+            GeoPoint(-38.74 + offset, -72.60),
+            GeoPoint(-38.74 + offset, -72.59),
+            GeoPoint(-38.739 + offset, -72.59),
+          ],
+        );
       }
       final coordinator = createTestSyncCoordinator(database, gateway);
 
@@ -61,8 +72,8 @@ void main() {
     gateway.loseFirstAck = false;
     gateway.conflict = const RemoteConflict(
       id: 'conflict-1',
-      aggregateType: 'parcel',
-      aggregateId: 'parcel-1',
+      aggregateType: 'sector',
+      aggregateId: 'sector-1',
       localJson: '{"name":"Local"}',
       remoteJson: '{"name":"Remota"}',
     );
@@ -128,10 +139,10 @@ void main() {
       SyncOutboxCompanion.insert(
         operationId: 'stale-1',
         ownerId: 'owner-1',
-        aggregateType: 'parcel',
-        aggregateId: 'parcel-1',
+        aggregateType: 'sector',
+        aggregateId: 'sector-1',
         mutationKind: 'create',
-        payloadJson: '{"id":"parcel-1"}',
+        payloadJson: '{"id":"sector-1"}',
         state: const Value('sending'),
         createdAt: DateTime.utc(2026),
       ),

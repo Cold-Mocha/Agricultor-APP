@@ -61,7 +61,7 @@ Deno.test("builds the requested Open-Meteo forecast contract", () => {
   assertEquals(url.searchParams.has("apikey"), false);
 });
 
-Deno.test("uses the center of an authorized parcel GeoJSON boundary", () => {
+Deno.test("uses the center of an authorized sector GeoJSON boundary", () => {
   assertEquals(
     coordinateFromGeometry({
       type: "Polygon",

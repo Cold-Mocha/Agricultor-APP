@@ -8,7 +8,6 @@ void main() {
     () {
       const initial = AgriculturalContext(
         ownerId: 'owner-1',
-        parcelId: 'parcel-a',
         sectorId: 'sector-a',
         seasonId: 'season-a',
         assignmentId: 'assignment-a',
@@ -18,7 +17,6 @@ void main() {
       final bound = BoundAgriculturalContext.from(initial);
       const changed = AgriculturalContext(
         ownerId: 'owner-1',
-        parcelId: 'parcel-b',
         sectorId: 'sector-b',
         seasonId: 'season-b',
         assignmentId: 'assignment-b',
@@ -26,7 +24,6 @@ void main() {
       );
 
       expect(bound.differsFrom(changed), isTrue);
-      expect(bound.parcelId, 'parcel-a');
       expect(bound.sectorId, 'sector-a');
       expect(bound.seasonId, 'season-a');
       expect(bound.assignmentId, 'assignment-a');
@@ -37,7 +34,6 @@ void main() {
   test('an explicit route sector overrides only the sector binding', () {
     const context = AgriculturalContext(
       ownerId: 'owner-1',
-      parcelId: 'parcel-a',
       sectorId: 'sector-a',
       seasonId: 'season-a',
       assignmentId: 'assignment-a',
@@ -49,7 +45,6 @@ void main() {
       sectorId: 'sector-route',
     );
 
-    expect(bound.parcelId, 'parcel-a');
     expect(bound.sectorId, 'sector-route');
     expect(bound.seasonId, 'season-a');
   });
@@ -58,11 +53,9 @@ void main() {
     final resolved = DateTime.utc(2026, 9, 10);
     const context = AgriculturalContext(
       ownerId: 'owner-1',
-      parcelId: 'parcel-a',
       sectorId: 'sector-a',
       category: ProductiveCategory.apiary,
       labels: ContextLabels(
-        parcel: 'Parcela A',
         sector: 'Colmenar',
         category: 'Apícola',
       ),

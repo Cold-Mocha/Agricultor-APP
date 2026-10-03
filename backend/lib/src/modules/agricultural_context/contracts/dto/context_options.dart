@@ -9,12 +9,10 @@ final class ContextOption {
 
 final class BoundContextSummary {
   const BoundContextSummary({
-    this.parcelName,
     this.sectorName,
     this.category,
     this.allowedOperations = const <ProductiveOperation>[],
   });
-  final String? parcelName;
   final String? sectorName;
   final ProductiveCategory? category;
   final List<ProductiveOperation> allowedOperations;

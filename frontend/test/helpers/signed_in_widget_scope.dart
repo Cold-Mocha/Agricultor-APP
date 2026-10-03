@@ -20,7 +20,6 @@ Future<void> selectFixtureAgriculturalContext(
     agriculturalContextControllerProvider.notifier,
   );
   await controller.restore('owner-1');
-  await controller.selectParcel('parcel-1');
   await controller.selectSector('sector-1');
   await controller.selectSeason('season-1');
   await controller.selectAssignment('assignment-1');

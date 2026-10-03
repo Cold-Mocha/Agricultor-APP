@@ -29,52 +29,56 @@ select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000001
 create temporary table sync_v2_results(value jsonb);
 create function pg_temp.push_result(operation jsonb) returns jsonb
 language sql as $$ select public.sync_push(jsonb_build_array(operation))->'results'->0 $$;
+create function pg_temp.sector_payload(name text, extra jsonb default '{}'::jsonb) returns jsonb
+language sql as $$ select jsonb_build_object(
+  'id','30000000-0000-4000-8000-000000000001','number',1,'name',name,'kind','crop',
+  'polygon',jsonb_build_array(
+    jsonb_build_object('lat',-38.74,'lng',-72.60), jsonb_build_object('lat',-38.74,'lng',-72.59),
+    jsonb_build_object('lat',-38.73,'lng',-72.59)),
+  'updated_at','2026-01-01T00:00:00Z') || extra $$;
 insert into sync_v2_results values (public.sync_push(jsonb_build_array(jsonb_build_object(
   'operation_id','20000000-0000-4000-8000-000000000001',
-  'aggregate_type','parcel','aggregate_id','30000000-0000-4000-8000-000000000001',
+  'aggregate_type','sector','aggregate_id','30000000-0000-4000-8000-000000000001',
   'mutation_kind','create','protocol_version',2,'payload_schema_version',1,
-  'request_hash','hash-create','payload',jsonb_build_object(
-    'id','30000000-0000-4000-8000-000000000001','name','Parcela pgTAP',
-    'is_active',true,'updated_at','2026-01-01T00:00:00Z'
-  )
+  'request_hash','hash-create','payload',pg_temp.sector_payload('Sector pgTAP')
 ))));
-select is((select value#>>'{results,0,status}' from sync_v2_results), 'applied', 'parcel applies before ACK');
-select is((select count(*)::integer from public.parcels where id='30000000-0000-4000-8000-000000000001'), 1, 'business row exists after applied');
+select is((select value#>>'{results,0,status}' from sync_v2_results), 'applied', 'sector applies before ACK');
+select is((select count(*)::integer from public.sectors where id='30000000-0000-4000-8000-000000000001'), 1, 'business row exists after applied');
 select is(pg_temp.push_result(jsonb_build_object(
-  'operation_id','20000000-0000-4000-8000-000000000001','aggregate_type','parcel',
+  'operation_id','20000000-0000-4000-8000-000000000001','aggregate_type','sector',
   'aggregate_id','30000000-0000-4000-8000-000000000001','mutation_kind','create',
-  'protocol_version',2,'payload_schema_version',1,'request_hash','hash-create','payload',jsonb_build_object(
-    'id','30000000-0000-4000-8000-000000000001','name','Parcela pgTAP','is_active',true,'updated_at','2026-01-01T00:00:00Z'
-  ))) ->> 'status', 'duplicate', 'lost ACK retry is duplicate');
+  'protocol_version',2,'payload_schema_version',1,'request_hash','hash-create',
+  'payload',pg_temp.sector_payload('Sector pgTAP')
+  )) ->> 'status', 'duplicate', 'lost ACK retry is duplicate');
 select is(pg_temp.push_result(jsonb_build_object(
-  'operation_id','20000000-0000-4000-8000-000000000001','aggregate_type','parcel',
+  'operation_id','20000000-0000-4000-8000-000000000001','aggregate_type','sector',
   'aggregate_id','30000000-0000-4000-8000-000000000001','mutation_kind','update',
   'protocol_version',2,'payload_schema_version',1,'request_hash','different','payload','{}'::jsonb
   )) ->> 'error_code', 'idempotency_mismatch', 'same id with different hash rejects');
 
 select is(pg_temp.push_result(jsonb_build_object(
-  'operation_id','20000000-0000-4000-8000-000000000002','aggregate_type','sector',
+  'operation_id','20000000-0000-4000-8000-000000000002','aggregate_type','parcel',
   'aggregate_id','30000000-0000-4000-8000-000000000002','mutation_kind','create',
   'protocol_version',2,'payload_schema_version',1,'request_hash','unsupported','payload','{}'::jsonb
   )) ->> 'status', 'rejected', 'unsupported aggregate rejects');
 select is((select count(*)::integer from public.sync_operations where operation_id='20000000-0000-4000-8000-000000000002'), 0, 'unsupported aggregate gets no success receipt');
 
 select is(pg_temp.push_result(jsonb_build_object(
-  'operation_id','20000000-0000-4000-8000-000000000003','aggregate_type','parcel',
+  'operation_id','20000000-0000-4000-8000-000000000003','aggregate_type','sector',
   'aggregate_id','30000000-0000-4000-8000-000000000001','mutation_kind','update',
-  'protocol_version',2,'payload_schema_version',1,'base_version',0,'request_hash','conflict','payload',jsonb_build_object(
-    'id','30000000-0000-4000-8000-000000000001','name','Conflicto','updated_at','2026-01-02T00:00:00Z'
-  ))) ->> 'status', 'conflict', 'stale base returns conflict');
+  'protocol_version',2,'payload_schema_version',1,'base_version',0,'request_hash','conflict',
+  'payload',pg_temp.sector_payload('Conflicto', jsonb_build_object('updated_at','2026-01-02T00:00:00Z'))
+  )) ->> 'status', 'conflict', 'stale base returns conflict');
 select is((select count(*)::integer from public.sync_operations where operation_id='20000000-0000-4000-8000-000000000003'), 0, 'conflict gets no success receipt');
 
 select is(pg_temp.push_result(jsonb_build_object(
-  'operation_id','20000000-0000-4000-8000-000000000004','aggregate_type','parcel',
+  'operation_id','20000000-0000-4000-8000-000000000004','aggregate_type','sector',
   'aggregate_id','30000000-0000-4000-8000-000000000001','mutation_kind','delete',
-  'protocol_version',2,'payload_schema_version',1,'base_version',1,'request_hash','delete','payload',jsonb_build_object(
-    'id','30000000-0000-4000-8000-000000000001','name','Parcela pgTAP','is_archived',true,
-    'deleted_at','2026-01-03T00:00:00Z','updated_at','2026-01-03T00:00:00Z'
-  ))) ->> 'status', 'applied', 'delete applies as tombstone');
-select ok((select deleted_at is not null from public.parcels where id='30000000-0000-4000-8000-000000000001'), 'tombstone remains remotely');
+  'protocol_version',2,'payload_schema_version',1,'base_version',1,'request_hash','delete',
+  'payload',pg_temp.sector_payload('Sector pgTAP', jsonb_build_object(
+    'deleted_at','2026-01-03T00:00:00Z','updated_at','2026-01-03T00:00:00Z'))
+  )) ->> 'status', 'applied', 'delete applies as tombstone');
+select ok((select deleted_at is not null from public.sectors where id='30000000-0000-4000-8000-000000000001'), 'tombstone remains remotely');
 select ok((select bool_and(change_seq > 0) from public.sync_pull(0, 200)), 'pull returns ordered positive sequence');
 
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000002', true);

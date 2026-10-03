@@ -23,16 +23,10 @@ final class TerritoryMapFacade {
   final AppDatabase _database;
   final LocationGateway _location;
 
-  Stream<List<TerritoryContextSector>> watchContextSectors({
-    required String ownerId,
-    required String parcelId,
-  }) =>
+  Stream<List<TerritoryContextSector>> watchContextSectors(String ownerId) =>
       (_database.select(_database.sectors)
             ..where(
-              (row) =>
-                  row.ownerId.equals(ownerId) &
-                  row.parcelId.equals(parcelId) &
-                  row.deletedAt.isNull(),
+              (row) => row.ownerId.equals(ownerId) & row.deletedAt.isNull(),
             )
             ..orderBy([(row) => OrderingTerm.asc(row.number)]))
           .watch()
@@ -41,7 +35,6 @@ final class TerritoryMapFacade {
                 .map(
                   (row) => TerritoryContextSector(
                     id: row.id,
-                    parcelId: row.parcelId,
                     name: row.name,
                     kind: row.kind,
                   ),
@@ -52,38 +45,38 @@ final class TerritoryMapFacade {
   Future<TerritoryContextSector?> loadContextSector({
     required String ownerId,
     required String sectorId,
-    String? parcelId,
   }) async {
-    final query = _database.select(_database.sectors)
-      ..where(
-        (row) =>
-            row.id.equals(sectorId) &
-            row.ownerId.equals(ownerId) &
-            row.deletedAt.isNull(),
-      );
-    if (parcelId != null) {
-      query.where((row) => row.parcelId.equals(parcelId));
-    }
-    final row = await query.getSingleOrNull();
+    final row =
+        await (_database.select(_database.sectors)..where(
+              (row) =>
+                  row.id.equals(sectorId) &
+                  row.ownerId.equals(ownerId) &
+                  row.deletedAt.isNull(),
+            ))
+            .getSingleOrNull();
     return row == null
         ? null
-        : TerritoryContextSector(
-            id: row.id,
-            parcelId: row.parcelId,
-            name: row.name,
-            kind: row.kind,
-          );
+        : TerritoryContextSector(id: row.id, name: row.name, kind: row.kind);
   }
 
-  Stream<List<MapSectorGeometry>> watchSectors({
-    required String ownerId,
-    required String parcelId,
-  }) =>
+  /// First active sector, used when no sector was remembered yet.
+  Future<TerritoryContextSector?> loadFirstContextSector(String ownerId) async {
+    final row =
+        await (_database.select(_database.sectors)
+              ..where(
+                (row) => row.ownerId.equals(ownerId) & row.deletedAt.isNull(),
+              )
+              ..orderBy([(row) => OrderingTerm.asc(row.number)])
+              ..limit(1))
+            .getSingleOrNull();
+    return row == null
+        ? null
+        : TerritoryContextSector(id: row.id, name: row.name, kind: row.kind);
+  }
+
+  Stream<List<MapSectorGeometry>> watchSectors(String ownerId) =>
       (_database.select(_database.sectors)..where(
-            (row) =>
-                row.ownerId.equals(ownerId) &
-                row.parcelId.equals(parcelId) &
-                row.deletedAt.isNull(),
+            (row) => row.ownerId.equals(ownerId) & row.deletedAt.isNull(),
           ))
           .watch()
           .map(
@@ -112,15 +105,14 @@ final class TerritoryMapFacade {
     required String ownerId,
     required MapGeometryFormInput input,
   }) async {
-    final sectors =
-        await (_database.select(_database.sectors)..where(
-              (row) =>
-                  row.ownerId.equals(ownerId) &
-                  row.parcelId.equals(input.parcelId) &
-                  row.deletedAt.isNull(),
-            ))
-            .get();
-    final matches = sectors.where((row) => row.id == input.sectorId).toList();
+    // Deleted sectors are tombstones that keep their number under the
+    // (owner_id, number) unique key, so numbering must count them too.
+    final sectors = await (_database.select(
+      _database.sectors,
+    )..where((row) => row.ownerId.equals(ownerId))).get();
+    final matches = sectors
+        .where((row) => row.id == input.sectorId && row.deletedAt == null)
+        .toList();
     final highest = sectors.fold<int>(
       0,
       (value, row) => row.number > value ? row.number : value,
@@ -130,7 +122,6 @@ final class TerritoryMapFacade {
     if (kind == null) throw StateError('sector_kind_required');
     return SectorRepository(_database).saveConfirmed(
       ownerId: ownerId,
-      parcelId: input.parcelId,
       id: row?.id,
       number: row?.number ?? highest + 1,
       name: row?.name ?? 'Sector ${highest + 1}',

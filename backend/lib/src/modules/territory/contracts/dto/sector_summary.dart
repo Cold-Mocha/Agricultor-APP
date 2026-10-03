@@ -2,7 +2,6 @@
 final class SectorSummary {
   const SectorSummary({
     required this.id,
-    required this.parcelId,
     required this.number,
     required this.kind,
     required this.areaSquareMeters,
@@ -21,7 +20,6 @@ final class SectorSummary {
   });
 
   final String id;
-  final String parcelId;
   final int number;
   final String kind;
   final double areaSquareMeters;

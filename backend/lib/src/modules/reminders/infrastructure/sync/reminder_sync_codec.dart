@@ -26,27 +26,11 @@ final class ReminderSyncCodec implements AggregateSyncCodec {
         payload['updated_at'] is! String) {
       throw const FormatException('reminder_payload_invalid');
     }
-    final parcelId = payload['parcel_id'] as String?;
     final sectorId = payload['sector_id'] as String?;
-    if (parcelId != null) {
-      final parcel =
-          await (database.select(database.parcels)..where(
-                (row) => row.id.equals(parcelId) & row.ownerId.equals(ownerId),
-              ))
-              .getSingleOrNull();
-      if (parcel == null) {
-        throw const FormatException('reminder_parent_missing');
-      }
-    }
     if (sectorId != null) {
       final sector =
           await (database.select(database.sectors)..where(
-                (row) =>
-                    row.id.equals(sectorId) &
-                    row.ownerId.equals(ownerId) &
-                    (parcelId == null
-                        ? const Constant(true)
-                        : row.parcelId.equals(parcelId)),
+                (row) => row.id.equals(sectorId) & row.ownerId.equals(ownerId),
               ))
               .getSingleOrNull();
       if (sector == null) {
@@ -61,7 +45,6 @@ final class ReminderSyncCodec implements AggregateSyncCodec {
           RemindersCompanion.insert(
             id: change.aggregateId,
             ownerId: ownerId,
-            parcelId: Value(parcelId),
             sectorId: Value(sectorId),
             title: (payload['title']! as String).trim(),
             description: Value(payload['description'] as String?),

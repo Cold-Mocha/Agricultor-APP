@@ -21,23 +21,15 @@ final class SectorListFacade {
   final CropCyclesFacade _cropCycles;
   final HistoryFacade _history;
 
-  Stream<List<SectorSummary>> watchSummaries({
-    required String ownerId,
-    required String parcelId,
-  }) async* {
+  Stream<List<SectorSummary>> watchSummaries(String ownerId) async* {
     try {
       await _cropCycles.ensureCatalog();
     } on Object {
       // The local sector projection remains usable without the seed.
     }
-    yield* SectorSummaryRepository(_database)
-        .watch(ownerId: ownerId, parcelId: parcelId);
+    yield* SectorSummaryRepository(_database).watch(ownerId);
   }
 
-  Future<List<HistoryEvent>> recentHistory({
-    required String ownerId,
-    required String parcelId,
-  }) => _history.list(
-    HistoryFilter(ownerId: ownerId, parcelId: parcelId, limit: 3),
-  );
+  Future<List<HistoryEvent>> recentHistory(String ownerId) =>
+      _history.list(HistoryFilter(ownerId: ownerId, limit: 3));
 }

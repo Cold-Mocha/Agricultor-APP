@@ -1,18 +1,15 @@
 import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo_point.dart';
-import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/parcel_repository.dart';
 import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
-import 'package:drift/drift.dart' hide isNotNull;
+import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/file_backed_database.dart';
 import '../../helpers/in_memory_database.dart';
 
 void main() {
-  test('sector numbers are unique per parcel', () async {
+  test('sector numbers are unique per owner', () async {
     final database = createInMemoryDatabase();
     addTearDown(database.close);
-    final parcelId = await ParcelRepository(database)
-        .save(ownerId: 'owner-1', name: 'Campo');
     const polygon = [
       GeoPoint(-38.74, -72.60),
       GeoPoint(-38.74, -72.59),
@@ -21,7 +18,6 @@ void main() {
     final repository = SectorRepository(database);
     await repository.save(
       ownerId: 'owner-1',
-      parcelId: parcelId,
       number: 1,
       name: 'Sector 1',
       polygon: polygon,
@@ -30,33 +26,27 @@ void main() {
     await expectLater(
       repository.save(
         ownerId: 'owner-1',
-        parcelId: parcelId,
         number: 1,
         name: 'Duplicado',
         polygon: polygon,
       ),
       throwsA(anything),
     );
+    await repository.save(
+      ownerId: 'owner-2',
+      number: 1,
+      name: 'Otro agricultor',
+      polygon: polygon,
+    );
   });
 
-  test('persists multiple sectors, versions geometry and creates outbox dependency', () async {
+  test('persists multiple sectors and versions geometry', () async {
     final fixture = await FileBackedDatabaseFixture.create();
     addTearDown(fixture.dispose);
     var database = fixture.open();
-    final parcelId = await ParcelRepository(database).save(
-      ownerId: 'owner-1',
-      name: 'Campo persistente',
-      boundary: const [
-        GeoPoint(-38.75, -72.61),
-        GeoPoint(-38.75, -72.57),
-        GeoPoint(-38.71, -72.57),
-        GeoPoint(-38.71, -72.61),
-      ],
-    );
     final repository = SectorRepository(database);
     final sectorId = await repository.save(
       ownerId: 'owner-1',
-      parcelId: parcelId,
       number: 1,
       name: 'Norte',
       polygon: const [
@@ -67,7 +57,6 @@ void main() {
     );
     await repository.save(
       ownerId: 'owner-1',
-      parcelId: parcelId,
       number: 2,
       name: 'Sur',
       polygon: const [
@@ -78,7 +67,6 @@ void main() {
     );
     await repository.save(
       ownerId: 'owner-1',
-      parcelId: parcelId,
       id: sectorId,
       number: 1,
       name: 'Norte editado',
@@ -94,7 +82,7 @@ void main() {
 
     final sectors =
         await (database.select(database.sectors)..where(
-              (row) => row.parcelId.equals(parcelId) & row.deletedAt.isNull(),
+              (row) => row.ownerId.equals('owner-1') & row.deletedAt.isNull(),
             ))
             .get();
     expect(sectors, hasLength(2));
@@ -103,29 +91,22 @@ void main() {
       database.syncOutbox,
     )..where((row) => row.aggregateType.equals('sector'))).get();
     expect(childOperations, hasLength(3));
-    expect(childOperations.first.dependencyOperationId, isNotNull);
+    expect(childOperations.first.dependencyOperationId, isNull);
   });
 
   test(
-    'rejects archived/foreign parent and rolls back sector plus outbox',
+    'rejects invalid geometry and rolls back sector plus outbox',
     () async {
       final database = createInMemoryDatabase();
       addTearDown(database.close);
-      final parcelId = await ParcelRepository(database)
-          .save(ownerId: 'owner-1', name: 'Campo');
       await expectLater(
         SectorRepository(database).save(
           ownerId: 'owner-2',
-          parcelId: parcelId,
           number: 1,
-          name: 'Ajeno',
-          polygon: const [
-            GeoPoint(-38.74, -72.60),
-            GeoPoint(-38.74, -72.59),
-            GeoPoint(-38.73, -72.59),
-          ],
+          name: 'Inválido',
+          polygon: const [GeoPoint(-38.74, -72.60), GeoPoint(-38.74, -72.59)],
         ),
-        throwsStateError,
+        throwsArgumentError,
       );
       expect(await database.select(database.sectors).get(), isEmpty);
       expect(
