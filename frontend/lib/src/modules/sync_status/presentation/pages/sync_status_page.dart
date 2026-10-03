@@ -28,7 +28,6 @@ final class SyncStatusPage extends ConsumerWidget {
     if (ref.watch(isLocalModeProvider)) {
       return const AgroPage(
         title: 'Sincronización',
-        subtitle: 'Modo local · tus datos se guardan en este dispositivo.',
         child: AgroEmptyState(
           title: 'Respaldo en la nube desactivado',
           message: 'Disponible al activar el respaldo en la nube. Para guardar una copia, usa Más > Exportar XLSX.',

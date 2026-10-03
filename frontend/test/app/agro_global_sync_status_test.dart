@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:agrocampo/src/app/layout/agro_page.dart';
 import 'package:agrocampo/src/app/shell/agro_global_sync_status.dart';
 import 'package:agrocampo/src/app/theme/agro_theme.dart';
+import 'package:agrocampo/src/modules/auth/auth_ui.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:agrocampo_backend/src/composition/backend_providers.dart';
 import 'package:agrocampo_backend/src/platform/network/connectivity_service.dart';
@@ -61,9 +63,7 @@ void main() {
     semantics.dispose();
   });
 
-  testWidgets('local mode replaces pending sync with a device-only notice', (
-    tester,
-  ) async {
+  testWidgets('local mode shows no status banner at all', (tester) async {
     final connectivity = _Connectivity();
     addTearDown(connectivity.controller.close);
 
@@ -71,6 +71,7 @@ void main() {
       ProviderScope(
         overrides: [
           isLocalModeProvider.overrideWithValue(true),
+          unlockedOwnerIdProvider.overrideWithValue('owner-1'),
           connectivityServiceProvider.overrideWithValue(connectivity),
           pendingSyncCountProvider.overrideWith(
             (ref, ownerId) => Stream.value(2),
@@ -78,16 +79,14 @@ void main() {
         ],
         child: MaterialApp(
           theme: AgroTheme.light,
-          home: const Scaffold(body: AgroGlobalSyncStatus(ownerId: 'owner-1')),
+          home: const AgroPage(title: 'Inicio', child: SizedBox.shrink()),
         ),
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(
-      find.text('Modo local · tus datos se guardan en este dispositivo.'),
-      findsOneWidget,
-    );
+    expect(find.byType(AgroGlobalSyncStatus), findsNothing);
+    expect(find.textContaining('Modo local'), findsNothing);
     expect(find.textContaining('pendiente'), findsNothing);
   });
 }

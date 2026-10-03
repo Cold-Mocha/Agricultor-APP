@@ -162,7 +162,7 @@ void main() {
     final database = createInMemoryDatabase();
     await pumpPage(tester, database: database, localMode: true);
 
-    expect(find.text('AgroIA no disponible en modo local'), findsOneWidget);
+    expect(find.text('AgroIA no disponible'), findsOneWidget);
     expect(find.text('Enviar consulta'), findsNothing);
     expect(find.byType(TextField), findsNothing);
     await database.close();

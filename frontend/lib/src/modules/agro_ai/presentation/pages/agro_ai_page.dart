@@ -42,8 +42,8 @@ final class _AgroAiPageState extends ConsumerState<AgroAiPage> {
                       final messages = snapshot.data ?? const [];
                       if (messages.isEmpty && localMode) {
                         return const AgroEmptyState(
-                          title: 'AgroIA no disponible en modo local',
-                          message: 'AgroIA necesita el modo con respaldo en la nube. Tus registros siguen en este dispositivo.',
+                          title: 'AgroIA no disponible',
+                          message: 'AgroIA necesita el respaldo en la nube. Tus registros siguen en este dispositivo.',
                         );
                       }
                       if (messages.isEmpty) {

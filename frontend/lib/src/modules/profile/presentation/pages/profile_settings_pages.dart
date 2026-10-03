@@ -225,7 +225,7 @@ final class ProfileInformationPage extends ConsumerWidget {
             LucideIcons.cloudOff,
             '¿Puedo registrar sin conexión?',
             localMode
-                ? 'Sí. En modo local todos los registros se guardan en este dispositivo.'
+                ? 'Sí. Todos los registros se guardan en este dispositivo.'
                 : 'Sí. Los registros se guardan primero en el dispositivo y se respaldan cuando vuelve la conexión.',
           ),
           _InfoItem(
