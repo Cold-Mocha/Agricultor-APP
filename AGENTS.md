@@ -6,6 +6,7 @@ This repository contains the canonical AgroCampo Android MVP documentation, the 
 Android application in `frontend/`, a local Flutter backend package plus Supabase in `backend/`,
 and two static prototypes used only as evidence. Functional requirements remain in
 `specs/001-agrocampo-android-mvp/` and its approved `specs/002-agrocampo-functional-core/` extension;
+`specs/004-sector-only-territory/` removes parcels and overrides 001–003 wherever they mention them;
 the only visual source is `master.md`.
 `index.html` is the GitHub Pages prototype, `agrocampo-highfi.html` is an audited visual/flow
 reference, and `agrocampo-acceptance.test.js` validates the deployed prototype. Neither HTML file

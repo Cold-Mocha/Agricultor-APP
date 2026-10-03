@@ -8,15 +8,15 @@ construido. No agrega requisitos: la autoridad funcional está en `specs/` y la 
 ## 1. Qué es
 
 AgroCampo es una aplicación **Android personal y offline-first** para el agricultor propietario.
-Reemplaza cuadernos y registros dispersos: organiza parcelas, sectores y cultivos, registra las
+Reemplaza cuadernos y registros dispersos: organiza cuadrantes (sectores) y cultivos, registra las
 `LABORES` de terreno, conserva historial por temporada y sincroniza con la nube cuando hay
 conectividad. Todo guardado ocurre primero en el teléfono; la red nunca bloquea el trabajo de campo.
 
 | Capacidad | Qué permite |
 |---|---|
 | Acceso y perfil | Sesión Supabase Auth persistida de forma segura, perfil, preferencias. |
-| Territorio | Parcelas y sectores (cuadrantes) dibujados sobre mapa OpenStreetMap. |
-| Contexto agrícola | Selección de parcela/sector activo que acompaña los registros. |
+| Territorio | Cuadrantes (sectores) del agricultor dibujados sobre mapa OpenStreetMap; sin parcelas desde 004. |
+| Contexto agrícola | Selección del cuadrante activo, su temporada y su cultivo, que acompaña los registros. |
 | Temporadas y cultivos | Ciclos de cultivo, catálogo oficial + cultivos propios, rotación por sector. |
 | Labores | Registro de labores (fertilización, cosecha, etc.) ligado a sector y temporada. |
 | Suelo | Mediciones de suelo como labor especializada. |
@@ -40,6 +40,7 @@ Clima y AgroIA son auxiliares: si fallan, el resto de la app sigue funcionando.
 | [`specs/001-agrocampo-android-mvp/`](../../specs/001-agrocampo-android-mvp/) | Definición del MVP: requisitos, plan, modelo de datos, contratos, backlog. |
 | [`specs/002-agrocampo-functional-core/`](../../specs/002-agrocampo-functional-core/) | Incremento: núcleo funcional completo; redefine AgroIA sin contexto privado. |
 | [`specs/003-agrocampo-functional-refinement/`](../../specs/003-agrocampo-functional-refinement/) | Incremento: flujos reales, persistentes y verificables sobre 001/002. |
+| [`specs/004-sector-only-territory/`](../../specs/004-sector-only-territory/spec.md) | Elimina la parcela: cuadrantes por agricultor, temporadas por cuadrante y reinicio de datos (Drift v12, migración 0021). |
 | [`master.md`](../../master.md) | Design System: única autoridad de UI/UX y accesibilidad. |
 | `index.html`, `agrocampo-highfi.html` | Prototipos estáticos: sólo evidencia, nunca arquitectura ni alcance. |
 
@@ -235,7 +236,7 @@ Shell de cinco pestañas definido por `master.md` (`frontend/lib/src/app/routing
 
 | Pestaña | Ruta | Contenido |
 |---|---|---|
-| Inicio | `/inicio` | Resumen, perfil, parcelas. |
+| Inicio | `/inicio` | Resumen del cuadrante activo, clima y perfil. |
 | Sectores | `/sectores` | Mapa de cuadrantes, detalle, rotación, historial, apicultura. |
 | Registrar | `/registrar` | Labores, suelo, riego, producción, foto. |
 | AgroIA | `/agroia` | Chatbot. |

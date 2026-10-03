@@ -35,7 +35,7 @@ Para ver qué falta, sin imprimir secretos:
 | 2 | [Firebase y FCM](#2-firebase-y-fcm) | `google-services.json`, `FIREBASE_SERVICE_ACCOUNT_JSON` |
 | 3 | [Gemini (AgroIA)](#3-gemini-agroia) | `GEMINI_API_KEY`, `GEMINI_MODEL` |
 | 4 | [Firma Android](#4-firma-android) | `release.keystore`, `key.properties` |
-| 5 | [Coordenadas de la parcela](#5-coordenadas-de-la-parcela) | `OPEN_METEO_DEFAULT_*`, `MAP_INITIAL_*` |
+| 5 | [Coordenadas por defecto](#5-coordenadas-por-defecto) | `OPEN_METEO_DEFAULT_*`, `MAP_INITIAL_*` |
 | 6 | [CI/CD](#6-cicd) | Secretos de GitHub Actions |
 
 ## 1. Proyecto Supabase
@@ -88,7 +88,7 @@ La integración está **a medio construir** (ver [`status.md`](./status.md#brech
    `gemini-2.5-flash`).
 
 AgroIA sólo recibe el texto que escribe el agricultor, su locale y metadata de política. Nunca
-recibe parcelas, historial, riego, producción ni fotos, y nunca escribe datos. No cambies esto sin
+recibe cuadrantes, historial, riego, producción ni fotos, y nunca escribe datos. No cambies esto sin
 revisar la spec 002.
 
 Para probarla contra el proyecto remoto: un 401 sin cabecera de autorización es lo esperado; un 200
@@ -123,10 +123,10 @@ subir más actualizaciones.
    Sin `key.properties`, el artefacto se firma con la clave debug y no se puede publicar. El archivo
    que se sube a Play Console es el AAB (`frontend/build/app/outputs/bundle/release/app-release.aab`).
 
-## 5. Coordenadas de la parcela
+## 5. Coordenadas por defecto
 
-Open-Meteo no requiere API key, pero `weather-proxy` necesita una ubicación para las consultas que
-llegan sin coordenadas. Completa `OPEN_METEO_DEFAULT_LATITUDE` y `OPEN_METEO_DEFAULT_LONGITUDE` con
+Open-Meteo no requiere API key. `weather-proxy` usa el centro del cuadrante activo y necesita una
+ubicación por defecto para las consultas que llegan sin cuadrante. Completa `OPEN_METEO_DEFAULT_LATITUDE` y `OPEN_METEO_DEFAULT_LONGITUDE` con
 la ubicación real. Opcionalmente, completa también `MAP_INITIAL_LATITUDE` y `MAP_INITIAL_LONGITUDE`
 para centrar el mapa. Temuco (`-38.7363, -72.5974`) es sólo un fixture de pruebas.
 

@@ -1,6 +1,6 @@
 # AgroCampo
 
-Aplicación Android personal y **offline-first** para el agricultor: parcelas y sectores, temporadas
+Aplicación Android personal y **offline-first** para el agricultor: cuadrantes (sectores), temporadas
 y cultivos, labores, suelo, riego por goteo, producción, apicultura, fotografías, recordatorios,
 historial y exportación. Todo se guarda primero en el teléfono y se sincroniza con Supabase cuando
 hay red. Clima y AgroIA son auxiliares: si fallan, el trabajo de campo continúa.

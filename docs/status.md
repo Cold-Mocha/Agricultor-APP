@@ -14,6 +14,7 @@ producción.
 | [`001-agrocampo-android-mvp`](../specs/001-agrocampo-android-mvp/tasks.md) | 85/85 | — |
 | [`002-agrocampo-functional-core`](../specs/002-agrocampo-functional-core/tasks.md) | 114/118 | T016, T096, T115, T118 |
 | [`003-agrocampo-functional-refinement`](../specs/003-agrocampo-functional-refinement/tasks.md) | 119/124 | T030, T115, T120, T121, T124 |
+| [`004-sector-only-territory`](../specs/004-sector-only-territory/spec.md) | sin `tasks.md` | pgTAP y Deno de la migración 0021 sin ejecutar |
 
 Todas las pendientes requieren ejecución en **Android API 24+** (emulador o dispositivo real), no
 cambios de implementación:
@@ -31,6 +32,21 @@ cambios de implementación:
 | 003 T124 | Gate final: constitución, arquitectura, alcance y US1–US7. |
 
 Los resultados de esas ejecuciones se registran en este documento.
+
+## Verificación de 004 — sin parcelas (host, 2026-10-02)
+
+| Suite | Resultado |
+|---|---|
+| Backend `flutter test` | 156/156 (incluye reinicio Drift v12 desde una base v9 poblada) |
+| Frontend `flutter test` (widgets + goldens) | 86/86; golden `us8/export.png` regenerado por cambio de copy |
+| `flutter analyze` backend y frontend | PASS |
+| Aceptación del prototipo y sintaxis embebida | PASS |
+| pgTAP (0001–0021) y Deno (`weather-proxy`) | **No ejecutado**: el host no tiene Supabase CLI, Docker ni Deno |
+| Integration tests Android | No ejecutados |
+
+La migración `0021_sector_only_territory.sql` **vacía los datos agrícolas y de sincronización** en
+Supabase al aplicarse, y Drift v12 borra la base local al actualizar la app. Ambos reinicios están
+aprobados por la spec 004.
 
 ## Última verificación registrada (host, 2026-09-11)
 
