@@ -1,4 +1,5 @@
 import 'package:agrocampo/src/app/controllers/app_lifecycle_controller.dart';
+import 'package:agrocampo/src/app/controllers/theme_mode_controller.dart';
 import 'package:agrocampo/src/app/routing/app_router.dart';
 import 'package:agrocampo/src/app/theme/agro_theme.dart';
 import 'package:flutter/material.dart';
@@ -36,10 +37,13 @@ final class _AgroCampoAppState extends ConsumerState<AgroCampoApp>
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(appRouterProvider);
+    final themeMode = ref.watch(themeModeProvider);
     return MaterialApp.router(
       title: 'AgroCampo',
       debugShowCheckedModeBanner: false,
       theme: AgroTheme.light,
+      darkTheme: AgroTheme.dark,
+      themeMode: themeMode,
       locale: const Locale('es', 'CL'),
       supportedLocales: const [Locale('es', 'CL')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,

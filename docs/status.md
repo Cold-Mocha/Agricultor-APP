@@ -75,6 +75,21 @@ aprobados por la spec 004.
 | `flutter analyze` frontend | PASS |
 | `dart run tool/check_architecture.dart` | PASS |
 
+## Tema oscuro (host, 2026-10-05)
+
+Aprobado y agregado al MVP (ver `master.md`, sección «Tema oscuro»). `AgroTheme.dark` reutiliza la
+paleta de marca con superficies y contenedores oscuros nuevos, verificados contra el mismo criterio
+de contraste del documento (4,5:1 texto normal, 3:1 texto grande/bordes). La preferencia se guarda
+por dispositivo (`ProfileFacade.setDarkModeEnabled`, tabla `app_preferences`) y se activa desde
+Perfil > Tema, reemplazando la página informativa anterior.
+
+| Suite | Resultado |
+|---|---|
+| Frontend `flutter test` | 99/99 (incluye `theme_test.dart`, `theme_mode_controller_test.dart`, `profile_theme_page_test.dart`) |
+| Backend `flutter test` | 187/187 (incluye `profile_facade_test.dart`) |
+| `flutter analyze` backend y frontend | PASS |
+| `dart run tool/check_architecture.dart` | PASS |
+
 ## Última verificación registrada (host, 2026-09-11)
 
 | Suite | Resultado |

@@ -113,78 +113,190 @@ abstract final class AgroTheme {
     );
   }
 
-  static TextTheme _textTheme(TextTheme base) => base
-      .copyWith(
-        displayLarge: const TextStyle(
-          fontSize: 38,
-          height: 44 / 38,
-          fontWeight: FontWeight.w900,
+  static ThemeData get dark {
+    const colors = ColorScheme(
+      brightness: Brightness.dark,
+      primary: AgroColors.brandSoft,
+      onPrimary: AgroColors.brandDark,
+      primaryContainer: AgroColors.primaryContainerDark,
+      onPrimaryContainer: AgroColors.brandSoft,
+      secondary: AgroColors.accent,
+      onSecondary: AgroColors.brandDark,
+      secondaryContainer: AgroColors.secondaryContainerDark,
+      onSecondaryContainer: AgroColors.accentSoft,
+      tertiary: AgroColors.sky,
+      onTertiary: AgroColors.surface,
+      tertiaryContainer: AgroColors.tertiaryContainerDark,
+      onTertiaryContainer: AgroColors.skySoft,
+      error: AgroColors.rose,
+      onError: AgroColors.surface,
+      errorContainer: AgroColors.errorContainerDark,
+      onErrorContainer: AgroColors.roseSoft,
+      surface: AgroColors.surfaceDark,
+      onSurface: AgroColors.inkDark,
+      onSurfaceVariant: AgroColors.mutedDark,
+      outline: AgroColors.lineDark,
+      outlineVariant: AgroColors.primaryContainerDark,
+      shadow: Color(0x40000000),
+      scrim: Color(0x80000000),
+      inverseSurface: AgroColors.inkDark,
+      onInverseSurface: AgroColors.surfaceDark,
+      inversePrimary: AgroColors.brand,
+    );
+    final base = ThemeData(
+      useMaterial3: true,
+      colorScheme: colors,
+      fontFamily: 'Inter',
+    );
+    return base.copyWith(
+      scaffoldBackgroundColor: AgroColors.surfaceDark,
+      textTheme: _textTheme(base.textTheme, color: AgroColors.inkDark),
+      extensions: const [
+        AgroSemanticColors(
+          success: AgroColors.primaryContainerDark,
+          onSuccess: AgroColors.brandSoft,
+          warning: AgroColors.secondaryContainerDark,
+          onWarning: AgroColors.accentSoft,
+          info: AgroColors.tertiaryContainerDark,
+          onInfo: AgroColors.skySoft,
+          error: AgroColors.errorContainerDark,
+          onError: AgroColors.roseSoft,
         ),
-        displayMedium: const TextStyle(
-          fontSize: 32,
-          height: 38 / 32,
-          fontWeight: FontWeight.w900,
+      ],
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AgroColors.surfaceDark,
+        foregroundColor: AgroColors.inkDark,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+      ),
+      cardTheme: CardThemeData(
+        color: AgroColors.surfaceDark,
+        elevation: AgroElevation.card,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AgroRadii.large),
+          side: const BorderSide(color: AgroColors.lineDark),
         ),
-        headlineLarge: const TextStyle(
-          fontSize: 28,
-          height: 34 / 28,
-          fontWeight: FontWeight.w900,
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          minimumSize: const Size(AgroSizes.touchTarget, AgroSizes.touchTarget),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AgroRadii.large),
+          ),
         ),
-        headlineMedium: const TextStyle(
-          fontSize: 24,
-          height: 30 / 24,
-          fontWeight: FontWeight.w900,
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size(AgroSizes.touchTarget, AgroSizes.touchTarget),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AgroRadii.large),
+          ),
         ),
-        headlineSmall: const TextStyle(
-          fontSize: 22,
-          height: 28 / 22,
-          fontWeight: FontWeight.w800,
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          minimumSize: const Size(AgroSizes.touchTarget, AgroSizes.touchTarget),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AgroRadii.large),
+          ),
         ),
-        titleLarge: const TextStyle(
-          fontSize: 20,
-          height: 26 / 20,
-          fontWeight: FontWeight.w800,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AgroColors.surfaceDark,
+        constraints: const BoxConstraints(minHeight: 56),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AgroRadii.large),
         ),
-        titleMedium: const TextStyle(
-          fontSize: 16,
-          height: 22 / 16,
-          fontWeight: FontWeight.w800,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AgroRadii.large),
+          borderSide: const BorderSide(color: AgroColors.lineDark),
         ),
-        titleSmall: const TextStyle(
-          fontSize: 15,
-          height: 20 / 15,
-          fontWeight: FontWeight.w800,
+      ),
+      navigationBarTheme: const NavigationBarThemeData(
+        height: 80,
+        backgroundColor: AgroColors.surfaceDark,
+        indicatorColor: AgroColors.primaryContainerDark,
+        labelTextStyle: WidgetStatePropertyAll(
+          TextStyle(fontWeight: FontWeight.w800),
         ),
-        bodyLarge: const TextStyle(
-          fontSize: 16,
-          height: 1.5,
-          fontWeight: FontWeight.w400,
-        ),
-        bodyMedium: const TextStyle(
-          fontSize: 14,
-          height: 1.5,
-          fontWeight: FontWeight.w400,
-        ),
-        bodySmall: const TextStyle(
-          fontSize: 12,
-          height: 1.5,
-          fontWeight: FontWeight.w400,
-        ),
-        labelLarge: const TextStyle(
-          fontSize: 14,
-          height: 20 / 14,
-          fontWeight: FontWeight.w800,
-        ),
-        labelMedium: const TextStyle(
-          fontSize: 12,
-          height: 16 / 12,
-          fontWeight: FontWeight.w800,
-        ),
-        labelSmall: const TextStyle(
-          fontSize: 11,
-          height: 16 / 11,
-          fontWeight: FontWeight.w800,
-        ),
-      )
-      .apply(bodyColor: AgroColors.ink, displayColor: AgroColors.ink);
+      ),
+    );
+  }
+
+  static TextTheme _textTheme(TextTheme base, {Color color = AgroColors.ink}) =>
+      base
+          .copyWith(
+            displayLarge: const TextStyle(
+              fontSize: 38,
+              height: 44 / 38,
+              fontWeight: FontWeight.w900,
+            ),
+            displayMedium: const TextStyle(
+              fontSize: 32,
+              height: 38 / 32,
+              fontWeight: FontWeight.w900,
+            ),
+            headlineLarge: const TextStyle(
+              fontSize: 28,
+              height: 34 / 28,
+              fontWeight: FontWeight.w900,
+            ),
+            headlineMedium: const TextStyle(
+              fontSize: 24,
+              height: 30 / 24,
+              fontWeight: FontWeight.w900,
+            ),
+            headlineSmall: const TextStyle(
+              fontSize: 22,
+              height: 28 / 22,
+              fontWeight: FontWeight.w800,
+            ),
+            titleLarge: const TextStyle(
+              fontSize: 20,
+              height: 26 / 20,
+              fontWeight: FontWeight.w800,
+            ),
+            titleMedium: const TextStyle(
+              fontSize: 16,
+              height: 22 / 16,
+              fontWeight: FontWeight.w800,
+            ),
+            titleSmall: const TextStyle(
+              fontSize: 15,
+              height: 20 / 15,
+              fontWeight: FontWeight.w800,
+            ),
+            bodyLarge: const TextStyle(
+              fontSize: 16,
+              height: 1.5,
+              fontWeight: FontWeight.w400,
+            ),
+            bodyMedium: const TextStyle(
+              fontSize: 14,
+              height: 1.5,
+              fontWeight: FontWeight.w400,
+            ),
+            bodySmall: const TextStyle(
+              fontSize: 12,
+              height: 1.5,
+              fontWeight: FontWeight.w400,
+            ),
+            labelLarge: const TextStyle(
+              fontSize: 14,
+              height: 20 / 14,
+              fontWeight: FontWeight.w800,
+            ),
+            labelMedium: const TextStyle(
+              fontSize: 12,
+              height: 16 / 12,
+              fontWeight: FontWeight.w800,
+            ),
+            labelSmall: const TextStyle(
+              fontSize: 11,
+              height: 16 / 11,
+              fontWeight: FontWeight.w800,
+            ),
+          )
+          .apply(bodyColor: color, displayColor: color);
 }

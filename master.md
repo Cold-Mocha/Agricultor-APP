@@ -3,7 +3,7 @@
 **Estado:** fuente visual oficial para AgroCampo MVP Módulo 001  
 **Plataforma objetivo:** Android con Flutter y Material 3  
 **Evidencia visual auditada:** `agrocampo-highfi.html` y, para Physalis/Apicultura, `index.html`
-**Tema oficial del MVP:** claro  
+**Temas oficiales del MVP:** claro y oscuro, seleccionables desde Perfil > Tema; claro sigue siendo el valor por defecto.  
 **Ámbito:** identidad, tokens, componentes, navegación, estados, pantallas y criterios de implementación visual. No define lógica de negocio ni amplía el alcance funcional.
 
 **Límite de autoridad:** `master.md` no es un módulo funcional. La única fuente de requisitos es
@@ -914,13 +914,35 @@ resultado final, sin estado de respaldo pendiente.
 
 ### Arquitectura visual del tema
 
-- Usar Material 3 y un único `ThemeData` claro para el MVP.
-- Construir `ColorScheme` con el mapeo de este documento.
-- Crear una extensión semántica del tema para success, warning, info, offline, syncing y pending.
-- Crear tokens centralizados de espaciado, radios, elevación, tamaño de icono y movimiento.
+- Usar Material 3 con dos `ThemeData`: claro (por defecto) y oscuro.
+- Construir cada `ColorScheme` con el mapeo de este documento.
+- Crear una extensión semántica del tema para success, warning, info, offline, syncing y pending, con variante para cada `ColorScheme`.
+- Crear tokens centralizados de espaciado, radios, elevación, tamaño de icono y movimiento, compartidos por ambos temas.
 - Acceder al tema desde el contexto; no usar referencias estáticas ni HEX dentro de pantallas.
 - Empaquetar Inter y los SVG de cultivo localmente para operación offline.
-- Un tema oscuro futuro requiere especificación y aprobación separadas; “Modo claro” es el estado actual del MVP.
+- La preferencia de tema (claro/oscuro) se guarda por dispositivo en Perfil > Tema y se aplica de inmediato a toda la app; no se sincroniza entre dispositivos.
+
+### Tema oscuro
+
+Aprobado como parte del MVP. Reutiliza la paleta de marca y el mismo criterio de contraste de
+este documento (4,5:1 texto normal, 3:1 texto grande/bordes); sólo agrega superficies y
+contenedores oscuros, verificados contra ese criterio:
+
+| Token | Valor | Uso | Contraste verificado |
+|---|---:|---|---|
+| `surface-dark` | `#0E1A14` | Fondo de pantalla y de tarjeta (equivalente oscuro de `surface`) | — |
+| `ink-dark` | `#E7F3EC` | Texto principal sobre `surface-dark` | 15,66:1 |
+| `muted-dark` | `#9FC2AE` | Texto secundario sobre `surface-dark` | 9,18:1 |
+| `line-dark` | `#4A7D63` | Borde de tarjetas y campos sobre `surface-dark` | 3,74:1 |
+| `primary-container-dark` | `#234A39` | Contenedor primario; texto con `brand-soft` | 7,06:1 |
+| `secondary-container-dark` | `#4A3310` | Contenedor de acento/advertencia; texto con `accent-soft` | 9,42:1 |
+| `tertiary-container-dark` | `#122A4D` | Contenedor informativo; texto con `sky-soft` | 11,76:1 |
+| `error-container-dark` | `#5C1A29` | Contenedor de error; texto con `rose-soft` | 10,43:1 |
+
+El resto del `ColorScheme` oscuro reutiliza tokens claros ya aprobados invertidos de rol: `primary`
+usa `brand-soft` (texto `brand-dark`, 7,01:1), `secondary` sigue usando `accent` (texto
+`brand-dark`, 5,19:1), `tertiary` sigue usando `sky` (texto blanco, 5,17:1) y `error` sigue usando
+`rose` (texto blanco, 5,23:1).
 
 ### Traducción HTML a Flutter
 
@@ -1104,7 +1126,7 @@ Estas mejoras corrigen presentación, accesibilidad, feedback y adaptación resp
 22. Toda pantalla con datos define carga, vacío, contenido, error y recuperación; las pantallas que guardan también definen pendiente y sincronización.
 23. El mapa siempre tiene alternativa textual y los vértices editables disponen de blanco táctil y alternativa al arrastre.
 24. AgroIA se presenta como ayuda consultiva y exige verificación en terreno; no toma decisiones ni ejecuta acciones.
-25. No implementar tema oscuro, iOS ni variantes visuales fuera del MVP sin especificación aprobada.
+25. No implementar iOS ni variantes visuales fuera del MVP sin especificación aprobada. El tema oscuro está aprobado (ver «Tema oscuro» en Flutter Implementation Guidelines) y no requiere aprobación adicional.
 26. No agregar roles, empresas, trabajadores, inventario, ERP, automatización física de riego, IA avanzada ni análisis fotográfico.
 27. Las decisiones visuales no modifican cálculos, reglas agronómicas, sincronización ni lógica funcional del MVP.
 28. Cada cambio visual debe probarse al menos en teléfono estrecho, teléfono grande y landscape, además de contraste y semántica.

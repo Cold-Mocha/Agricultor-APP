@@ -38,6 +38,12 @@ final class ProfileController {
 
   Future<void> setWeatherAlertsEnabled(String ownerId, bool enabled) =>
       _facade.setWeatherAlertsEnabled(ownerId, enabled);
+
+  Stream<bool> watchDarkModeEnabled(String ownerId) =>
+      _facade.watchDarkModeEnabled(ownerId);
+
+  Future<void> setDarkModeEnabled(String ownerId, bool enabled) =>
+      _facade.setDarkModeEnabled(ownerId, enabled);
 }
 
 final profileControllerProvider = Provider<ProfileController>(

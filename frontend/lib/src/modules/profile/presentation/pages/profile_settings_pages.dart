@@ -97,7 +97,46 @@ final class ProfileSecurityPage extends ConsumerWidget {
   }
 }
 
-enum ProfileInformationKind { language, theme, help, contact, privacy }
+final class ProfileThemePage extends ConsumerWidget {
+  const ProfileThemePage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ownerId = ref.watch(unlockedOwnerIdProvider);
+    final controller = ref.watch(profileControllerProvider);
+    return AgroPage(
+      title: 'Tema',
+      subtitle: 'Apariencia de AgroCampo',
+      child: ownerId == null
+          ? const Center(child: Text('Inicia sesión para ver esta opción.'))
+          : ListView(
+              children: [
+                StreamBuilder<bool>(
+                  stream: controller.watchDarkModeEnabled(ownerId),
+                  builder: (context, snapshot) => SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    secondary: const Icon(LucideIcons.moon),
+                    title: const Text('Modo oscuro'),
+                    subtitle: const Text(
+                      'Se aplica de inmediato en toda la aplicación.',
+                    ),
+                    value: snapshot.data ?? false,
+                    onChanged: (enabled) =>
+                        controller.setDarkModeEnabled(ownerId, enabled),
+                  ),
+                ),
+                const _InformationCard(
+                  icon: LucideIcons.smartphone,
+                  title: 'Preferencia de este dispositivo',
+                  message: 'El tema se guarda en este dispositivo y no se sincroniza con otros.',
+                ),
+              ],
+            ),
+    );
+  }
+}
+
+enum ProfileInformationKind { language, help, contact, privacy }
 
 final class ProfileInformationPage extends ConsumerWidget {
   const ProfileInformationPage({required this.kind, super.key});
@@ -116,17 +155,6 @@ final class ProfileInformationPage extends ConsumerWidget {
             LucideIcons.languages,
             'Español (Chile)',
             'Es el idioma activo del MVP. Aún no hay otros idiomas disponibles.',
-          ),
-        ],
-      ),
-      ProfileInformationKind.theme => (
-        'Tema',
-        'Apariencia de AgroCampo',
-        const [
-          _InfoItem(
-            LucideIcons.sun,
-            'Modo claro',
-            'Es el tema disponible actualmente. No se simula un modo oscuro que todavía no forma parte del MVP.',
           ),
         ],
       ),

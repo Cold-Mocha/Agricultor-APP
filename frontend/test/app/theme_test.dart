@@ -25,4 +25,20 @@ void main() {
       const Size(AgroSizes.touchTarget, AgroSizes.touchTarget),
     );
   });
+
+  test('dark theme is backed by the same token palette, inverted', () {
+    final theme = AgroTheme.dark;
+
+    expect(theme.useMaterial3, isTrue);
+    expect(theme.colorScheme.brightness, Brightness.dark);
+    expect(theme.colorScheme.surface, AgroColors.surfaceDark);
+    expect(theme.colorScheme.onSurface, AgroColors.inkDark);
+    expect(theme.scaffoldBackgroundColor, AgroColors.surfaceDark);
+    expect(theme.extension<AgroSemanticColors>(), isNotNull);
+    const states = <WidgetState>{};
+    expect(
+      theme.filledButtonTheme.style?.minimumSize?.resolve(states),
+      const Size(AgroSizes.touchTarget, AgroSizes.touchTarget),
+    );
+  });
 }

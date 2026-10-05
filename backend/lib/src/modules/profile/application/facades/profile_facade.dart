@@ -61,4 +61,24 @@ final class ProfileFacade {
 
   Future<void> setWeatherAlertsEnabled(String ownerId, bool enabled) =>
       _weather.setAlertsEnabled(ownerId, enabled);
+
+  Stream<bool> watchDarkModeEnabled(String ownerId) =>
+      (_database.select(_database.appPreferences)..where(
+            (row) =>
+                row.ownerId.equals(ownerId) &
+                row.key.equals('dark_mode_enabled'),
+          ))
+          .watchSingleOrNull()
+          .map((preference) => preference?.value == 'true');
+
+  Future<void> setDarkModeEnabled(String ownerId, bool enabled) => _database
+      .into(_database.appPreferences)
+      .insertOnConflictUpdate(
+        AppPreferencesCompanion.insert(
+          ownerId: ownerId,
+          key: 'dark_mode_enabled',
+          value: enabled.toString(),
+          updatedAt: DateTime.now().toUtc(),
+        ),
+      );
 }

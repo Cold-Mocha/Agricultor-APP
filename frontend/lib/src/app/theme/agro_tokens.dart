@@ -33,6 +33,18 @@ abstract final class AgroColors {
   static const mapPolygonSaved = Color(0x554B7F52);
   static const mapPolygonStroke = Color(0xFF2F6338);
   static const mapOverlayShadow = Color(0x33000000);
+
+  /// Dark theme surfaces and containers. Verified to clear 4,5:1 for text,
+  /// 3:1 for large text/borders against the same-row background, matching
+  /// the contrast criterion in master.md.
+  static const surfaceDark = Color(0xFF0E1A14);
+  static const inkDark = Color(0xFFE7F3EC);
+  static const mutedDark = Color(0xFF9FC2AE);
+  static const lineDark = Color(0xFF4A7D63);
+  static const primaryContainerDark = Color(0xFF234A39);
+  static const secondaryContainerDark = Color(0xFF4A3310);
+  static const tertiaryContainerDark = Color(0xFF122A4D);
+  static const errorContainerDark = Color(0xFF5C1A29);
 }
 
 abstract final class AgroSpacing {

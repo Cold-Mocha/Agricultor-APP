@@ -186,9 +186,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                       ),
                       GoRoute(
                         path: 'tema',
-                        builder: (_, _) => const ProfileInformationPage(
-                          kind: ProfileInformationKind.theme,
-                        ),
+                        builder: (_, _) => const ProfileThemePage(),
                       ),
                       GoRoute(
                         path: 'ayuda',
