@@ -1,8 +1,7 @@
 import 'dart:convert';
 
 import 'package:agrocampo_backend/src/modules/reminders/domain/entities/field_alerts.dart';
-import 'package:agrocampo_backend/src/modules/weather/infrastructure/persistence/weather_gateway.dart';
-import 'package:agrocampo_backend/src/modules/weather/infrastructure/persistence/weather_repository.dart';
+import 'package:agrocampo_backend/src/modules/weather/weather_api.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:drift/drift.dart';
 
@@ -28,13 +27,12 @@ final class FieldAlertService {
   Future<void> saveSettings(String ownerId, FieldAlertSettings settings) =>
       _write(ownerId, _settingsKey, jsonEncode(settings.toJson()));
 
-  /// Refreshes the weather of every quadrant through [gateway]; a failing
+  /// Refreshes the weather of every quadrant through [weather]; a failing
   /// quadrant keeps its cached forecast.
-  Future<void> refreshWeather(String ownerId, WeatherGateway gateway) async {
-    final repository = WeatherRepository(_database, gateway);
+  Future<void> refreshWeather(String ownerId, WeatherFacade weather) async {
     for (final sector in await _liveSectors(ownerId)) {
       try {
-        await repository.refresh(
+        await weather.refresh(
           ownerId: ownerId,
           locality: sector.name,
           sectorId: sector.id,
@@ -63,10 +61,7 @@ final class FieldAlertService {
                   row.deletedAt.isNull(),
             ))
             .get();
-    final cache = WeatherRepository(
-      _database,
-      const UnavailableWeatherGateway(),
-    );
+    final cache = WeatherFacade.cacheOnly(_database);
     final forecasts = <SectorForecast>[];
     for (final sector in sectors) {
       final weather = await cache.cached(ownerId, sectorId: sector.id);
@@ -74,7 +69,10 @@ final class FieldAlertService {
         forecasts.add((
           sectorId: sector.id,
           sectorName: sector.name,
-          weather: weather,
+          forecast: [
+            for (final day in weather.forecast)
+              (date: day.date, minimumC: day.minimumC, maximumC: day.maximumC),
+          ],
         ));
       }
     }

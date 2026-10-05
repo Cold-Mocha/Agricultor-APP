@@ -4,6 +4,7 @@ import 'package:agrocampo_backend/src/composition/sync_codec_composition.dart';
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/secure_session_store.dart';
 import 'package:agrocampo_backend/src/modules/reminders/infrastructure/alerts/field_alert_service.dart';
 import 'package:agrocampo_backend/src/modules/weather/infrastructure/persistence/weather_gateway.dart';
+import 'package:agrocampo_backend/src/modules/weather/weather_api.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:agrocampo_backend/src/platform/network/runtime_config.dart';
 import 'package:agrocampo_backend/src/platform/notifications/local_notification_scheduler.dart';
@@ -66,7 +67,10 @@ Future<bool> _runFieldAlerts(String ownerId) async {
       try {
         final client = await _ownerClient(config, ownerId);
         if (client == null) return false;
-        await service.refreshWeather(ownerId, SupabaseWeatherGateway(client));
+        await service.refreshWeather(
+          ownerId,
+          WeatherFacade.withGateway(database, SupabaseWeatherGateway(client)),
+        );
       } on Object {
         // Offline: the cached forecast and season dates still apply.
       }

@@ -1,5 +1,3 @@
-import 'package:agrocampo_backend/src/modules/weather/domain/entities/weather_snapshot.dart';
-
 /// Automatic alerts the farmer can switch on, each with its own threshold.
 enum FieldAlertKind {
   /// Threshold: days before a season ends.
@@ -70,11 +68,19 @@ final class FieldAlertSettings {
 /// A season that may end soon, already labeled with its quadrant.
 typedef SeasonEnding = ({String seasonId, String sectorName, DateTime endsOn});
 
-/// Cached weather of one quadrant.
+/// One forecast day's extremes; a minimal projection so this domain never
+/// depends on the weather module's own entity.
+typedef FieldAlertForecastDay = ({
+  DateTime date,
+  double minimumC,
+  double maximumC,
+});
+
+/// Cached weather of one quadrant, reduced to what the rules below need.
 typedef SectorForecast = ({
   String sectorId,
   String sectorName,
-  WeatherSnapshot weather,
+  List<FieldAlertForecastDay> forecast,
 });
 
 final class FieldAlertNotice {
@@ -126,7 +132,7 @@ List<FieldAlertNotice> evaluateFieldAlerts({
   final cold = settings.rule(FieldAlertKind.cold);
   final heat = settings.rule(FieldAlertKind.heat);
   for (final sector in forecasts) {
-    for (final day in sector.weather.forecast) {
+    for (final day in sector.forecast) {
       final local = day.date.toLocal();
       final date = DateTime(local.year, local.month, local.day);
       if (date.isBefore(start)) continue;

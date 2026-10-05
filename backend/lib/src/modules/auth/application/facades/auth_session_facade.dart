@@ -4,8 +4,8 @@ import 'package:agrocampo_backend/src/modules/auth/domain/entities/session_state
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/auth_repository.dart';
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/biometric_unlock_gateway.dart';
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/local_auth_repository.dart';
-import 'package:agrocampo_backend/src/modules/crop_cycles/application/facades/crop_cycles_facade.dart';
-import 'package:agrocampo_backend/src/modules/reminders/application/facades/field_alerts_facade.dart';
+import 'package:agrocampo_backend/src/modules/crop_cycles/crop_cycles_api.dart';
+import 'package:agrocampo_backend/src/modules/reminders/reminders_api.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:agrocampo_backend/src/platform/database/owner_transfer.dart';
 import 'package:drift/drift.dart';

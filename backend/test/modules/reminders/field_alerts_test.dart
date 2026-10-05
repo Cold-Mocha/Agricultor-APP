@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:agrocampo_backend/src/modules/reminders/domain/entities/field_alerts.dart';
 import 'package:agrocampo_backend/src/modules/reminders/infrastructure/alerts/field_alert_service.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,24 +7,10 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../helpers/in_memory_database.dart';
 import '../../helpers/territory_fixture.dart';
 
-WeatherSnapshot _weather(List<(double, double)> minMax) => WeatherSnapshot(
-  locality: 'Sector 1',
-  temperatureC: 10,
-  humidityPercent: 60,
-  rainMillimeters: 0,
-  summary: 'Despejado',
-  fetchedAt: DateTime.utc(2026, 7, 1),
-  forecast: [
-    for (final (index, (min, max)) in minMax.indexed)
-      WeatherForecastDay(
-        date: DateTime(2026, 7, 1 + index),
-        minimumC: min,
-        maximumC: max,
-        rainChancePercent: 0,
-        summary: 'Despejado',
-      ),
-  ],
-);
+List<FieldAlertForecastDay> _forecast(List<(double, double)> minMax) => [
+  for (final (index, (min, max)) in minMax.indexed)
+    (date: DateTime(2026, 7, 1 + index), minimumC: min, maximumC: max),
+];
 
 void main() {
   final today = DateTime(2026, 7, 1);
@@ -69,7 +54,7 @@ void main() {
           (
             sectorId: 'sector-1',
             sectorName: 'Sector 1',
-            weather: _weather([(-1, 12), (3, 20), (8, 31)]),
+            forecast: _forecast([(-1, 12), (3, 20), (8, 31)]),
           ),
         ],
         today: today,
@@ -94,7 +79,7 @@ void main() {
           (
             sectorId: 'sector-1',
             sectorName: 'Sector 1',
-            weather: _weather([(-3, 10)]),
+            forecast: _forecast([(-3, 10)]),
           ),
         ],
         today: today,
