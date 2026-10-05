@@ -45,6 +45,19 @@ final class ProfilePage extends ConsumerWidget {
                           subtitle: 'Biometría y protección de datos',
                           onTap: () => context.push(AppRoutes.profileSecurity),
                         ),
+                        AgroSettingsTile(
+                          icon: LucideIcons.bell,
+                          title: 'Notificaciones',
+                          subtitle: 'Alertas de clima y recordatorios',
+                          onTap: () =>
+                              context.push(AppRoutes.profileNotifications),
+                        ),
+                        AgroSettingsTile(
+                          icon: LucideIcons.sun,
+                          title: 'Tema',
+                          subtitle: 'Apariencia de la aplicación',
+                          onTap: () => context.push(AppRoutes.profileTheme),
+                        ),
                       ],
                     ),
                     const SizedBox(height: AgroSpacing.lg),

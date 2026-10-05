@@ -61,6 +61,20 @@ aprobados por la spec 004.
 | `flutter test test/modules/crop_cycles/` | 5/5 |
 | Suite completa frontend | 91 pasan; 3 fallas preexistentes en Más/Perfil/LABORES por cambios pendientes ajenos a temporadas |
 
+## Corrección de fallas preexistentes — Más/Perfil/LABORES (host, 2026-10-05)
+
+| Falla | Causa | Solución |
+|---|---|---|
+| `more_page_test.dart` | `MorePage` resolvía `profileControllerProvider` (y por tanto `appDatabaseProvider`) de forma incondicional, sin esperar sesión activa. | La tarjeta de perfil se movió a un widget propio que sólo se construye cuando hay `ownerId`; se agregaron los grupos «Campo», «Organización» y «Respaldo y datos» con `AgroSectionHeader`. |
+| `profile_page_test.dart` | Faltaban los accesos a Notificaciones y Tema dentro de «Preferencias». | Se agregaron `AgroSettingsTile` para Notificaciones (`AppRoutes.profileNotifications`) y Tema (`AppRoutes.profileTheme`), ambas rutas ya cableadas. |
+| `labor_form_golden_test.dart` | El golden quedó desactualizado: el selector de tipo de labor ahora muestra el ícono de cada tipo en el valor seleccionado (parte del reemplazo de iconografía a Lucide), cambio no reflejado en la imagen de referencia. | Golden regenerado con `flutter test --update-goldens`. |
+
+| Suite | Resultado |
+|---|---|
+| Suite completa frontend | 94/94 |
+| `flutter analyze` frontend | PASS |
+| `dart run tool/check_architecture.dart` | PASS |
+
 ## Última verificación registrada (host, 2026-09-11)
 
 | Suite | Resultado |
