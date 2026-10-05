@@ -178,10 +178,7 @@ final class _StepHeader extends StatelessWidget {
       ),
       const SizedBox(width: AgroSpacing.sm),
       Expanded(
-        child: Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
+        child: Text(title, style: Theme.of(context).textTheme.titleMedium),
       ),
     ],
   );

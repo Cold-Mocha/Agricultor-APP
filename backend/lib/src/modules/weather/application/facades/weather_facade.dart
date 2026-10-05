@@ -26,10 +26,10 @@ final class WeatherFacade {
     AppDatabase database,
     WeatherGateway gateway,
   ) => WeatherFacade._(
-        WeatherRepository(database, gateway),
-        (ownerId, enabled) =>
-            WeatherAlertService(database).setEnabled(ownerId, enabled),
-      );
+    WeatherRepository(database, gateway),
+    (ownerId, enabled) =>
+        WeatherAlertService(database).setEnabled(ownerId, enabled),
+  );
 
   /// Read-only access to each quadrant's cached forecast, without a provider
   /// able to fetch a fresh one. Used where only the local cache matters

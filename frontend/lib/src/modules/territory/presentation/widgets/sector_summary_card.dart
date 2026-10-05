@@ -88,7 +88,6 @@ final class SectorSummaryCard extends StatelessWidget {
                           ),
                         ],
                       ),
-
                     ],
                   ),
                 ),
@@ -101,5 +100,4 @@ final class SectorSummaryCard extends StatelessWidget {
       ),
     );
   }
-
 }

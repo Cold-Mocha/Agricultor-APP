@@ -127,15 +127,9 @@ final class _AgriculturalSeasonFormPageState
             ),
           ),
           const SizedBox(height: AgroSpacing.md),
-          Text(
-            'Descripción:',
-            style: Theme.of(context).textTheme.labelLarge,
-          ),
+          Text('Descripción:', style: Theme.of(context).textTheme.labelLarge),
           const SizedBox(height: AgroSpacing.xs),
-          TextFormField(
-            controller: _notes,
-            maxLines: 3,
-          ),
+          TextFormField(controller: _notes, maxLines: 3),
           const SizedBox(height: 24),
           FilledButton.icon(
             onPressed: _saving ? null : _save,

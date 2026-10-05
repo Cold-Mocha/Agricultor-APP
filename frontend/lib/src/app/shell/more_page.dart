@@ -34,10 +34,12 @@ final class MorePage extends ConsumerWidget {
                       children: [
                         CircleAvatar(
                           radius: AgroSizes.iconFeatured,
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primaryContainer,
-                          foregroundColor:
-                              Theme.of(context).colorScheme.onPrimaryContainer,
+                          backgroundColor: Theme.of(context)
+                              .colorScheme
+                              .primaryContainer,
+                          foregroundColor: Theme.of(context)
+                              .colorScheme
+                              .onPrimaryContainer,
                           child: const Icon(
                             LucideIcons.user,
                             size: AgroSizes.iconFeatured,
@@ -50,13 +52,11 @@ final class MorePage extends ConsumerWidget {
                             children: [
                               Text(
                                 'Usuario',
-                                style:
-                                    Theme.of(context).textTheme.labelMedium,
+                                style: Theme.of(context).textTheme.labelMedium,
                               ),
                               Text(
                                 profile?.username ?? '',
-                                style:
-                                    Theme.of(context).textTheme.titleLarge,
+                                style: Theme.of(context).textTheme.titleLarge,
                               ),
                             ],
                           ),

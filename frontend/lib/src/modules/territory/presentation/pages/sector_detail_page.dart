@@ -537,49 +537,49 @@ final class _SectorHistorySection extends ConsumerWidget {
   final String sectorId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => FutureBuilder<List<HistoryEvent>>(
-    future: ref
-        .watch(historyControllerProvider)
-        .list(HistoryFilter(ownerId: ownerId, sectorId: sectorId)),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState != ConnectionState.done) {
-        return const Center(child: CircularProgressIndicator());
-      }
-      final events = snapshot.data ?? const <HistoryEvent>[];
-      if (events.isEmpty) {
-        return const AgroEmptyState(
-          title: 'Sin registros',
-          message: 'Las actividades de este cuadrante aparecerán aquí.',
-        );
-      }
-      return Column(
-        children: [
-          for (final event in events)
-            Padding(
-              padding: const EdgeInsets.only(bottom: AgroSpacing.xs),
-              child: Card(
-                child: ListTile(
-                  leading: Icon(switch (event.type) {
-                    HistoryEventType.labor => LucideIcons.wheat,
-                    HistoryEventType.cropAssignment => LucideIcons.leaf,
-                    HistoryEventType.soil => LucideIcons.flaskConical,
-                  }),
-                  title: Text(event.title),
-                  subtitle: Text(
-                    [
-                      if (event.cropLabel != null) event.cropLabel!,
-                      if (event.detail != null && event.detail!.isNotEmpty)
-                        event.detail!,
-                      MaterialLocalizations.of(
-                        context,
-                      ).formatShortDate(event.occurredAt.toLocal()),
-                    ].join(' · '),
+  Widget build(BuildContext context, WidgetRef ref) =>
+      FutureBuilder<List<HistoryEvent>>(
+        future: ref
+            .watch(historyControllerProvider)
+            .list(HistoryFilter(ownerId: ownerId, sectorId: sectorId)),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final events = snapshot.data ?? const <HistoryEvent>[];
+          if (events.isEmpty) {
+            return const AgroEmptyState(
+              title: 'Sin registros',
+              message: 'Las actividades de este cuadrante aparecerán aquí.',
+            );
+          }
+          return Column(
+            children: [
+              for (final event in events)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AgroSpacing.xs),
+                  child: Card(
+                    child: ListTile(
+                      leading: Icon(switch (event.type) {
+                        HistoryEventType.labor => LucideIcons.wheat,
+                        HistoryEventType.cropAssignment => LucideIcons.leaf,
+                        HistoryEventType.soil => LucideIcons.flaskConical,
+                      }),
+                      title: Text(event.title),
+                      subtitle: Text(
+                        [
+                          if (event.cropLabel != null) event.cropLabel!,
+                          if (event.detail != null && event.detail!.isNotEmpty)
+                            event.detail!,
+                          MaterialLocalizations.of(context)
+                              .formatShortDate(event.occurredAt.toLocal()),
+                        ].join(' · '),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-        ],
+            ],
+          );
+        },
       );
-    },
-  );
 }
