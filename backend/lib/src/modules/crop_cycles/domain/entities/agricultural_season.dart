@@ -46,6 +46,21 @@ final class AgriculturalSeason {
     }
   }
 
+  /// A season is active while today falls between its start and end, planned
+  /// before it starts and closed once it ended. Dates are compared by day.
+  static AgriculturalSeasonStatus statusFor({
+    required DateTime startsOn,
+    required DateTime endsOn,
+    required DateTime today,
+  }) {
+    DateTime day(DateTime value) =>
+        DateTime.utc(value.year, value.month, value.day);
+    final now = day(today);
+    if (now.isBefore(day(startsOn))) return AgriculturalSeasonStatus.planned;
+    if (now.isAfter(day(endsOn))) return AgriculturalSeasonStatus.closed;
+    return AgriculturalSeasonStatus.active;
+  }
+
   static bool canTransition(
     AgriculturalSeasonStatus from,
     AgriculturalSeasonStatus to,

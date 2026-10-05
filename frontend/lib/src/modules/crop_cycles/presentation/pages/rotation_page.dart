@@ -4,6 +4,7 @@ import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/auth/auth_ui.dart';
 import 'package:agrocampo/src/modules/crop_cycles/presentation/controllers/crop_cycles_controller.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
+import 'package:agrocampo/src/shared/design_system/components/crop_pictogram.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,7 +43,6 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
     if (ownerId == null) {
       return const AgroPage(
         title: 'Cultivos del sector',
-        subtitle: 'Planificar no cambia el cultivo vigente antes de la fecha.',
         child: AgroEmptyState(
           title: 'Sin sesión',
           message: 'Inicia sesión para administrar cultivos.',
@@ -57,27 +57,6 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
         final available = isRotationAvailableForSector(sector?.kind);
         return AgroPage(
           title: 'Cultivos del sector',
-          subtitle:
-              'Planificar no cambia el cultivo vigente antes de la fecha.',
-          actions: available
-              ? [
-                  IconButton(
-                    tooltip: 'Intercambiar cultivos',
-                    onPressed: () => _exchange(context, ref, ownerId),
-                    icon: const Icon(LucideIcons.arrowLeftRight),
-                  ),
-                  IconButton(
-                    tooltip: 'Asignar cultivo',
-                    onPressed: () => _assign(context, ref, ownerId),
-                    icon: const Icon(LucideIcons.sprout),
-                  ),
-                  IconButton(
-                    tooltip: 'Planificar cultivo',
-                    onPressed: () => _plan(context, ref, ownerId),
-                    icon: const Icon(LucideIcons.plus),
-                  ),
-                ]
-              : const [],
           child: sectorSnapshot.connectionState != ConnectionState.done
               ? const Center(child: CircularProgressIndicator())
               : sector == null
@@ -98,19 +77,14 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
                   ),
                   builder: (context, snapshot) {
                     final assignments = snapshot.data ?? const [];
-                    final contextCard = Card(
-                      child: ListTile(
-                        leading: const Icon(LucideIcons.leaf),
-                        title: Text('Contexto: ${sector.name}'),
-                        subtitle: Text(
-                          '${rotationContextLabel(sector.kind)} · fechas efectivas conservan el historial',
-                        ),
-                      ),
+                    final actions = _RotationActions(
+                      onExchange: () => _exchange(context, ref, ownerId),
+                      onAssign: () => _assign(context, ref, ownerId),
                     );
                     if (assignments.isEmpty) {
                       return ListView(
                         children: [
-                          contextCard,
+                          actions,
                           AgroEmptyState(
                             title: 'Sin cultivos asignados',
                             message: 'Asigna el cultivo vigente del sector. Necesitas una temporada activa en este cuadrante.',
@@ -139,19 +113,21 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
                     }
                     return ListView(
                       children: [
-                        contextCard,
+                        actions,
                         for (final assignment in assignments)
                           Card(
                             child: ListTile(
-                              leading: Icon(
-                                assignment.status ==
-                                        SectorCropAssignmentStatus.active
-                                    ? LucideIcons.leaf
-                                    : LucideIcons.calendar,
+                              leading: CropPictogram(
+                                asset: assignment.crop.iconAsset,
+                                colorToken: assignment.crop.colorToken,
+                                semanticLabel: assignment.crop.label,
+                                apiary:
+                                    assignment.crop.id ==
+                                    CropPictogram.apiaryCropId,
                               ),
                               title: Text(assignment.crop.label),
                               subtitle: Text(
-                                '${_status(assignment)} · desde ${_date(assignment.effectiveFrom)}${assignment.effectiveTo == null ? '' : ' hasta ${_date(assignment.effectiveTo!)}'} · ${assignment.syncState == 'synced' ? 'Sincronizado' : 'Local'}',
+                                '${_status(assignment)} · desde ${_date(assignment.effectiveFrom)}${assignment.effectiveTo == null ? '' : ' hasta ${_date(assignment.effectiveTo!)}'}',
                               ),
                               trailing: switch (assignment.status) {
                                 SectorCropAssignmentStatus.planned ||
@@ -165,18 +141,11 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
                                       action,
                                     ),
                                     itemBuilder: (_) => [
-                                      if (isRotationActivationDue(assignment))
-                                        const PopupMenuItem(
-                                          value: 'activate',
-                                          child: Text(
-                                            'Activar en fecha planificada',
-                                          ),
-                                        ),
                                       if (assignment.status ==
                                           SectorCropAssignmentStatus.planned)
                                         const PopupMenuItem(
                                           value: 'cancel',
-                                          child: Text('Cancelar planificación'),
+                                          child: Text('Quitar cultivo'),
                                         ),
                                       if (assignment.status ==
                                           SectorCropAssignmentStatus.active)
@@ -232,7 +201,7 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
     if (today.isBefore(season.startsOn)) {
       _notify(
         context,
-        'La temporada activa empieza el ${_date(season.startsOn)}. Planifica el cultivo para esa fecha.',
+        'La temporada activa empieza el ${_date(season.startsOn)}. El cultivo podrá cambiarse desde esa fecha.',
       );
       return;
     }
@@ -242,7 +211,7 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Asignar cultivo'),
+          title: const Text('Cambiar a otro cultivo'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -252,7 +221,7 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
                 decoration: const InputDecoration(labelText: 'Cultivo'),
                 items: [
                   for (final crop in crops)
-                    DropdownMenuItem(value: crop, child: Text(crop.label)),
+                    DropdownMenuItem(value: crop, child: _CropOption(crop)),
                 ],
                 onChanged: (value) => selected = value!,
               ),
@@ -283,7 +252,7 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
             ),
             FilledButton(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: const Text('Asignar'),
+              child: const Text('Cambiar'),
             ),
           ],
         ),
@@ -341,12 +310,6 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
     }
     try {
       switch (action) {
-        case 'activate':
-          await controller.activate(
-            ownerId: ownerId,
-            assignmentId: assignment.id,
-            effectiveAt: assignment.effectiveFrom,
-          );
         case 'cancel':
           await controller.cancel(
             ownerId: ownerId,
@@ -360,11 +323,7 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
           );
       }
       if (!context.mounted) return;
-      _notify(context, switch (action) {
-        'activate' => '${assignment.crop.label} ahora es el cultivo vigente.',
-        'cancel' => 'Planificación cancelada.',
-        _ => '${assignment.crop.label} quitado del sector.',
-      });
+      _notify(context, '${assignment.crop.label} quitado del sector.');
     } on Object catch (error) {
       if (context.mounted) _notify(context, _assignFailure(error));
     }
@@ -372,7 +331,7 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
 
   static String _assignFailure(Object error) => switch (error) {
     StateError(message: 'rotation_overlap') =>
-      'Ya hay un cultivo planificado en esas fechas. Cancélalo o actívalo.',
+      'Ya hay otro cultivo en esas fechas. Quítalo antes de cambiarlo.',
     StateError(message: 'assignment_outside_season') =>
       'La fecha queda fuera de la temporada activa.',
     StateError(message: 'season_closed' || 'assignment_season_not_active') =>
@@ -380,7 +339,7 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
     StateError(message: 'operation_requires_crop') =>
       'Sólo los sectores vegetales pueden tener cultivo.',
     StateError(message: 'assignment_end_before_start') =>
-      'El cultivo empieza en una fecha futura. Cancela su planificación.',
+      'El cultivo empieza en una fecha futura. Quítalo desde su menú.',
     _ => 'No se pudo actualizar el cultivo: $error',
   };
 
@@ -392,90 +351,6 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(message), action: action));
-  }
-
-  Future<void> _plan(
-    BuildContext context,
-    WidgetRef ref,
-    String ownerId,
-  ) async {
-    if (!await _ensureCropContext(context, ref, ownerId)) return;
-    final controller = ref.read(cropsControllerProvider);
-    final options = await controller.planOptions(
-      ownerId: ownerId,
-      sectorId: sectorId,
-    );
-    final season = options?.season;
-    if (season == null) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Primero activa una temporada.')),
-        );
-      }
-      return;
-    }
-    final crops = options!.crops;
-    if (!context.mounted || crops.isEmpty) return;
-    CropRef selected = crops.first;
-    var date = DateTime.now().add(const Duration(days: 1));
-    final accepted = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Planificar cultivo'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              DropdownButtonFormField<CropRef>(
-                initialValue: selected,
-                isExpanded: true,
-                decoration: const InputDecoration(labelText: 'Cultivo'),
-                items: [
-                  for (final crop in crops)
-                    DropdownMenuItem(value: crop, child: Text(crop.label)),
-                ],
-                onChanged: (value) => selected = value!,
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('Fecha efectiva'),
-                subtitle: Text(_date(date)),
-                onTap: () async {
-                  final value = await showDatePicker(
-                    context: dialogContext,
-                    firstDate: season.startsOn,
-                    lastDate: season.endsOn ?? DateTime(2100),
-                    initialDate: date.isBefore(season.startsOn)
-                        ? season.startsOn
-                        : date,
-                  );
-                  if (value != null) setDialogState(() => date = value);
-                },
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Cancelar'),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(dialogContext, true),
-              child: const Text('Planificar'),
-            ),
-          ],
-        ),
-      ),
-    );
-    if (accepted == true) {
-      await controller.plan(
-        ownerId: ownerId,
-        sectorId: sectorId,
-        agriculturalSeasonId: season.id,
-        crop: selected,
-        effectiveFrom: date,
-      );
-    }
   }
 
   Future<void> _exchange(
@@ -503,7 +378,7 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Intercambiar cultivos'),
+          title: const Text('Intercambiar cultivo con otro sector'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -589,12 +464,65 @@ final class _RotationPageState extends ConsumerState<RotationPage> {
   static String _status(SectorCropAssignment assignment) =>
       switch (assignment.status) {
         SectorCropAssignmentStatus.active => 'Vigente',
-        SectorCropAssignmentStatus.planned =>
-          'Planificado para ${_date(assignment.effectiveFrom)}',
+        SectorCropAssignmentStatus.planned => 'Próximo',
         SectorCropAssignmentStatus.ended => 'Finalizado',
         SectorCropAssignmentStatus.cancelled => 'Cancelado',
       };
 
   static String _date(DateTime value) =>
       '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
+}
+
+/// Crop choice with its fruit pictogram, as in the catalog.
+final class _CropOption extends StatelessWidget {
+  const _CropOption(this.crop);
+
+  final CropRef crop;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      SizedBox.square(
+        dimension: 32,
+        child: FittedBox(
+          child: CropPictogram(
+            asset: crop.iconAsset,
+            colorToken: crop.colorToken,
+            apiary: crop.id == CropPictogram.apiaryCropId,
+          ),
+        ),
+      ),
+      const SizedBox(width: AgroSpacing.sm),
+      Flexible(child: Text(crop.label, overflow: TextOverflow.ellipsis)),
+    ],
+  );
+}
+
+/// Crop actions below the page title, one under the other.
+final class _RotationActions extends StatelessWidget {
+  const _RotationActions({required this.onExchange, required this.onAssign});
+
+  final VoidCallback onExchange;
+  final VoidCallback onAssign;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: AgroSpacing.md),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        OutlinedButton.icon(
+          onPressed: onAssign,
+          icon: const Icon(LucideIcons.sprout),
+          label: const Text('Cambiar a otro cultivo'),
+        ),
+        const SizedBox(height: AgroSpacing.xs),
+        OutlinedButton.icon(
+          onPressed: onExchange,
+          icon: const Icon(LucideIcons.arrowLeftRight),
+          label: const Text('Intercambiar cultivo con otro sector'),
+        ),
+      ],
+    ),
+  );
 }

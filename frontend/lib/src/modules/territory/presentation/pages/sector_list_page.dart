@@ -34,7 +34,7 @@ final class SectorListPage extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => const AgroEmptyState(
           title: 'No se pudieron leer los cuadrantes',
-          message: 'Los datos locales siguen guardados. Vuelve a abrir esta sección.',
+          message: 'Tus datos siguen guardados. Vuelve a abrir esta sección.',
         ),
         data: (value) => _buildContent(context, ref, value),
       ),
@@ -55,7 +55,7 @@ final class SectorListPage extends ConsumerWidget {
       case SectorListStatus.error:
         return const AgroEmptyState(
           title: 'No se pudieron leer los cuadrantes',
-          message: 'Los datos locales siguen guardados. Vuelve a abrir esta sección.',
+          message: 'Tus datos siguen guardados. Vuelve a abrir esta sección.',
         );
       case SectorListStatus.ready:
         return _readyContent(context, ref, state);

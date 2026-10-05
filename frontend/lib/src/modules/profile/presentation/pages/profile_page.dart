@@ -31,98 +31,19 @@ final class ProfilePage extends ConsumerWidget {
               stream: controller.watchProfile(ownerId),
               builder: (context, profileSnapshot) {
                 final profile = profileSnapshot.data;
-                final displayName =
-                    profile?.displayName ?? 'Nombre no configurado';
                 return ListView(
                   key: const PageStorageKey('profile-scroll'),
                   children: [
-                    _ProfileHeader(
-                      displayName: displayName,
-                      email: profile?.emailDisplay,
-                      onEdit: () =>
-                          context.push(AppRoutes.profilePersonalInformation),
-                    ),
-                    const SizedBox(height: AgroSpacing.lg),
-                    AgroSettingsGroup(
-                      title: 'Cuenta',
-                      children: [
-                        AgroSettingsTile(
-                          icon: LucideIcons.idCard,
-                          title: 'Información personal',
-                          subtitle: 'Nombre visible y dato de acceso',
-                          onTap: () => context.push(
-                            AppRoutes.profilePersonalInformation,
-                          ),
-                        ),
-                      ],
-                    ),
+                    _ProfileHeader(username: profile?.username),
                     const SizedBox(height: AgroSpacing.lg),
                     AgroSettingsGroup(
                       title: 'Preferencias',
                       children: [
                         AgroSettingsTile(
-                          icon: LucideIcons.bell,
-                          title: 'Notificaciones',
-                          subtitle: 'Alertas meteorológicas y recordatorios',
-                          onTap: () =>
-                              context.push(AppRoutes.profileNotifications),
-                        ),
-                        AgroSettingsTile(
-                          icon: LucideIcons.languages,
-                          title: 'Idioma',
-                          subtitle: 'Idioma de la aplicación',
-                          value: 'Español (Chile)',
-                          onTap: () => context.push(AppRoutes.profileLanguage),
-                        ),
-                        AgroSettingsTile(
-                          icon: LucideIcons.fingerprint,
-                          title: 'Seguridad y biometría',
-                          subtitle: 'Desbloqueo en este dispositivo',
+                          icon: LucideIcons.shield,
+                          title: 'Seguridad',
+                          subtitle: 'Biometría y protección de datos',
                           onTap: () => context.push(AppRoutes.profileSecurity),
-                        ),
-                        AgroSettingsTile(
-                          icon: LucideIcons.sun,
-                          title: 'Tema',
-                          subtitle: 'Apariencia disponible',
-                          value: 'Claro',
-                          onTap: () => context.push(AppRoutes.profileTheme),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AgroSpacing.lg),
-                    AgroSettingsGroup(
-                      title: 'Ayuda y privacidad',
-                      children: [
-                        AgroSettingsTile(
-                          icon: LucideIcons.circleHelp,
-                          title: 'Ayuda y soporte',
-                          subtitle: 'Uso en terreno y datos offline',
-                          onTap: () => context.push(AppRoutes.profileHelp),
-                        ),
-                        AgroSettingsTile(
-                          icon: LucideIcons.circleHelp,
-                          title: 'Contacto',
-                          subtitle: 'Estado del canal de atención',
-                          onTap: () => context.push(AppRoutes.profileContact),
-                        ),
-                        AgroSettingsTile(
-                          icon: LucideIcons.shieldCheck,
-                          title: 'Privacidad',
-                          subtitle: 'Guardado local y respaldo',
-                          onTap: () => context.push(AppRoutes.profilePrivacy),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AgroSpacing.lg),
-                    AgroSettingsGroup(
-                      title: 'Datos',
-                      children: [
-                        AgroSettingsTile(
-                          icon: LucideIcons.cloudSync,
-                          title: 'Estado del respaldo',
-                          subtitle:
-                              'Pendientes, errores y última sincronización',
-                          onTap: () => context.push(AppRoutes.synchronization),
                         ),
                       ],
                     ),
@@ -154,7 +75,7 @@ final class ProfilePage extends ConsumerWidget {
       builder: (dialogContext) => AlertDialog(
         title: const Text('¿Cerrar sesión?'),
         content: const Text(
-          'Tus datos locales no se eliminan. La sincronización de esta cuenta se detendrá hasta que vuelvas a ingresar.',
+          'Tus datos no se eliminan. Vuelve a ingresar con tu usuario y PIN para seguir usándolos.',
         ),
         actions: [
           TextButton(
@@ -175,63 +96,37 @@ final class ProfilePage extends ConsumerWidget {
 }
 
 final class _ProfileHeader extends StatelessWidget {
-  const _ProfileHeader({
-    required this.displayName,
-    required this.email,
-    required this.onEdit,
-  });
+  const _ProfileHeader({required this.username});
 
-  final String displayName;
-  final String? email;
-  final VoidCallback onEdit;
+  final String? username;
 
   @override
-  Widget build(BuildContext context) {
-    final configured = displayName != 'Nombre no configurado';
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AgroSpacing.md),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              radius: AgroSizes.iconFeatured,
-              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-              foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-              child: configured
-                  ? Text(
-                      String.fromCharCode(displayName.runes.first)
-                          .toUpperCase(),
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    )
-                  : const Icon(LucideIcons.user, size: AgroSizes.iconFeatured),
+  Widget build(BuildContext context) => Card(
+    child: Padding(
+      padding: const EdgeInsets.all(AgroSpacing.md),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: AgroSizes.iconFeatured,
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+            child: const Icon(LucideIcons.user, size: AgroSizes.iconFeatured),
+          ),
+          const SizedBox(width: AgroSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Usuario', style: Theme.of(context).textTheme.labelMedium),
+                Text(
+                  username ?? '',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ],
             ),
-            const SizedBox(width: AgroSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    displayName,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: AgroSpacing.xxs),
-                  const Text('Uso personal · propietario/a de los cuadrantes'),
-                  if (email case final value?) ...[
-                    const SizedBox(height: AgroSpacing.xxs),
-                    Text(value),
-                  ],
-                ],
-              ),
-            ),
-            IconButton(
-              tooltip: 'Editar información personal',
-              onPressed: onEdit,
-              icon: const Icon(LucideIcons.pencil),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }

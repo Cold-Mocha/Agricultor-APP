@@ -66,6 +66,19 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
     if (!types.contains(_type)) _type = types.first;
   }
 
+  IconData _iconFor(LaborType type) => switch (type) {
+    LaborType.irrigation => LucideIcons.droplet,
+    LaborType.soil => LucideIcons.flaskConical,
+    LaborType.fertilization => LucideIcons.sprayCan,
+    LaborType.diseaseAndPestControl => LucideIcons.bug,
+    LaborType.cultivation => LucideIcons.tractor,
+    LaborType.sowing => LucideIcons.sprout,
+    LaborType.pruning => LucideIcons.scissors,
+    LaborType.harvest => LucideIcons.wheat,
+    LaborType.apiary => Icons.emoji_nature,
+    LaborType.other => LucideIcons.ellipsis,
+  };
+
   @override
   void dispose() {
     for (final controller in [
@@ -89,26 +102,7 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
     child: ListView(
       children: [
         const AgroSectionHeader(
-          title: '1. Cuadrante y cultivo',
-          subtitle: 'Confirma dónde quedará guardada la labor.',
-        ),
-        const SizedBox(height: AgroSpacing.sm),
-        const AgriculturalContextSelector(requireSector: true),
-        BoundAgriculturalContextCard(
-          bound: _bound!,
-          changed: _bound!.differsFrom(
-            ref.watch(agriculturalContextControllerProvider),
-          ),
-          onRebind: () => setState(() {
-            _bound = BoundAgriculturalContext.from(
-              ref.read(agriculturalContextControllerProvider),
-            );
-            _keepTypeCompatible();
-          }),
-        ),
-        const SizedBox(height: AgroSpacing.lg),
-        const AgroSectionHeader(
-          title: '2. Tipo y fecha',
+          title: '1. Tipo y fecha',
           subtitle: 'Selecciona la labor que realizaste.',
         ),
         const SizedBox(height: AgroSpacing.sm),
@@ -119,7 +113,16 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
           decoration: const InputDecoration(labelText: 'Tipo de labor'),
           items: [
             for (final type in _availableTypes)
-              DropdownMenuItem(value: type, child: Text(type.label)),
+              DropdownMenuItem(
+                value: type,
+                child: Row(
+                  children: [
+                    Icon(_iconFor(type), size: 18),
+                    const SizedBox(width: AgroSpacing.sm),
+                    Text(type.label),
+                  ],
+                ),
+              ),
           ],
           onChanged: (value) => setState(() => _type = value ?? _type),
         ),
@@ -135,7 +138,7 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
         ),
         const SizedBox(height: AgroSpacing.md),
         const AgroSectionHeader(
-          title: '3. Detalle',
+          title: '2. Detalle',
           subtitle: 'Sólo se muestran los datos de esta labor.',
         ),
         _detailsPanel(),
@@ -169,7 +172,7 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
           ),
           LaborType.apiary => FilledButton.icon(
             onPressed: _bound?.sectorId == null ? null : _openApiary,
-            icon: const Icon(Icons.hive_outlined),
+            icon: const Icon(Icons.emoji_nature),
             label: const Text('Abrir revisión apícola'),
           ),
           _ => FilledButton(
@@ -344,8 +347,7 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
           );
       if (!mounted || outcome == null) return;
       final message = switch (outcome) {
-        SavedLocal<LaborFormInput>() =>
-          'Actividad guardada localmente · pendiente de sincronizar',
+        SavedLocal<LaborFormInput>() => 'Actividad guardada.',
         ValidationFailed<LaborFormInput>() ||
         DomainRejected<LaborFormInput>() =>
           'Revisa los datos; el borrador se conservó.',

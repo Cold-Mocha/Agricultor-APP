@@ -19,16 +19,12 @@ final class SectorSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = switch (summary.statusLabel) {
-      'Requiere revisar el respaldo' => Theme.of(context).colorScheme.error,
       'Sin cultivo asignado' => Theme.of(context).colorScheme.onSurfaceVariant,
       _ => Theme.of(context).colorScheme.primary,
     };
-    final lastIrrigation = _dateLabel(context, summary.lastIrrigationAt);
-    final lastRecord = _dateLabel(context, summary.lastRecordAt);
     final semantics =
         '${summary.displayName}. ${summary.cropLabel}. '
-        '${summary.statusLabel}. Último riego $lastIrrigation. '
-        'Último registro $lastRecord.';
+        '${summary.statusLabel}.';
     return Semantics(
       button: true,
       selected: selected,
@@ -55,6 +51,7 @@ final class SectorSummaryCard extends StatelessWidget {
                 CropPictogram(
                   asset: summary.cropIconAsset,
                   colorToken: summary.cropColorToken,
+                  apiary: summary.isApiary,
                 ),
                 const SizedBox(width: AgroSpacing.sm),
                 Expanded(
@@ -91,40 +88,7 @@ final class SectorSummaryCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: AgroSpacing.xs),
-                      Text(
-                        'Último riego: $lastIrrigation · Último registro: $lastRecord',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      if (summary.syncState != 'synced') ...[
-                        const SizedBox(height: AgroSpacing.xxs),
-                        Row(
-                          children: [
-                            Icon(
-                              summary.syncState == 'error' ||
-                                      summary.syncState == 'conflict'
-                                  ? LucideIcons.cloudOff
-                                  : LucideIcons.cloudUpload,
-                              size: AgroSizes.iconAuxiliary,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurfaceVariant,
-                            ),
-                            const SizedBox(width: AgroSpacing.xxs),
-                            Expanded(
-                              child: Text(
-                                summary.syncState == 'error' ||
-                                        summary.syncState == 'conflict'
-                                    ? 'El dato local sigue guardado; revisa el respaldo.'
-                                    : 'Cambios por respaldar.',
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+
                     ],
                   ),
                 ),
@@ -138,8 +102,4 @@ final class SectorSummaryCard extends StatelessWidget {
     );
   }
 
-  static String _dateLabel(BuildContext context, DateTime? value) {
-    if (value == null) return 'sin registro';
-    return MaterialLocalizations.of(context).formatShortDate(value.toLocal());
-  }
 }

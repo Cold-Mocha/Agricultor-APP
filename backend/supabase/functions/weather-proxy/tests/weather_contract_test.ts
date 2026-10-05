@@ -20,6 +20,8 @@ const payload = {
     temperature_2m_min: [8, 7, 9],
     temperature_2m_max: [19, 16, 21],
     precipitation_probability_max: [35, 80, 5],
+    precipitation_sum: [0, 6.4, 0],
+    wind_speed_10m_max: [12, 30.5, 8],
   },
 };
 
@@ -35,6 +37,13 @@ Deno.test("normalizes Open-Meteo without inventing official alerts", () => {
   assertEquals(result.attribution_url, "https://open-meteo.com/");
   assertEquals(result.forecast.length, 3);
   assertEquals(result.forecast[1].summary, "Lluvia ligera");
+  assertEquals(result.forecast[1].rain_mm, 6.4);
+  assertEquals(result.forecast[1].wind_max_kmh, 30.5);
+  assertEquals(
+    result.forecast[1].wind_gusts_max_kmh,
+    null,
+    "missing optional daily values stay empty instead of failing",
+  );
   assertEquals(result.alerts, []);
   assertEquals("key" in result, false);
   assertEquals("apikey" in result, false);
@@ -49,7 +58,7 @@ Deno.test("builds the requested Open-Meteo forecast contract", () => {
   assertEquals(url.searchParams.get("latitude"), "-38.7363");
   assertEquals(url.searchParams.get("longitude"), "-72.5974");
   assertEquals(url.searchParams.get("timezone"), "auto");
-  assertEquals(url.searchParams.get("forecast_days"), "3");
+  assertEquals(url.searchParams.get("forecast_days"), "7");
   assertEquals(
     url.searchParams.get("daily"),
     "weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max",

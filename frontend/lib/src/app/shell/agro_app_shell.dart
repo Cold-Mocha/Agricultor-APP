@@ -36,9 +36,9 @@ final class AgroAppShell extends StatelessWidget {
             label: 'AgroIA',
           ),
           NavigationDestination(
-            icon: Icon(LucideIcons.grid2x2),
-            selectedIcon: Icon(LucideIcons.grid2x2),
-            label: 'Más',
+            icon: Icon(LucideIcons.settings),
+            selectedIcon: Icon(LucideIcons.settings),
+            label: 'configuracion',
           ),
         ],
       ),

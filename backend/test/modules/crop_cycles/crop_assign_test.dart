@@ -121,4 +121,54 @@ void main() {
       reason: 'an ended crop cannot be removed twice',
     );
   });
+
+  test('a crop chosen for a future season starts with that season', () async {
+    final database = createInMemoryDatabase();
+    final container = ProviderContainer(
+      overrides: [appDatabaseProvider.overrideWithValue(database)],
+    );
+    addTearDown(database.close);
+    addTearDown(container.dispose);
+    await seedAgriculturalContextFixture(database);
+    final crops = container.read(cropCyclesFacadeProvider);
+    final trigo = (await crops.watchCatalog('owner-1').first).singleWhere(
+      (crop) => crop.id == 'trigo',
+    );
+    final today = DateTime.now();
+    final startsOn = DateTime(today.year + 1, 3);
+    final seasonId = await crops.saveSeasonByDates(
+      ownerId: 'owner-1',
+      sectorId: 'sector-1',
+      startsOn: startsOn,
+      endsOn: DateTime(today.year + 2, 2),
+    );
+
+    final assignmentId = await crops.assignCropForSeason(
+      ownerId: 'owner-1',
+      sectorId: 'sector-1',
+      agriculturalSeasonId: seasonId,
+      crop: trigo,
+    );
+
+    final assignments = await crops
+        .watchAssignments(ownerId: 'owner-1', sectorId: 'sector-1')
+        .first;
+    final created = assignments.singleWhere((item) => item.id == assignmentId);
+    expect(
+      created.status,
+      SectorCropAssignmentStatus.planned,
+      reason: 'the crop waits for its season instead of replacing today',
+    );
+    final season = await crops.loadSeason(ownerId: 'owner-1', id: seasonId);
+    expect(
+      created.effectiveFrom,
+      season!.startsOn,
+      reason: 'the crop starts on the season start date',
+    );
+    expect(
+      assignments.singleWhere((item) => item.id == 'assignment-1').status,
+      SectorCropAssignmentStatus.active,
+      reason: 'the current crop stays until the new season starts',
+    );
+  });
 }

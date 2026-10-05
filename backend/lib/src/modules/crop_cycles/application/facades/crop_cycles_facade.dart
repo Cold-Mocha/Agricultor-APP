@@ -131,6 +131,78 @@ final class CropCyclesFacade {
     notes: input.notes,
   );
 
+  /// Saves a season from its dates only: the status follows today's date and
+  /// the name is the date range, so the farmer edits start, end and notes.
+  Future<String> saveSeasonByDates({
+    required String ownerId,
+    required String sectorId,
+    required DateTime startsOn,
+    required DateTime endsOn,
+    String? id,
+    String? notes,
+    DateTime? today,
+  }) {
+    String date(DateTime value) =>
+        '${value.day.toString().padLeft(2, '0')}/'
+        '${value.month.toString().padLeft(2, '0')}/${value.year}';
+    return AgriculturalSeasonRepository(_database).save(
+      ownerId: ownerId,
+      sectorId: sectorId,
+      id: id,
+      name: 'Temporada ${date(startsOn)} – ${date(endsOn)}',
+      startsOn: startsOn,
+      endsOn: endsOn,
+      status: AgriculturalSeason.statusFor(
+        startsOn: startsOn,
+        endsOn: endsOn,
+        today: today ?? DateTime.now(),
+      ),
+      notes: notes,
+    );
+  }
+
+  /// Moves seasons forward as days pass: planned ones start and active ones
+  /// close on their dates. A closed season never reopens.
+  Future<int> reconcileSeasonStatuses(String ownerId, {DateTime? today}) async {
+    final rows =
+        await (_database.select(_database.agriculturalSeasons)..where(
+              (row) =>
+                  row.ownerId.equals(ownerId) &
+                  row.deletedAt.isNull() &
+                  row.endsOn.isNotNull() &
+                  row.status.isIn(const ['planned', 'active']),
+            ))
+            .get();
+    var changed = 0;
+    for (final row in rows) {
+      final current = AgriculturalSeasonStatus.values.byName(row.status);
+      final next = AgriculturalSeason.statusFor(
+        startsOn: row.startsOn,
+        endsOn: row.endsOn!,
+        today: today ?? DateTime.now(),
+      );
+      if (next == current || !AgriculturalSeason.canTransition(current, next)) {
+        continue;
+      }
+      try {
+        await AgriculturalSeasonRepository(_database).save(
+          ownerId: ownerId,
+          sectorId: row.sectorId,
+          id: row.id,
+          name: row.name,
+          startsOn: row.startsOn,
+          endsOn: row.endsOn,
+          status: next,
+          notes: row.notes,
+        );
+        changed++;
+      } on StateError {
+        // Another season is already active in this quadrant; leave it.
+      }
+    }
+    return changed;
+  }
+
   Stream<List<SectorCropAssignment>> watchAssignments({
     required String ownerId,
     required String sectorId,
@@ -199,20 +271,6 @@ final class CropCyclesFacade {
     return CropPlanOptions(season: _season(season), crops: crops);
   }
 
-  Future<String> plan({
-    required String ownerId,
-    required String sectorId,
-    required String agriculturalSeasonId,
-    required CropRef crop,
-    required DateTime effectiveFrom,
-  }) => SectorCropAssignmentRepository(_database).plan(
-    ownerId: ownerId,
-    sectorId: sectorId,
-    agriculturalSeasonId: agriculturalSeasonId,
-    crop: crop,
-    effectiveFrom: effectiveFrom,
-  );
-
   /// Plans and activates [crop] in one step so it becomes the sector's current
   /// crop from [effectiveFrom].
   Future<String> assign({
@@ -222,7 +280,7 @@ final class CropCyclesFacade {
     required CropRef crop,
     required DateTime effectiveFrom,
   }) => _database.transaction(() async {
-    final assignmentId = await plan(
+    final assignmentId = await SectorCropAssignmentRepository(_database).plan(
       ownerId: ownerId,
       sectorId: sectorId,
       agriculturalSeasonId: agriculturalSeasonId,
@@ -236,6 +294,46 @@ final class CropCyclesFacade {
     );
     return assignmentId;
   });
+
+  /// Sets [crop] for a season just configured. In a running season it
+  /// replaces the current crop from today; in a future one it starts with the
+  /// season and becomes current on that date.
+  Future<String> assignCropForSeason({
+    required String ownerId,
+    required String sectorId,
+    required String agriculturalSeasonId,
+    required CropRef crop,
+    DateTime? today,
+  }) async {
+    final season =
+        await (_database.select(_database.agriculturalSeasons)..where(
+              (row) =>
+                  row.id.equals(agriculturalSeasonId) &
+                  row.ownerId.equals(ownerId) &
+                  row.sectorId.equals(sectorId) &
+                  row.deletedAt.isNull(),
+            ))
+            .getSingle();
+    return switch (season.status) {
+      'active' => assign(
+        ownerId: ownerId,
+        sectorId: sectorId,
+        agriculturalSeasonId: season.id,
+        crop: crop,
+        effectiveFrom: _laterOf(today ?? DateTime.now(), season.startsOn),
+      ),
+      'planned' => SectorCropAssignmentRepository(_database).plan(
+        ownerId: ownerId,
+        sectorId: sectorId,
+        agriculturalSeasonId: season.id,
+        crop: crop,
+        effectiveFrom: season.startsOn,
+      ),
+      _ => throw StateError('season_closed'),
+    };
+  }
+
+  static DateTime _laterOf(DateTime a, DateTime b) => a.isAfter(b) ? a : b;
 
   /// Non-archived crops a farmer can pick for a quadrant.
   Future<List<CropRef>> availableCrops(String ownerId) async {

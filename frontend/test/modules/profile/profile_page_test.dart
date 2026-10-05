@@ -17,7 +17,7 @@ final class _OnlineConnectivity implements ConnectivityService {
 }
 
 void main() {
-  testWidgets('Perfil shows stored identity and coherent groups', (
+  testWidgets('Perfil shows only the login user and coherent groups', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(430, 1500);
@@ -31,7 +31,7 @@ void main() {
           LocalProfilesCompanion.insert(
             id: 'owner-1',
             displayName: 'María Soto',
-            emailDisplay: const Value('maria@example.com'),
+            emailDisplay: const Value('mario@agrocampo.app'),
             updatedAt: DateTime.now().toUtc(),
           ),
         );
@@ -48,16 +48,26 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('María Soto'), findsOneWidget);
-    expect(find.text('maria@example.com'), findsOneWidget);
+    expect(find.text('Mario'), findsOneWidget);
+    expect(find.text('María Soto'), findsNothing);
+    expect(find.textContaining('@'), findsNothing, reason: 'no email shown');
+    expect(find.textContaining('propietario'), findsNothing);
+    expect(find.byTooltip('Editar información personal'), findsNothing);
     expect(find.text('Ubicación'), findsNothing);
     expect(find.textContaining('parcela'), findsNothing);
-    expect(find.text('Información personal'), findsOneWidget);
+    expect(find.text('Información personal'), findsNothing);
     expect(find.text('Notificaciones'), findsOneWidget);
-    expect(find.text('Seguridad y biometría'), findsOneWidget);
-    expect(find.text('Ayuda y soporte'), findsOneWidget);
-    expect(find.text('Contacto'), findsOneWidget);
-    expect(find.text('Privacidad'), findsOneWidget);
+    expect(find.text('Tema'), findsOneWidget);
+    for (final removed in const [
+      'Idioma',
+      'Seguridad y biometría',
+      'Ayuda y soporte',
+      'Contacto',
+      'Privacidad',
+      'Estado del respaldo',
+    ]) {
+      expect(find.text(removed), findsNothing, reason: '$removed was removed');
+    }
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(milliseconds: 1));
     await database.close();

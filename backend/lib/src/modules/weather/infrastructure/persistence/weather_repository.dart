@@ -52,12 +52,26 @@ final class WeatherRepository {
     return snapshot;
   }
 
+  /// Reuses the quadrant's cached weather while it is under an hour old;
+  /// [forceRefresh] always asks the provider, as the reload button does.
   Future<WeatherLoadResult> load({
     required String ownerId,
     required String locality,
     String? sectorId,
     DateTime? now,
+    bool forceRefresh = false,
   }) async {
+    if (!forceRefresh) {
+      final cachedSnapshot = await cached(
+        ownerId,
+        sectorId: sectorId,
+        locality: locality,
+      );
+      if (cachedSnapshot != null &&
+          cachedSnapshot.isFreshAt(now ?? DateTime.now())) {
+        return WeatherFresh(cachedSnapshot, fromCache: true);
+      }
+    }
     try {
       return WeatherFresh(
         await refresh(ownerId: ownerId, locality: locality, sectorId: sectorId),
@@ -94,7 +108,9 @@ final class WeatherRepository {
                         ? const Constant(true)
                         : entry.locality.equals(locality)),
               )
-              ..orderBy([(entry) => OrderingTerm.desc(entry.fetchedAt)]))
+              ..orderBy([(entry) => OrderingTerm.desc(entry.fetchedAt)])
+              // A renamed quadrant keeps its old row; the newest one wins.
+              ..limit(1))
             .getSingleOrNull();
     return row == null
         ? null

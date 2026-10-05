@@ -3,8 +3,8 @@ import 'package:agrocampo/src/app/routing/app_routes.dart';
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
 import 'package:agrocampo/src/modules/auth/auth_ui.dart';
+import 'package:agrocampo/src/modules/home/presentation/widgets/today_weather_section.dart';
 import 'package:agrocampo/src/modules/territory/territory_ui.dart';
-import 'package:agrocampo/src/modules/weather/weather_ui.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_navigation_card.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_section_header.dart';
@@ -27,17 +27,10 @@ final class HomePage extends ConsumerWidget {
     return AgroPage(
       title: 'Inicio',
       subtitle: 'Tu cuaderno de campo',
-      actions: [
-        IconButton(
-          tooltip: 'Abrir perfil',
-          onPressed: () => context.push(AppRoutes.profile),
-          icon: const Icon(LucideIcons.circleUserRound),
-        ),
-      ],
       child: ownerId == null
           ? const AgroEmptyState(
               title: 'Sin sesión activa',
-              message: 'Inicia sesión para recuperar tu espacio local.',
+              message: 'Inicia sesión para ver tu campo.',
             )
           : StreamBuilder<List<ContextOption>>(
               stream: controller.watchSectors(ownerId),
@@ -69,15 +62,10 @@ final class HomePage extends ConsumerWidget {
                       subtitle: 'Condiciones y accesos principales para trabajar en terreno.',
                     ),
                     const SizedBox(height: AgroSpacing.sm),
-                    if (activeSector == null)
-                      const AgriculturalContextSelector(compact: true)
-                    else
-                      WeatherSummaryCard(
-                        ownerId: ownerId,
-                        sectorId: activeSector.id,
-                        locality: activeSector.name,
-                      ),
-                    const SizedBox(height: AgroSpacing.sm),
+                    if (activeSector == null) ...[
+                      const AgriculturalContextSelector(compact: true),
+                      const SizedBox(height: AgroSpacing.sm),
+                    ],
                     AgroNavigationCard(
                       icon: LucideIcons.layoutGrid,
                       title: 'Ver cuadrantes',
@@ -89,6 +77,14 @@ final class HomePage extends ConsumerWidget {
                       ].join(' · '),
                       onTap: () => context.go(AppRoutes.sectors),
                     ),
+                    if (activeSector != null) ...[
+                      const SizedBox(height: AgroSpacing.lg),
+                      TodayWeatherSection(
+                        ownerId: ownerId,
+                        sectorId: activeSector.id,
+                        label: activeSector.name,
+                      ),
+                    ],
                     const SizedBox(height: AgroSpacing.lg),
                     const RecentHistorySection(),
                     const SizedBox(height: AgroSpacing.lg),

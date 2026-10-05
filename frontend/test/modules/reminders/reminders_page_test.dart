@@ -35,17 +35,32 @@ final class _NoopScheduler implements LocalNotificationScheduler {
   Future<void> cancel(int id) async {}
 }
 
+final class _NoopAlertNotifier implements FieldAlertNotifier {
+  @override
+  Future<void> show({
+    required int id,
+    required String title,
+    String? body,
+  }) async {}
+}
+
 Future<void> _pumpPage(
   WidgetTester tester, {
   required AppDatabase database,
   SessionState session = const SessionState.signedIn('owner-1'),
 }) async {
+  // The alerts come first; a tall surface keeps the reminders list built.
+  tester.view.physicalSize = const Size(430, 2600);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
         appDatabaseProvider.overrideWithValue(database),
         connectivityServiceProvider.overrideWithValue(_OnlineConnectivity()),
         localNotificationSchedulerProvider.overrideWithValue(_NoopScheduler()),
+        fieldAlertNotifierProvider.overrideWithValue(_NoopAlertNotifier()),
         reminderNotificationPayloadBuilderProvider.overrideWithValue(
           reminderTestPayload,
         ),
@@ -168,6 +183,43 @@ void main() {
       find.widgetWithText(FilledButton, 'Guardar cambios'),
       findsOneWidget,
     );
+    await database.close();
+  });
+
+  testWidgets('each field alert has its switch and editable threshold', (
+    tester,
+  ) async {
+    final database = createInMemoryDatabase();
+    await _pumpPage(tester, database: database);
+
+    for (final title in const [
+      'Fin de temporada',
+      'Helada',
+      'Temperatura baja',
+      'Temperatura alta',
+    ]) {
+      expect(find.text(title), findsOneWidget, reason: '$title card');
+    }
+    expect(find.text('7 d'), findsOneWidget, reason: 'season end default');
+    expect(find.text('30 °C'), findsNothing, reason: 'heat starts disabled');
+
+    await tester.tap(find.widgetWithText(SwitchListTile, 'Temperatura alta'));
+    await tester.pumpAndSettle();
+    expect(find.text('30 °C'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Subir máxima'));
+    await tester.pumpAndSettle();
+    expect(find.text('31 °C'), findsOneWidget);
+
+    final saved = await tester.runAsync(
+      () => database.select(database.appPreferences).get(),
+    );
+    expect(
+      saved!.singleWhere((row) => row.key == 'field_alerts').value,
+      contains('"heat":{"enabled":true,"threshold":31.0}'),
+    );
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump(const Duration(milliseconds: 1));
     await database.close();
   });
 }

@@ -58,8 +58,6 @@ void main() {
         AppRoutes.cropCatalog,
         AppRoutes.history,
         AppRoutes.reminders,
-        AppRoutes.synchronization,
-        AppRoutes.conflict('conflict-1'),
         AppRoutes.export,
         AppRoutes.settings,
       ];

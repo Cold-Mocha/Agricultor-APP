@@ -29,9 +29,9 @@ final class AgroNavigationCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 80),
+          constraints: const BoxConstraints(minHeight: 64),
           child: Padding(
-            padding: const EdgeInsets.all(AgroSpacing.md),
+            padding: const EdgeInsets.all(AgroSpacing.sm),
             child: Row(
               children: [
                 Container(

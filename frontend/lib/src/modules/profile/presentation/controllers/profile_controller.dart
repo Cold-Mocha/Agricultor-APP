@@ -11,6 +11,14 @@ final class ProfileUiState {
 
   final String displayName;
   final String? emailDisplay;
+
+  /// The login user: accounts are `<user>@agrocampo.app`, so the part before
+  /// the `@` is what the farmer typed to sign in.
+  String get username {
+    final user = emailDisplay?.split('@').first.trim() ?? '';
+    if (user.isEmpty) return displayName;
+    return user[0].toUpperCase() + user.substring(1);
+  }
 }
 
 final class ProfileController {
@@ -24,9 +32,6 @@ final class ProfileController {
         (summary) =>
             summary == null ? null : ProfileUiState.fromSummary(summary),
       );
-
-  Future<ProfileSaveResult> save(String ownerId, ProfileFormInput input) =>
-      _facade.save(ownerId, input);
 
   Stream<bool> watchWeatherAlertsEnabled(String ownerId) =>
       _facade.watchWeatherAlertsEnabled(ownerId);

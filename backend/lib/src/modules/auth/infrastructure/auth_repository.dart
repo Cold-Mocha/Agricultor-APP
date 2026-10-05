@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/secure_session_store.dart';
 import 'package:agrocampo_backend/src/shared/kernel/app_failure.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -37,6 +39,19 @@ final class SupabaseAuthRepository implements AuthRepository {
   final SupabaseClient? client;
   final SessionStore store;
 
+  /// Keeps the stored refresh token current. Supabase rotates it on every
+  /// refresh, so persisting only the sign-in token would end the session at
+  /// the next app start. Lives as long as the app.
+  StreamSubscription<AuthState>? keepSessionFresh() =>
+      client?.auth.onAuthStateChange.listen(
+        (state) => persistRotatedToken(
+          store,
+          event: state.event,
+          userId: state.session?.user.id,
+          refreshToken: state.session?.refreshToken,
+        ),
+      );
+
   @override
   Future<RestoredAuthSession?> restoreSession() async {
     final local = await store.read();
@@ -47,6 +62,20 @@ final class SupabaseAuthRepository implements AuthRepository {
         ownerId: local.ownerId,
         biometricEnabled: local.biometricEnabled,
         offline: true,
+      );
+    }
+    // supabase_flutter recovers its own persisted session on initialize; it
+    // is newer than ours whenever the token rotated while the app was open.
+    final recovered = authClient.auth.currentSession;
+    if (recovered != null && recovered.user.id == local.ownerId) {
+      final refreshToken = recovered.refreshToken;
+      if (refreshToken != null && refreshToken.isNotEmpty) {
+        await store.persist(ownerId: local.ownerId, refreshToken: refreshToken);
+      }
+      return RestoredAuthSession(
+        ownerId: local.ownerId,
+        biometricEnabled: local.biometricEnabled,
+        offline: false,
       );
     }
     try {
@@ -66,7 +95,16 @@ final class SupabaseAuthRepository implements AuthRepository {
         biometricEnabled: local.biometricEnabled,
         offline: false,
       );
-    } on AuthException {
+    } on AuthException catch (error) {
+      // Without signal the session stays open offline; only a rejection by
+      // Supabase ends it.
+      if (isTransientAuthFailure(error)) {
+        return RestoredAuthSession(
+          ownerId: local.ownerId,
+          biometricEnabled: local.biometricEnabled,
+          offline: true,
+        );
+      }
       await store.clear();
       return null;
     } on Object {
@@ -109,7 +147,7 @@ final class SupabaseAuthRepository implements AuthRepository {
       );
       return AuthenticatedOwner(id: user.id, email: user.email ?? email.trim());
     } on AuthException catch (error) {
-      throw AuthenticationFailure('auth_rejected', error.message);
+      throw signInFailure(error);
     }
   }
 
@@ -125,4 +163,46 @@ final class SupabaseAuthRepository implements AuthRepository {
       await store.clear();
     }
   }
+}
+
+/// Network failures while refreshing must not sign the owner out.
+bool isTransientAuthFailure(Object error) =>
+    error is AuthRetryableFetchException;
+
+/// Persists a rotated refresh token for the signed-in owner. Ignores events
+/// after sign-out so a late refresh cannot resurrect a closed session.
+Future<void> persistRotatedToken(
+  SessionStore store, {
+  required AuthChangeEvent event,
+  required String? userId,
+  required String? refreshToken,
+}) async {
+  if (event != AuthChangeEvent.tokenRefreshed &&
+      event != AuthChangeEvent.signedIn) {
+    return;
+  }
+  if (userId == null || refreshToken == null || refreshToken.isEmpty) return;
+  final stored = await store.read();
+  if (stored == null || stored.ownerId != userId) return;
+  await store.persist(ownerId: userId, refreshToken: refreshToken);
+}
+
+/// Farmer-facing reason for a rejected sign-in; never exposes SDK details.
+AppFailure signInFailure(AuthException error) {
+  if (isTransientAuthFailure(error)) {
+    return const ConnectivityFailure(
+      'auth_offline',
+      'Sin conexión. El primer acceso requiere internet.',
+    );
+  }
+  if (error.code == 'invalid_credentials' || error.statusCode == '400') {
+    return const AuthenticationFailure(
+      'invalid_credentials',
+      'El usuario o el PIN son incorrectos.',
+    );
+  }
+  return const AuthenticationFailure(
+    'auth_rejected',
+    'No fue posible iniciar sesión. Intenta nuevamente.',
+  );
 }

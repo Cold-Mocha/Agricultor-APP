@@ -50,19 +50,6 @@ final class _ProductionPageState extends ConsumerState<ProductionPage> {
     subtitle: 'Cosecha trazable por sector y temporada',
     child: ListView(
       children: [
-        const AgriculturalContextSelector(requireSector: true),
-        BoundAgriculturalContextCard(
-          bound: _bound!,
-          changed: _bound!.differsFrom(
-            ref.watch(agriculturalContextControllerProvider),
-          ),
-          onRebind: () => setState(
-            () => _bound = BoundAgriculturalContext.from(
-              ref.read(agriculturalContextControllerProvider),
-            ),
-          ),
-        ),
-        const SizedBox(height: AgroSpacing.sm),
         FutureBuilder<HarvestContextUiState?>(
           future: _loadContext(),
           builder: (context, snapshot) {
@@ -168,13 +155,8 @@ final class _ProductionPageState extends ConsumerState<ProductionPage> {
         _showMissingContext();
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Cosecha guardada localmente · pendiente de sincronizar',
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Cosecha guardada.')));
     } on Object {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

@@ -15,7 +15,6 @@ import 'package:agrocampo/src/modules/production/production_ui.dart';
 import 'package:agrocampo/src/modules/profile/profile_ui.dart';
 import 'package:agrocampo/src/modules/reminders/reminders_ui.dart';
 import 'package:agrocampo/src/modules/soil/soil_ui.dart';
-import 'package:agrocampo/src/modules/sync_status/sync_status_ui.dart';
 import 'package:agrocampo/src/modules/territory/territory_ui.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/widgets.dart';
@@ -110,57 +109,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.home,
                 builder: (_, _) => const HomePage(),
-                routes: [
-                  GoRoute(
-                    path: 'perfil',
-                    builder: (_, _) => const ProfilePage(),
-                    routes: [
-                      GoRoute(
-                        path: 'informacion',
-                        builder: (_, _) =>
-                            const ProfilePersonalInformationPage(),
-                      ),
-                      GoRoute(
-                        path: 'notificaciones',
-                        builder: (_, _) => const ProfileNotificationsPage(),
-                      ),
-                      GoRoute(
-                        path: 'idioma',
-                        builder: (_, _) => const ProfileInformationPage(
-                          kind: ProfileInformationKind.language,
-                        ),
-                      ),
-                      GoRoute(
-                        path: 'seguridad',
-                        builder: (_, _) => const ProfileSecurityPage(),
-                      ),
-                      GoRoute(
-                        path: 'tema',
-                        builder: (_, _) => const ProfileInformationPage(
-                          kind: ProfileInformationKind.theme,
-                        ),
-                      ),
-                      GoRoute(
-                        path: 'ayuda',
-                        builder: (_, _) => const ProfileInformationPage(
-                          kind: ProfileInformationKind.help,
-                        ),
-                      ),
-                      GoRoute(
-                        path: 'contacto',
-                        builder: (_, _) => const ProfileInformationPage(
-                          kind: ProfileInformationKind.contact,
-                        ),
-                      ),
-                      GoRoute(
-                        path: 'privacidad',
-                        builder: (_, _) => const ProfileInformationPage(
-                          kind: ProfileInformationKind.privacy,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
               ),
             ],
           ),
@@ -219,6 +167,50 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (_, _) => const MorePage(),
                 routes: [
                   GoRoute(
+                    path: 'perfil',
+                    builder: (_, _) => const ProfilePage(),
+                    routes: [
+                      GoRoute(
+                        path: 'notificaciones',
+                        builder: (_, _) => const ProfileNotificationsPage(),
+                      ),
+                      GoRoute(
+                        path: 'idioma',
+                        builder: (_, _) => const ProfileInformationPage(
+                          kind: ProfileInformationKind.language,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'seguridad',
+                        builder: (_, _) => const ProfileSecurityPage(),
+                      ),
+                      GoRoute(
+                        path: 'tema',
+                        builder: (_, _) => const ProfileInformationPage(
+                          kind: ProfileInformationKind.theme,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'ayuda',
+                        builder: (_, _) => const ProfileInformationPage(
+                          kind: ProfileInformationKind.help,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'contacto',
+                        builder: (_, _) => const ProfileInformationPage(
+                          kind: ProfileInformationKind.contact,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'privacidad',
+                        builder: (_, _) => const ProfileInformationPage(
+                          kind: ProfileInformationKind.privacy,
+                        ),
+                      ),
+                    ],
+                  ),
+                  GoRoute(
                     path: 'temporadas',
                     builder: (_, _) => const AgriculturalSeasonsPage(),
                     routes: [
@@ -251,19 +243,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                       GoRoute(
                         path: ':id',
                         builder: (_, _) => const RemindersPage(),
-                      ),
-                    ],
-                  ),
-                  GoRoute(
-                    path: 'sincronizacion',
-                    name: 'sync-status',
-                    builder: (_, _) => const SyncStatusPage(),
-                    routes: [
-                      GoRoute(
-                        path: 'conflictos/:id',
-                        builder: (_, state) => ConflictResolutionPage(
-                          conflictId: state.pathParameters['id']!,
-                        ),
                       ),
                     ],
                   ),

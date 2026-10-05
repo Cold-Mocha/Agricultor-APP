@@ -4,7 +4,9 @@ import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_
 import 'package:agrocampo/src/modules/auth/auth_ui.dart';
 import 'package:agrocampo/src/modules/reminders/presentation/controllers/reminders_controller.dart';
 import 'package:agrocampo/src/modules/reminders/presentation/formatters/reminder_labels.dart';
+import 'package:agrocampo/src/modules/reminders/presentation/widgets/field_alerts_section.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
+import 'package:agrocampo/src/shared/design_system/components/agro_section_header.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,12 +36,20 @@ final class _RemindersPageState extends ConsumerState<RemindersPage> {
   Widget build(BuildContext context) {
     final ownerId = ref.watch(sessionControllerProvider).ownerId;
     final controller = ref.watch(remindersControllerProvider);
-    final localMode = ref.watch(isLocalModeProvider);
     return AgroPage(
       title: 'Recordatorios',
-      subtitle: 'Avisos locales disponibles sin conexión',
+      subtitle: 'Alertas del campo y avisos de labores',
       child: ListView(
         children: [
+          if (ownerId != null) ...[
+            FieldAlertsSection(ownerId: ownerId),
+            const SizedBox(height: AgroSpacing.lg),
+          ],
+          const AgroSectionHeader(
+            title: 'Recordatorios de labores',
+            subtitle: 'Un aviso en la fecha y hora que elijas.',
+          ),
+          const SizedBox(height: AgroSpacing.sm),
           const AgriculturalContextSelector(),
           const SizedBox(height: AgroSpacing.sm),
           TextField(
@@ -77,7 +87,7 @@ final class _RemindersPageState extends ConsumerState<RemindersPage> {
                 if (reminders.isEmpty) {
                   return const AgroEmptyState(
                     title: 'Aún no hay recordatorios',
-                    message: 'Programa una labor y quedará guardada incluso sin conexión.',
+                    message: 'Programa una labor y te avisaremos.',
                   );
                 }
                 return Column(
@@ -98,13 +108,10 @@ final class _RemindersPageState extends ConsumerState<RemindersPage> {
                                 reminder.scheduledAt,
                               ),
                               ReminderLabels.status(reminder.status),
-                              switch (reminder.notificationState) {
+                              ?switch (reminder.notificationState) {
                                 'permissionDenied' => 'Permiso denegado; recordatorio conservado sin aviso',
                                 'error' => 'Aviso del sistema no disponible; dato conservado',
-                                _ => ReminderLabels.syncState(
-                                  reminder.syncState,
-                                  localMode: localMode,
-                                ),
+                                _ => null,
                               },
                             ].join(' · '),
                           ),

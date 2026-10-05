@@ -68,7 +68,6 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
           ? 'Selecciona un cuadrante o crea uno nuevo.'
           : 'La geometría cambia solo al confirmar.',
       padding: EdgeInsets.zero,
-      showGlobalStatus: false,
       child: Column(
         children: [
           const Padding(
@@ -110,7 +109,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                                             AgroSpacing.sm,
                                           ),
                                           child: Text(
-                                            'Los tiles no están disponibles. Las geometrías locales siguen visibles y editables.',
+                                            'El mapa de fondo no está disponible. Los cuadrantes siguen visibles y editables.',
                                             textAlign: TextAlign.center,
                                           ),
                                         ),
@@ -134,7 +133,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
   Widget _map(List<MapSectorGeometry> sectors, String? selectedId) {
     final draftPoints = _visibleDraftPoints;
     return Semantics(
-      label: 'Mapa territorial de OpenStreetMap con geometrías locales',
+      label: 'Mapa territorial de OpenStreetMap con tus cuadrantes',
       child: ColoredBox(
         key: _mapKey,
         color: AgroColors.mapCanvas,
@@ -528,7 +527,20 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
 
   Future<void> _save(List<MapSectorGeometry> sectors, String ownerId) async {
     final created = _editingId == null;
-    final createdCrop = created && _newKind == 'crop';
+    // A crop quadrant only exists with its crop: choose it before saving.
+    CropRef? crop;
+    if (created && _newKind == 'crop') {
+      crop = await pickInitialCrop(context, ref, ownerId: ownerId);
+      if (!mounted) return;
+      if (crop == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Elige un cultivo para crear el cuadrante.'),
+          ),
+        );
+        return;
+      }
+    }
     final id = await ref
         .read(territoryMapControllerProvider)
         .saveGeometry(
@@ -539,28 +551,32 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
             polygon: _draft!.confirm(),
           ),
         );
+    var message = 'Geometría guardada en este dispositivo.';
+    if (crop != null) {
+      try {
+        await ref
+            .read(cropsControllerProvider)
+            .assignInitialCrop(ownerId: ownerId, sectorId: id, crop: crop);
+        message = 'Cuadrante guardado con ${crop.label} como cultivo.';
+      } on Object {
+        // Without its crop the new quadrant is removed instead of kept empty.
+        await ref.read(sectorDetailControllerProvider(id)).delete(ownerId);
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'No se pudo asignar el cultivo, así que el cuadrante no se creó.',
+            ),
+          ),
+        );
+        return;
+      }
+    }
     await ref
         .read(agriculturalContextControllerProvider.notifier)
         .selectSector(id);
     if (!mounted) return;
     _cancel();
-    var message = 'Geometría guardada en este dispositivo.';
-    if (createdCrop) {
-      try {
-        final crop = await askInitialCrop(
-          context,
-          ref,
-          ownerId: ownerId,
-          sectorId: id,
-        );
-        if (crop != null) {
-          message = 'Cuadrante guardado con ${crop.label} como cultivo.';
-        }
-      } on Object {
-        message = 'Cuadrante guardado. No se pudo asignar el cultivo; hazlo desde Cambiar cultivo.';
-      }
-    }
-    if (!mounted) return;
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
     // A new quadrant lands in "Tus cuadrantes"; edits stay on the map.

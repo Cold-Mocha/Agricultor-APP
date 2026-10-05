@@ -56,19 +56,16 @@ void main() {
       GeoPoint(-38.74, -72.59),
       GeoPoint(-38.73, -72.59),
     ];
-    final input = MapGeometryFormInput(
-      polygon: polygon,
-      kind: 'crop',
-    );
+    final input = MapGeometryFormInput(polygon: polygon, kind: 'crop');
     await map.saveGeometry(ownerId: 'owner-1', input: input);
     final last = await map.saveGeometry(ownerId: 'owner-1', input: input);
     await container.read(sectorDetailFacadeProvider(last)).delete('owner-1');
 
     final next = await map.saveGeometry(ownerId: 'owner-1', input: input);
 
-    final created = await (database.select(database.sectors)
-          ..where((row) => row.id.equals(next)))
-        .getSingle();
+    final created = await (database.select(
+      database.sectors,
+    )..where((row) => row.id.equals(next))).getSingle();
     expect(
       created.number,
       3,

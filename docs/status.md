@@ -48,6 +48,19 @@ La migración `0021_sector_only_territory.sql` **vacía los datos agrícolas y d
 Supabase al aplicarse, y Drift v12 borra la base local al actualizar la app. Ambos reinicios están
 aprobados por la spec 004.
 
+## Ajuste de UI — pantallas de temporadas (host, 2026-10-04)
+
+| Cambio | Detalle |
+|---|---|
+| Listado de Temporadas | El título de cada temporada es su rango de fechas (inicio — término), no su nombre; el estado se mantiene en el preview del listado. |
+| Crear/editar temporada | Inicio y Término van lado a lado dentro de un contenedor con borde verde redondeado; debajo la etiqueta «Descripción:» y su campo; se quitó el tile «Estado:» (se calcula solo con las fechas). |
+
+| Suite | Resultado |
+|---|---|
+| `flutter analyze` (módulos crop_cycles) | PASS |
+| `flutter test test/modules/crop_cycles/` | 5/5 |
+| Suite completa frontend | 91 pasan; 3 fallas preexistentes en Más/Perfil/LABORES por cambios pendientes ajenos a temporadas |
+
 ## Última verificación registrada (host, 2026-09-11)
 
 | Suite | Resultado |

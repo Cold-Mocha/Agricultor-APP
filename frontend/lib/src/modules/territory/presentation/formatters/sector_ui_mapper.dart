@@ -9,14 +9,11 @@ abstract final class SectorUiMapper {
     // an icon, crop label or localized text.
     final isApiary =
         ProductiveCategory.fromCode(summary.kind) == ProductiveCategory.apiary;
-    final statusLabel =
-        summary.syncState == 'conflict' || summary.syncState == 'error'
-        ? 'Requiere revisar el respaldo'
-        : isApiary
+    final statusLabel = isApiary
         ? 'Apicultura'
         : switch (summary.assignmentStatus) {
             'active' => 'Cultivo activo',
-            'planned' => 'Cultivo planificado',
+            'planned' => 'Cultivo próximo',
             _ => 'Sin cultivo asignado',
           };
     return SectorCardUiState(
@@ -37,6 +34,7 @@ abstract final class SectorUiMapper {
       lastIrrigationAt: summary.lastIrrigationAt,
       lastSoilAt: summary.lastSoilAt,
       soilMoisturePercent: summary.soilMoisturePercent,
+      soilTemperatureC: summary.soilTemperatureC,
     );
   }
 

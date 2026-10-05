@@ -53,23 +53,11 @@ final class _IrrigationRecordPageState
   @override
   Widget build(BuildContext context) => AgroPage(
     title: 'Riego',
-    subtitle: 'Registro básico disponible sin conexión',
+    subtitle: 'Registro de riego del cuadrante',
     child: ListView(
       children: [
         const Text(
           'Regla agronómica no disponible para este cultivo y tipo de suelo.',
-        ),
-        const AgriculturalContextSelector(requireSector: true),
-        BoundAgriculturalContextCard(
-          bound: _bound!,
-          changed: _bound!.differsFrom(
-            ref.watch(agriculturalContextControllerProvider),
-          ),
-          onRebind: () => setState(
-            () => _bound = BoundAgriculturalContext.from(
-              ref.read(agriculturalContextControllerProvider),
-            ),
-          ),
         ),
         const SizedBox(height: AgroSpacing.sm),
         OutlinedButton.icon(
@@ -192,7 +180,7 @@ final class _IrrigationRecordPageState
           .save(input, calculation: _preview);
       if (!mounted) return;
       if (failure == null) {
-        _notify('Riego guardado localmente.');
+        _notify('Riego guardado.');
       } else {
         _notify(failure.message, needsCrop: failure.needsCrop);
       }

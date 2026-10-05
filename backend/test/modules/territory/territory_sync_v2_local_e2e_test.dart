@@ -13,111 +13,103 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../helpers/sync_test_coordinator.dart';
 
 void main() {
-  test(
-    'sector syncs exact-once into a second DB without a parent',
-    () async {
-      const url = String.fromEnvironment('SUPABASE_URL');
-      const anonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
-      if (url.isEmpty || anonKey.isEmpty) return;
-      final client = SupabaseClient(
-        url,
-        anonKey,
-        authOptions: const AuthClientOptions(
-          authFlowType: AuthFlowType.implicit,
-        ),
-      );
-      addTearDown(client.dispose);
-      final suffix = DateTime.now().microsecondsSinceEpoch;
-      final auth = await client.auth.signUp(
-        email: 'territory-e2e-$suffix@agrocampo.local',
-        password: 'AgroCampo-$suffix!',
-      );
-      final ownerId = auth.user!.id;
-      expect(auth.session, isNotNull);
+  test('sector syncs exact-once into a second DB without a parent', () async {
+    const url = String.fromEnvironment('SUPABASE_URL');
+    const anonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+    if (url.isEmpty || anonKey.isEmpty) return;
+    final client = SupabaseClient(
+      url,
+      anonKey,
+      authOptions: const AuthClientOptions(authFlowType: AuthFlowType.implicit),
+    );
+    addTearDown(client.dispose);
+    final suffix = DateTime.now().microsecondsSinceEpoch;
+    final auth = await client.auth.signUp(
+      email: 'territory-e2e-$suffix@agrocampo.local',
+      password: 'AgroCampo-$suffix!',
+    );
+    final ownerId = auth.user!.id;
+    expect(auth.session, isNotNull);
 
-      final firstDirectory = await Directory.systemTemp.createTemp(
-        'territory-v2-a-',
-      );
-      final firstFile = File(
-        '${firstDirectory.path}${Platform.pathSeparator}db.sqlite',
-      );
-      var firstDb = AppDatabase.forTesting(NativeDatabase(firstFile));
-      addTearDown(() async {
-        await firstDb.close();
-        await firstDirectory.delete(recursive: true);
-      });
-      final sectorId = await SectorRepository(firstDb).save(
-        ownerId: ownerId,
-        number: 1,
-        name: 'Norte',
-        polygon: const [
-          GeoPoint(-38.74, -72.60),
-          GeoPoint(-38.74, -72.59),
-          GeoPoint(-38.73, -72.59),
-          GeoPoint(-38.73, -72.60),
-        ],
-      );
-      final queued = await firstDb.select(firstDb.syncOutbox).get();
-      expect(queued, hasLength(1));
-      expect(queued.single.aggregateType, 'sector');
-      expect(queued.single.dependencyOperationId, isNull);
-
+    final firstDirectory = await Directory.systemTemp.createTemp(
+      'territory-v2-a-',
+    );
+    final firstFile = File(
+      '${firstDirectory.path}${Platform.pathSeparator}db.sqlite',
+    );
+    var firstDb = AppDatabase.forTesting(NativeDatabase(firstFile));
+    addTearDown(() async {
       await firstDb.close();
-      firstDb = AppDatabase.forTesting(NativeDatabase(firstFile));
-      final realGateway = SupabaseSyncGateway(client);
-      final lostAckGateway = _LoseFirstAckGateway(realGateway);
-      await expectLater(
-        createTestSyncCoordinator(firstDb, lostAckGateway).synchronize(ownerId),
-        throwsA(isA<StateError>()),
-      );
-      expect(
-        await client.from('sectors').select('id').eq('id', sectorId),
-        hasLength(1),
-      );
-      expect(
-        (await firstDb.select(firstDb.syncOutbox).get())
-            .singleWhere((row) => row.aggregateType == 'sector')
-            .state,
-        'pending',
-      );
+      await firstDirectory.delete(recursive: true);
+    });
+    final sectorId = await SectorRepository(firstDb).save(
+      ownerId: ownerId,
+      number: 1,
+      name: 'Norte',
+      polygon: const [
+        GeoPoint(-38.74, -72.60),
+        GeoPoint(-38.74, -72.59),
+        GeoPoint(-38.73, -72.59),
+        GeoPoint(-38.73, -72.60),
+      ],
+    );
+    final queued = await firstDb.select(firstDb.syncOutbox).get();
+    expect(queued, hasLength(1));
+    expect(queued.single.aggregateType, 'sector');
+    expect(queued.single.dependencyOperationId, isNull);
 
-      await createTestSyncCoordinator(
-        firstDb,
-        lostAckGateway,
-      ).synchronize(ownerId);
-      expect(
-        await firstDb.select(firstDb.syncOutbox).get(),
-        everyElement(
-          isA<SyncOutboxData>().having((row) => row.state, 'state', 'done'),
-        ),
-      );
-      expect(
-        (await firstDb.select(firstDb.sectors).getSingle()).syncState,
-        'synced',
-      );
+    await firstDb.close();
+    firstDb = AppDatabase.forTesting(NativeDatabase(firstFile));
+    final realGateway = SupabaseSyncGateway(client);
+    final lostAckGateway = _LoseFirstAckGateway(realGateway);
+    await expectLater(
+      createTestSyncCoordinator(firstDb, lostAckGateway).synchronize(ownerId),
+      throwsA(isA<StateError>()),
+    );
+    expect(
+      await client.from('sectors').select('id').eq('id', sectorId),
+      hasLength(1),
+    );
+    expect(
+      (await firstDb.select(firstDb.syncOutbox).get())
+          .singleWhere((row) => row.aggregateType == 'sector')
+          .state,
+      'pending',
+    );
 
-      final secondDirectory = await Directory.systemTemp.createTemp(
-        'territory-v2-b-',
-      );
-      final secondFile = File(
-        '${secondDirectory.path}${Platform.pathSeparator}db.sqlite',
-      );
-      final secondDb = AppDatabase.forTesting(NativeDatabase(secondFile));
-      addTearDown(() async {
-        await secondDb.close();
-        await secondDirectory.delete(recursive: true);
-      });
-      await createTestSyncCoordinator(
-        secondDb,
-        realGateway,
-      ).synchronize(ownerId);
-      final downloadedSector = await secondDb
-          .select(secondDb.sectors)
-          .getSingle();
-      expect(downloadedSector.id, sectorId);
-      expect(downloadedSector.areaSquareMeters, greaterThan(0));
-    },
-  );
+    await createTestSyncCoordinator(
+      firstDb,
+      lostAckGateway,
+    ).synchronize(ownerId);
+    expect(
+      await firstDb.select(firstDb.syncOutbox).get(),
+      everyElement(
+        isA<SyncOutboxData>().having((row) => row.state, 'state', 'done'),
+      ),
+    );
+    expect(
+      (await firstDb.select(firstDb.sectors).getSingle()).syncState,
+      'synced',
+    );
+
+    final secondDirectory = await Directory.systemTemp.createTemp(
+      'territory-v2-b-',
+    );
+    final secondFile = File(
+      '${secondDirectory.path}${Platform.pathSeparator}db.sqlite',
+    );
+    final secondDb = AppDatabase.forTesting(NativeDatabase(secondFile));
+    addTearDown(() async {
+      await secondDb.close();
+      await secondDirectory.delete(recursive: true);
+    });
+    await createTestSyncCoordinator(secondDb, realGateway).synchronize(ownerId);
+    final downloadedSector = await secondDb
+        .select(secondDb.sectors)
+        .getSingle();
+    expect(downloadedSector.id, sectorId);
+    expect(downloadedSector.areaSquareMeters, greaterThan(0));
+  });
 }
 
 final class _LoseFirstAckGateway implements SyncGateway {

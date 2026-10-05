@@ -1,7 +1,4 @@
-import 'package:agrocampo/src/app/shell/agro_global_sync_status.dart';
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
-import 'package:agrocampo/src/modules/auth/auth_ui.dart';
-import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,7 +9,6 @@ final class AgroPage extends ConsumerWidget {
     this.subtitle,
     this.actions = const [],
     this.padding = const EdgeInsets.all(AgroSpacing.md),
-    this.showGlobalStatus = true,
     super.key,
   });
 
@@ -21,11 +17,9 @@ final class AgroPage extends ConsumerWidget {
   final Widget child;
   final List<Widget> actions;
   final EdgeInsetsGeometry padding;
-  final bool showGlobalStatus;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ownerId = ref.watch(unlockedOwnerIdProvider);
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     return Scaffold(
       appBar: AppBar(
@@ -47,13 +41,6 @@ final class AgroPage extends ConsumerWidget {
               ),
           ],
         ),
-        // Local mode has no cloud backup to report, so the banner stays hidden.
-        bottom:
-            ownerId == null ||
-                !showGlobalStatus ||
-                ref.watch(isLocalModeProvider)
-            ? null
-            : AgroGlobalSyncStatus(ownerId: ownerId),
       ),
       body: SafeArea(
         child: Center(

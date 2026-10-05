@@ -71,7 +71,7 @@ void main() {
       final labor = await database.select(database.labors).getSingle();
       expect(labor.type, LaborType.fertilization.name);
       expect(labor.syncState, 'pending');
-      expect(find.textContaining('pendiente de sincronizar'), findsOneWidget);
+      expect(find.text('Actividad guardada.'), findsOneWidget);
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pump(const Duration(milliseconds: 1));
     },

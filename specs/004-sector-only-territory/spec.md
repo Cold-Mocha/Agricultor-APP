@@ -64,12 +64,26 @@ Los datos existentes no se migran. Al actualizar:
    **Then** la operación se rechaza.
 3. **Given** un cambio de cuadrante activo, **Then** la temporada y la asignación activas se
    limpian.
+4. **Given** un cuadrante vegetal, **When** crea una temporada vigente o futura, **Then** la app
+   pregunta si también cambia el cultivo; en una temporada vigente reemplaza al cultivo actual
+   desde hoy y en una futura empieza junto con la temporada.
 
 ### Clima del cuadrante (P2)
 
 1. **Given** un cuadrante activo y modo en línea, **When** abre Inicio, **Then** el clima se
    consulta con el centro del polígono de ese cuadrante y se rotula con su nombre.
 2. **Given** que no hay cuadrante activo, **Then** Inicio invita a dibujar o elegir un cuadrante.
+3. **Given** un cuadrante activo, **When** abre Inicio, **Then** "Clima de hoy" muestra
+   temperatura, mínima/máxima del día, helada y fase lunar.
+4. **Given** un pronóstico con mínima ≤ 0 °C hoy o en días siguientes, **Then** la tarjeta Helada
+   dice "Pronosticada" con el día y la mínima, aclarando "Según pronóstico, no es alerta oficial";
+   si no, "No pronosticada". Reemplaza, para esta tarjeta, la regla de 002 que prohibía derivar
+   helada de un umbral local: el valor sólo repite el pronóstico del proveedor.
+5. **Given** clima disponible, **Then** "Próximos días" lista el pronóstico diario de 7 días con
+   condición, % y mm de lluvia, viento máximo y mínima/máxima.
+6. **Given** cualquier conexión, **Then** la fase lunar se calcula en el dispositivo con el mes
+   sinódico medio (precisión de alrededor de un día) e indica % iluminado y próxima luna llena o
+   nueva.
 
 ## Functional Requirements
 
@@ -82,6 +96,19 @@ Los datos existentes no se migran. Al actualizar:
 - **FR-004-05**: Las labores, producción, riego, suelo, apicultura, recordatorios e historial se
   filtran por agricultor, cuadrante y temporada, nunca por parcela.
 - **FR-004-06**: El clima usa el centro del polígono del cuadrante activo.
+- **FR-004-09**: Cultivos del sector ofrece "Cambiar a otro cultivo" e "Intercambiar cultivo con
+  otro sector"; no existe una acción separada para planificar cultivos: el cultivo futuro se elige
+  al crear la temporada.
+- **FR-004-10**: La sincronización es automática y no tiene UI: no hay pantalla de sincronización,
+  resolución de conflictos ni banner global, y ningún registro muestra "Sincronizado", "Local" o
+  "pendiente de sincronizar".
+- **FR-004-11**: Recordatorios incluye "Alertas automáticas" con una tarjeta por alerta, cada una
+  con interruptor y umbral editable: fin de temporada (días antes, 7 por defecto), helada (mínima ≤
+  0 °C), temperatura baja (mínima ≤ 5 °C) y temperatura alta (máxima ≥ 30 °C); las dos últimas
+  parten desactivadas. Se revisan al abrir la app, al cambiar un umbral y cada 3 horas en segundo
+  plano (WorkManager), con el pronóstico de cada cuadrante; cada evento se notifica una sola vez y
+  las de clima aclaran que repiten el pronóstico, no una alerta oficial. Los umbrales se guardan en
+  `app_preferences` del dispositivo (no se sincronizan).
 - **FR-004-07**: La sincronización rechaza el agregado `parcel` como no soportado y no exige
   `parcel_id` en ningún payload.
 - **FR-004-08**: La actualización reinicia los datos locales y remotos según **Data Reset**.

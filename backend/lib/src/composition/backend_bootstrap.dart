@@ -32,12 +32,20 @@ final class AgroCampoBackend {
       client = Supabase.instance.client;
     }
     const secureStorage = FlutterSecureStorage();
-    final AuthRepository authRepository = config.online
-        ? SupabaseAuthRepository(
-            client: client,
-            store: const SecureSessionStore(secureStorage),
-          )
-        : const LocalAuthRepository(LocalOwnerStore(secureStorage));
+    final AuthRepository authRepository;
+    if (config.online) {
+      final supabaseAuth = SupabaseAuthRepository(
+        client: client,
+        store: const SecureSessionStore(secureStorage),
+      );
+      // The session stays open until the owner signs out explicitly.
+      supabaseAuth.keepSessionFresh();
+      authRepository = supabaseAuth;
+    } else {
+      authRepository = const LocalAuthRepository(
+        LocalOwnerStore(secureStorage),
+      );
+    }
     final syncScheduler = WorkManagerSyncScheduler();
     await syncScheduler.initialize();
     final notificationScheduler = PluginLocalNotificationScheduler();
@@ -51,6 +59,9 @@ final class AgroCampoBackend {
           authRepositoryProvider.overrideWithValue(authRepository),
           isLocalModeProvider.overrideWithValue(!config.online),
           syncSchedulerProvider.overrideWithValue(syncScheduler),
+          fieldAlertSchedulerProvider.overrideWithValue(
+            WorkManagerFieldAlertScheduler(),
+          ),
           localNotificationSchedulerProvider.overrideWithValue(
             notificationScheduler,
           ),

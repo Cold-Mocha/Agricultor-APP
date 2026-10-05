@@ -20,7 +20,10 @@ final class AgriculturalSeasonsPage extends ConsumerWidget {
     final controller = ref.watch(cropsControllerProvider);
     return AgroPage(
       title: 'Temporadas',
-      subtitle: 'Organiza el trabajo sin borrar temporadas anteriores.',
+      subtitle: switch (ref.watch(activeSectorNameProvider).value) {
+        final name? => 'Configurando $name',
+        null => 'Temporadas de este cuadrante.',
+      },
       actions: [
         IconButton(
           tooltip: 'Nueva temporada',
@@ -33,13 +36,11 @@ final class AgriculturalSeasonsPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const AgriculturalContextSelector(compact: true),
-          const SizedBox(height: 12),
           Expanded(
             child: ownerId == null || scope.sectorId == null
                 ? const AgroEmptyState(
-                    title: 'Selecciona un cuadrante',
-                    message: 'Cada temporada pertenece a un cuadrante.',
+                    title: 'Abre un cuadrante',
+                    message: 'Configura sus temporadas desde Configurar temporada en cada cuadrante.',
                   )
                 : StreamBuilder<List<AgriculturalSeason>>(
                     stream: controller.watchSeasons(
@@ -60,12 +61,10 @@ final class AgriculturalSeasonsPage extends ConsumerWidget {
                             Card(
                               child: ListTile(
                                 leading: Icon(_icon(season.status)),
-                                title: Text(season.name),
-                                subtitle: Text(
-                                  '${_status(season.status)} · ${_date(season.startsOn)}${season.endsOn == null ? '' : ' — ${_date(season.endsOn!)}'} · ${_sync(season.syncState)}',
-                                ),
+                                title: Text(_range(season)),
+                                subtitle: Text(_status(season.status)),
                                 selected: scope.seasonId == season.id,
-                                trailing: const Icon(LucideIcons.chevronRight),
+                                trailing: const Icon(LucideIcons.pencil),
                                 onTap: () async {
                                   await ref
                                       .read(
@@ -103,8 +102,9 @@ final class AgriculturalSeasonsPage extends ConsumerWidget {
     AgriculturalSeasonStatus.planned => 'Planificada',
   };
 
-  static String _sync(String value) =>
-      value == 'synced' ? 'Sincronizada' : 'Local';
+  static String _range(AgriculturalSeason season) =>
+      '${_date(season.startsOn)}${season.endsOn == null ? '' : ' — ${_date(season.endsOn!)}'}';
+
   static String _date(DateTime value) =>
       '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
 }

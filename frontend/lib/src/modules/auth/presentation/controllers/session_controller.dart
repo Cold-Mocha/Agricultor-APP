@@ -27,7 +27,11 @@ final class SessionController extends Notifier<SessionState> {
           .read(authSessionFacadeProvider)
           .signIn(email: email, password: password);
     } on Object catch (error) {
-      state = SessionState.signedOut(message: error.toString());
+      state = SessionState.signedOut(
+        message: error is AppFailure
+            ? error.message
+            : 'No fue posible iniciar sesión. Intenta nuevamente.',
+      );
     }
   }
 

@@ -78,7 +78,7 @@ void main() {
 
       expect(
         find.bySemanticsLabel(
-          RegExp('Mapa territorial de OpenStreetMap con geometrías locales'),
+          RegExp('Mapa territorial de OpenStreetMap con tus cuadrantes'),
         ),
         findsOneWidget,
       );

@@ -52,19 +52,6 @@ final class _SoilMeasurementPageState
     subtitle: 'Los campos omitidos se conservan como no medidos.',
     child: ListView(
       children: [
-        const AgriculturalContextSelector(requireSector: true),
-        BoundAgriculturalContextCard(
-          bound: _bound!,
-          changed: _bound!.differsFrom(
-            ref.watch(agriculturalContextControllerProvider),
-          ),
-          onRebind: () => setState(
-            () => _bound = BoundAgriculturalContext.from(
-              ref.read(agriculturalContextControllerProvider),
-            ),
-          ),
-        ),
-        const SizedBox(height: AgroSpacing.sm),
         for (var index = 0; index < _values.length; index++) ...[
           TextField(
             controller: _values[index],
@@ -109,8 +96,7 @@ final class _SoilMeasurementPageState
           ),
         );
     if (!mounted || !saved) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Medición guardada localmente.')),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Medición guardada.')));
   }
 }

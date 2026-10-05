@@ -140,6 +140,57 @@ class SyncOutboxDao extends DatabaseAccessor<AppDatabase>
             ),
           );
 
+  /// Cancels unsent work that belongs to a deleted quadrant: the server
+  /// rejects it for good, so it would stay pending forever.
+  Future<int> cancelOrphansOfDeletedSectors(String ownerId) => customUpdate(
+    '''
+    UPDATE sync_outbox
+    SET state = 'cancelled', last_error_code = 'parent_deleted'
+    WHERE owner_id = ?1
+      AND state IN ('pending', 'retry_wait', 'failed')
+      AND (
+        (aggregate_type = 'agriculturalSeason' AND aggregate_id IN (
+          SELECT a.id FROM agricultural_seasons a
+          JOIN sectors s ON s.id = a.sector_id
+          WHERE s.owner_id = ?1 AND s.deleted_at IS NOT NULL))
+        OR (aggregate_type = 'sectorCropAssignment' AND aggregate_id IN (
+          SELECT c.id FROM crop_seasons c
+          JOIN sectors s ON s.id = c.sector_id
+          WHERE s.owner_id = ?1 AND s.deleted_at IS NOT NULL))
+        OR (aggregate_type = 'labor' AND aggregate_id IN (
+          SELECT l.id FROM labors l
+          JOIN sectors s ON s.id = l.sector_id
+          WHERE s.owner_id = ?1 AND s.deleted_at IS NOT NULL))
+        OR (aggregate_type = 'irrigationConfig' AND aggregate_id IN (
+          SELECT i.id FROM sector_irrigation_configs i
+          JOIN sectors s ON s.id = i.sector_id
+          WHERE s.owner_id = ?1 AND s.deleted_at IS NOT NULL))
+        OR (aggregate_type = 'reminder' AND aggregate_id IN (
+          SELECT r.id FROM reminders r
+          JOIN sectors s ON s.id = r.sector_id
+          WHERE s.owner_id = ?1 AND s.deleted_at IS NOT NULL))
+      )
+    ''',
+    variables: [Variable<String>(ownerId)],
+    updates: {syncOutbox},
+  );
+
+  /// Returns failed operations whose rejection was a missing parent to the
+  /// queue, so they are pushed again on this run.
+  Future<void> requeueRecoverable(String ownerId) =>
+      (update(syncOutbox)..where(
+            (row) =>
+                row.ownerId.equals(ownerId) &
+                row.state.equals('failed') &
+                row.lastErrorCode.like('%_missing'),
+          ))
+          .write(
+            const SyncOutboxCompanion(
+              state: Value('pending'),
+              nextAttemptAt: Value(null),
+            ),
+          );
+
   Future<void> restorePending(String operationId, String errorCode) =>
       (update(
         syncOutbox,
@@ -160,7 +211,8 @@ class SyncOutboxDao extends DatabaseAccessor<AppDatabase>
   Stream<List<SyncOutboxData>> watchPending(String ownerId) =>
       (select(syncOutbox)..where(
             (row) =>
-                row.ownerId.equals(ownerId) & row.state.isNotIn(const ['done']),
+                row.ownerId.equals(ownerId) &
+                row.state.isNotIn(const ['done', 'cancelled']),
           ))
           .watch();
 

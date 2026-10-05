@@ -75,3 +75,33 @@ final class PluginLocalNotificationScheduler
   @override
   Future<void> cancel(int id) => _plugin.cancel(id: id);
 }
+
+/// Shows a notification right away, for alerts found while checking.
+abstract interface class FieldAlertNotifier {
+  Future<void> show({required int id, required String title, String? body});
+}
+
+final class PluginFieldAlertNotifier implements FieldAlertNotifier {
+  PluginFieldAlertNotifier([FlutterLocalNotificationsPlugin? plugin])
+    : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
+
+  final FlutterLocalNotificationsPlugin _plugin;
+
+  @override
+  Future<void> show({required int id, required String title, String? body}) =>
+      _plugin.show(
+        id: id,
+        title: title,
+        body: body,
+        notificationDetails: const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'agrocampo_field_alerts',
+            'Alertas del campo',
+            channelDescription:
+                'Fin de temporada, helada y temperaturas fuera de umbral',
+            importance: Importance.high,
+            priority: Priority.high,
+          ),
+        ),
+      );
+}

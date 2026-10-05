@@ -7,93 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-final class ProfilePersonalInformationPage extends ConsumerStatefulWidget {
-  const ProfilePersonalInformationPage({super.key});
-
-  @override
-  ConsumerState<ProfilePersonalInformationPage> createState() =>
-      _ProfilePersonalInformationPageState();
-}
-
-final class _ProfilePersonalInformationPageState
-    extends ConsumerState<ProfilePersonalInformationPage> {
-  final _name = TextEditingController();
-  String? _loadedOwnerId;
-  bool _saving = false;
-
-  @override
-  void dispose() {
-    _name.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final ownerId = ref.watch(unlockedOwnerIdProvider);
-    final controller = ref.watch(profileControllerProvider);
-    return AgroPage(
-      title: 'Información personal',
-      subtitle: 'Identidad visible en este dispositivo',
-      child: ownerId == null
-          ? const Center(child: Text('Inicia sesión para editar tu perfil.'))
-          : StreamBuilder<ProfileUiState?>(
-              stream: controller.watchProfile(ownerId),
-              builder: (context, snapshot) {
-                final profile = snapshot.data;
-                if (_loadedOwnerId != ownerId &&
-                    snapshot.connectionState != ConnectionState.waiting) {
-                  _loadedOwnerId = ownerId;
-                  _name.text = profile?.displayName ?? '';
-                }
-                return ListView(
-                  children: [
-                    TextField(
-                      key: const ValueKey('profile-display-name'),
-                      controller: _name,
-                      textCapitalization: TextCapitalization.words,
-                      autofillHints: const [AutofillHints.name],
-                      decoration: const InputDecoration(
-                        labelText: 'Nombre visible',
-                        helperText:
-                            'Se guarda localmente y se usa en tu perfil.',
-                      ),
-                    ),
-                    const SizedBox(height: AgroSpacing.md),
-                    _ReadOnlyValue(
-                      label: 'Correo de acceso',
-                      value: profile?.emailDisplay ?? 'No disponible',
-                    ),
-                    const SizedBox(height: AgroSpacing.md),
-                    FilledButton(
-                      onPressed: _saving ? null : () => _save(ownerId),
-                      child: Text(_saving ? 'Guardando…' : 'Guardar cambios'),
-                    ),
-                  ],
-                );
-              },
-            ),
-    );
-  }
-
-  Future<void> _save(String ownerId) async {
-    setState(() => _saving = true);
-    final result = await ref
-        .read(profileControllerProvider)
-        .save(ownerId, ProfileFormInput(displayName: _name.text));
-    if (!mounted) return;
-    setState(() => _saving = false);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          result == ProfileSaveResult.saved
-              ? 'Perfil guardado en este dispositivo.'
-              : 'Escribe un nombre visible.',
-        ),
-      ),
-    );
-  }
-}
-
 final class ProfileNotificationsPage extends ConsumerWidget {
   const ProfileNotificationsPage({super.key});
 
@@ -115,7 +28,7 @@ final class ProfileNotificationsPage extends ConsumerWidget {
                     secondary: const Icon(LucideIcons.bell),
                     title: const Text('Alertas meteorológicas'),
                     subtitle: const Text(
-                      'Los avisos se consultan cuando hay conexión. El registro local sigue disponible.',
+                      'Los avisos se consultan cuando hay conexión.',
                     ),
                     value: snapshot.data ?? false,
                     onChanged: (enabled) =>
@@ -124,8 +37,8 @@ final class ProfileNotificationsPage extends ConsumerWidget {
                 ),
                 const _InformationCard(
                   icon: LucideIcons.alarmClock,
-                  title: 'Recordatorios de labores',
-                  message: 'Se administran desde Más > Recordatorios y funcionan como avisos locales del dispositivo.',
+                  title: 'Alertas y recordatorios',
+                  message: 'Fin de temporada, helada, temperaturas y labores se configuran en Configuración > Recordatorios.',
                 ),
               ],
             ),
@@ -173,10 +86,10 @@ final class ProfileSecurityPage extends ConsumerWidget {
           ),
           _InformationCard(
             icon: LucideIcons.lock,
-            title: 'Datos locales protegidos',
+            title: 'Datos protegidos',
             message: localMode
                 ? 'Tus datos se guardan sólo en este dispositivo, con almacenamiento seguro.'
-                : 'La sesión se conserva con almacenamiento seguro. Cerrar sesión detiene la sincronización de esta cuenta.',
+                : 'La sesión se conserva con almacenamiento seguro hasta que la cierres.',
           ),
         ],
       ),
@@ -226,25 +139,18 @@ final class ProfileInformationPage extends ConsumerWidget {
             '¿Puedo registrar sin conexión?',
             localMode
                 ? 'Sí. Todos los registros se guardan en este dispositivo.'
-                : 'Sí. Los registros se guardan primero en el dispositivo y se respaldan cuando vuelve la conexión.',
+                : 'Sí. Los registros se guardan y se respaldan solos cuando hay conexión.',
           ),
           _InfoItem(
             LucideIcons.layoutGrid,
             '¿Dónde veo un cuadrante?',
             'Abre Sectores, toca su tarjeta y encontrarás sus métricas, labores e historial.',
           ),
-          if (localMode)
-            const _InfoItem(
-              LucideIcons.fileSpreadsheet,
-              '¿Cómo respaldo mis datos?',
-              'En Más > Exportar XLSX puedes guardar una copia legible de tus datos.',
-            )
-          else
-            const _InfoItem(
-              LucideIcons.refreshCw,
-              '¿Cómo reviso el respaldo?',
-              'En Más > Sincronización puedes ver pendientes, errores y reintentar.',
-            ),
+          const _InfoItem(
+            LucideIcons.fileSpreadsheet,
+            '¿Cómo respaldo mis datos?',
+            'En Configuración > Exportar XLSX puedes guardar una copia legible de tus datos.',
+          ),
         ],
       ),
       ProfileInformationKind.contact => (
@@ -271,8 +177,8 @@ final class ProfileInformationPage extends ConsumerWidget {
           ] else ...const [
             _InfoItem(
               LucideIcons.smartphone,
-              'Trabajo local primero',
-              'Tus registros se guardan en el dispositivo antes del respaldo en Supabase.',
+              'Respaldo en Supabase',
+              'Tus registros se respaldan solos en Supabase.',
             ),
             _InfoItem(
               LucideIcons.circleUserRound,
@@ -328,19 +234,6 @@ final class GeneralSettingsPage extends StatelessWidget {
         ],
       ),
     ),
-  );
-}
-
-final class _ReadOnlyValue extends StatelessWidget {
-  const _ReadOnlyValue({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) => InputDecorator(
-    decoration: InputDecoration(labelText: label),
-    child: Text(value),
   );
 }
 

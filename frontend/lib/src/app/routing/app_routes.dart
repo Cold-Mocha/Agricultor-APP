@@ -3,7 +3,7 @@
 abstract final class AppRoutes {
   static const login = '/acceso';
   static const home = '/inicio';
-  static const profile = '/inicio/perfil';
+  static const profile = '/mas/perfil';
 
   static const sectors = '/sectores';
 
@@ -20,18 +20,16 @@ abstract final class AppRoutes {
   static const cropCatalog = '/mas/catalogo';
   static const history = '/mas/historial';
   static const reminders = '/mas/recordatorios';
-  static const synchronization = '/mas/sincronizacion';
   static const export = '/mas/exportar';
   static const settings = '/mas/configuracion';
 
-  static const profilePersonalInformation = '/inicio/perfil/informacion';
-  static const profileNotifications = '/inicio/perfil/notificaciones';
-  static const profileLanguage = '/inicio/perfil/idioma';
-  static const profileSecurity = '/inicio/perfil/seguridad';
-  static const profileTheme = '/inicio/perfil/tema';
-  static const profileHelp = '/inicio/perfil/ayuda';
-  static const profileContact = '/inicio/perfil/contacto';
-  static const profilePrivacy = '/inicio/perfil/privacidad';
+  static const profileNotifications = '/mas/perfil/notificaciones';
+  static const profileLanguage = '/mas/perfil/idioma';
+  static const profileSecurity = '/mas/perfil/seguridad';
+  static const profileTheme = '/mas/perfil/tema';
+  static const profileHelp = '/mas/perfil/ayuda';
+  static const profileContact = '/mas/perfil/contacto';
+  static const profilePrivacy = '/mas/perfil/privacidad';
 
   static const quadrantMap = '$sectors/mapa';
 
@@ -68,9 +66,6 @@ abstract final class AppRoutes {
 
   static String historyFor({String? sectorId}) =>
       _withSector(history, sectorId);
-
-  static String conflict(String conflictId) =>
-      '$synchronization/conflictos/${Uri.encodeComponent(conflictId)}';
 
   static String reminder(String reminderId) =>
       '$reminders/${Uri.encodeComponent(reminderId)}';

@@ -55,10 +55,7 @@ void main() {
       ownerId: 'owner-1',
       sectorId: 'sector-a',
       category: ProductiveCategory.apiary,
-      labels: ContextLabels(
-        sector: 'Colmenar',
-        category: 'Apícola',
-      ),
+      labels: ContextLabels(sector: 'Colmenar', category: 'Apícola'),
       allowedOperations: [ProductiveOperation.apiaryInspection],
     );
     final bound = BoundAgriculturalContext.from(context, resolvedFor: resolved);

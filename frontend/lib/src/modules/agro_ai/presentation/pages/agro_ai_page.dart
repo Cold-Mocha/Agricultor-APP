@@ -1,4 +1,5 @@
 import 'package:agrocampo/src/app/layout/agro_page.dart';
+import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/agro_ai/presentation/controllers/agro_ai_controller.dart';
 import 'package:agrocampo/src/modules/auth/auth_ui.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
@@ -85,21 +86,34 @@ final class _AgroAiPageState extends ConsumerState<AgroAiPage> {
                   ),
           ),
           if (!localMode) ...[
-            TextField(
-              controller: _question,
-              onChanged: (_) => setState(() {}),
-              decoration: const InputDecoration(labelText: 'Consulta agrícola'),
-            ),
-            Semantics(
-              label: 'Enviar consulta a AgroIA',
-              button: true,
-              child: FilledButton(
-                onPressed:
-                    ownerId == null || _sending || _question.text.trim().isEmpty
-                    ? null
-                    : _send,
-                child: Text(_sending ? 'Consultando…' : 'Enviar consulta'),
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _question,
+                    onChanged: (_) => setState(() {}),
+                    decoration: const InputDecoration(
+                      labelText: 'Consulta agrícola',
+                    ),
+                  ),
+                ),
+                const SizedBox(width: AgroSpacing.xs),
+                IconButton.filled(
+                  tooltip: _sending ? 'Consultando…' : 'Enviar consulta',
+                  onPressed:
+                      ownerId == null ||
+                          _sending ||
+                          _question.text.trim().isEmpty
+                      ? null
+                      : _send,
+                  icon: _sending
+                      ? const SizedBox.square(
+                          dimension: AgroSizes.iconStandard,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(LucideIcons.send),
+                ),
+              ],
             ),
           ],
         ],

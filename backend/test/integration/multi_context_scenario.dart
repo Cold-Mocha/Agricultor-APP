@@ -98,12 +98,8 @@ void main() {
       expect(await database.select(database.sectors).get(), hasLength(30));
       expect(await database.select(database.labors).get(), hasLength(30));
       for (final entry in expectedSeasonBySector.entries) {
-        final events = await HistoryRepository(database).list(
-          HistoryFilter(
-            ownerId: 'owner-1',
-            sectorId: entry.key,
-          ),
-        );
+        final events = await HistoryRepository(database)
+            .list(HistoryFilter(ownerId: 'owner-1', sectorId: entry.key));
         expect(events.map((event) => event.sectorId).toSet(), {entry.key});
         expect(
           events.where((event) => event.type == HistoryEventType.labor),

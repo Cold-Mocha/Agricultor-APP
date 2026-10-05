@@ -26,7 +26,7 @@ final class _OnlineConnectivity implements ConnectivityService {
 }
 
 void main() {
-  testWidgets('Inicio shows the active sector without field actions', (
+  testWidgets('Inicio shows Tu campo hoy, today weather and the moon', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(430, 1200);
@@ -63,9 +63,18 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Tu campo hoy'), findsOneWidget);
+    expect(find.text('Clima de hoy'), findsOneWidget);
+    for (final label in ['TEMPERATURA', 'MÍN / MÁX', 'HELADA', 'LUNA']) {
+      expect(find.text(label), findsOneWidget, reason: '$label card');
+    }
+    expect(
+      find.textContaining('% iluminada'),
+      findsOneWidget,
+      reason: 'the moon is computed offline even without weather',
+    );
     await tester.scrollUntilVisible(find.text('Resumen del historial'), 200);
     expect(find.text('Resumen del historial'), findsOneWidget);
-    expect(find.text('Curicó'), findsOneWidget);
+    expect(find.text('1 cuadrante · Curicó'), findsOneWidget);
     expect(find.text('Ver cuadrantes'), findsOneWidget);
     // Field actions live in each quadrant's detail, not on Inicio.
     expect(find.text('Labores'), findsNothing);

@@ -5,37 +5,36 @@ import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Asks which crop a freshly drawn quadrant holds and assigns it, opening the
-/// quadrant's first season when needed. Returns the chosen crop, or `null`
-/// when the farmer postpones the choice.
-Future<CropRef?> askInitialCrop(
+/// Asks which crop a quadrant about to be created holds. Returns `null` when
+/// the farmer cancels; the quadrant must then not be created.
+Future<CropRef?> pickInitialCrop(
   BuildContext context,
   WidgetRef ref, {
   required String ownerId,
-  required String sectorId,
+  String title = '¿Qué cultivas en este cuadrante?',
+  String message = 'Lo dejamos como cultivo vigente desde hoy.',
 }) async {
-  final controller = ref.read(cropsControllerProvider);
-  final crops = await controller.availableCrops(ownerId);
+  final crops = await ref.read(cropsControllerProvider).availableCrops(ownerId);
   if (!context.mounted || crops.isEmpty) return null;
-  final selected = await showModalBottomSheet<CropRef>(
+  return showModalBottomSheet<CropRef>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    builder: (context) => _InitialCropSheet(crops: crops),
+    builder: (context) =>
+        _InitialCropSheet(crops: crops, title: title, message: message),
   );
-  if (selected == null) return null;
-  await controller.assignInitialCrop(
-    ownerId: ownerId,
-    sectorId: sectorId,
-    crop: selected,
-  );
-  return selected;
 }
 
 final class _InitialCropSheet extends StatelessWidget {
-  const _InitialCropSheet({required this.crops});
+  const _InitialCropSheet({
+    required this.crops,
+    required this.title,
+    required this.message,
+  });
 
   final List<CropRef> crops;
+  final String title;
+  final String message;
 
   @override
   Widget build(BuildContext context) => SafeArea(
@@ -57,12 +56,9 @@ final class _InitialCropSheet extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '¿Qué cultivas en este cuadrante?',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
+                Text(title, style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: AgroSpacing.xxs),
-                const Text('Lo dejamos como cultivo vigente desde hoy.'),
+                Text(message),
               ],
             ),
           ),
@@ -76,6 +72,7 @@ final class _InitialCropSheet extends StatelessWidget {
                     leading: CropPictogram(
                       asset: crop.iconAsset,
                       colorToken: crop.colorToken,
+                      apiary: crop.id == CropPictogram.apiaryCropId,
                     ),
                     title: Text(crop.label),
                     onTap: () => Navigator.pop(context, crop),
@@ -87,7 +84,7 @@ final class _InitialCropSheet extends StatelessWidget {
             padding: const EdgeInsets.all(AgroSpacing.sm),
             child: TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Ahora no'),
+              child: const Text('Cancelar'),
             ),
           ),
         ],

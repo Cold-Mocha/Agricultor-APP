@@ -26,9 +26,8 @@ corregido; el detalle de cada corrección está en [`ISSUES.md`](./ISSUES.md).
 | AgroIA | [AgroIA](#14-agroia) |
 | Más | [Más](#15-más) · [Temporadas](#16-temporadas) · [Nueva temporada](#17-nueva-temporada) · [Catálogo](#18-catálogo-de-cultivos) · [Recordatorios](#19-recordatorios) · [Sincronización](#20-sincronización) · [Exportar](#21-exportar) · [Configuración](#22-configuración) |
 
-Todas las pantallas comparten la barra inferior de 5 pestañas y el banner global bajo el
-encabezado. En modo local dice "Modo local · tus datos se guardan en este dispositivo." (✅ I1); en
-modo online muestra la conexión y los pendientes de sincronización.
+Todas las pantallas comparten la barra inferior de 5 pestañas. No hay banner global: la
+sincronización es automática y no se muestra en la UI.
 
 ---
 
@@ -77,11 +76,11 @@ modo online muestra la conexión y los pendientes de sincronización.
 <img src="04_rotacion.webp" width="240"> <img src="04_rotacion_planificar.webp" width="240">
 
 - **Ruta:** `/sectores/:id/rotacion`
-- **Propósito:** planificar y cambiar el cultivo del cuadrante sin perder el historial.
-- **CTA:** **+ Planificar cultivo**, **⇄ Intercambiar cultivos**; sin temporadas, **Administrar
-  temporadas**.
-- **Qué hace:** lista las asignaciones de cultivo con fechas efectivas. Planificar exige una temporada
-  activa (la segunda captura muestra el aviso "Primero activa una temporada.").
+- **Propósito:** cambiar el cultivo del cuadrante sin perder el historial.
+- **CTA:** **Cambiar a otro cultivo** e **Intercambiar cultivo con otro sector**, uno bajo el otro;
+  sin temporadas, **Administrar temporadas**.
+- **Qué hace:** lista las asignaciones de cultivo con fechas efectivas. Cambiar exige una temporada
+  activa. El cultivo de una temporada futura se elige al crearla (la app lo pregunta).
 - **Qué debería mostrar:** cultivo vigente y planificados con su vigencia; el intercambio entre dos
   sectores cuando existe más de uno.
 
@@ -226,8 +225,7 @@ Variantes del paso "3. Detalle":
 
 - **Ruta:** `/mas`
 - **Propósito:** menú de organización, respaldo y configuración.
-- **CTA:** Temporadas, Catálogo de cultivos, Historial agrícola, Recordatorios, Sincronización,
-  Exportar XLSX y Configuración.
+- **CTA:** Catálogo de cultivos, Historial agrícola, Recordatorios, Exportar XLSX y Configuración.
 
 ## 16. Temporadas
 
@@ -272,17 +270,10 @@ Variantes del paso "3. Detalle":
   ✅ La fecha se muestra como "vie, 2 oct · 3:16" y los estados en español: Programado, Completado,
   Cancelado; en modo local, "Guardado en este dispositivo" (I3).
 
-## 20. Sincronización
+## 20. Sincronización (retirada)
 
-<img src="20_sincronizacion.webp" width="240">
-
-- **Ruta:** `/mas/sincronizacion` (conflictos en `/mas/sincronizacion/conflictos/:id`)
-- **Propósito:** estado del respaldo en la nube.
-- **CTA:** **Sincronizar ahora**.
-- **Qué hace:** cambios pendientes, conflictos por resolver y último respaldo confirmado.
-- **Qué debería mostrar:** en modo online, la fecha del último respaldo y los conflictos con acceso a
-  su resolución. ✅ En modo local muestra "Respaldo en la nube desactivado" y remite a Exportar
-  XLSX, sin "Sincronizar ahora" (I5).
+La pantalla, sus conflictos y el banner global se retiraron: la sincronización corre sola en segundo
+plano y la app no muestra estados "Sincronizado", "Local" ni "pendiente de sincronizar".
 
 ## 21. Exportar
 
@@ -304,7 +295,7 @@ Variantes del paso "3. Detalle":
 
 <img src="23_perfil.webp" width="240"> <img src="23_perfil_b.webp" width="240"> <img src="23_perfil_c.webp" width="240">
 
-- **Ruta:** `/inicio/perfil`
+- **Ruta:** `/mas/perfil` (se abre desde la tarjeta "Tu perfil" en Más)
 - **Propósito:** identidad y preferencias del agricultor.
 - **CTA:** **Editar información personal** (lápiz) y cada fila de ajustes. En modo online incluye
   **Cerrar sesión**; en modo local se oculta.
@@ -312,14 +303,14 @@ Variantes del paso "3. Detalle":
 
 | # | Subpantalla | Ruta | Contenido / CTA | Captura |
 |---|---|---|---|---|
-| 24 | Información personal | `/inicio/perfil/informacion` | Nombre visible y correo de acceso → **Guardar cambios** | [24](24_perfil_informacion.webp) |
-| 25 | Notificaciones | `/inicio/perfil/notificaciones` | Interruptor de alertas meteorológicas; recordatorios se gestionan en Más | [25](25_perfil_notificaciones.webp) |
-| 26 | Idioma | `/inicio/perfil/idioma` | Sólo Español (Chile); informativa | [26](26_perfil_idioma.webp) |
-| 27 | Seguridad | `/inicio/perfil/seguridad` | Interruptor de desbloqueo biométrico; en modo local habla sólo de este dispositivo (✅ I6) | [27](27_perfil_seguridad.webp) |
-| 28 | Tema | `/inicio/perfil/tema` | Sólo modo claro; informativa | [28](28_perfil_tema.webp) |
-| 29 | Ayuda y soporte | `/inicio/perfil/ayuda` | Preguntas frecuentes; en modo local el respaldo se explica con Exportar XLSX (✅ I6) | [29](29_perfil_ayuda.webp) |
-| 30 | Contacto | `/inicio/perfil/contacto` | "Contacto no configurado" | [30](30_perfil_contacto.webp) |
-| 31 | Privacidad | `/inicio/perfil/privacidad` | En modo local: "Datos en este dispositivo", sin Supabase ni cuentas (✅ I6) | [31](31_perfil_privacidad.webp) |
+| 24 | Información personal | retirada | El perfil sólo muestra el usuario de acceso, sin correo ni edición | — |
+| 25 | Notificaciones | `/mas/perfil/notificaciones` | Interruptor de alertas meteorológicas; recordatorios se gestionan en Más | [25](25_perfil_notificaciones.webp) |
+| 26 | Idioma | `/mas/perfil/idioma` | Sólo Español (Chile); informativa | [26](26_perfil_idioma.webp) |
+| 27 | Seguridad | `/mas/perfil/seguridad` | Interruptor de desbloqueo biométrico; en modo local habla sólo de este dispositivo (✅ I6) | [27](27_perfil_seguridad.webp) |
+| 28 | Tema | `/mas/perfil/tema` | Sólo modo claro; informativa | [28](28_perfil_tema.webp) |
+| 29 | Ayuda y soporte | `/mas/perfil/ayuda` | Preguntas frecuentes; en modo local el respaldo se explica con Exportar XLSX (✅ I6) | [29](29_perfil_ayuda.webp) |
+| 30 | Contacto | `/mas/perfil/contacto` | "Contacto no configurado" | [30](30_perfil_contacto.webp) |
+| 31 | Privacidad | `/mas/perfil/privacidad` | En modo local: "Datos en este dispositivo", sin Supabase ni cuentas (✅ I6) | [31](31_perfil_privacidad.webp) |
 
 <img src="24_perfil_informacion.webp" width="160"> <img src="25_perfil_notificaciones.webp" width="160"> <img src="26_perfil_idioma.webp" width="160"> <img src="27_perfil_seguridad.webp" width="160"> <img src="28_perfil_tema.webp" width="160"> <img src="29_perfil_ayuda.webp" width="160"> <img src="30_perfil_contacto.webp" width="160"> <img src="31_perfil_privacidad.webp" width="160">
 
@@ -340,7 +331,6 @@ Variantes del paso "3. Detalle":
 | Pantalla | Ruta | Motivo |
 |---|---|---|
 | Acceso (login) | `/acceso` | Sólo existe en modo online (`AGROCAMPO_ONLINE=true`). |
-| Resolución de conflicto | `/mas/sincronizacion/conflictos/:id` | Requiere un conflicto real de sincronización. |
 
 ## Hallazgos
 

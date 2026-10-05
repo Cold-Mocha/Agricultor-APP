@@ -10,12 +10,5 @@ final cropsControllerProvider = cropCyclesFacadeProvider;
 bool isRotationAvailableForSector(String? kind) =>
     ProductiveCategory.fromCode(kind) == ProductiveCategory.crop;
 
-bool isRotationActivationDue(
-  SectorCropAssignment assignment, {
-  DateTime? now,
-}) =>
-    assignment.status == SectorCropAssignmentStatus.planned &&
-    !(now ?? DateTime.now()).toUtc().isBefore(assignment.effectiveFrom.toUtc());
-
 String rotationContextLabel(String? kind) =>
     isRotationAvailableForSector(kind) ? 'Sector vegetal' : 'Sector apícola';

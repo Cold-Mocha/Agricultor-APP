@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('Más groups field organization and data tools', (tester) async {
+  testWidgets('Configuraciones groups field organization and data tools', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(430, 1300);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -20,12 +22,20 @@ void main() {
     expect(find.text('Campo'), findsOneWidget);
     expect(find.text('Organización'), findsOneWidget);
     expect(find.text('Respaldo y datos'), findsOneWidget);
-    expect(find.text('Temporadas'), findsOneWidget);
+    expect(
+      find.text('Temporadas'),
+      findsNothing,
+      reason: 'seasons open from each quadrant',
+    );
     expect(find.text('Catálogo de cultivos'), findsOneWidget);
     expect(find.text('Historial agrícola'), findsOneWidget);
     expect(find.text('Recordatorios'), findsOneWidget);
-    expect(find.text('Sincronización'), findsOneWidget);
+    expect(
+      find.text('Sincronización'),
+      findsNothing,
+      reason: 'sync runs in the background and is not shown',
+    );
     expect(find.text('Exportar XLSX'), findsOneWidget);
-    expect(find.text('Perfil'), findsNothing);
+    expect(find.text('Tu perfil'), findsOneWidget);
   });
 }

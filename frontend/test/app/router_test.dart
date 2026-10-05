@@ -18,8 +18,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Acceso'), findsOneWidget);
-    expect(find.text('Correo electrónico'), findsOneWidget);
+    expect(find.text('AGROCAMPO'), findsOneWidget);
+    expect(find.text('Usuario'), findsOneWidget);
+    expect(find.text('PIN'), findsOneWidget);
   });
 
   testWidgets('locked owner cannot render a private route', (tester) async {
@@ -33,7 +34,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Acceso'), findsOneWidget);
+    expect(find.text('AGROCAMPO'), findsOneWidget);
     expect(find.text('Desbloquear con biometría'), findsOneWidget);
     expect(find.text('Resumen del campo'), findsNothing);
   });

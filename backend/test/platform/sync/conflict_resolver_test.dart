@@ -41,19 +41,22 @@ void main() {
     expect(conflict.resolvedAt, isNotNull);
   });
 
-  test('keep remote is rejected for aggregates without a remote apply', () async {
-    await insertConflict('conflict-remote');
-    await expectLater(
-      ConflictResolver(database)
-          .resolve('conflict-remote', ConflictChoice.keepRemote),
-      throwsStateError,
-    );
-    expect(
-      (await database.select(database.syncConflicts).getSingle()).state,
-      isNot('resolving'),
-    );
-    expect(await database.select(database.syncOutbox).get(), isEmpty);
-  });
+  test(
+    'keep remote is rejected for aggregates without a remote apply',
+    () async {
+      await insertConflict('conflict-remote');
+      await expectLater(
+        ConflictResolver(database)
+            .resolve('conflict-remote', ConflictChoice.keepRemote),
+        throwsStateError,
+      );
+      expect(
+        (await database.select(database.syncConflicts).getSingle()).state,
+        isNot('resolving'),
+      );
+      expect(await database.select(database.syncOutbox).get(), isEmpty);
+    },
+  );
 }
 
 final class _AckGateway implements SyncGateway {

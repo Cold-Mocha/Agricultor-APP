@@ -12,7 +12,7 @@ import '../../helpers/signed_in_widget_scope.dart';
 
 void main() {
   testWidgets(
-    'timeline exposes historical labels, filters and truthful sync state',
+    'timeline exposes historical labels and filters without sync state',
     (tester) async {
       final database = createInMemoryDatabase();
       final container = signedInWidgetContainer(database);
@@ -45,8 +45,9 @@ void main() {
       expect(find.text('Fertilización'), findsOneWidget);
       expect(find.textContaining('Trigo'), findsNWidgets(2));
       expect(
-        find.byTooltip('Guardado localmente; pendiente de sincronizar'),
-        findsNWidgets(2),
+        find.textContaining('sincroniz'),
+        findsNothing,
+        reason: 'sync runs in the background and is not shown',
       );
       await tester.tap(find.text('Cultivos'));
       await tester.pumpAndSettle();

@@ -6,6 +6,21 @@ typedef ContextOptionsController = ContextOptionsQueries;
 
 final contextOptionsControllerProvider = contextOptionsQueriesProvider;
 
+/// Name of the active quadrant, for headers that say what is being edited.
+final activeSectorNameProvider = StreamProvider.autoDispose<String?>((ref) {
+  final context = ref.watch(agriculturalContextControllerProvider);
+  final ownerId = context.ownerId;
+  final sectorId = context.sectorId;
+  if (ownerId == null || sectorId == null) return Stream.value(null);
+  return ref
+      .watch(contextOptionsControllerProvider)
+      .watchSectors(ownerId)
+      .map(
+        (sectors) =>
+            sectors.where((sector) => sector.id == sectorId).firstOrNull?.name,
+      );
+});
+
 final agriculturalContextControllerProvider =
     NotifierProvider<AgriculturalContextController, AgriculturalContext>(
       AgriculturalContextController.new,

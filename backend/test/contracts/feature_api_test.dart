@@ -53,16 +53,8 @@ void main() {
       expect(options?.crops.map((crop) => crop.label), contains('Trigo'));
 
       final map = container.read(territoryMapFacadeProvider);
-      expect(
-        (await map.watchSectors('owner-1').first)
-            .single
-            .id,
-        'sector-1',
-      );
-      expect(
-        await map.watchSectors('other-owner').first,
-        isEmpty,
-      );
+      expect((await map.watchSectors('owner-1').first).single.id, 'sector-1');
+      expect(await map.watchSectors('other-owner').first, isEmpty);
     },
   );
 

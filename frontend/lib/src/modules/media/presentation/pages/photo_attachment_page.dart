@@ -33,22 +33,9 @@ final class _PhotoAttachmentPageState
   @override
   Widget build(BuildContext context) => AgroPage(
     title: 'Fotografías',
-    subtitle: 'Adjuntos privados disponibles sin conexión',
+    subtitle: 'Adjuntos privados del cuadrante',
     child: ListView(
       children: [
-        const AgriculturalContextSelector(requireSector: true),
-        BoundAgriculturalContextCard(
-          bound: _bound!,
-          changed: _bound!.differsFrom(
-            ref.watch(agriculturalContextControllerProvider),
-          ),
-          onRebind: () => setState(
-            () => _bound = BoundAgriculturalContext.from(
-              ref.read(agriculturalContextControllerProvider),
-            ),
-          ),
-        ),
-        const SizedBox(height: AgroSpacing.sm),
         if (_selected == null)
           const AspectRatio(
             aspectRatio: 4 / 3,
@@ -105,8 +92,7 @@ final class _PhotoAttachmentPageState
         .read(photoAttachmentControllerProvider)
         .attach(sectorId: sectorId, selection: selected);
     if (!mounted || !saved) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Fotografía guardada localmente.')),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Fotografía guardada.')));
   }
 }

@@ -10,7 +10,7 @@ void main() {
         .readAsStringSync();
     for (final route in [
       '/inicio',
-      '/inicio/perfil',
+      '/mas/perfil',
       '/sectores',
       '/registrar',
       '/registrar/suelo',
@@ -24,7 +24,6 @@ void main() {
       '/mas/historial',
       '/mas/recordatorios',
       '/mas/exportar',
-      '/mas/sincronizacion',
       '/mas/configuracion',
     ]) {
       expect(routes, contains("'$route'"), reason: 'Ruta MVP ausente: $route');
@@ -36,7 +35,6 @@ void main() {
       reason: 'Módulo 004 sin parcelas',
     );
     expect(router, contains("path: 'labor/:laborType'"));
-    expect(router, contains("path: 'conflictos/:id'"));
     expect(router, isNot(contains('FoundationPlaceholderPage')));
     final shell = File('lib/src/app/shell/agro_app_shell.dart')
         .readAsStringSync();

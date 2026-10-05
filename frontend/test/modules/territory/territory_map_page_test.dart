@@ -6,6 +6,7 @@ import 'package:agrocampo_backend/src/modules/territory/domain/value_objects/geo
 import 'package:agrocampo_backend/src/modules/territory/infrastructure/persistence/sector_repository.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -46,7 +47,7 @@ void main() {
 
       expect(
         find.bySemanticsLabel(
-          RegExp('Mapa territorial de OpenStreetMap con geometrías locales'),
+          RegExp('Mapa territorial de OpenStreetMap con tus cuadrantes'),
         ),
         findsOneWidget,
       );
@@ -74,7 +75,7 @@ void main() {
 
       await tester.tap(
         find.bySemanticsLabel(
-          RegExp('Mapa territorial de OpenStreetMap con geometrías locales'),
+          RegExp('Mapa territorial de OpenStreetMap con tus cuadrantes'),
         ),
       );
       await tester.pump(const Duration(milliseconds: 300));
@@ -311,6 +312,67 @@ void main() {
       findsOneWidget,
       reason: 'a new quadrant returns to Tus cuadrantes',
     );
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump(const Duration(milliseconds: 1));
+  });
+
+  testWidgets('cancelling the crop choice does not create the quadrant', (
+    tester,
+  ) async {
+    // The catalog asset is cached by an earlier test's fake clock; reload it.
+    rootBundle.clear();
+    tester.view.physicalSize = const Size(800, 1200);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final database = createInMemoryDatabase();
+    addTearDown(database.close);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(database),
+          unlockedOwnerIdProvider.overrideWithValue('owner-1'),
+        ],
+        child: MaterialApp(
+          home: TerritoryMapPage(tileProvider: _TransparentTileProvider()),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Nuevo cuadrante'));
+    await tester.pumpAndSettle();
+    final origin = tester.getTopLeft(find.byType(FlutterMap));
+    for (final offset in const [
+      Offset(40, 40),
+      Offset(160, 40),
+      Offset(100, 120),
+    ]) {
+      await tester.tapAt(origin + offset);
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
+    }
+    await tester.tap(find.text('Confirmar'));
+    // The catalog loads from the database before the sheet opens.
+    for (var attempt = 0; attempt < 60; attempt++) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      );
+      await tester.pump();
+      if (find.text('¿Qué cultivas en este cuadrante?').evaluate().isNotEmpty) {
+        break;
+      }
+    }
+    await tester.pumpAndSettle();
+    expect(find.text('¿Qué cultivas en este cuadrante?'), findsOneWidget);
+
+    await tester.tap(find.text('Cancelar').last);
+    await tester.pumpAndSettle();
+
+    final sectors = await tester.runAsync(
+      () => database.select(database.sectors).get(),
+    );
+    expect(sectors, isEmpty, reason: 'no crop chosen, no quadrant created');
+    expect(find.text('Confirmar'), findsOneWidget, reason: 'still drawing');
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(milliseconds: 1));
   });

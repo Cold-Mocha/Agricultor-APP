@@ -25,10 +25,7 @@ void main() {
       decoded.tables['sectores']!.rows[1][0]!.value.toString(),
       'sector-1',
     );
-    expect(
-      decoded.tables['labores']!.rows[1][1]!.value.toString(),
-      'sector-1',
-    );
+    expect(decoded.tables['labores']!.rows[1][1]!.value.toString(), 'sector-1');
     expect(bytes.take(2), [80, 75]);
   });
 }

@@ -74,6 +74,20 @@ final class WeatherSnapshot {
   final List<WeatherForecastDay> forecast;
   final List<WeatherAlert> alerts;
 
+  /// First forecast day from [today] on whose minimum is at or below 0 °C.
+  /// This repeats the forecast; it is not an official frost warning.
+  WeatherForecastDay? freezingForecastFrom(DateTime today) {
+    final start = DateTime(today.year, today.month, today.day);
+    for (final day in forecast) {
+      final local = day.date.toLocal();
+      if (DateTime(local.year, local.month, local.day).isBefore(start)) {
+        continue;
+      }
+      if (day.minimumC <= 0) return day;
+    }
+    return null;
+  }
+
   bool isFreshAt(DateTime now) =>
       (expiresAt ?? fetchedAt.add(const Duration(hours: 1))).isAfter(
         now.toUtc(),
@@ -107,6 +121,9 @@ final class WeatherForecastDay {
     required this.maximumC,
     required this.rainChancePercent,
     required this.summary,
+    this.rainMillimeters,
+    this.windMaxKmh,
+    this.windGustsMaxKmh,
   });
   factory WeatherForecastDay.fromJson(Map<String, dynamic> json) =>
       WeatherForecastDay(
@@ -115,18 +132,29 @@ final class WeatherForecastDay {
         maximumC: (json['maximum_c'] as num).toDouble(),
         rainChancePercent: (json['rain_chance_percent'] as num).toInt(),
         summary: json['summary'] as String,
+        rainMillimeters: (json['rain_mm'] as num?)?.toDouble(),
+        windMaxKmh: (json['wind_max_kmh'] as num?)?.toDouble(),
+        windGustsMaxKmh: (json['wind_gusts_max_kmh'] as num?)?.toDouble(),
       );
   final DateTime date;
   final double minimumC;
   final double maximumC;
   final int rainChancePercent;
   final String summary;
+
+  /// Optional: snapshots cached before these fields existed lack them.
+  final double? rainMillimeters;
+  final double? windMaxKmh;
+  final double? windGustsMaxKmh;
   Map<String, dynamic> toJson() => {
     'date': date.toIso8601String().substring(0, 10),
     'minimum_c': minimumC,
     'maximum_c': maximumC,
     'rain_chance_percent': rainChancePercent,
     'summary': summary,
+    if (rainMillimeters != null) 'rain_mm': rainMillimeters,
+    if (windMaxKmh != null) 'wind_max_kmh': windMaxKmh,
+    if (windGustsMaxKmh != null) 'wind_gusts_max_kmh': windGustsMaxKmh,
   };
 }
 

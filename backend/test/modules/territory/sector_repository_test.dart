@@ -94,27 +94,24 @@ void main() {
     expect(childOperations.first.dependencyOperationId, isNull);
   });
 
-  test(
-    'rejects invalid geometry and rolls back sector plus outbox',
-    () async {
-      final database = createInMemoryDatabase();
-      addTearDown(database.close);
-      await expectLater(
-        SectorRepository(database).save(
-          ownerId: 'owner-2',
-          number: 1,
-          name: 'Inválido',
-          polygon: const [GeoPoint(-38.74, -72.60), GeoPoint(-38.74, -72.59)],
-        ),
-        throwsArgumentError,
-      );
-      expect(await database.select(database.sectors).get(), isEmpty);
-      expect(
-        await (database.select(
-          database.syncOutbox,
-        )..where((row) => row.aggregateType.equals('sector'))).get(),
-        isEmpty,
-      );
-    },
-  );
+  test('rejects invalid geometry and rolls back sector plus outbox', () async {
+    final database = createInMemoryDatabase();
+    addTearDown(database.close);
+    await expectLater(
+      SectorRepository(database).save(
+        ownerId: 'owner-2',
+        number: 1,
+        name: 'Inválido',
+        polygon: const [GeoPoint(-38.74, -72.60), GeoPoint(-38.74, -72.59)],
+      ),
+      throwsArgumentError,
+    );
+    expect(await database.select(database.sectors).get(), isEmpty);
+    expect(
+      await (database.select(
+        database.syncOutbox,
+      )..where((row) => row.aggregateType.equals('sector'))).get(),
+      isEmpty,
+    );
+  });
 }

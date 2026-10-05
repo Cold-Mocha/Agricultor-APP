@@ -8,17 +8,27 @@ final class CropPictogram extends StatelessWidget {
     this.asset,
     this.colorToken,
     this.semanticLabel,
+    this.apiary = false,
     super.key,
   });
+
+  /// Apiary units always show a bee instead of a crop pictogram.
+  static const apiaryIcon = Icons.emoji_nature;
+
+  /// The catalog id of the beekeeping "crop".
+  static const apiaryCropId = 'apicultura';
 
   final String? asset;
   final String? colorToken;
   final String? semanticLabel;
+  final bool apiary;
 
   @override
   Widget build(BuildContext context) {
     final foreground = _color(context, colorToken);
-    final image = asset == null
+    final image = apiary
+        ? Icon(apiaryIcon, color: foreground, size: AgroSizes.iconFeatured)
+        : asset == null
         ? Icon(LucideIcons.leaf, color: foreground)
         : SvgPicture.asset(
             asset!,

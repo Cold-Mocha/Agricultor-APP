@@ -9,6 +9,7 @@ import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../../backend/test/helpers/in_memory_database.dart';
 
@@ -108,8 +109,8 @@ void main() {
     final database = createInMemoryDatabase();
     await pumpPage(tester, database: database);
 
-    final sendButton = tester.widget<FilledButton>(
-      find.widgetWithText(FilledButton, 'Enviar consulta'),
+    final sendButton = tester.widget<IconButton>(
+      find.widgetWithIcon(IconButton, LucideIcons.send),
     );
     expect(sendButton.onPressed, isNull);
 
@@ -119,8 +120,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final enabledButton = tester.widget<FilledButton>(
-      find.widgetWithText(FilledButton, 'Enviar consulta'),
+    final enabledButton = tester.widget<IconButton>(
+      find.widgetWithIcon(IconButton, LucideIcons.send),
     );
     expect(enabledButton.onPressed, isNotNull);
     await database.close();
@@ -137,7 +138,7 @@ void main() {
         '¿Cuándo conviene regar paltos?',
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(FilledButton, 'Enviar consulta'));
+      await tester.tap(find.byTooltip('Enviar consulta'));
       await tester.pumpAndSettle();
 
       // The failed message is persisted and the question stays in the
@@ -163,7 +164,7 @@ void main() {
     await pumpPage(tester, database: database, localMode: true);
 
     expect(find.text('AgroIA no disponible'), findsOneWidget);
-    expect(find.text('Enviar consulta'), findsNothing);
+    expect(find.byTooltip('Enviar consulta'), findsNothing);
     expect(find.byType(TextField), findsNothing);
     await database.close();
   });

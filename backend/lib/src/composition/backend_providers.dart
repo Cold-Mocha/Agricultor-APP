@@ -45,6 +45,12 @@ final syncSchedulerProvider = Provider<SyncScheduler>(
 final localNotificationSchedulerProvider = Provider<LocalNotificationScheduler>(
   (ref) => PluginLocalNotificationScheduler(),
 );
+final fieldAlertNotifierProvider = Provider<FieldAlertNotifier>(
+  (ref) => PluginFieldAlertNotifier(),
+);
+final fieldAlertSchedulerProvider = Provider<FieldAlertScheduler>(
+  (ref) => const NoFieldAlertScheduler(),
+);
 final reminderNotificationPayloadBuilderProvider =
     Provider<ReminderNotificationPayloadBuilder>(
       (ref) =>
@@ -81,5 +87,16 @@ final syncTriggerCoordinatorProvider = Provider<SyncTriggerCoordinator>((ref) {
           ),
     ref.watch(syncSchedulerProvider),
     ref.watch(connectivityServiceProvider),
+    pendingWork: (ownerId) => ref
+        .read(appDatabaseProvider)
+        .syncOutboxDao
+        .watchPending(ownerId)
+        .map(
+          (rows) => rows
+              .where(
+                (row) => row.state == 'pending' || row.state == 'retry_wait',
+              )
+              .length,
+        ),
   );
 });

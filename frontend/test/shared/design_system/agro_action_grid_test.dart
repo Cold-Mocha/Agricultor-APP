@@ -38,4 +38,44 @@ void main() {
     expect(rects.map((rect) => rect.left).toSet(), hasLength(2));
     expect(rects.map((rect) => rect.top).toSet(), hasLength(3));
   });
+
+  testWidgets('uniform height gives every tile the tallest height', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AgroTheme.light,
+        home: Scaffold(
+          body: SizedBox(
+            width: 328,
+            child: AgroAdaptiveGrid(
+              columns: 2,
+              uniformHeight: true,
+              children: [
+                for (final (index, extra) in const [
+                  (0, 'Una línea más de detalle'),
+                  (1, null),
+                  (2, null),
+                  (3, null),
+                ])
+                  AgroActionTile(
+                    key: ValueKey(index),
+                    icon: LucideIcons.droplet,
+                    label: 'Acción $index',
+                    description: extra,
+                    onTap: () {},
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final heights = {
+      for (var index = 0; index < 4; index++)
+        tester.getSize(find.byKey(ValueKey(index))).height,
+    };
+    expect(heights, hasLength(1), reason: 'all four tiles share one height');
+  });
 }

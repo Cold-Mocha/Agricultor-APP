@@ -33,6 +33,10 @@ final class SyncCoordinator {
   final SyncRetryPolicy _retryPolicy;
 
   Future<SyncRunResult> synchronize(String ownerId) async {
+    // Work under a deleted quadrant can never be accepted; drop it first.
+    await _database.syncOutboxDao.cancelOrphansOfDeletedSectors(ownerId);
+    // Operations stored as failed before missing parents became retryable.
+    await _database.syncOutboxDao.requeueRecoverable(ownerId);
     final pending = await _database.syncOutboxDao.eligibleBatch(ownerId);
     var pushed = 0;
     var conflictCount = 0;
@@ -110,7 +114,8 @@ final class SyncCoordinator {
               operation.conflict!,
             ]);
           }
-        } else if (operation.status == PushOperationStatus.rejected) {
+        } else if (operation.status == PushOperationStatus.rejected &&
+            !isRecoverableRejection(operation.errorCode)) {
           await _database.syncOutboxDao.markTerminal(
             row.operationId,
             'failed',
@@ -203,3 +208,9 @@ final class SyncCoordinator {
     return conflicts.length;
   }
 }
+
+/// A parent or catalog row that does not exist on the server yet (for example
+/// a crop catalog deployed later) is retried with backoff instead of failing
+/// for good.
+bool isRecoverableRejection(String? errorCode) =>
+    errorCode != null && errorCode.endsWith('_missing');

@@ -43,7 +43,7 @@ final class _CropCatalogPageState extends ConsumerState<CropCatalogPage> {
       ],
       child: ownerId == null
           ? const AgroEmptyState(
-              title: 'Sin sesión local',
+              title: 'Sin sesión',
               message: 'Inicia sesión para administrar cultivos.',
             )
           : FutureBuilder<void>(
@@ -82,6 +82,8 @@ final class _CropCatalogPageState extends ConsumerState<CropCatalogPage> {
                                   leading: CropPictogram(
                                     asset: crop.iconAsset,
                                     colorToken: crop.colorToken,
+                                    apiary:
+                                        crop.id == CropPictogram.apiaryCropId,
                                   ),
                                   title: Text(crop.label),
                                   subtitle: Text(

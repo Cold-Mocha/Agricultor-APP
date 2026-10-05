@@ -43,6 +43,14 @@ function weatherSummary(code: unknown): string {
     : "Condición sin descripción";
 }
 
+/** Days of daily forecast shown to the farmer. */
+export const forecastDays = 7;
+
+function optionalNumberAt(values: unknown, index: number): number | null {
+  if (!Array.isArray(values) || typeof values[index] !== "number") return null;
+  return Number(values[index]);
+}
+
 function numberAt(values: unknown, index: number): number {
   if (!Array.isArray(values) || typeof values[index] !== "number") {
     throw new Error("weather_contract_invalid");
@@ -69,7 +77,7 @@ export function normalizeOpenMeteo(
     throw new Error("weather_contract_invalid");
   }
 
-  const forecast = daily.time.slice(0, 3).map(
+  const forecast = daily.time.slice(0, forecastDays).map(
     (date: unknown, index: number) => {
       if (typeof date !== "string") throw new Error("weather_contract_invalid");
       return {
@@ -81,6 +89,9 @@ export function normalizeOpenMeteo(
           index,
         ),
         summary: weatherSummary(numberAt(daily.weather_code, index)),
+        rain_mm: optionalNumberAt(daily.precipitation_sum, index),
+        wind_max_kmh: optionalNumberAt(daily.wind_speed_10m_max, index),
+        wind_gusts_max_kmh: optionalNumberAt(daily.wind_gusts_10m_max, index),
       };
     },
   );
@@ -151,7 +162,7 @@ export function buildOpenMeteoUrl(coordinate: Coordinate): URL {
       "wind_gusts_10m",
     ].join(","),
   );
-  url.searchParams.set("forecast_days", "3");
+  url.searchParams.set("forecast_days", String(forecastDays));
   url.searchParams.set("timezone", "auto");
   return url;
 }

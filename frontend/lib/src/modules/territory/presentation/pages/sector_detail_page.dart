@@ -1,12 +1,17 @@
+import 'dart:async';
+
 import 'package:agrocampo/src/app/layout/agro_page.dart';
 import 'package:agrocampo/src/app/routing/app_routes.dart';
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
+import 'package:agrocampo/src/modules/history/history_ui.dart';
 import 'package:agrocampo/src/modules/territory/presentation/controllers/territory_controllers.dart';
+import 'package:agrocampo/src/modules/weather/weather_ui.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_action_tile.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_metric_card.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_section_header.dart';
 import 'package:agrocampo/src/shared/design_system/components/crop_pictogram.dart';
+import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -212,6 +217,7 @@ final class SectorDetailPage extends ConsumerWidget {
               const SizedBox(height: AgroSpacing.sm),
               AgroAdaptiveGrid(
                 columns: 2,
+                uniformHeight: true,
                 children: [
                   AgroMetricCard(
                     label: 'Superficie',
@@ -219,11 +225,9 @@ final class SectorDetailPage extends ConsumerWidget {
                     icon: LucideIcons.ruler,
                   ),
                   AgroMetricCard(
-                    label: 'Humedad del suelo',
-                    value: summary.soilMoisturePercent == null
-                        ? 'Sin medición'
-                        : '${summary.soilMoisturePercent!.toStringAsFixed(0)} %',
-                    icon: LucideIcons.droplets,
+                    label: 'Última labor',
+                    value: _date(context, summary.lastLaborAt),
+                    icon: LucideIcons.clipboardCheck,
                   ),
                   AgroMetricCard(
                     label: 'Último riego',
@@ -238,55 +242,63 @@ final class SectorDetailPage extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: AgroSpacing.lg),
+              _QuadrantClimate(
+                ownerId: state.ownerId!,
+                sectorId: detail.id,
+                label: 'Cuadrante ${detail.number}',
+                summary: summary,
+              ),
+              const SizedBox(height: AgroSpacing.lg),
               const AgroSectionHeader(
                 title: 'Acciones',
                 subtitle:
                     'El contexto de este cuadrante se mantiene en cada flujo.',
               ),
               const SizedBox(height: AgroSpacing.sm),
-              // Two columns by three rows keep every action of the quadrant
-              // visible at once.
-              AgroAdaptiveGrid(
-                columns: 2,
-                children: [
-                  AgroActionTile(
-                    icon: LucideIcons.clipboardPlus,
-                    label: 'Registrar labor',
-                    onTap: () => context.push(
-                      AppRoutes.registerFor(sectorId: detail.id),
+              // Riego and Suelo are grouped on a shared surface above the
+              // full-width Registrar labor action.
+              Container(
+                padding: const EdgeInsets.all(AgroSpacing.xs),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(AgroRadii.medium),
+                ),
+                child: AgroAdaptiveGrid(
+                  columns: 2,
+                  uniformHeight: true,
+                  children: [
+                    AgroActionTile(
+                      icon: LucideIcons.droplet,
+                      label: 'Riego',
+                      onTap: () => context.push(
+                        AppRoutes.irrigationFor(sectorId: detail.id),
+                      ),
                     ),
-                  ),
-                  AgroActionTile(
-                    icon: LucideIcons.droplet,
-                    label: 'Riego',
-                    onTap: () => context.push(
-                      AppRoutes.irrigationFor(sectorId: detail.id),
+                    AgroActionTile(
+                      icon: LucideIcons.flaskConical,
+                      label: 'Suelo',
+                      onTap: () =>
+                          context.push(AppRoutes.soilFor(sectorId: detail.id)),
                     ),
-                  ),
-                  AgroActionTile(
-                    icon: LucideIcons.flaskConical,
-                    label: 'Suelo',
-                    onTap: () =>
-                        context.push(AppRoutes.soilFor(sectorId: detail.id)),
-                  ),
-                  AgroActionTile(
-                    icon: LucideIcons.sparkles,
-                    label: 'AgroIA',
-                    onTap: () => context.push(AppRoutes.agroAi),
-                  ),
-                  AgroActionTile(
-                    icon: LucideIcons.leaf,
-                    label: 'Cambiar cultivo',
-                    onTap: () =>
-                        context.push(AppRoutes.sectorRotation(detail.id)),
-                  ),
-                  AgroActionTile(
-                    icon: LucideIcons.history,
-                    label: 'Ver historial',
-                    onTap: () =>
-                        context.push(AppRoutes.sectorHistory(detail.id)),
-                  ),
-                ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: AgroSpacing.xs),
+              AgroActionTile(
+                icon: LucideIcons.clipboardPlus,
+                label: 'Registrar labor',
+                onTap: () =>
+                    context.push(AppRoutes.registerFor(sectorId: detail.id)),
+              ),
+              const SizedBox(height: AgroSpacing.lg),
+              const AgroSectionHeader(
+                title: 'Historial',
+                subtitle: 'Actividad reciente de este cuadrante.',
+              ),
+              const SizedBox(height: AgroSpacing.sm),
+              _SectorHistorySection(
+                ownerId: state.ownerId!,
+                sectorId: detail.id,
               ),
               const SizedBox(height: AgroSpacing.lg),
             ],
@@ -314,73 +326,260 @@ final class _CropIdentityCard extends StatelessWidget {
   final VoidCallback? onApiary;
 
   @override
-  Widget build(BuildContext context) => Card(
-    child: Padding(
-      padding: const EdgeInsets.all(AgroSpacing.md),
-      child: Column(
+  // No surrounding card: the crop and its two actions sit on the page.
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: AgroSpacing.xs),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CropPictogram(
+              asset: summary.cropIconAsset,
+              colorToken: summary.cropColorToken,
+              semanticLabel: summary.cropLabel,
+              apiary: summary.isApiary,
+            ),
+            const SizedBox(width: AgroSpacing.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    summary.cropLabel,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: AgroSpacing.xxs),
+                  Text(
+                    summary.seasonLabel ?? 'Sin temporada asignada',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AgroSpacing.sm),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: onChangeCrop,
+                icon: const Icon(LucideIcons.repeat),
+                label: const Text('Cambiar cultivo'),
+              ),
+            ),
+            const SizedBox(width: AgroSpacing.xs),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: onConfigureSeason,
+                icon: const Icon(LucideIcons.calendarRange),
+                label: const Text('Configurar temporada'),
+              ),
+            ),
+          ],
+        ),
+        if (onApiary case final action?) ...[
+          const SizedBox(height: AgroSpacing.xs),
+          OutlinedButton.icon(
+            onPressed: action,
+            icon: const Icon(CropPictogram.apiaryIcon),
+            label: const Text('Registrar revisión apícola'),
+          ),
+        ],
+      ],
+    ),
+  );
+}
+
+/// Weather of the quadrant next to its last soil reading, in the same
+/// two-by-two metric layout as the quadrant status.
+final class _QuadrantClimate extends ConsumerStatefulWidget {
+  const _QuadrantClimate({
+    required this.ownerId,
+    required this.sectorId,
+    required this.label,
+    required this.summary,
+  });
+
+  final String ownerId;
+  final String sectorId;
+  final String label;
+  final SectorCardUiState summary;
+
+  @override
+  ConsumerState<_QuadrantClimate> createState() => _QuadrantClimateState();
+}
+
+final class _QuadrantClimateState extends ConsumerState<_QuadrantClimate> {
+  /// Weather is refreshed hourly while the quadrant stays open.
+  static const _autoRefresh = Duration(hours: 1);
+
+  late Future<WeatherLoadResult> _weather = _load();
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(_autoRefresh, (_) => _reload());
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  Future<WeatherLoadResult> _load({bool forceRefresh = false}) => ref
+      .read(weatherControllerProvider)
+      .load(
+        ownerId: widget.ownerId,
+        locality: widget.label,
+        sectorId: widget.sectorId,
+        forceRefresh: forceRefresh,
+      );
+
+  void _reload() => setState(() => _weather = _load(forceRefresh: true));
+
+  @override
+  void didUpdateWidget(covariant _QuadrantClimate oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.sectorId != widget.sectorId) _weather = _load();
+  }
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder<WeatherLoadResult>(
+    future: _weather,
+    builder: (context, snapshot) {
+      final weather = switch (snapshot.data) {
+        WeatherFresh(:final snapshot) => snapshot,
+        WeatherStale(:final snapshot) => snapshot,
+        _ => null,
+      };
+      final loading = snapshot.connectionState != ConnectionState.done;
+      final missing = loading ? 'Cargando…' : 'Sin datos';
+      final soilMoisture = widget.summary.soilMoisturePercent;
+      final soilTemperature = widget.summary.soilTemperatureC;
+      return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CropPictogram(
-                asset: summary.cropIconAsset,
-                colorToken: summary.cropColorToken,
-                semanticLabel: summary.cropLabel,
-              ),
-              const SizedBox(width: AgroSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      summary.cropLabel,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: AgroSpacing.xxs),
-                    Text(
-                      summary.seasonLabel ?? 'Sin temporada asignada',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: AgroSpacing.xs),
-                    Text(summary.statusLabel),
-                  ],
+              const Expanded(
+                child: AgroSectionHeader(
+                  title: 'Clima en el cuadrante',
+                  subtitle: 'Se actualiza cada hora.',
                 ),
+              ),
+              IconButton(
+                tooltip: 'Actualizar clima',
+                onPressed: loading ? null : _reload,
+                icon: loading
+                    ? const SizedBox.square(
+                        dimension: AgroSizes.iconStandard,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(LucideIcons.refreshCw),
               ),
             ],
           ),
           const SizedBox(height: AgroSpacing.sm),
-          Row(
+          AgroAdaptiveGrid(
+            columns: 2,
+            uniformHeight: true,
             children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: onChangeCrop,
-                  icon: const Icon(LucideIcons.repeat),
-                  label: const Text('Cambiar cultivo'),
-                ),
+              AgroMetricCard(
+                label: 'Clima',
+                value: weather == null
+                    ? missing
+                    : '${weather.temperatureC.round()} °C',
+                supportingText: weather?.summary,
+                icon: LucideIcons.cloudSun,
               ),
-              const SizedBox(width: AgroSpacing.xs),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: onConfigureSeason,
-                  icon: const Icon(LucideIcons.calendarRange),
-                  label: const Text('Configurar temporada'),
-                ),
+              AgroMetricCard(
+                label: 'Humedad',
+                value: weather == null
+                    ? missing
+                    : '${weather.humidityPercent} %',
+                icon: LucideIcons.droplets,
+              ),
+              AgroMetricCard(
+                label: 'Humedad del suelo',
+                value: soilMoisture == null
+                    ? 'Sin medición'
+                    : '${soilMoisture.toStringAsFixed(0)} %',
+                icon: LucideIcons.sprout,
+              ),
+              AgroMetricCard(
+                label: 'Temp. del suelo',
+                value: soilTemperature == null
+                    ? 'Sin medición'
+                    : '${soilTemperature.toStringAsFixed(1)} °C',
+                icon: LucideIcons.thermometer,
               ),
             ],
           ),
-          if (onApiary case final action?) ...[
-            const SizedBox(height: AgroSpacing.xs),
-            OutlinedButton.icon(
-              onPressed: action,
-              icon: const Icon(Icons.hive_outlined),
-              label: const Text('Registrar revisión apícola'),
-            ),
-          ],
         ],
-      ),
-    ),
+      );
+    },
+  );
+}
+
+/// Shows this quadrant's history inline instead of linking out to a
+/// separate page.
+final class _SectorHistorySection extends ConsumerWidget {
+  const _SectorHistorySection({required this.ownerId, required this.sectorId});
+
+  final String ownerId;
+  final String sectorId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => FutureBuilder<List<HistoryEvent>>(
+    future: ref
+        .watch(historyControllerProvider)
+        .list(HistoryFilter(ownerId: ownerId, sectorId: sectorId)),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState != ConnectionState.done) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      final events = snapshot.data ?? const <HistoryEvent>[];
+      if (events.isEmpty) {
+        return const AgroEmptyState(
+          title: 'Sin registros',
+          message: 'Las actividades de este cuadrante aparecerán aquí.',
+        );
+      }
+      return Column(
+        children: [
+          for (final event in events)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AgroSpacing.xs),
+              child: Card(
+                child: ListTile(
+                  leading: Icon(switch (event.type) {
+                    HistoryEventType.labor => LucideIcons.wheat,
+                    HistoryEventType.cropAssignment => LucideIcons.leaf,
+                    HistoryEventType.soil => LucideIcons.flaskConical,
+                  }),
+                  title: Text(event.title),
+                  subtitle: Text(
+                    [
+                      if (event.cropLabel != null) event.cropLabel!,
+                      if (event.detail != null && event.detail!.isNotEmpty)
+                        event.detail!,
+                      MaterialLocalizations.of(
+                        context,
+                      ).formatShortDate(event.occurredAt.toLocal()),
+                    ].join(' · '),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      );
+    },
   );
 }

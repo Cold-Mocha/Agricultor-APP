@@ -33,12 +33,10 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
       child: ownerId == null
           ? const AgroEmptyState(
               title: 'Sin historial',
-              message: 'Inicia sesión para consultar registros locales.',
+              message: 'Inicia sesión para consultar tus registros.',
             )
           : Column(
               children: [
-                const AgriculturalContextSelector(requireSector: true),
-                const SizedBox(height: AgroSpacing.sm),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -122,20 +120,6 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
                                             _date(event.occurredAt),
                                           ].join(' · '),
                                         ),
-                                        trailing: Tooltip(
-                                          message: _syncLabel(
-                                            event.syncState,
-                                            event.backupState,
-                                          ),
-                                          child: Icon(
-                                            event.syncState == 'synced'
-                                                ? LucideIcons.cloudCheck
-                                                : event.syncState == 'conflict'
-                                                ? LucideIcons.cloudAlert
-                                                : LucideIcons.cloudUpload,
-                                            size: 20,
-                                          ),
-                                        ),
                                       ),
                                     ),
                                   ],
@@ -163,14 +147,6 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
     HistoryEventType.labor => LucideIcons.wheat,
     HistoryEventType.cropAssignment => LucideIcons.leaf,
     HistoryEventType.soil => LucideIcons.flaskConical,
-  };
-
-  String _syncLabel(String state, BackupState backup) => switch (backup) {
-    BackupState.backedUp => 'Respaldado',
-    BackupState.conflict => 'Conflicto pendiente',
-    BackupState.syncing => 'Sincronizando',
-    BackupState.error => 'Error de respaldo; reintento disponible',
-    _ => 'Guardado localmente; pendiente de sincronizar',
   };
 
   String _date(DateTime value) =>

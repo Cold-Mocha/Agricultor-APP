@@ -64,7 +64,14 @@ final class SectorSummaryRepository {
             WHERE sm.sector_id = s.id
             ORDER BY sm.measured_at DESC
             LIMIT 1
-          ) AS soil_moisture_percent
+          ) AS soil_moisture_percent,
+          (
+            SELECT sm.temperature_celsius
+            FROM soil_measurements sm
+            WHERE sm.sector_id = s.id
+            ORDER BY sm.measured_at DESC
+            LIMIT 1
+          ) AS soil_temperature_c
         FROM sectors s
         LEFT JOIN crop_seasons ca ON ca.id = (
           SELECT cs.id
@@ -120,6 +127,9 @@ final class SectorSummaryRepository {
                 lastSoilAt: _date(row, 'last_soil_at'),
                 soilMoisturePercent: row.readNullable<double>(
                   'soil_moisture_percent',
+                ),
+                soilTemperatureC: row.readNullable<double>(
+                  'soil_temperature_c',
                 ),
               ),
             )

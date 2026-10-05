@@ -4,6 +4,8 @@ import 'package:agrocampo_backend/src/modules/auth/domain/entities/session_state
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/auth_repository.dart';
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/biometric_unlock_gateway.dart';
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/local_auth_repository.dart';
+import 'package:agrocampo_backend/src/modules/crop_cycles/application/facades/crop_cycles_facade.dart';
+import 'package:agrocampo_backend/src/modules/reminders/application/facades/field_alerts_facade.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:agrocampo_backend/src/platform/database/owner_transfer.dart';
 import 'package:drift/drift.dart';
@@ -35,10 +37,22 @@ final authSessionFacadeProvider = Provider<AuthSessionFacade>((ref) {
           .transfer(from: localOwnerId, to: ownerId);
       await store.clearOwnerId();
     },
-    (ownerId) => ref.read(cropAssignmentReconcilerProvider).reconcile(ownerId),
+    (ownerId) async {
+      // Seasons first: crops activate only inside an active season.
+      await ref.read(cropCyclesFacadeProvider).reconcileSeasonStatuses(ownerId);
+      await ref.read(cropAssignmentReconcilerProvider).reconcile(ownerId);
+    },
     (ownerId) => ref.read(reminderReconcilerProvider).reconcile(ownerId),
+    (ownerId) => ref.read(fieldAlertsFacadeProvider).checkNow(ownerId),
     (ownerId) => ref.read(syncTriggerCoordinatorProvider).start(ownerId),
-    (ownerId) => ref.read(syncTriggerCoordinatorProvider).stop(ownerId),
+    (ownerId) async {
+      await ref.read(syncTriggerCoordinatorProvider).stop(ownerId);
+      try {
+        await ref.read(fieldAlertsFacadeProvider).stop(ownerId);
+      } on Object {
+        // No background work to cancel on a host environment.
+      }
+    },
   );
 });
 
@@ -52,6 +66,7 @@ final class AuthSessionFacade {
     this._adoptLocalOwner,
     this._reconcileCrops,
     this._reconcileReminders,
+    this._checkFieldAlerts,
     this._startSync,
     this._stopSync,
   );
@@ -62,6 +77,7 @@ final class AuthSessionFacade {
   final Future<void> Function(String ownerId) _adoptLocalOwner;
   final Future<void> Function(String ownerId) _reconcileCrops;
   final Future<void> Function(String ownerId) _reconcileReminders;
+  final Future<void> Function(String ownerId) _checkFieldAlerts;
   final Future<void> Function(String ownerId) _startSync;
   final Future<void> Function(String ownerId) _stopSync;
 
@@ -118,6 +134,11 @@ final class AuthSessionFacade {
       await _reconcileReminders(ownerId);
     } on Object {
       // Native notification support may be unavailable on a host environment.
+    }
+    try {
+      await _checkFieldAlerts(ownerId);
+    } on Object {
+      // Same as reminders: alerts are best effort and retried on resume.
     }
     await _startSync(ownerId);
   }

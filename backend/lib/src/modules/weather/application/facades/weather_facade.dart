@@ -21,10 +21,12 @@ final class WeatherFacade {
     required String ownerId,
     required String locality,
     String? sectorId,
+    bool forceRefresh = false,
   }) => _repository.load(
     ownerId: ownerId,
     locality: locality,
     sectorId: sectorId,
+    forceRefresh: forceRefresh,
   );
 
   Future<void> setAlertsEnabled(String ownerId, bool enabled) =>

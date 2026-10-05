@@ -25,6 +25,7 @@ final class SectorCardUiState {
     this.lastIrrigationAt,
     this.lastSoilAt,
     this.soilMoisturePercent,
+    this.soilTemperatureC,
   });
 
   final String id;
@@ -44,6 +45,7 @@ final class SectorCardUiState {
   final DateTime? lastIrrigationAt;
   final DateTime? lastSoilAt;
   final double? soilMoisturePercent;
+  final double? soilTemperatureC;
 
   String get displayName => 'Cuadrante $number';
 
