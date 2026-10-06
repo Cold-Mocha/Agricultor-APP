@@ -75,6 +75,26 @@ aprobados por la spec 004.
 | `flutter analyze` frontend | PASS |
 | `dart run tool/check_architecture.dart` | PASS |
 
+## Exportar XLSX — excluir eliminados y ampliar columnas (host, 2026-10-06)
+
+`ExportRepository.snapshot()` no filtraba sectores eliminados (`sectors.deleted_at`): un sector
+borrado seguía apareciendo en la hoja `sectores`, junto con todas sus labores, mediciones de
+suelo, riegos, producción y registros de apicultura, porque esas hojas no se acotaban a los
+sectores vigentes. Ahora cada hoja se calcula a partir del conjunto de sectores no eliminados del
+propietario, igual que el resto de la app (p. ej. `SectorHistoryDao`).
+
+De paso se ampliaron las columnas exportadas por hoja para reflejar los formatos agregados por
+migraciones recientes, antes ausentes del archivo: `categoria_dominio`, `estado` (recorded/
+corrected/voided) y `detalle_json` en labores; humedad/pH/temperatura/conductividad/NPK completos
+en suelo; duración en segundos, volumen aplicado y config de goteo en riego; notas de calidad en
+producción; y los campos de estado de reina/cría/alimentación en apicultura.
+
+| Suite | Resultado |
+|---|---|
+| Backend `flutter test` | 189/189 (incluye `export_repository_test.dart`) |
+| `flutter analyze` backend | PASS |
+| `dart run tool/check_architecture.dart` | PASS |
+
 ## Tema oscuro (host, 2026-10-05)
 
 Aprobado y agregado al MVP (ver `master.md`, sección «Tema oscuro»). `AgroTheme.dark` reutiliza la
