@@ -20,8 +20,8 @@ class Sectors extends Table {
   @override
   Set<Column<Object>> get primaryKey => {id};
 
-  @override
-  List<Set<Column<Object>>> get uniqueKeys => [
-    {ownerId, number},
-  ];
+  // A sector number is only unique among sectors the owner hasn't deleted;
+  // reusing a deleted sector's number must be allowed. SQLite can't express
+  // that as a table-level UNIQUE constraint, so it lives in a partial
+  // unique index (see idx_sectors_number_active) applied in migrations.
 }

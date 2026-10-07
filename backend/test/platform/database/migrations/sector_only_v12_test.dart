@@ -17,7 +17,7 @@ void main() {
         .customSelect('PRAGMA user_version')
         .map((row) => row.read<int>('user_version'))
         .getSingle();
-    expect(version, 12);
+    expect(version, 13);
 
     final parcelTables = await database
         .customSelect(

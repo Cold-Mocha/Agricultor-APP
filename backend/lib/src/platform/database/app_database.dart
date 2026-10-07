@@ -30,6 +30,7 @@ part '../sync/persistence/tables/sync_conflicts.dart';
 part '../sync/persistence/tables/sync_cursors.dart';
 part '../sync/persistence/tables/sync_outbox.dart';
 part 'app_database.g.dart';
+part 'migrations/sector_number_reuse_v13.dart';
 part 'migrations/sector_only_v12.dart';
 part 'tables/form_drafts.dart';
 
@@ -69,7 +70,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -79,15 +80,24 @@ class AppDatabase extends _$AppDatabase {
       for (final statement in _sectorOnlyV12Indexes) {
         await customStatement(statement);
       }
+      for (final statement in _sectorNumberReuseV13Indexes) {
+        await customStatement(statement);
+      }
     },
     onUpgrade: (migrator, from, to) async {
       if (from < 12) {
         await _resetForSectorOnlyV12(this, migrator);
       }
+      if (from < 13) {
+        await _allowSectorNumberReuseV13(this, migrator);
+      }
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
       for (final statement in _sectorOnlyV12Indexes) {
+        await customStatement(statement);
+      }
+      for (final statement in _sectorNumberReuseV13Indexes) {
         await customStatement(statement);
       }
     },

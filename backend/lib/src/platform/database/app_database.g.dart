@@ -3722,10 +3722,6 @@ class $SectorsTable extends Sectors with TableInfo<$SectorsTable, Sector> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  List<Set<GeneratedColumn>> get uniqueKeys => [
-    {ownerId, number},
-  ];
-  @override
   Sector map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Sector(

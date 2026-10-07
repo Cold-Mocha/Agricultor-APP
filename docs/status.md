@@ -75,6 +75,20 @@ aprobados por la spec 004.
 | `flutter analyze` frontend | PASS |
 | `dart run tool/check_architecture.dart` | PASS |
 
+## Reutilizar número de cuadrante eliminado (host, 2026-10-07; Drift v13)
+
+Renombrar un cuadrante al número de uno ya eliminado fallaba: `sectors` tenía
+`UNIQUE(owner_id, number)` a nivel de tabla, que se seguía aplicando contra filas con
+`deleted_at` no nulo. Se reconstruye la tabla (sin perder datos) para reemplazar esa
+restricción por un índice único parcial, `WHERE deleted_at IS NULL`, igual que ya se hacía para
+`labor_id` en suelo/apicultura/producción. Un cuadrante eliminado deja de bloquear su número.
+
+| Suite | Resultado |
+|---|---|
+| Backend `flutter test` | 192/192 (incluye el reinicio v12→v13 desde una base poblada y el caso de conflicto legítimo) |
+| `flutter analyze` backend | PASS |
+| `dart run tool/check_architecture.dart` | PASS |
+
 ## Exportar XLSX — excluir eliminados y ampliar columnas (host, 2026-10-06)
 
 `ExportRepository.snapshot()` no filtraba sectores eliminados (`sectors.deleted_at`): un sector
