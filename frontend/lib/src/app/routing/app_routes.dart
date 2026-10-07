@@ -48,6 +48,9 @@ abstract final class AppRoutes {
   static String labor(String type, {String? sectorId}) =>
       _withSector('$register/labor/$type', sectorId);
 
+  static String laborEdit(String laborId) =>
+      '$register/labor/editar/${Uri.encodeComponent(laborId)}';
+
   static String registerFor({String? sectorId}) =>
       _withSector(register, sectorId);
 

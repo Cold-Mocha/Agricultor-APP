@@ -75,6 +75,24 @@ aprobados por la spec 004.
 | `flutter analyze` frontend | PASS |
 | `dart run tool/check_architecture.dart` | PASS |
 
+## Corregir labores desde Historial (host, 2026-10-07)
+
+Historial prohibía explícitamente inventar edición ("no inventar edición o borrado fuera del
+MVP"); se aprueba ahora reabrir una labor `recorded` para corregirla, usando el flujo de
+corrección que ya existía en el backend (`LaborRepository.correct`, `recorded → corrected`) pero
+sin punto de entrada en la UI. Cada evento de labor editable en Historial muestra un ícono de
+lápiz; al tocarlo abre `LaborFormPage` con el tipo fijo y los campos reconstruidos desde el detalle
+guardado, y al guardar reemplaza la labor por una nueva que la supersede — el original sigue
+visible, marcado como corregido, nunca se borra ni se reemplaza en silencio. Suelo, apicultura y
+cosecha no se editan desde aquí; conservan sus pantallas especializadas.
+
+| Suite | Resultado |
+|---|---|
+| Backend `flutter test` | 196/196 (incluye `loadForEdit`/`correctOutcome`) |
+| Frontend `flutter test` | 102/102 (incluye el flujo de corrección y el filtro de edición en Historial) |
+| `flutter analyze` backend y frontend | PASS |
+| `dart run tool/check_architecture.dart` | PASS |
+
 ## Reutilizar número de cuadrante eliminado (host, 2026-10-07; Drift v13)
 
 Renombrar un cuadrante al número de uno ya eliminado fallaba: `sectors` tenía

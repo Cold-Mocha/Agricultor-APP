@@ -713,7 +713,11 @@ La barra inferior contiene exactamente cinco destinos:
 - **Jerarquía:** contexto de cuadrante, eventos cronológicos y estado vacío.
 - **Componentes:** timeline de cards, icono por actividad, etiquetas de temporada/sync cuando aporten valor.
 - **Información:** fecha, tipo, cultivo, notas y estado de sincronización relevante.
-- **Acciones:** abrir detalle si está contemplado; no inventar edición o borrado fuera del MVP.
+- **Acciones:** abrir detalle si está contemplado; para labores con formulario genérico
+  (fertilización, control de enfermedades/plagas, cultivo, siembra, poda, otra, riego) se aprueba
+  reabrir y corregir usando el flujo existente de corrección (`recorded → corrected`): el registro
+  original permanece visible y auditable, nunca se reemplaza en silencio. Suelo, apicultura y
+  cosecha conservan sus flujos especializados y no se editan desde Historial. No se agrega borrado.
 - **Estados:** con eventos, vacío, filtrado sin resultados, pendiente y error de sincronización.
 - **Regla:** los eventos locales aparecen inmediatamente y no esperan la nube.
 

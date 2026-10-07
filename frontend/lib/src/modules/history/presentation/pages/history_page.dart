@@ -1,4 +1,5 @@
 import 'package:agrocampo/src/app/layout/agro_page.dart';
+import 'package:agrocampo/src/app/routing/app_routes.dart';
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
 import 'package:agrocampo/src/modules/auth/auth_ui.dart';
@@ -7,7 +8,20 @@ import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.d
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+
+/// Labor types the generic correction form can reopen; soil, apiary and
+/// harvest keep their own specialized flows (master.md).
+const _editableLaborTypes = {
+  'fertilization',
+  'diseaseAndPestControl',
+  'cultivation',
+  'sowing',
+  'pruning',
+  'other',
+  'irrigation',
+};
 
 final class HistoryPage extends ConsumerStatefulWidget {
   const HistoryPage({this.initialSectorId, super.key});
@@ -120,6 +134,17 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
                                             _date(event.occurredAt),
                                           ].join(' · '),
                                         ),
+                                        trailing: _isEditable(event)
+                                            ? const Icon(
+                                                LucideIcons.pencil,
+                                                size: AgroSizes.iconStandard,
+                                              )
+                                            : null,
+                                        onTap: _isEditable(event)
+                                            ? () => context.push(
+                                                AppRoutes.laborEdit(event.id),
+                                              )
+                                            : null,
                                       ),
                                     ),
                                   ],
@@ -142,6 +167,12 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
       onSelected: (_) => setState(() => _type = type),
     ),
   );
+
+  bool _isEditable(HistoryEvent event) =>
+      event.type == HistoryEventType.labor &&
+      event.status == 'recorded' &&
+      event.laborType != null &&
+      _editableLaborTypes.contains(event.laborType);
 
   IconData _icon(HistoryEvent event) => switch (event.type) {
     HistoryEventType.labor => LucideIcons.wheat,

@@ -26,4 +26,31 @@ final class LaborFormController {
         .read(laborsFacadeProvider)
         .saveOutcome(ownerId: ownerId, input: input);
   }
+
+  /// Reopens [laborId] as prefilled form text, or null when there is no
+  /// unlocked owner, the labor is gone, or it has no generic edit form.
+  Future<LaborEditDraft?> loadForEdit(String laborId) {
+    final ownerId = _ref.read(unlockedOwnerIdProvider);
+    if (ownerId == null) return Future.value(null);
+    return _ref
+        .read(laborsFacadeProvider)
+        .loadForEdit(ownerId: ownerId, laborId: laborId);
+  }
+
+  /// Supersedes [originalLaborId] with [input]'s details; the original stays
+  /// visible in history marked as corrected.
+  Future<SaveOutcome<LaborFormInput>?> correctTyped(
+    String originalLaborId,
+    LaborFormInput input,
+  ) {
+    final ownerId = _ref.read(unlockedOwnerIdProvider);
+    if (ownerId == null) return Future.value(null);
+    return _ref
+        .read(laborsFacadeProvider)
+        .correctOutcome(
+          ownerId: ownerId,
+          originalLaborId: originalLaborId,
+          input: input,
+        );
+  }
 }

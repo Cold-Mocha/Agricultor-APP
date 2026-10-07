@@ -3,6 +3,7 @@ import 'package:agrocampo/src/app/routing/app_routes.dart';
 import 'package:agrocampo/src/app/theme/agro_tokens.dart';
 import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
 import 'package:agrocampo/src/modules/labors/presentation/controllers/labors_controller.dart';
+import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_section_header.dart';
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
@@ -10,10 +11,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+const _fertilizationMethodCodes = ['manual', 'foliar', 'fertigation'];
+
 final class LaborFormPage extends ConsumerStatefulWidget {
-  const LaborFormPage({this.initialSectorId, this.initialLaborType, super.key});
+  const LaborFormPage({
+    this.initialSectorId,
+    this.initialLaborType,
+    this.editLaborId,
+    super.key,
+  });
   final String? initialSectorId;
   final LaborType? initialLaborType;
+
+  /// When set, the page reopens this labor for correction instead of
+  /// creating a new one: the type becomes fixed and saving calls
+  /// `correctTyped`, which supersedes the original.
+  final String? editLaborId;
 
   @override
   ConsumerState<LaborFormPage> createState() => _LaborFormPageState();
@@ -32,23 +45,65 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
   BoundAgriculturalContext? _bound;
   bool _saving = false;
   String _fertilizationMethod = 'manual';
+  bool get _editing => widget.editLaborId != null;
+  bool _loadingDraft = false;
+  bool _draftUnavailable = false;
 
   @override
   void initState() {
     super.initState();
     _type = widget.initialLaborType ?? LaborType.fertilization;
+    if (_editing) {
+      _loadingDraft = true;
+      _loadDraft(widget.editLaborId!);
+    }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_bound == null) {
+    if (_bound == null && !_editing) {
       _bound = BoundAgriculturalContext.from(
         ref.read(agriculturalContextControllerProvider),
         sectorId: widget.initialSectorId,
       );
       _keepTypeCompatible();
     }
+  }
+
+  Future<void> _loadDraft(String laborId) async {
+    final draft = await ref
+        .read(laborFormControllerProvider)
+        .loadForEdit(laborId);
+    if (!mounted) return;
+    if (draft == null) {
+      setState(() {
+        _loadingDraft = false;
+        _draftUnavailable = true;
+      });
+      return;
+    }
+    setState(() {
+      _type = draft.type;
+      _occurredAt = draft.occurredAt;
+      _bound = BoundAgriculturalContext.from(
+        ref.read(agriculturalContextControllerProvider),
+        sectorId: draft.sectorId,
+      );
+      if (_type == LaborType.fertilization &&
+          _fertilizationMethodCodes.contains(draft.secondary)) {
+        _fertilizationMethod = draft.secondary;
+      } else {
+        _secondary.text = draft.secondary;
+      }
+      _primary.text = draft.primary;
+      _amount.text = draft.amount;
+      _unit.text = draft.unit;
+      _extra.text = draft.extra;
+      _customName.text = draft.customName;
+      _notes.text = draft.notes;
+      _loadingDraft = false;
+    });
   }
 
   /// Mirrors DomainCompatibilityPolicy: apiary sectors only accept apiary
@@ -96,93 +151,127 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
   }
 
   @override
-  Widget build(BuildContext context) => AgroPage(
-    title: 'Registrar labor',
-    subtitle: 'Actividad del cuaderno de campo',
-    child: ListView(
-      children: [
-        const AgroSectionHeader(
-          title: '1. Tipo y fecha',
-          subtitle: 'Selecciona la labor que realizaste.',
+  Widget build(BuildContext context) {
+    if (_loadingDraft) {
+      return AgroPage(
+        title: 'Corregir labor',
+        subtitle: 'Actividad del cuaderno de campo',
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (_draftUnavailable) {
+      return AgroPage(
+        title: 'Corregir labor',
+        subtitle: 'Actividad del cuaderno de campo',
+        child: const AgroEmptyState(
+          title: 'No disponible para corrección',
+          message:
+              'Esta labor ya fue corregida, anulada, o no admite un '
+              'formulario genérico de corrección.',
         ),
-        const SizedBox(height: AgroSpacing.sm),
-        DropdownButtonFormField<LaborType>(
-          key: const ValueKey('labor-type'),
-          isExpanded: true,
-          initialValue: _type,
-          decoration: const InputDecoration(labelText: 'Tipo de labor'),
-          items: [
-            for (final type in _availableTypes)
-              DropdownMenuItem(
-                value: type,
-                child: Row(
-                  children: [
-                    Icon(_iconFor(type), size: 18),
-                    const SizedBox(width: AgroSpacing.sm),
-                    Text(type.label),
-                  ],
+      );
+    }
+    return AgroPage(
+      title: _editing ? 'Corregir labor' : 'Registrar labor',
+      subtitle: 'Actividad del cuaderno de campo',
+      child: ListView(
+        children: [
+          const AgroSectionHeader(
+            title: '1. Tipo y fecha',
+            subtitle: 'Selecciona la labor que realizaste.',
+          ),
+          const SizedBox(height: AgroSpacing.sm),
+          DropdownButtonFormField<LaborType>(
+            key: const ValueKey('labor-type'),
+            isExpanded: true,
+            initialValue: _type,
+            decoration: InputDecoration(
+              labelText: 'Tipo de labor',
+              helperText: _editing
+                  ? 'El tipo no se puede cambiar al corregir.'
+                  : null,
+            ),
+            items: [
+              for (final type in _availableTypes)
+                DropdownMenuItem(
+                  value: type,
+                  child: Row(
+                    children: [
+                      Icon(_iconFor(type), size: 18),
+                      const SizedBox(width: AgroSpacing.sm),
+                      Text(type.label),
+                    ],
+                  ),
                 ),
+            ],
+            onChanged: _editing
+                ? null
+                : (value) => setState(() => _type = value ?? _type),
+          ),
+          const SizedBox(height: AgroSpacing.sm),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const Text('Fecha de la labor'),
+            subtitle: Text(
+              MaterialLocalizations.of(context).formatMediumDate(_occurredAt),
+            ),
+            trailing: const Icon(LucideIcons.calendar),
+            onTap: _selectDate,
+          ),
+          const SizedBox(height: AgroSpacing.md),
+          const AgroSectionHeader(
+            title: '2. Detalle',
+            subtitle: 'Sólo se muestran los datos de esta labor.',
+          ),
+          _detailsPanel(),
+          const SizedBox(height: AgroSpacing.sm),
+          TextField(
+            key: const ValueKey('labor-notes'),
+            controller: _notes,
+            minLines: 2,
+            maxLines: 5,
+            decoration: const InputDecoration(
+              labelText: 'Observaciones (opcional)',
+            ),
+          ),
+          const SizedBox(height: AgroSpacing.md),
+          if (_type == LaborType.irrigation)
+            OutlinedButton.icon(
+              onPressed: _openIrrigation,
+              icon: const Icon(LucideIcons.droplet),
+              label: const Text('Calcular riego por goteo'),
+            ),
+          switch (_type) {
+            LaborType.harvest => FilledButton.icon(
+              onPressed: _openProduction,
+              icon: const Icon(LucideIcons.wheat),
+              label: const Text('Registrar cosecha y producción'),
+            ),
+            LaborType.soil => FilledButton.icon(
+              onPressed: _openSoil,
+              icon: const Icon(LucideIcons.flaskConical),
+              label: const Text('Abrir medición de suelo'),
+            ),
+            LaborType.apiary => FilledButton.icon(
+              onPressed: _bound?.sectorId == null ? null : _openApiary,
+              icon: const Icon(Icons.emoji_nature),
+              label: const Text('Abrir revisión apícola'),
+            ),
+            _ => FilledButton(
+              onPressed: _saving ? null : _save,
+              child: Text(
+                _saving
+                    ? 'Guardando…'
+                    : _editing
+                    ? 'Guardar corrección'
+                    : 'Guardar actividad',
               ),
-          ],
-          onChanged: (value) => setState(() => _type = value ?? _type),
-        ),
-        const SizedBox(height: AgroSpacing.sm),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          title: const Text('Fecha de la labor'),
-          subtitle: Text(
-            MaterialLocalizations.of(context).formatMediumDate(_occurredAt),
-          ),
-          trailing: const Icon(LucideIcons.calendar),
-          onTap: _selectDate,
-        ),
-        const SizedBox(height: AgroSpacing.md),
-        const AgroSectionHeader(
-          title: '2. Detalle',
-          subtitle: 'Sólo se muestran los datos de esta labor.',
-        ),
-        _detailsPanel(),
-        const SizedBox(height: AgroSpacing.sm),
-        TextField(
-          key: const ValueKey('labor-notes'),
-          controller: _notes,
-          minLines: 2,
-          maxLines: 5,
-          decoration: const InputDecoration(
-            labelText: 'Observaciones (opcional)',
-          ),
-        ),
-        const SizedBox(height: AgroSpacing.md),
-        if (_type == LaborType.irrigation)
-          OutlinedButton.icon(
-            onPressed: _openIrrigation,
-            icon: const Icon(LucideIcons.droplet),
-            label: const Text('Calcular riego por goteo'),
-          ),
-        switch (_type) {
-          LaborType.harvest => FilledButton.icon(
-            onPressed: _openProduction,
-            icon: const Icon(LucideIcons.wheat),
-            label: const Text('Registrar cosecha y producción'),
-          ),
-          LaborType.soil => FilledButton.icon(
-            onPressed: _openSoil,
-            icon: const Icon(LucideIcons.flaskConical),
-            label: const Text('Abrir medición de suelo'),
-          ),
-          LaborType.apiary => FilledButton.icon(
-            onPressed: _bound?.sectorId == null ? null : _openApiary,
-            icon: const Icon(Icons.emoji_nature),
-            label: const Text('Abrir revisión apícola'),
-          ),
-          _ => FilledButton(
-            onPressed: _saving ? null : _save,
-            child: Text(_saving ? 'Guardando…' : 'Guardar actividad'),
-          ),
-        },
-      ],
-    ),
-  );
+            ),
+          },
+        ],
+      ),
+    );
+  }
 
   Widget _detailsPanel() {
     Widget field(
@@ -325,29 +414,29 @@ final class _LaborFormPageState extends ConsumerState<LaborFormPage> {
     if (sectorId == null) return;
     setState(() => _saving = true);
     try {
-      final outcome = await ref
-          .read(laborFormControllerProvider)
-          .saveTyped(
-            LaborFormInput(
-              sectorId: sectorId,
-              type: _type,
-              occurredAt: _occurredAt,
-              primary: _primary.text,
-              secondary:
-                  _type == LaborType.fertilization &&
-                      _secondary.text.trim().isEmpty
-                  ? _fertilizationMethod
-                  : _secondary.text,
-              amount: _amount.text,
-              unit: _unit.text,
-              extra: _extra.text,
-              customName: _customName.text,
-              notes: _notes.text,
-            ),
-          );
+      final input = LaborFormInput(
+        sectorId: sectorId,
+        type: _type,
+        occurredAt: _occurredAt,
+        primary: _primary.text,
+        secondary:
+            _type == LaborType.fertilization && _secondary.text.trim().isEmpty
+            ? _fertilizationMethod
+            : _secondary.text,
+        amount: _amount.text,
+        unit: _unit.text,
+        extra: _extra.text,
+        customName: _customName.text,
+        notes: _notes.text,
+      );
+      final controller = ref.read(laborFormControllerProvider);
+      final outcome = _editing
+          ? await controller.correctTyped(widget.editLaborId!, input)
+          : await controller.saveTyped(input);
       if (!mounted || outcome == null) return;
       final message = switch (outcome) {
-        SavedLocal<LaborFormInput>() => 'Actividad guardada.',
+        SavedLocal<LaborFormInput>() =>
+          _editing ? 'Corrección guardada.' : 'Actividad guardada.',
         ValidationFailed<LaborFormInput>() ||
         DomainRejected<LaborFormInput>() =>
           'Revisa los datos; el borrador se conservó.',

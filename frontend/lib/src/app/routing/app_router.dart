@@ -59,6 +59,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
         routes: [
           GoRoute(
+            path: 'labor/editar/:id',
+            builder: (_, state) =>
+                LaborFormPage(editLaborId: state.pathParameters['id']!),
+          ),
+          GoRoute(
             path: 'labor/:laborType',
             builder: (_, state) => LaborFormPage(
               initialSectorId: state.uri.queryParameters['sectorId'],

@@ -1,4 +1,5 @@
 export 'application/facades/labors_facade.dart';
+export 'contracts/dto/labor_edit_draft.dart';
 export 'contracts/dto/labor_form_input.dart';
 export 'contracts/labor_context.dart';
 export 'domain/entities/cultivation_details.dart';

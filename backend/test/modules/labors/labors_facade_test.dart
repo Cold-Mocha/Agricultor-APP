@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:agrocampo_backend/src/composition/backend_providers.dart';
+import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -112,5 +113,134 @@ void main() {
     );
     final draft = await database.formDraftDao.read('owner-1', 'labor');
     expect(jsonDecode(draft!)['notes'], 'Conservar para reintento');
+  });
+
+  group('editing a past labor', () {
+    late AppDatabase database;
+    late ProviderContainer container;
+
+    setUp(() async {
+      database = createInMemoryDatabase();
+      container = ProviderContainer(
+        overrides: [appDatabaseProvider.overrideWithValue(database)],
+      );
+      await seedAgriculturalContextFixture(database);
+    });
+
+    tearDown(() {
+      container.dispose();
+      return database.close();
+    });
+
+    Future<String> saveFertilization() async {
+      await container
+          .read(laborsFacadeProvider)
+          .saveOutcome(
+            ownerId: 'owner-1',
+            input: LaborFormInput(
+              sectorId: 'sector-1',
+              type: LaborType.fertilization,
+              occurredAt: DateTime.utc(2026),
+              primary: 'Compost',
+              secondary: 'Manual',
+              amount: '5',
+              unit: 'kg',
+              extra: '',
+              customName: '',
+              notes: 'Aplicado en la mañana',
+            ),
+          );
+      return (await database.select(database.labors).getSingle()).id;
+    }
+
+    test('loadForEdit reverse-maps details back into form fields', () async {
+      final laborId = await saveFertilization();
+
+      final draft = await container
+          .read(laborsFacadeProvider)
+          .loadForEdit(ownerId: 'owner-1', laborId: laborId);
+
+      expect(draft, isNotNull);
+      expect(draft!.type, LaborType.fertilization);
+      expect(draft.sectorId, 'sector-1');
+      expect(draft.primary, 'Compost');
+      expect(draft.secondary, 'Manual');
+      expect(draft.amount, '5');
+      expect(draft.unit, 'kg');
+      expect(draft.notes, 'Aplicado en la mañana');
+    });
+
+    test('correctOutcome supersedes the original and keeps it visible as corrected', () async {
+      final originalId = await saveFertilization();
+
+      final result = await container
+          .read(laborsFacadeProvider)
+          .correctOutcome(
+            ownerId: 'owner-1',
+            originalLaborId: originalId,
+            input: LaborFormInput(
+              sectorId: 'sector-1',
+              type: LaborType.fertilization,
+              occurredAt: DateTime.utc(2026),
+              primary: 'Compost',
+              secondary: 'Manual',
+              amount: '8',
+              unit: 'kg',
+              extra: '',
+              customName: '',
+              notes: 'Corregido: era más cantidad',
+            ),
+          );
+
+      expect(result, isA<SavedLocal<LaborFormInput>>());
+      final rows = await database.select(database.labors).get();
+      expect(rows, hasLength(2));
+      final original = rows.singleWhere((row) => row.id == originalId);
+      expect(original.status, 'corrected');
+      final replacement = rows.singleWhere((row) => row.id != originalId);
+      expect(replacement.status, 'recorded');
+      expect(replacement.supersedesLaborId, originalId);
+      expect(replacement.notes, 'Corregido: era más cantidad');
+
+      // The corrected original no longer offers editing; its replacement does.
+      final facade = container.read(laborsFacadeProvider);
+      expect(
+        await facade.loadForEdit(ownerId: 'owner-1', laborId: originalId),
+        isNull,
+      );
+      expect(
+        await facade.loadForEdit(ownerId: 'owner-1', laborId: replacement.id),
+        isNotNull,
+      );
+    });
+
+    test('loadForEdit returns null for types without a generic form', () async {
+      await database
+          .into(database.labors)
+          .insert(
+            LaborsCompanion.insert(
+              id: 'labor-soil',
+              ownerId: 'owner-1',
+              sectorId: 'sector-1',
+              type: 'soil',
+              occurredAt: DateTime.utc(2026),
+              updatedAt: DateTime.utc(2026),
+            ),
+          );
+
+      final draft = await container
+          .read(laborsFacadeProvider)
+          .loadForEdit(ownerId: 'owner-1', laborId: 'labor-soil');
+
+      expect(draft, isNull);
+    });
+
+    test('loadForEdit returns null for an unknown labor', () async {
+      final draft = await container
+          .read(laborsFacadeProvider)
+          .loadForEdit(ownerId: 'owner-1', laborId: 'missing');
+
+      expect(draft, isNull);
+    });
   });
 }

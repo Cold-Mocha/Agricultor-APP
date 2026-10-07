@@ -57,4 +57,60 @@ void main() {
       await tester.pump(const Duration(milliseconds: 1));
     },
   );
+
+  testWidgets(
+    'only recorded labors with a generic edit form offer correction',
+    (tester) async {
+      final database = createInMemoryDatabase();
+      final container = signedInWidgetContainer(database);
+      addTearDown(database.close);
+      addTearDown(container.dispose);
+      await seedAgriculturalContextFixture(database);
+      await LaborRepository(database).save(
+        ownerId: 'owner-1',
+        sectorId: 'sector-1',
+        type: LaborType.fertilization,
+        occurredAt: DateTime.utc(2026, 2),
+        details: const FertilizationDetails(
+          product: 'Compost',
+          amount: 20,
+          unit: 'kg',
+          applicationMethod: 'Banda',
+        ).toEnvelope(),
+        notes: 'Aplicación norte',
+      );
+      await LaborRepository(database).save(
+        ownerId: 'owner-1',
+        sectorId: 'sector-1',
+        type: LaborType.soil,
+        occurredAt: DateTime.utc(2026, 2, 2),
+      );
+      await selectFixtureAgriculturalContext(container);
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(home: HistoryPage()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final fertilizationTile = tester.widget<ListTile>(
+        find.ancestor(
+          of: find.text('Fertilización'),
+          matching: find.byType(ListTile),
+        ),
+      );
+      expect(fertilizationTile.onTap, isNotNull);
+      expect(fertilizationTile.trailing, isA<Icon>());
+
+      final soilTile = tester.widget<ListTile>(
+        find.ancestor(of: find.text('Suelo'), matching: find.byType(ListTile)),
+      );
+      expect(soilTile.onTap, isNull);
+      expect(soilTile.trailing, isNull);
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump(const Duration(milliseconds: 1));
+    },
+  );
 }

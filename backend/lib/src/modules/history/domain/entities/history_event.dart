@@ -20,6 +20,7 @@ final class HistoryEvent {
     this.cropLabel,
     this.detail,
     this.status,
+    this.laborType,
   });
 
   final String id;
@@ -33,6 +34,11 @@ final class HistoryEvent {
   final String? cropLabel;
   final String? detail;
   final String? status;
+
+  /// The raw `LaborType` name for [HistoryEventType.labor] events, null for
+  /// every other event type. Lets the UI decide whether this entry can be
+  /// reopened for correction without parsing [title].
+  final String? laborType;
   final String syncState;
   final ProductiveCategory category;
   final BackupState backupState;

@@ -57,6 +57,7 @@ final class HistoryRepository {
                 categories[row.sectorId] ?? ProductiveCategory.legacyUnknown,
             backupState: _backupState(row.syncState),
             details: _decodeDetails(row.detailsJson),
+            laborType: row.type,
           ),
         );
       }
