@@ -109,6 +109,14 @@ límite existente; no autoriza duplicar la feature.
 
 La auditoría detallada y sus alternativas están en [research.md](./research.md).
 
+### Actualización aprobada — teselas satelitales (2026-10-07)
+
+La fila «Mapa externo» registra la decisión original (OpenStreetMap, sin cambio de proveedor). Se
+aprueba ahora sumar **Esri World Imagery** como proveedor de teselas por defecto, para dar vista
+satelital con más detalle del terreno: mantiene el mismo contrato (`MAP_TILE_URL` configurable,
+sin API key, atribución visible vía `SimpleAttributionWidget`); sólo cambian la URL de teselas por
+defecto y el texto de atribución (`Esri, Maxar, Earthstar Geographics`). No se usa Google Maps.
+
 ## Constitution Check
 
 ### Gate previo a Phase 0

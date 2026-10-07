@@ -134,7 +134,7 @@ final class TerritoryMapFacade {
   Future<GeoPoint> locate() => _location.currentPosition();
 
   Future<bool> openAttribution() => launchUrl(
-    Uri.parse('https://www.openstreetmap.org/copyright'),
+    Uri.parse('https://www.esri.com/en-us/legal/copyright-trademarks'),
     mode: LaunchMode.externalApplication,
   );
 }

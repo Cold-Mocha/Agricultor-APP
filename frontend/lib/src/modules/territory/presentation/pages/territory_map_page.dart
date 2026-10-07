@@ -35,9 +35,12 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
     double.tryParse(_initialLatitude) ?? -38.7363,
     double.tryParse(_initialLongitude) ?? -72.5974,
   );
-  static const _openStreetMapTiles = String.fromEnvironment(
+
+  /// Esri World Imagery: free satellite tiles, no API key, same guarantee
+  /// OpenStreetMap had. `MAP_TILE_URL` can still override it per environment.
+  static const _satelliteTiles = String.fromEnvironment(
     'MAP_TILE_URL',
-    defaultValue: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    defaultValue: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
   );
   static const _userAgentPackageName = 'cl.agrocampo.app';
 
@@ -133,7 +136,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
   Widget _map(List<MapSectorGeometry> sectors, String? selectedId) {
     final draftPoints = _visibleDraftPoints;
     return Semantics(
-      label: 'Mapa territorial de OpenStreetMap con tus cuadrantes',
+      label: 'Mapa satelital territorial con tus cuadrantes',
       child: ColoredBox(
         key: _mapKey,
         color: AgroColors.mapCanvas,
@@ -149,7 +152,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
           ),
           children: [
             TileLayer(
-              urlTemplate: _openStreetMapTiles,
+              urlTemplate: _satelliteTiles,
               userAgentPackageName: _userAgentPackageName,
               maxNativeZoom: 19,
               tileProvider: widget.tileProvider,
@@ -231,7 +234,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
             Padding(
               padding: const EdgeInsets.all(AgroSpacing.sm),
               child: SimpleAttributionWidget(
-                source: const Text('OpenStreetMap contributors'),
+                source: const Text('Esri, Maxar, Earthstar Geographics'),
                 onTap: _openMapAttribution,
                 alignment: Alignment.topRight,
                 backgroundColor: Theme.of(context).colorScheme.surface

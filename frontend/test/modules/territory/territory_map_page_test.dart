@@ -16,7 +16,7 @@ import '../../../../backend/test/helpers/in_memory_database.dart';
 
 void main() {
   testWidgets(
-    'uses OpenStreetMap tiles and renders persisted Drift geometry offline',
+    'uses satellite tiles and renders persisted Drift geometry offline',
     (tester) async {
       final database = createInMemoryDatabase();
       addTearDown(database.close);
@@ -47,20 +47,20 @@ void main() {
 
       expect(
         find.bySemanticsLabel(
-          RegExp('Mapa territorial de OpenStreetMap con tus cuadrantes'),
+          RegExp('Mapa satelital territorial con tus cuadrantes'),
         ),
         findsOneWidget,
       );
       final tileLayer = tester.widget<TileLayer>(find.byType(TileLayer));
       expect(
         tileLayer.urlTemplate,
-        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       );
       expect(
         tileLayer.tileProvider.headers['User-Agent'],
         'flutter_map (cl.agrocampo.app)',
       );
-      expect(find.text('OpenStreetMap contributors'), findsOneWidget);
+      expect(find.text('Esri, Maxar, Earthstar Geographics'), findsOneWidget);
       // The sector selector is the map's textual alternative (master.md).
       expect(
         find.bySemanticsLabel('Lista textual de cuadrantes guardados'),
@@ -75,7 +75,7 @@ void main() {
 
       await tester.tap(
         find.bySemanticsLabel(
-          RegExp('Mapa territorial de OpenStreetMap con tus cuadrantes'),
+          RegExp('Mapa satelital territorial con tus cuadrantes'),
         ),
       );
       await tester.pump(const Duration(milliseconds: 300));

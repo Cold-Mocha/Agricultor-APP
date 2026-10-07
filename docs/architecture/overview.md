@@ -15,7 +15,7 @@ conectividad. Todo guardado ocurre primero en el teléfono; la red nunca bloquea
 | Capacidad | Qué permite |
 |---|---|
 | Acceso y perfil | Sesión Supabase Auth persistida de forma segura, perfil, preferencias. |
-| Territorio | Cuadrantes (sectores) del agricultor dibujados sobre mapa OpenStreetMap; sin parcelas desde 004. |
+| Territorio | Cuadrantes (sectores) del agricultor dibujados sobre mapa satelital (Esri World Imagery); sin parcelas desde 004. |
 | Contexto agrícola | Selección del cuadrante activo, su temporada y su cultivo, que acompaña los registros. |
 | Temporadas y cultivos | Ciclos de cultivo, catálogo oficial + cultivos propios, rotación por sector. |
 | Labores | Registro de labores (fertilización, cosecha, etc.) ligado a sector y temporada. |
@@ -54,7 +54,7 @@ Clima y AgroIA son auxiliares: si fallan, el resto de la app sigue funcionando.
 | Persistencia local | Drift (SQLite), esquema v11 |
 | Remoto | Supabase: Postgres + RLS + RPC, Auth, Storage, Edge Functions (Deno) |
 | Segundo plano | workmanager (sync periódica), flutter_local_notifications, Firebase Messaging |
-| Mapa | flutter_map + latlong2 sobre teselas OpenStreetMap |
+| Mapa | flutter_map + latlong2 sobre teselas satelitales Esri World Imagery (`MAP_TILE_URL` configurable, sin API key) |
 | Otros | geolocator, image_picker, local_auth, flutter_secure_storage, excel |
 | UI | Lucide icons, flutter_animate, tokens propios en `shared/design_system` |
 
