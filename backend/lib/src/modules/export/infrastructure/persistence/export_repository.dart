@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:agrocampo_backend/src/modules/export/infrastructure/export_columns.dart';
 import 'package:agrocampo_backend/src/modules/export/infrastructure/export_snapshot.dart';
+import 'package:agrocampo_backend/src/modules/history/history_api.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:agrocampo_backend/src/shared/kernel/entity_id.dart';
 import 'package:drift/drift.dart';
@@ -9,11 +11,14 @@ final class ExportRepository {
   const ExportRepository(this._database);
   final AppDatabase _database;
 
-  Future<AgroExportSnapshot> snapshot(String ownerId) async {
+  Future<AgroExportSnapshot> snapshot(
+    String ownerId, {
+    Iterable<HistoryEvent> history = const [],
+  }) async {
     // Only sectors the owner hasn't deleted are exported; every detail sheet
     // below is scoped to this set so a deleted sector's labors, soil
     // readings, irrigation, production and apiary records disappear with it,
-    // matching what the rest of the app (e.g. the history screen) shows.
+    // The separate history sheet retains their audit trail.
     final sectors =
         await (_database.select(_database.sectors)..where(
               (row) => row.ownerId.equals(ownerId) & row.deletedAt.isNull(),
@@ -59,8 +64,34 @@ final class ExportRepository {
               ))
               .get();
     final snapshot = AgroExportSnapshot(
+      id: EntityId.generate().value,
+      columns: exportColumns,
       generatedAt: DateTime.now().toUtc(),
       sheets: {
+        'historial': [
+          for (final event in history)
+            {
+              'id': event.id,
+              'grupo': event.groupingKey,
+              'tipo': event.type.name,
+              'fecha': event.occurredAt.toIso8601String(),
+              'titulo': event.title,
+              'sector_id': event.sectorId,
+              'sector_numero': event.sectorNumber,
+              'sector_nombre': event.sectorName,
+              'sector_retirado': event.sectorRetired,
+              'temporada_id': event.seasonId,
+              'temporada': event.seasonLabel,
+              'cultivo': event.cropLabel,
+              'categoria': event.category.code,
+              'estado': event.status,
+              'labor_reemplazada_id': event.supersedesLaborId,
+              'correccion_id': event.replacedByLaborId,
+              'notas': event.detail,
+              'detalle_json': jsonEncode(event.details),
+              'estado_sync': event.syncState,
+            },
+        ],
         'sectores': [
           for (final row in sectors)
             {
@@ -170,9 +201,9 @@ final class ExportRepository {
         .into(_database.exportSnapshots)
         .insert(
           ExportSnapshotsCompanion.insert(
-            id: EntityId.generate().value,
+            id: snapshot.id,
             ownerId: ownerId,
-            status: 'complete',
+            status: 'prepared',
             manifestJson: jsonEncode({
               'sheets': snapshot.sheets.keys.toList(),
               'generated_at': snapshot.generatedAt.toIso8601String(),
@@ -182,4 +213,9 @@ final class ExportRepository {
         );
     return snapshot;
   }
+
+  Future<void> recordDelivery(String ownerId, String id, String status) =>
+      (_database.update(_database.exportSnapshots)
+            ..where((row) => row.id.equals(id) & row.ownerId.equals(ownerId)))
+          .write(ExportSnapshotsCompanion(status: Value(status)));
 }

@@ -21,6 +21,11 @@ final class HistoryEvent {
     this.detail,
     this.status,
     this.laborType,
+    this.sectorNumber,
+    this.sectorName,
+    this.sectorRetired = false,
+    this.supersedesLaborId,
+    this.replacedByLaborId,
   });
 
   final String id;
@@ -29,6 +34,11 @@ final class HistoryEvent {
   final DateTime occurredAt;
   final String title;
   final String sectorId;
+  final int? sectorNumber;
+  final String? sectorName;
+  final bool sectorRetired;
+  final String? supersedesLaborId;
+  final String? replacedByLaborId;
   final String? seasonId;
   final String? seasonLabel;
   final String? cropLabel;
@@ -43,6 +53,27 @@ final class HistoryEvent {
   final ProductiveCategory category;
   final BackupState backupState;
   final Map<String, Object?> details;
+}
+
+final class HistorySector {
+  const HistorySector({
+    required this.id,
+    required this.number,
+    required this.name,
+    required this.retired,
+    this.seasons = const [],
+  });
+  final String id;
+  final int number;
+  final String name;
+  final bool retired;
+  final List<HistorySeason> seasons;
+}
+
+final class HistorySeason {
+  const HistorySeason({required this.id, required this.name});
+  final String id;
+  final String name;
 }
 
 final class HistoryFilter {

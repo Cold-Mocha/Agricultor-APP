@@ -104,9 +104,9 @@ final class TerritoryMapFacade {
   Future<String> saveGeometry({
     required String ownerId,
     required MapGeometryFormInput input,
-  }) async {
-    // Deleted sectors are tombstones that keep their number under the
-    // (owner_id, number) unique key, so numbering must count them too.
+  }) => _database.transaction(() async {
+    // Allocation and persistence share a transaction; retired numbers remain
+    // reserved even though the local index only covers active sectors.
     final sectors = await (_database.select(
       _database.sectors,
     )..where((row) => row.ownerId.equals(ownerId))).get();
@@ -118,6 +118,9 @@ final class TerritoryMapFacade {
       (value, row) => row.number > value ? row.number : value,
     );
     final row = matches.isEmpty ? null : matches.first;
+    if (input.sectorId != null && row == null) {
+      throw StateError('sector_not_found');
+    }
     final kind = row?.kind ?? input.kind;
     if (kind == null) throw StateError('sector_kind_required');
     return SectorRepository(_database).saveConfirmed(
@@ -129,7 +132,7 @@ final class TerritoryMapFacade {
       polygon: input.polygon,
       expectedVersion: input.expectedVersion ?? row?.version,
     );
-  }
+  });
 
   Future<GeoPoint> locate() => _location.currentPosition();
 

@@ -12,4 +12,12 @@ final class HistoryFacade {
   final HistoryRepository _repository;
   Future<List<HistoryEvent>> list(HistoryFilter filter) =>
       _repository.list(filter);
+  Stream<List<HistoryEvent>> watch(HistoryFilter filter) =>
+      _repository.watch(filter);
+  Stream<List<HistorySector>> watchSectors(String ownerId) =>
+      _repository.watchSectors(ownerId);
+
+  /// Export shares the projection without applying the screen's page limit.
+  Future<List<HistoryEvent>> listAll(String ownerId) =>
+      _repository.listAll(ownerId);
 }

@@ -73,7 +73,8 @@ final class SectorRepository {
     String kind = 'crop',
     String? id,
     int? expectedVersion,
-  }) async {
+  }) => _database.transaction(() async {
+    if (number < 1) throw ArgumentError.value(number, 'number');
     if (kind != 'crop' && kind != 'apiary' && kind != 'legacyUnknown') {
       throw ArgumentError.value(kind, 'kind', 'sector_kind_invalid');
     }
@@ -91,6 +92,21 @@ final class SectorRepository {
               ))
               .getSingleOrNull();
     if (id != null && existing == null) throw StateError('sector_not_found');
+    if (existing?.deletedAt != null) throw StateError('sector_retired');
+    if (existing != null && existing.number != number) {
+      throw StateError('sector_number_immutable');
+    }
+    // Older v13 data may already share a number with a tombstone. Preserve
+    // edits to that existing identity, while prohibiting any new reuse.
+    if (existing == null) {
+      final reserved =
+          await (_database.select(_database.sectors)..where(
+                (row) =>
+                    row.ownerId.equals(ownerId) & row.number.equals(number),
+              ))
+              .get();
+      if (reserved.isNotEmpty) throw StateError('sector_number_reserved');
+    }
     if (existing != null && existing.kind != kind) {
       throw StateError('sector_kind_immutable');
     }
@@ -156,7 +172,7 @@ final class SectorRepository {
       ),
     );
     return sectorId;
-  }
+  });
 
   /// Explicit command. Callers must supply the immutable category and the
   /// version they edited; `save` remains for existing fixtures.

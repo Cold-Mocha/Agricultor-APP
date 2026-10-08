@@ -23,9 +23,9 @@ final class _ExportPageState extends ConsumerState<ExportPage> {
         const Card(
           child: ListTile(
             leading: Icon(LucideIcons.table),
-            title: Text('Copia XLSX v1'),
+            title: Text('Datos e historial agrícola'),
             subtitle: Text(
-              'Incluye sectores, labores, suelo, riego, producción y apicultura.',
+              'Incluye sectores, labores, suelo, riego, producción, apicultura e historial, también de sectores retirados.',
             ),
           ),
         ),
