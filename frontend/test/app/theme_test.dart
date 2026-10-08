@@ -1,0 +1,44 @@
+import 'package:agrocampo/src/app/theme/agro_theme.dart';
+import 'package:agrocampo/src/app/theme/agro_tokens.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  test('Material theme is backed by the AgroCampo token palette', () {
+    final theme = AgroTheme.light;
+
+    expect(theme.useMaterial3, isTrue);
+    expect(theme.colorScheme.primary, AgroColors.brand);
+    expect(theme.colorScheme.secondary, AgroColors.accent);
+    expect(theme.extension<AgroSemanticColors>(), isNotNull);
+    const states = <WidgetState>{};
+    expect(
+      theme.filledButtonTheme.style?.minimumSize?.resolve(states),
+      const Size(AgroSizes.touchTarget, AgroSizes.touchTarget),
+    );
+    expect(
+      theme.outlinedButtonTheme.style?.minimumSize?.resolve(states),
+      const Size(AgroSizes.touchTarget, AgroSizes.touchTarget),
+    );
+    expect(
+      theme.textButtonTheme.style?.minimumSize?.resolve(states),
+      const Size(AgroSizes.touchTarget, AgroSizes.touchTarget),
+    );
+  });
+
+  test('dark theme is backed by the same token palette, inverted', () {
+    final theme = AgroTheme.dark;
+
+    expect(theme.useMaterial3, isTrue);
+    expect(theme.colorScheme.brightness, Brightness.dark);
+    expect(theme.colorScheme.surface, AgroColors.surfaceDark);
+    expect(theme.colorScheme.onSurface, AgroColors.inkDark);
+    expect(theme.scaffoldBackgroundColor, AgroColors.surfaceDark);
+    expect(theme.extension<AgroSemanticColors>(), isNotNull);
+    const states = <WidgetState>{};
+    expect(
+      theme.filledButtonTheme.style?.minimumSize?.resolve(states),
+      const Size(AgroSizes.touchTarget, AgroSizes.touchTarget),
+    );
+  });
+}

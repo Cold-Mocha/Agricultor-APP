@@ -1,0 +1,98 @@
+import 'package:agrocampo/src/app/layout/agro_page.dart';
+import 'package:agrocampo/src/app/theme/agro_tokens.dart';
+import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
+import 'package:agrocampo/src/modules/media/presentation/controllers/media_controller.dart';
+import 'package:agrocampo_backend/agrocampo_backend.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+
+final class PhotoAttachmentPage extends ConsumerStatefulWidget {
+  const PhotoAttachmentPage({this.initialSectorId, super.key});
+  final String? initialSectorId;
+
+  @override
+  ConsumerState<PhotoAttachmentPage> createState() =>
+      _PhotoAttachmentPageState();
+}
+
+final class _PhotoAttachmentPageState
+    extends ConsumerState<PhotoAttachmentPage> {
+  PhotoSelectionUiState? _selected;
+  BoundAgriculturalContext? _bound;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _bound ??= BoundAgriculturalContext.from(
+      ref.read(agriculturalContextControllerProvider),
+      sectorId: widget.initialSectorId,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => AgroPage(
+    title: 'Fotografías',
+    subtitle: 'Adjuntos privados del cuadrante',
+    child: ListView(
+      children: [
+        if (_selected == null)
+          const AspectRatio(
+            aspectRatio: 4 / 3,
+            child: Card(
+              child: Center(child: Icon(LucideIcons.imagePlus, size: 64)),
+            ),
+          )
+        else
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AgroRadii.medium),
+            child: Image.memory(_selected!.previewBytes, fit: BoxFit.cover),
+          ),
+        const SizedBox(height: AgroSpacing.md),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => _pick(PhotoSelectionSource.camera),
+                icon: const Icon(LucideIcons.camera),
+                label: const Text('Cámara'),
+              ),
+            ),
+            const SizedBox(width: AgroSpacing.sm),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => _pick(PhotoSelectionSource.gallery),
+                icon: const Icon(LucideIcons.images),
+                label: const Text('Galería'),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AgroSpacing.md),
+        FilledButton(
+          onPressed: _selected == null ? null : _save,
+          child: const Text('Adjuntar fotografía'),
+        ),
+      ],
+    ),
+  );
+
+  Future<void> _pick(PhotoSelectionSource source) async {
+    final selected = await ref
+        .read(photoAttachmentControllerProvider)
+        .pick(source);
+    if (selected != null && mounted) setState(() => _selected = selected);
+  }
+
+  Future<void> _save() async {
+    final sectorId = _bound?.sectorId;
+    final selected = _selected;
+    if (sectorId == null || selected == null) return;
+    final saved = await ref
+        .read(photoAttachmentControllerProvider)
+        .attach(sectorId: sectorId, selection: selected);
+    if (!mounted || !saved) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Fotografía guardada.')));
+  }
+}

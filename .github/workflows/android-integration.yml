@@ -1,0 +1,101 @@
+name: Android Integration Tests
+
+# Corre frontend/integration_test/*.dart (un archivo por funcionalidad: riego,
+# apiary, fertilización, territorio, clima, AgroIA, historial, recordatorios,
+# sincronización, sesión, etc.) contra un emulador Android hospedado por el
+# runner. Replica los pasos verificados manualmente en un Pixel 8 (build,
+# install, pm grant, geo fix), no los inventa.
+#
+# Esto es evidencia de CI-emulador, no certificación de dispositivo físico:
+# no sustituye T030/T115/T120/T121/T124 de
+# specs/003-agrocampo-functional-refinement/tasks.md, que exigen API 24+ real
+# (ver docs/status.md y docs/deployment.md).
+
+on:
+  push:
+    branches: [main, master, "feature/**"]
+  pull_request:
+    branches: [main, master, "feature/**"]
+  workflow_dispatch: {}
+
+concurrency:
+  group: android-integration-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_CHANNEL: stable
+  AVD_API_LEVEL: 30
+  # Coordenadas de referencia usadas en las suites y fixtures existentes
+  # (Temuco, Chile) — ver docs/deployment.md#5-coordenadas-de-la-parcela.
+  AVD_GEO_LONGITUDE: "-72.5984"
+  AVD_GEO_LATITUDE: "-38.7397"
+
+jobs:
+  integration-tests:
+    # `env` is not available in jobs.<id>.name; keep in sync with AVD_API_LEVEL.
+    name: integration_test/ on Android API 30 emulator
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: flutter pub get (workspace root)
+        run: flutter pub get
+
+      - name: AVD cache
+        uses: actions/cache@v4
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ env.AVD_API_LEVEL }}-google_apis-x86_64
+
+      - name: Create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ env.AVD_API_LEVEL }}
+          target: google_apis
+          arch: x86_64
+          profile: pixel_5
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
+
+      - name: Build debug APK
+        working-directory: frontend
+        run: flutter build apk --debug --no-pub
+
+      - name: Run integration_test suite on the emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ env.AVD_API_LEVEL }}
+          target: google_apis
+          arch: x86_64
+          profile: pixel_5
+          force-avd-creation: false
+          working-directory: frontend
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: |
+            set -e
+            adb install -r -d build/app/outputs/flutter-apk/app-debug.apk
+            adb shell settings put secure location_mode 3
+            adb shell pm grant cl.agrocampo.app android.permission.ACCESS_FINE_LOCATION
+            adb shell pm grant cl.agrocampo.app android.permission.ACCESS_COARSE_LOCATION
+            if [ "$(adb shell getprop ro.build.version.sdk | tr -d '\r')" -ge 33 ]; then adb shell pm grant cl.agrocampo.app android.permission.POST_NOTIFICATIONS; fi
+            adb emu geo fix ${{ env.AVD_GEO_LONGITUDE }} ${{ env.AVD_GEO_LATITUDE }}
+            flutter test integration_test -d emulator-5554 --no-pub --reporter expanded

@@ -1,0 +1,136 @@
+name: CI
+
+# Gates automatizados del workspace AgroCampo. Reproduce, sin secretos y sobre un
+# stack Supabase local desechable, los comandos documentados en
+# specs/003-agrocampo-functional-refinement/quickstart.md (G0, G10 no-Android, G11
+# no-Android, G12) y docs/architecture/frontend-backend-boundary.md. No sustituye la
+# verificación en dispositivo Android API 24+ pendiente (ver docs/status.md).
+
+on:
+  push:
+    branches: [main, master, "feature/**"]
+  pull_request:
+    branches: [main, master, "feature/**"]
+  workflow_dispatch: {}
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_CHANNEL: stable
+
+jobs:
+  architecture-guard:
+    name: G0 · Workspace and architecture guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+      - name: flutter pub get (workspace root)
+        run: flutter pub get
+      - name: Workspace members must be exactly frontend + backend
+        run: dart pub workspace list
+      - name: Architecture boundary checker
+        run: dart run tool/check_architecture.dart
+
+  backend:
+    name: Backend · format, analyze, test
+    runs-on: ubuntu-latest
+    needs: architecture-guard
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+      - name: flutter pub get (workspace root)
+        run: flutter pub get
+      - name: Drift code generation
+        working-directory: backend
+        run: dart run build_runner build --delete-conflicting-outputs
+      - name: dart format
+        working-directory: backend
+        run: dart format --output=none --set-exit-if-changed .
+      - name: flutter analyze
+        working-directory: backend
+        run: flutter analyze --no-pub
+      - name: flutter test
+        working-directory: backend
+        run: flutter test --no-pub --reporter compact
+      - name: Guard — dev build must not require Supabase secrets
+        working-directory: backend
+        run: dart run tool/verify_runtime_config_guard.dart
+      - name: Guard — production build without secrets must fail closed
+        working-directory: backend
+        run: |
+          if dart run -DAGROCAMPO_ENV=production tool/verify_runtime_config_guard.dart; then
+            echo "::error::RuntimeConfig aceptó un build de producción sin SUPABASE_URL/SUPABASE_PUBLISHABLE_KEY configurados. Revisar backend/lib/src/platform/network/runtime_config.dart: esto es una regresión de seguridad, no un fallo de CI."
+            exit 1
+          fi
+          echo "RuntimeConfig sigue rechazando un build de producción sin Supabase configurado (comportamiento esperado)."
+
+  frontend:
+    name: Frontend · format, analyze, test, goldens
+    runs-on: ubuntu-latest
+    needs: architecture-guard
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+      - name: flutter pub get (workspace root)
+        run: flutter pub get
+      - name: dart format
+        working-directory: frontend
+        run: dart format --output=none --set-exit-if-changed .
+      - name: flutter analyze
+        working-directory: frontend
+        run: flutter analyze --no-pub
+      - name: flutter test (unit + widget + golden)
+        working-directory: frontend
+        run: flutter test --no-pub --reporter compact
+
+  prototype:
+    name: G12 · Static prototype acceptance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Required copy/behavior acceptance
+        run: node agrocampo-acceptance.test.js
+      - name: Embedded JavaScript syntax check
+        run: |
+          node -e "const fs=require('fs'); const html=fs.readFileSync('agrocampo-highfi.html','utf8'); const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]); for (const script of scripts) new Function(script); console.log('Embedded JavaScript syntax OK:', scripts.length);"
+
+  supabase-local:
+    name: G10/G11 · Supabase local stack (pgTAP + Edge Functions)
+    runs-on: ubuntu-latest
+    needs: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Start disposable local Supabase stack
+        run: supabase --workdir backend start
+      - name: Apply migrations 0001..0020 (local reset only)
+        run: supabase --workdir backend db reset
+      - name: pgTAP database suite
+        run: supabase --workdir backend test db
+      - name: Edge Function tests — weather-proxy
+        run: deno test --allow-env backend/supabase/functions/weather-proxy/tests
+      - name: Edge Function tests — agro-ai
+        run: deno test --allow-env backend/supabase/functions/agro-ai/tests
+      - name: Stop local Supabase stack
+        if: always()
+        run: supabase --workdir backend stop

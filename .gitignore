@@ -1,0 +1,88 @@
+# Miscellaneous
+*.class
+*.log
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+key.properties
+google-services.json
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+/frontend/build/
+/backend/build/
+/frontend/coverage/
+/backend/coverage/
+/backend/drift_schemas/*.sqlite
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/frontend/android/app/debug
+/frontend/android/app/profile
+/frontend/android/app/release
+/frontend/android/.gradle/
+/frontend/android/.kotlin/
+/frontend/android/build/
+/frontend/android/app/build/
+
+# Widget Preview related
+.widget_preview/
+
+# Agent/tool config (not part of the app)
+.agents/
+.opencode/
+# Keep machine-local Spec Kit state ignored, but version the ratified constitution.
+.specify/*
+!.specify/memory/
+.specify/memory/*
+!.specify/memory/constitution.md
+graphify-out/
+
+# Local Supabase CLI state (may contain generated credentials)
+backend/supabase/.branches/
+backend/supabase/.temp/
+
+# Generated golden-test diagnostics; approved baseline images remain tracked
+frontend/test/golden/**/failures/
+
+# Flutter auto-generated
+.metadata
+frontend/.migration-cache/
+
+# IntelliJ project files
+*.iml
