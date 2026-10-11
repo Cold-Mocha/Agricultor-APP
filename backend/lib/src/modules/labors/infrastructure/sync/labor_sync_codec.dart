@@ -29,10 +29,11 @@ final class LaborSyncCodec implements AggregateSyncCodec {
     }
     final type = decoded['type']! as String;
     final isApiary = type == 'apiary';
+    final requiresCropContext = !isApiary && type != 'soil';
     final sectorId = decoded['sector_id']! as String;
     final seasonId = decoded['agricultural_season_id'] as String?;
     final assignmentId = decoded['crop_assignment_id'] as String?;
-    if (!isApiary && (seasonId == null || assignmentId == null)) {
+    if (requiresCropContext && (seasonId == null || assignmentId == null)) {
       throw const FormatException('labor_parent_missing');
     }
     final sectorRow = await database
@@ -48,29 +49,40 @@ final class LaborSyncCodec implements AggregateSyncCodec {
     if (isApiary && sectorKind != 'apiary') {
       throw const FormatException('operation_not_valid_for_crop');
     }
+    if (!isApiary && sectorKind != 'crop') {
+      throw const FormatException('operation_not_valid_for_apiary');
+    }
     final category = decoded['domain_category'] as String? ?? sectorKind;
     if (category != sectorKind) {
       throw const FormatException('labor_category_mismatch');
     }
-    if (!isApiary) {
+    if (seasonId != null) {
       final season =
           await (database.select(database.agriculturalSeasons)..where(
                 (row) =>
-                    row.id.equals(seasonId!) &
+                    row.id.equals(seasonId) &
                     row.ownerId.equals(ownerId) &
                     row.sectorId.equals(sectorId),
               ))
               .getSingleOrNull();
+      if (season == null) {
+        throw const FormatException('labor_parent_missing');
+      }
+    }
+    if (assignmentId != null) {
+      if (seasonId == null) {
+        throw const FormatException('labor_parent_missing');
+      }
       final assignment =
           await (database.select(database.cropSeasons)..where(
                 (row) =>
-                    row.id.equals(assignmentId!) &
+                    row.id.equals(assignmentId) &
                     row.ownerId.equals(ownerId) &
                     row.sectorId.equals(sectorId) &
-                    row.agriculturalSeasonId.equals(seasonId!),
+                    row.agriculturalSeasonId.equals(seasonId),
               ))
               .getSingleOrNull();
-      if (season == null || assignment == null) {
+      if (assignment == null) {
         throw const FormatException('labor_parent_missing');
       }
     }
@@ -115,6 +127,78 @@ final class LaborSyncCodec implements AggregateSyncCodec {
           Variable<String>(change.aggregateId),
         ],
       );
+      final soil = decoded['soil'];
+      if (soil != null) {
+        if (type != 'soil' ||
+            soil is! Map<String, Object?> ||
+            soil['id'] is! String) {
+          throw const FormatException('labor_soil_payload_invalid');
+        }
+        await _validateChildIdentity(
+          database,
+          ownerId,
+          sectorId,
+          change.aggregateId,
+          'soil_measurements',
+          soil,
+        );
+        final moisture = _soilNumber(
+          soil,
+          'moisturePercent',
+          'moisture_percent',
+        );
+        final ph = _soilNumber(soil, 'ph', 'ph');
+        final temperature = _soilNumber(
+          soil,
+          'temperatureCelsius',
+          'temperature_celsius',
+        );
+        final conductivity = _soilNumber(soil, 'conductivity', 'conductivity');
+        final nitrogen = _soilNumber(soil, 'nitrogen', 'nitrogen');
+        final phosphorus = _soilNumber(soil, 'phosphorus', 'phosphorus');
+        final potassium = _soilNumber(soil, 'potassium', 'potassium');
+        if ([
+              moisture,
+              ph,
+              temperature,
+              conductivity,
+              nitrogen,
+              phosphorus,
+              potassium,
+            ].every((value) => value == null) ||
+            (moisture != null && (moisture < 0 || moisture > 100)) ||
+            (ph != null && (ph < 0 || ph > 14)) ||
+            [
+              conductivity,
+              nitrogen,
+              phosphorus,
+              potassium,
+            ].any((value) => value != null && value < 0)) {
+          throw const FormatException('labor_soil_payload_invalid');
+        }
+        await database
+            .into(database.soilMeasurements)
+            .insertOnConflictUpdate(
+              SoilMeasurementsCompanion.insert(
+                id: soil['id']! as String,
+                ownerId: ownerId,
+                sectorId: sectorId,
+                laborId: Value(change.aggregateId),
+                moisturePercent: Value(moisture),
+                ph: Value(ph),
+                temperatureCelsius: Value(temperature),
+                conductivity: Value(conductivity),
+                nitrogen: Value(nitrogen),
+                phosphorus: Value(phosphorus),
+                potassium: Value(potassium),
+                notes: Value(soil['notes'] as String?),
+                measuredAt:
+                    _date(soil['measured_at']) ??
+                    DateTime.parse(decoded['occurred_at']! as String).toUtc(),
+                updatedAt: _date(soil['updated_at']) ?? updatedAt,
+              ),
+            );
+      }
       final production = decoded['production'];
       if (production != null) {
         if (production is! Map<String, Object?> ||
@@ -247,6 +331,14 @@ final class LaborSyncCodec implements AggregateSyncCodec {
             apiary['inspected_at'] is! String) {
           throw const FormatException('labor_apiary_payload_invalid');
         }
+        await _validateChildIdentity(
+          database,
+          ownerId,
+          sectorId,
+          change.aggregateId,
+          'apiary_inspections',
+          apiary,
+        );
         await database
             .into(database.apiaryInspections)
             .insertOnConflictUpdate(
@@ -282,6 +374,52 @@ final class LaborSyncCodec implements AggregateSyncCodec {
 
   DateTime? _date(Object? value) =>
       value is String ? DateTime.parse(value).toUtc() : null;
+
+  static double? _soilNumber(
+    Map<String, Object?> soil,
+    String camel,
+    String snake,
+  ) {
+    if (soil.containsKey(camel) &&
+        soil.containsKey(snake) &&
+        soil[camel] != soil[snake]) {
+      throw const FormatException('soil_field_alias_mismatch');
+    }
+    final value = soil.containsKey(camel) ? soil[camel] : soil[snake];
+    if (value == null) return null;
+    if (value is! num || !value.toDouble().isFinite) {
+      throw const FormatException('labor_soil_payload_invalid');
+    }
+    return value.toDouble();
+  }
+
+  static Future<void> _validateChildIdentity(
+    AppDatabase database,
+    String ownerId,
+    String sectorId,
+    String laborId,
+    String table,
+    Map<String, Object?> child,
+  ) async {
+    if ((child['owner_id'] != null && child['owner_id'] != ownerId) ||
+        (child['sector_id'] != null && child['sector_id'] != sectorId) ||
+        (child['labor_id'] != null && child['labor_id'] != laborId)) {
+      throw const FormatException('labor_child_identity_invalid');
+    }
+    // Table comes only from the two constant codec call sites above.
+    final existing = await database
+        .customSelect(
+          'SELECT owner_id, sector_id, labor_id FROM $table WHERE id = ?',
+          variables: [Variable<String>(child['id']! as String)],
+        )
+        .getSingleOrNull();
+    if (existing != null &&
+        (existing.read<String>('owner_id') != ownerId ||
+            existing.read<String>('sector_id') != sectorId ||
+            existing.readNullable<String>('labor_id') != laborId)) {
+      throw const FormatException('labor_child_identity_invalid');
+    }
+  }
 
   @override
   Future<void> markAcknowledged(

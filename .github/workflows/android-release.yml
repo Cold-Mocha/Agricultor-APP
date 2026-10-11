@@ -23,22 +23,34 @@ on:
 
 env:
   FLUTTER_CHANNEL: stable
+  FLUTTER_VERSION: "3.47.0"
 
 jobs:
   debug-build:
     name: Debug APK (build sanity)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: github.event_name != 'release'
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
+      - name: SDK and checkout evidence
+        run: |
+          mkdir -p build/ci
+          { git rev-parse HEAD; uname -a; flutter --version; dart --version; } > build/ci/environment.log 2>&1
       - run: flutter pub get
       - name: Build debug APK
         working-directory: frontend
-        run: flutter build apk --debug --no-pub
+        run: bash ../scripts/ci_log.sh ../build/ci/android-debug-build.log flutter build apk --debug --no-pub
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: diagnostics-${{ github.job }}-${{ github.sha }}
+          path: build/ci/
+          retention-days: 14
       - uses: actions/upload-artifact@v4
         with:
           name: agrocampo-debug-apk
@@ -47,7 +59,7 @@ jobs:
 
   release-build:
     name: Release APK + AAB (guarded by secrets)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: >-
       github.event_name == 'release' ||
       startsWith(github.ref, 'refs/tags/v') ||
@@ -57,7 +69,12 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
+      - name: SDK and checkout evidence
+        run: |
+          mkdir -p build/ci
+          { git rev-parse HEAD; uname -a; flutter --version; dart --version; } > build/ci/environment.log 2>&1
       - run: flutter pub get
 
       - name: Check which release secrets are configured
@@ -104,14 +121,20 @@ jobs:
             DEFINES+=("--dart-define=SUPABASE_URL=$SUPABASE_URL")
             DEFINES+=("--dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY")
           fi
-          flutter build apk --release --no-pub "${DEFINES[@]}"
-          flutter build appbundle --release --no-pub "${DEFINES[@]}"
+          bash ../scripts/ci_log.sh ../build/ci/android-release-apk.log flutter build apk --release --no-pub "${DEFINES[@]}"
+          bash ../scripts/ci_log.sh ../build/ci/android-release-aab.log flutter build appbundle --release --no-pub "${DEFINES[@]}"
 
       - name: Flag artifacts that are not production-ready
         if: steps.check.outputs.has_keystore != 'true' || steps.check.outputs.has_supabase != 'true'
         run: |
           echo "::warning::Este artefacto NO está listo para Play Store — keystore configurado: ${{ steps.check.outputs.has_keystore }}, Supabase de producción configurado: ${{ steps.check.outputs.has_supabase }}. Ver docs/deployment.md antes de publicar."
 
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: diagnostics-${{ github.job }}-${{ github.sha }}
+          path: build/ci/
+          retention-days: 14
       - uses: actions/upload-artifact@v4
         with:
           name: agrocampo-release-${{ steps.check.outputs.has_keystore == 'true' && 'signed' || 'UNSIGNED-debugkey' }}

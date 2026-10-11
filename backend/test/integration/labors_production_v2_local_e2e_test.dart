@@ -27,9 +27,11 @@ import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:agrocampo_backend/src/platform/notifications/local_notification_scheduler.dart';
 import 'package:agrocampo_backend/src/platform/sync/protocol/supabase_sync_gateway.dart';
 import 'package:drift/native.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../helpers/local_supabase_e2e.dart';
 import '../helpers/reminder_test_payload.dart';
 import '../helpers/sync_test_coordinator.dart';
 
@@ -37,9 +39,10 @@ void main() {
   test(
     'seven labor types, correction and production survive restart and sync',
     () async {
-      const url = String.fromEnvironment('SUPABASE_URL');
-      const anonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
-      if (url.isEmpty || anonKey.isEmpty) return;
+      requireLocalSupabaseE2e();
+      const url = localSupabaseUrl;
+      const anonKey = localSupabaseAnonKey;
+
       final client = SupabaseClient(
         url,
         anonKey,
@@ -50,7 +53,7 @@ void main() {
       addTearDown(client.dispose);
       final suffix = DateTime.now().microsecondsSinceEpoch;
       final auth = await client.auth.signUp(
-        email: 'labors-e2e-$suffix@agrocampo.local',
+        email: 'labors-e2e-$suffix@example.invalid',
         password: 'AgroCampo-$suffix!',
       );
       final ownerId = auth.user!.id;
@@ -305,7 +308,13 @@ void main() {
         ),
         hasLength(1),
       );
+      debugPrint(
+        'REAL_E2E labors owner=$ownerId nine labor roots, correction, production/irrigation/reminder SQLiteA/B verified',
+      );
     },
+    skip: !localSupabaseE2e
+        ? 'Requires explicit disposable local Supabase E2E gate'
+        : false,
   );
 }
 

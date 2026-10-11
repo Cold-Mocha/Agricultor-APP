@@ -24,6 +24,7 @@ concurrency:
 
 env:
   FLUTTER_CHANNEL: stable
+  FLUTTER_VERSION: "3.47.0"
   AVD_API_LEVEL: 30
   # Coordenadas de referencia usadas en las suites y fixtures existentes
   # (Temuco, Chile) — ver docs/deployment.md#5-coordenadas-de-la-parcela.
@@ -34,7 +35,7 @@ jobs:
   integration-tests:
     # `env` is not available in jobs.<id>.name; keep in sync with AVD_API_LEVEL.
     name: integration_test/ on Android API 30 emulator
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
@@ -48,8 +49,13 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
+      - name: SDK and checkout evidence
+        run: |
+          mkdir -p build/ci
+          { git rev-parse HEAD; uname -a; flutter --version; dart --version; } > build/ci/environment.log 2>&1
       - name: flutter pub get (workspace root)
         run: flutter pub get
 
@@ -77,7 +83,7 @@ jobs:
 
       - name: Build debug APK
         working-directory: frontend
-        run: flutter build apk --debug --no-pub
+        run: bash ../scripts/ci_log.sh ../build/ci/android-debug-build.log flutter build apk --debug --no-pub
 
       - name: Run integration_test suite on the emulator
         uses: reactivecircus/android-emulator-runner@v2
@@ -98,4 +104,10 @@ jobs:
             adb shell pm grant cl.agrocampo.app android.permission.ACCESS_COARSE_LOCATION
             if [ "$(adb shell getprop ro.build.version.sdk | tr -d '\r')" -ge 33 ]; then adb shell pm grant cl.agrocampo.app android.permission.POST_NOTIFICATIONS; fi
             adb emu geo fix ${{ env.AVD_GEO_LONGITUDE }} ${{ env.AVD_GEO_LATITUDE }}
-            flutter test integration_test -d emulator-5554 --no-pub --reporter expanded
+            bash ../scripts/ci_log.sh ../build/ci/android-integration.log flutter test integration_test -d emulator-5554 --no-pub --reporter expanded
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: diagnostics-android-integration-${{ github.sha }}
+          path: build/ci/
+          retention-days: 14
