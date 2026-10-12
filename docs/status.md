@@ -7,6 +7,35 @@ registres una ejecución de verificación.
 **Release global: NO LISTO.** Faltan la verificación en Android API 24+ y las credenciales de
 producción.
 
+## Suelo, tests históricos y firma Android (2026-10-11)
+
+El formulario de suelo valida formato y rangos, conserva los campos ante errores y permite
+reintentar sin duplicar el guardado. El dominio rechaza los valores no finitos antes de JSON.
+UI según `master.md` → **Medición de suelo** (001 T042). Los tests antiguos usan números
+históricos reservados e inmutables y verifican ausencia de cambios en filas/outbox tras rechazos.
+Se revisó el golden de exportación ya actualizado en el árbol: los otros seis PNG siguen
+iguales a HEAD y ningún baseline cambió durante esta ejecución.
+
+| Gate local | Resultado |
+|---|---|
+| Backend completo | 205 aprobadas, 4 E2E Supabase omitidas explícitas; salida 0 |
+| Frontend completo, incluidos siete goldens | 116 aprobadas; salida 0 |
+| Formato, análisis, arquitectura, Drift y prototipos | PASS |
+| Reproducción de firma anterior | Gradle busca `android/app/app/release.keystore`; fallo específico, salida 1 |
+| Ruta corregida | `:app:validateSigningRelease` aprobado; salida 0 |
+| APK release y certificado | 78,6 MB; build y `apksigner` aprobados, esquema v2, coincide con certificado de prueba; salidas 0 |
+
+El primer build pasó la firma pero falló en el registro Java generado de `integration_test`.
+Flutter 3.47 omite regenerar tooling nativo con `--no-pub`; se retiró ese flag de APK/AAB
+release en `android-release.yml`. El build final regeneró ese registro y terminó 0.
+El lockfile y las dependencias siguen sin cambios. Se retiraron sólo las credenciales temporales
+propias tras verificar su certificado; se conserva el APK de prueba y sus hashes.
+
+No había credenciales locales de firma; se usó una clave temporal de prueba para comprobar la
+configuración. El APK usa runtime development. Esta ejecución no acredita CI remoto,
+identidad de firma de producción,
+pgTAP/Edge Functions ni pruebas instrumentadas Android. Se mantienen los pendientes globales.
+
 ## Avance por spec
 
 | Spec | Tareas | Pendientes |

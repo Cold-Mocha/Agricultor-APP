@@ -20,7 +20,7 @@ final class SoilMeasurementInput {
   final Map<String, String> units;
 
   void validate() {
-    if ([
+    final values = [
       moisturePercent,
       ph,
       temperatureCelsius,
@@ -28,8 +28,12 @@ final class SoilMeasurementInput {
       nitrogen,
       phosphorus,
       potassium,
-    ].every((value) => value == null)) {
+    ];
+    if (values.every((value) => value == null)) {
       throw ArgumentError('soil_requires_one_measurement');
+    }
+    if (values.any((value) => value != null && !value.isFinite)) {
+      throw ArgumentError('soil_value_not_finite');
     }
     if (moisturePercent case final value? when value < 0 || value > 100) {
       throw ArgumentError('moisture_out_of_range');

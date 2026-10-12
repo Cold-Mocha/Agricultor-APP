@@ -121,8 +121,10 @@ jobs:
             DEFINES+=("--dart-define=SUPABASE_URL=$SUPABASE_URL")
             DEFINES+=("--dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY")
           fi
-          bash ../scripts/ci_log.sh ../build/ci/android-release-apk.log flutter build apk --release --no-pub "${DEFINES[@]}"
-          bash ../scripts/ci_log.sh ../build/ci/android-release-aab.log flutter build appbundle --release --no-pub "${DEFINES[@]}"
+          # Flutter 3.47 must regenerate native registrants for release so
+          # dev-only integration_test is excluded. --no-pub skips that step.
+          bash ../scripts/ci_log.sh ../build/ci/android-release-apk.log flutter build apk --release "${DEFINES[@]}"
+          bash ../scripts/ci_log.sh ../build/ci/android-release-aab.log flutter build appbundle --release "${DEFINES[@]}"
 
       - name: Flag artifacts that are not production-ready
         if: steps.check.outputs.has_keystore != 'true' || steps.check.outputs.has_supabase != 'true'
