@@ -375,6 +375,7 @@ final class HistoryRepository {
     'soil' => 'Suelo',
     'fertilization' => 'Fertilización',
     'diseaseAndPestControl' => 'Control de enfermedades y plagas',
+    'cultivation' => 'Cultivo',
     'sowing' => 'Siembra',
     'pruning' => 'Poda',
     'harvest' => 'Cosecha',

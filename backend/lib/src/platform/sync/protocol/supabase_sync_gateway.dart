@@ -16,6 +16,7 @@ final class SupabaseSyncGateway implements SyncGateway {
     required String ownerId,
     required List<PushMutation> operations,
   }) async {
+    _requireOwner(ownerId);
     final response = await _client.rpc<Object?>(
       'sync_push',
       params: {
@@ -64,11 +65,19 @@ final class SupabaseSyncGateway implements SyncGateway {
     required String ownerId,
     required int afterCursor,
   }) async {
+    _requireOwner(ownerId);
     final response = await _client.rpc<List<Object?>>(
       'sync_pull',
       params: {'after_cursor': afterCursor, 'page_size': 200},
     );
     return const SyncPullResponseParser().parse(response, afterCursor);
+  }
+
+  void _requireOwner(String ownerId) {
+    final currentOwner = _client.auth.currentUser?.id;
+    if (currentOwner != null && currentOwner != ownerId) {
+      throw StateError('sync_owner_mismatch');
+    }
   }
 
   List<RemoteConflict> _parseConflicts(Object? value) =>

@@ -2,6 +2,7 @@ import 'package:agrocampo_backend/src/composition/backend_providers.dart';
 import 'package:agrocampo_backend/src/composition/sync_scheduler.dart';
 import 'package:agrocampo_backend/src/modules/auth/application/facades/auth_session_facade.dart';
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/auth_repository.dart';
+import 'package:agrocampo_backend/src/modules/auth/infrastructure/device_auth_repository.dart';
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/local_auth_repository.dart';
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/secure_session_store.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
@@ -40,7 +41,11 @@ final class AgroCampoBackend {
       );
       // The session stays open until the owner signs out explicitly.
       supabaseAuth.keepSessionFresh();
-      authRepository = supabaseAuth;
+      authRepository = DeviceAuthRepository(
+        supabaseAuth,
+        const LocalAuthRepository(LocalOwnerStore(secureStorage)),
+        supabaseAuth.createAnonymousSession,
+      );
     } else {
       authRepository = const LocalAuthRepository(
         LocalOwnerStore(secureStorage),

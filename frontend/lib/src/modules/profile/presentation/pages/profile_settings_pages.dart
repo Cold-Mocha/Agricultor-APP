@@ -65,7 +65,7 @@ final class ProfileSecurityPage extends ConsumerWidget {
             subtitle: Text(
               localMode
                   ? 'Usa la biometría configurada en este dispositivo al abrir AgroCampo.'
-                  : 'Usa la biometría configurada en este dispositivo después de iniciar sesión.',
+                  : 'Usa la biometría configurada en este dispositivo al abrir AgroCampo.',
             ),
             value: session.biometricEnabled,
             onChanged: session.ownerId == null
@@ -89,7 +89,7 @@ final class ProfileSecurityPage extends ConsumerWidget {
             title: 'Datos protegidos',
             message: localMode
                 ? 'Tus datos se guardan sólo en este dispositivo, con almacenamiento seguro.'
-                : 'La sesión se conserva con almacenamiento seguro hasta que la cierres.',
+                : 'La identidad de este dispositivo se conserva con almacenamiento seguro para respaldar tus datos.',
           ),
         ],
       ),

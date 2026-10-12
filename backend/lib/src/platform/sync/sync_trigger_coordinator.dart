@@ -12,6 +12,7 @@ final class SyncTriggerCoordinator {
     this._scheduler,
     this._connectivity, {
     this._pendingWork,
+    this.afterSync,
     this.saveDebounce = const Duration(seconds: 2),
     this.retryInterval = const Duration(minutes: 2),
   });
@@ -22,6 +23,7 @@ final class SyncTriggerCoordinator {
 
   /// Count of operations still waiting to be pushed for an owner.
   final Stream<int> Function(String ownerId)? _pendingWork;
+  final Future<void> Function(String ownerId)? afterSync;
 
   /// Groups several saves made in a row into a single synchronization.
   final Duration saveDebounce;
@@ -71,6 +73,11 @@ final class SyncTriggerCoordinator {
         _rerun = false;
         try {
           await _coordinator.synchronize(ownerId);
+        } on Object {
+          await _scheduler.schedule(ownerId: ownerId);
+        }
+        try {
+          await afterSync?.call(ownerId);
         } on Object {
           await _scheduler.schedule(ownerId: ownerId);
         }

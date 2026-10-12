@@ -24,6 +24,7 @@ final class _RemindersPageState extends ConsumerState<RemindersPage> {
   final _description = TextEditingController();
   DateTime _scheduledAt = DateTime.now().add(const Duration(hours: 1));
   String? _editingId;
+  bool _saving = false;
 
   @override
   void dispose() {
@@ -73,9 +74,13 @@ final class _RemindersPageState extends ConsumerState<RemindersPage> {
             onTap: _pickDateTime,
           ),
           FilledButton(
-            onPressed: ownerId == null ? null : _save,
+            onPressed: ownerId == null || _saving ? null : _save,
             child: Text(
-              _editingId == null ? 'Programar recordatorio' : 'Guardar cambios',
+              _saving
+                  ? 'Guardando…'
+                  : _editingId == null
+                  ? 'Programar recordatorio'
+                  : 'Guardar cambios',
             ),
           ),
           const Divider(height: AgroSpacing.lg),
@@ -157,8 +162,12 @@ final class _RemindersPageState extends ConsumerState<RemindersPage> {
     final time = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(_scheduledAt),
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+        child: child!,
+      ),
     );
-    if (time == null) return;
+    if (time == null || !mounted) return;
     setState(
       () => _scheduledAt = DateTime(
         date.year,
@@ -171,29 +180,52 @@ final class _RemindersPageState extends ConsumerState<RemindersPage> {
   }
 
   Future<void> _save() async {
-    final ownerId = ref.read(sessionControllerProvider).ownerId!;
+    if (_saving) return;
+    final ownerId = ref.read(sessionControllerProvider).ownerId;
+    if (ownerId == null) return;
     final context = ref.read(agriculturalContextControllerProvider);
-    await ref
-        .read(remindersControllerProvider)
-        .save(
-          ownerId: ownerId,
-          id: _editingId,
-          input: ReminderInput(
-            title: _title.text,
-            description: _description.text,
-            scheduledAt: _scheduledAt,
-            sectorId: context.sectorId,
-            sourceTimeZone: DateTime.now().timeZoneName,
-          ),
+    final input = ReminderInput(
+      title: _title.text,
+      description: _description.text,
+      scheduledAt: _scheduledAt,
+      sectorId: context.sectorId,
+      sourceTimeZone: DateTime.now().timeZoneName,
+    );
+    try {
+      input.validate(DateTime.now());
+    } on ArgumentError {
+      _notify(
+        'Escribe un título de hasta 120 caracteres y elige una fecha futura. La descripción admite hasta 500 caracteres.',
+      );
+      return;
+    }
+    setState(() => _saving = true);
+    try {
+      await ref
+          .read(remindersControllerProvider)
+          .save(ownerId: ownerId, id: _editingId, input: input);
+      if (!mounted) return;
+      setState(() {
+        _editingId = null;
+        _title.clear();
+        _description.clear();
+        _scheduledAt = DateTime.now().add(const Duration(hours: 1));
+      });
+      _notify('Recordatorio guardado.');
+    } on Object {
+      if (mounted) {
+        _notify(
+          'No fue posible guardar el recordatorio. Tus valores se conservaron; intenta nuevamente.',
         );
-    if (!mounted) return;
-    setState(() {
-      _editingId = null;
-      _title.clear();
-      _description.clear();
-      _scheduledAt = DateTime.now().add(const Duration(hours: 1));
-    });
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
+
+  void _notify(String message) => ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(SnackBar(content: Text(message)));
 
   Future<void> _action(ReminderSummary reminder, String action) async {
     final ownerId = ref.read(sessionControllerProvider).ownerId!;

@@ -17,7 +17,7 @@ final class _ExportPageState extends ConsumerState<ExportPage> {
   @override
   Widget build(BuildContext context) => AgroPage(
     title: 'Exportar',
-    subtitle: 'Copia XLSX íntegra de los datos disponibles en este dispositivo',
+    subtitle: 'Datos agrícolas e historial disponibles en este dispositivo',
     child: ListView(
       children: [
         const Card(
@@ -25,7 +25,7 @@ final class _ExportPageState extends ConsumerState<ExportPage> {
             leading: Icon(LucideIcons.table),
             title: Text('Datos e historial agrícola'),
             subtitle: Text(
-              'Incluye sectores, labores, suelo, riego, producción, apicultura e historial, también de sectores retirados.',
+              'Incluye registros agrícolas de sectores activos y el historial completo, también de sectores retirados. Las fotos y los recordatorios no forman parte del XLSX.',
             ),
           ),
         ),

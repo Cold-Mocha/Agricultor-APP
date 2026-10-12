@@ -249,6 +249,17 @@ final class LaborSyncCodec implements AggregateSyncCodec {
                 laborId: Value(change.aggregateId),
                 irrigationType: irrigation['irrigation_type']! as String,
                 soilTypeCode: irrigation['soil_type_code']! as String,
+                flowLitersPerHour: Value(
+                  details['data'] is Map<String, Object?>
+                      ? ((details['data']
+                                    as Map<
+                                      String,
+                                      Object?
+                                    >)['flowLitersPerHour']
+                                as num?)
+                            ?.toDouble()
+                      : null,
+                ),
                 configId: Value(irrigation['config_id'] as String?),
                 configVersion: Value(irrigation['config_version'] as int?),
                 durationMinutes: Value(

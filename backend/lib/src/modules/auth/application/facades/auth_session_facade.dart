@@ -8,6 +8,7 @@ import 'package:agrocampo_backend/src/modules/crop_cycles/crop_cycles_api.dart';
 import 'package:agrocampo_backend/src/modules/reminders/reminders_api.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:agrocampo_backend/src/platform/database/owner_transfer.dart';
+import 'package:agrocampo_backend/src/platform/network/connectivity_service.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -33,6 +34,8 @@ final authSessionFacadeProvider = Provider<AuthSessionFacade>((ref) {
       final store = ref.read(localOwnerStoreProvider);
       final localOwnerId = await store.readOwnerId();
       if (localOwnerId == null || localOwnerId == ownerId) return;
+      await ref.read(syncTriggerCoordinatorProvider).stop(localOwnerId);
+      await ref.read(fieldAlertsFacadeProvider).stop(localOwnerId);
       await OwnerTransfer(ref.read(appDatabaseProvider))
           .transfer(from: localOwnerId, to: ownerId);
       await store.clearOwnerId();
@@ -53,6 +56,12 @@ final authSessionFacadeProvider = Provider<AuthSessionFacade>((ref) {
         // No background work to cancel on a host environment.
       }
     },
+    () => ref.read(supabaseClientProvider) == null
+        ? const Stream<bool>.empty()
+        : ref
+              .read(connectivityServiceProvider)
+              .watch()
+              .map((signal) => signal == ConnectionSignal.available),
   );
 });
 
@@ -69,6 +78,7 @@ final class AuthSessionFacade {
     this._checkFieldAlerts,
     this._startSync,
     this._stopSync,
+    this._connections,
   );
 
   final AuthRepository Function() _auth;
@@ -80,6 +90,9 @@ final class AuthSessionFacade {
   final Future<void> Function(String ownerId) _checkFieldAlerts;
   final Future<void> Function(String ownerId) _startSync;
   final Future<void> Function(String ownerId) _stopSync;
+  final Stream<bool> Function() _connections;
+
+  Stream<bool> watchConnection() => _connections();
 
   Future<SessionState> restore() async {
     final session = await _auth().restoreSession();
@@ -91,6 +104,7 @@ final class AuthSessionFacade {
         ? SessionState.offline(session.ownerId)
         : SessionState.signedIn(session.ownerId);
     await resumeOwner(session.ownerId);
+    await _rememberProfile(session.ownerId, '');
     return restored;
   }
 
@@ -154,8 +168,11 @@ final class AuthSessionFacade {
           .insertOnConflictUpdate(
             LocalProfilesCompanion.insert(
               id: ownerId,
-              displayName: current?.displayName ?? email,
-              emailDisplay: Value(email),
+              displayName:
+                  current?.displayName ?? (email.isEmpty ? 'Mi campo' : email),
+              emailDisplay: Value(
+                email.isEmpty ? current?.emailDisplay : email,
+              ),
               locale: Value(current?.locale ?? 'es_CL'),
               updatedAt: DateTime.now().toUtc(),
             ),

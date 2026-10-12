@@ -4,6 +4,7 @@ import 'package:agrocampo_backend/src/modules/auth/infrastructure/biometric_unlo
 import 'package:agrocampo_backend/src/modules/crop_cycles/infrastructure/persistence/crop_assignment_reconciler.dart';
 import 'package:agrocampo_backend/src/modules/labors/infrastructure/persistence/labor_repository.dart';
 import 'package:agrocampo_backend/src/modules/labors/labors_api.dart';
+import 'package:agrocampo_backend/src/modules/media/media_api.dart';
 import 'package:agrocampo_backend/src/modules/weather/infrastructure/persistence/weather_gateway.dart';
 import 'package:agrocampo_backend/src/modules/weather/infrastructure/persistence/weather_repository.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
@@ -87,6 +88,11 @@ final syncTriggerCoordinatorProvider = Provider<SyncTriggerCoordinator>((ref) {
           ),
     ref.watch(syncSchedulerProvider),
     ref.watch(connectivityServiceProvider),
+    afterSync: (ownerId) async {
+      if (!await ref.read(mediaFacadeProvider).uploadPending(ownerId)) {
+        throw StateError('photo_upload_pending');
+      }
+    },
     pendingWork: (ownerId) => ref
         .read(appDatabaseProvider)
         .syncOutboxDao

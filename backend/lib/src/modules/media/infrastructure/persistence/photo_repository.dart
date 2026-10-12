@@ -75,7 +75,7 @@ final class PhotoRepository {
     return id;
   }
 
-  Future<void> uploadPending(String ownerId, PhotoUploadGateway gateway) async {
+  Future<bool> uploadPending(String ownerId, PhotoUploadGateway gateway) async {
     final pending =
         await (_database.select(_database.photoAttachments)..where(
               (row) =>
@@ -83,21 +83,28 @@ final class PhotoRepository {
                   row.uploadState.equals('pending'),
             ))
             .get();
+    var complete = true;
     for (final photo in pending) {
-      final remotePath = await gateway.upload(
-        ownerId: ownerId,
-        contentHash: photo.contentHash,
-        mimeType: photo.mimeType,
-        bytes: await File(photo.localPath).readAsBytes(),
-      );
-      await (_database.update(
-        _database.photoAttachments,
-      )..where((row) => row.id.equals(photo.id))).write(
-        PhotoAttachmentsCompanion(
-          remotePath: Value(remotePath),
-          uploadState: const Value('done'),
-        ),
-      );
+      try {
+        final remotePath = await gateway.upload(
+          ownerId: ownerId,
+          contentHash: photo.contentHash,
+          mimeType: photo.mimeType,
+          bytes: await File(photo.localPath).readAsBytes(),
+        );
+        await (_database.update(
+          _database.photoAttachments,
+        )..where((row) => row.id.equals(photo.id))).write(
+          PhotoAttachmentsCompanion(
+            remotePath: Value(remotePath),
+            uploadState: const Value('done'),
+          ),
+        );
+      } on Object {
+        // Retain the file/row for a later retry; continue with other photos.
+        complete = false;
+      }
     }
+    return complete;
   }
 }

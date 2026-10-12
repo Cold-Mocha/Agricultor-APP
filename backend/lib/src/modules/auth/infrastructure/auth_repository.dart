@@ -39,6 +39,22 @@ final class SupabaseAuthRepository implements AuthRepository {
   final SupabaseClient? client;
   final SessionStore store;
 
+  Future<RestoredAuthSession> createAnonymousSession() async {
+    final response = await client!.auth.signInAnonymously();
+    final session = response.session!;
+    await store.persist(
+      ownerId: session.user.id,
+      refreshToken: session.refreshToken!,
+    );
+    return RestoredAuthSession(
+      ownerId: session.user.id,
+      biometricEnabled: await store.read().then(
+        (value) => value?.biometricEnabled ?? false,
+      ),
+      offline: false,
+    );
+  }
+
   /// Keeps the stored refresh token current. Supabase rotates it on every
   /// refresh, so persisting only the sign-in token would end the session at
   /// the next app start. Lives as long as the app.

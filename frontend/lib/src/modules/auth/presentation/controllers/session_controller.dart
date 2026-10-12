@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,9 +14,23 @@ final unlockedOwnerIdProvider = Provider<String?>((ref) {
   };
 });
 
+final _connectionProvider = StreamProvider<bool>(
+  (ref) => ref.watch(authSessionFacadeProvider).watchConnection(),
+);
+
 final class SessionController extends Notifier<SessionState> {
   @override
-  SessionState build() => const SessionState.restoring();
+  SessionState build() {
+    ref.listen(_connectionProvider, (previous, next) {
+      if (previous?.asData?.value == false &&
+          next.asData?.value == true &&
+          state.status == SessionStatus.offline &&
+          !ref.read(isLocalModeProvider)) {
+        unawaited(restore());
+      }
+    });
+    return const SessionState.restoring();
+  }
 
   Future<void> restore() async {
     state = await ref.read(authSessionFacadeProvider).restore();
@@ -91,6 +107,12 @@ final class SessionController extends Notifier<SessionState> {
     state = const SessionState.signedOut();
   }
 
-  Future<void> resumeOwner(String ownerId) =>
-      ref.read(authSessionFacadeProvider).resumeOwner(ownerId);
+  Future<void> resumeOwner(String ownerId) async {
+    if (state.status == SessionStatus.offline &&
+        !ref.read(isLocalModeProvider)) {
+      await restore();
+      return;
+    }
+    await ref.read(authSessionFacadeProvider).resumeOwner(ownerId);
+  }
 }

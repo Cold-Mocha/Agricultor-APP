@@ -2,10 +2,13 @@ import 'dart:ui';
 
 import 'package:agrocampo_backend/src/composition/sync_codec_composition.dart';
 import 'package:agrocampo_backend/src/modules/auth/infrastructure/secure_session_store.dart';
+import 'package:agrocampo_backend/src/modules/media/infrastructure/persistence/photo_repository.dart';
+import 'package:agrocampo_backend/src/modules/media/infrastructure/persistence/supabase_photo_gateway.dart';
 import 'package:agrocampo_backend/src/modules/reminders/infrastructure/alerts/field_alert_service.dart';
 import 'package:agrocampo_backend/src/modules/weather/infrastructure/persistence/weather_gateway.dart';
 import 'package:agrocampo_backend/src/modules/weather/weather_api.dart';
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
+import 'package:agrocampo_backend/src/platform/files/private_file_store.dart';
 import 'package:agrocampo_backend/src/platform/network/runtime_config.dart';
 import 'package:agrocampo_backend/src/platform/notifications/local_notification_scheduler.dart';
 import 'package:agrocampo_backend/src/platform/sync/protocol/supabase_sync_gateway.dart';
@@ -43,12 +46,20 @@ Future<bool> _runSync(String ownerId) async {
   try {
     final client = await _ownerClient(config, ownerId);
     if (client == null) return false;
-    await SyncCoordinator(
-      database,
-      SupabaseSyncGateway(client),
-      registry: createAgroCampoSyncRegistry(),
-    ).synchronize(ownerId);
-    return true;
+    var mediaComplete = true;
+    try {
+      await SyncCoordinator(
+        database,
+        SupabaseSyncGateway(client),
+        registry: createAgroCampoSyncRegistry(),
+      ).synchronize(ownerId);
+    } finally {
+      mediaComplete = await PhotoRepository(
+        database,
+        PrivateFileStore(),
+      ).uploadPending(ownerId, SupabasePhotoGateway(client));
+    }
+    return mediaComplete;
   } on Object {
     return false;
   } finally {

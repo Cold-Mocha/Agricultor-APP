@@ -42,7 +42,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.login,
         name: 'login',
-        builder: (context, state) => const LoginPage(),
+        builder: (context, state) => const DeviceAccessPage(),
       ),
       // Notification payload compatibility for records made before the
       // navigation hierarchy was corrected.

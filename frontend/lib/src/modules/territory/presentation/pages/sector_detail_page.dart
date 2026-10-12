@@ -47,16 +47,15 @@ final class SectorDetailPage extends ConsumerWidget {
     String ownerId,
   ) async {
     final controller = ref.read(sectorDetailControllerProvider(sectorId));
-    final field = TextEditingController(
-      text: await controller.loadName(ownerId) ?? '',
-    );
+    var editedName = await controller.loadName(ownerId) ?? '';
     if (!context.mounted) return;
     final name = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Renombrar cuadrante'),
-        content: TextField(
-          controller: field,
+        content: TextFormField(
+          initialValue: editedName,
+          onChanged: (value) => editedName = value,
           autofocus: true,
           maxLength: 80,
           decoration: const InputDecoration(labelText: 'Nombre'),
@@ -67,22 +66,23 @@ final class SectorDetailPage extends ConsumerWidget {
             child: const Text('Cancelar'),
           ),
           FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, field.text),
+            onPressed: () => Navigator.pop(dialogContext, editedName),
             child: const Text('Guardar'),
           ),
         ],
       ),
     );
-    field.dispose();
     if (name == null || !context.mounted) return;
     String message;
     try {
-      await controller.rename(ownerId: ownerId, name: name);
+      await ref
+          .read(sectorDetailControllerProvider(sectorId))
+          .rename(ownerId: ownerId, name: name);
       message = 'Nombre actualizado.';
     } on Object catch (error) {
       message = error is StateError && error.message == 'sector_name_required'
           ? 'Escribe un nombre para el cuadrante.'
-          : 'No se pudo renombrar el cuadrante: $error';
+          : 'No se pudo renombrar el cuadrante. Intenta nuevamente.';
     }
     if (context.mounted) _notify(context, message);
   }

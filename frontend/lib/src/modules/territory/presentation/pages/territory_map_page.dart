@@ -53,6 +53,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
   int? _selectedVertex;
   GeoPoint? _draggedPoint;
   bool _tileLoadFailed = false;
+  bool _locating = false;
 
   @override
   void dispose() {
@@ -437,7 +438,7 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
                     IconButton(
                       tooltip: 'Usar mi ubicación',
                       iconSize: AgroSizes.iconStandard,
-                      onPressed: _locate,
+                      onPressed: _locating ? null : _locate,
                       icon: const Icon(LucideIcons.locateFixed),
                     ),
                     IconButton(
@@ -630,8 +631,11 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
   });
 
   Future<void> _locate() async {
+    if (_locating) return;
+    setState(() => _locating = true);
     try {
       final point = await ref.read(territoryMapControllerProvider).locate();
+      if (!mounted) return;
       _controller.move(_latLngPoint(point), 17);
     } on Object catch (error) {
       if (!mounted) return;
@@ -645,6 +649,8 @@ final class _TerritoryMapPageState extends ConsumerState<TerritoryMapPage> {
           ),
         ),
       );
+    } finally {
+      if (mounted) setState(() => _locating = false);
     }
   }
 

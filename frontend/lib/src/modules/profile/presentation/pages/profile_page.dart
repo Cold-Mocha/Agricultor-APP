@@ -5,7 +5,6 @@ import 'package:agrocampo/src/modules/auth/auth_ui.dart';
 import 'package:agrocampo/src/modules/profile/presentation/controllers/profile_controller.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_empty_state.dart';
 import 'package:agrocampo/src/shared/design_system/components/agro_settings_group.dart';
-import 'package:agrocampo_backend/agrocampo_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -17,7 +16,6 @@ final class ProfilePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ownerId = ref.watch(unlockedOwnerIdProvider);
-    final localMode = ref.watch(isLocalModeProvider);
     final controller = ref.watch(profileControllerProvider);
     return AgroPage(
       title: 'Perfil',
@@ -34,7 +32,9 @@ final class ProfilePage extends ConsumerWidget {
                 return ListView(
                   key: const PageStorageKey('profile-scroll'),
                   children: [
-                    _ProfileHeader(username: profile?.username),
+                    _ProfileHeader(
+                      username: profile?.displayName ?? 'Mi campo',
+                    ),
                     const SizedBox(height: AgroSpacing.lg),
                     AgroSettingsGroup(
                       title: 'Preferencias',
@@ -61,50 +61,11 @@ final class ProfilePage extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: AgroSpacing.lg),
-                    if (!localMode) ...[
-                      OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Theme.of(context).colorScheme.error,
-                          side: BorderSide(
-                            color: Theme.of(context).colorScheme.error,
-                          ),
-                        ),
-                        onPressed: () => _confirmSignOut(context, ref),
-                        icon: const Icon(LucideIcons.logOut),
-                        label: const Text('Cerrar sesión'),
-                      ),
-                      const SizedBox(height: AgroSpacing.lg),
-                    ],
                   ],
                 );
               },
             ),
     );
-  }
-
-  Future<void> _confirmSignOut(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('¿Cerrar sesión?'),
-        content: const Text(
-          'Tus datos no se eliminan. Vuelve a ingresar con tu usuario y PIN para seguir usándolos.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Cerrar sesión'),
-          ),
-        ],
-      ),
-    );
-    if (confirmed == true) {
-      await ref.read(sessionControllerProvider.notifier).signOut();
-    }
   }
 }
 

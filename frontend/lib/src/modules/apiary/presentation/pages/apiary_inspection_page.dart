@@ -31,6 +31,7 @@ final class _ApiaryInspectionPageState
   final _observations = TextEditingController();
   ApiaryTaskType _task = ApiaryTaskType.inspection;
   bool _superInstalled = false;
+  bool _saving = false;
   BoundAgriculturalContext? _bound;
 
   @override
@@ -118,7 +119,10 @@ final class _ApiaryInspectionPageState
               label: const Text('Adjuntar fotografía'),
             ),
           const SizedBox(height: AgroSpacing.md),
-          FilledButton(onPressed: _save, child: const Text('Guardar revisión')),
+          FilledButton(
+            onPressed: _saving ? null : _save,
+            child: Text(_saving ? 'Guardando…' : 'Guardar revisión'),
+          ),
         ],
       ],
     ),
@@ -139,6 +143,7 @@ final class _ApiaryInspectionPageState
   );
 
   Future<void> _save() async {
+    if (_saving) return;
     final sectorId = _bound?.sectorId ?? widget.sectorId;
     if (sectorId == null) return;
     if (_bound?.category != ProductiveCategory.apiary) {
@@ -149,30 +154,53 @@ final class _ApiaryInspectionPageState
       );
       return;
     }
-    final saved = await ref
-        .read(apiaryInspectionControllerProvider)
-        .save(
-          sectorId: sectorId,
-          input: ApiaryInspectionInput(
-            taskType: _task,
-            beekeeperName: _beekeeper.text,
-            hiveCount: int.tryParse(_hives.text) ?? 0,
-            queenStatus: _queen.text,
-            broodStatus: _brood.text,
-            feedingStatus: _feeding.text,
-            healthNotes: _health.text,
-            pestNotes: _pests.text,
-            superInstalled: _superInstalled,
-            inspectedAt: DateTime.now(),
-            observations: _observations.text,
-          ),
-        );
-    if (mounted && saved) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Revisión guardada en este dispositivo.')),
+    final input = ApiaryInspectionInput(
+      taskType: _task,
+      beekeeperName: _beekeeper.text,
+      hiveCount: int.tryParse(_hives.text) ?? 0,
+      queenStatus: _queen.text,
+      broodStatus: _brood.text,
+      feedingStatus: _feeding.text,
+      healthNotes: _health.text,
+      pestNotes: _pests.text,
+      superInstalled: _superInstalled,
+      inspectedAt: DateTime.now(),
+      observations: _observations.text,
+    );
+    try {
+      input.validate();
+    } on ArgumentError {
+      _notify(
+        'Completa apicultor, reina y postura. Ingresa una cantidad entera de colmenas mayor que cero.',
       );
+      return;
+    }
+    setState(() => _saving = true);
+    try {
+      final saved = await ref
+          .read(apiaryInspectionControllerProvider)
+          .save(sectorId: sectorId, input: input);
+      if (mounted) {
+        _notify(
+          saved
+              ? 'Revisión guardada en este dispositivo.'
+              : 'Selecciona un sector apícola y vuelve a intentar.',
+        );
+      }
+    } on Object {
+      if (mounted) {
+        _notify(
+          'No fue posible guardar la revisión. Tus valores se conservaron; intenta nuevamente.',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
+
+  void _notify(String message) => ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(SnackBar(content: Text(message)));
 
   static String _label(ApiaryTaskType type) => switch (type) {
     ApiaryTaskType.inspection => 'Inspección',

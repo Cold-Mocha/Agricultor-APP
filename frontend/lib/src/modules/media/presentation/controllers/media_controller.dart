@@ -47,7 +47,11 @@ final class PhotoAttachmentController {
           ownerId: ownerId,
           sectorId: sectorId,
           sourcePath: selection._source.path,
-          mimeType: selection._source.mimeType ?? 'image/jpeg',
+          mimeType:
+              selection._source.mimeType ??
+              (selection._source.path.toLowerCase().endsWith('.png')
+                  ? 'image/png'
+                  : 'image/jpeg'),
         );
   }
 }

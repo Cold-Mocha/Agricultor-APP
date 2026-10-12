@@ -19,10 +19,13 @@ final class ReminderReconciler {
     for (final row in rows) {
       final notificationId =
           row.androidNotificationId ?? stableNotificationId(row.id);
-      if (row.status != 'scheduled' || !row.scheduledAt.isAfter(instant)) {
+      if (row.status != 'scheduled') {
         await _scheduler.cancel(notificationId);
         continue;
       }
+      // Inexact alarms may still be waiting for Android to deliver them.
+      // Resuming after their time must not cancel or schedule them again.
+      if (!row.scheduledAt.isAfter(instant)) continue;
       // A denied permission is a durable, truthful state. Reconciliation must
       // not silently turn it into "scheduled" until the user saves again and
       // grants the permission.

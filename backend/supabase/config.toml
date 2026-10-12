@@ -22,6 +22,7 @@ vector_port = 54428
 
 [auth]
 enabled = true
+enable_anonymous_sign_ins = true
 site_url = "cl.agrocampo.app://login-callback"
 
 [storage]
