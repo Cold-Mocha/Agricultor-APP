@@ -1,0 +1,18 @@
+import 'package:agrocampo_backend/src/platform/sync/protocol/sync_contract.dart';
+
+abstract interface class SyncGateway {
+  Future<PushResult> push({
+    required String ownerId,
+    required List<PushMutation> operations,
+  });
+
+  Future<PullResult> pull({required String ownerId, required int afterCursor});
+}
+
+/// Exact owner-scoped existence checks, independent of the incremental log.
+abstract interface class SectorExistenceGateway {
+  Future<Set<String>> existingSectorIds({
+    required String ownerId,
+    required List<String> candidateIds,
+  });
+}

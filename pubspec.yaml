@@ -1,0 +1,14 @@
+name: agrocampo_workspace
+description: Workspace modular de AgroCampo.
+publish_to: none
+version: 1.0.0
+
+environment:
+  sdk: ^3.13.0
+
+workspace:
+  - frontend
+  - backend
+
+dependency_overrides:
+  path_provider_android: 2.2.23
