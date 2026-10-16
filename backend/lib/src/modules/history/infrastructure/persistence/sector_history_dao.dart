@@ -8,7 +8,10 @@ final class SectorHistoryDao {
 
   /// Page the combined timeline before loading typed details from each source.
   Future<Map<String, List<String>>> pageIds(HistoryFilter filter) async {
-    final conditions = <String>['e.owner_id = ?'];
+    final conditions = <String>[
+      'e.owner_id = ?',
+      "(s.id IS NULL OR s.sync_state <> 'remote_missing')",
+    ];
     final variables = <Variable>[Variable(filter.ownerId)];
     void where(String condition, Variable value) {
       conditions.add(condition);
@@ -17,6 +20,13 @@ final class SectorHistoryDao {
 
     if (filter.sectorId != null) {
       where('e.sector_id = ?', Variable(filter.sectorId!));
+    }
+    if (filter.sectorRetired != null) {
+      conditions.add(
+        filter.sectorRetired!
+            ? 's.deleted_at IS NOT NULL'
+            : 's.id IS NOT NULL AND s.deleted_at IS NULL',
+      );
     }
     if (filter.seasonId != null) {
       where('e.season_id = ?', Variable(filter.seasonId!));

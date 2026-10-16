@@ -22,6 +22,8 @@ const _editableLaborTypes = {
   'irrigation',
 };
 
+enum _SectorScope { all, active, retired }
+
 /// master.md: Historial, estados vacíos y componentes Material existentes.
 final class HistoryPage extends ConsumerStatefulWidget {
   const HistoryPage({this.initialSectorId, super.key});
@@ -34,6 +36,13 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
   HistoryEventType? _type;
   String? _sectorId, _seasonId, _owner;
   bool _sectorChosen = false;
+  bool _refreshing = false;
+  _SectorScope _sectorScope = _SectorScope.all;
+  bool? get _sectorRetired => switch (_sectorScope) {
+    _SectorScope.all => null,
+    _SectorScope.active => false,
+    _SectorScope.retired => true,
+  };
   DateTimeRange? _dates;
   int _limit = 100;
   Object? _queryKey;
@@ -47,6 +56,43 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
     _queryKey = null;
   });
 
+  Future<void> _refresh(String owner, String? selectedSector) async {
+    if (_refreshing) return;
+    setState(() => _refreshing = true);
+    try {
+      final result = await ref.read(historyControllerProvider).refresh(owner);
+      if (!mounted || ref.read(unlockedOwnerIdProvider) != owner) return;
+      _change(() {
+        if (result.unavailableSectorIds.contains(selectedSector)) {
+          _sectorChosen = true;
+          _sectorId = null;
+          _seasonId = null;
+        }
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            result.localChangesProtected
+                ? 'Datos actualizados. Tus cambios sin enviar se conservaron.'
+                : 'Datos actualizados.',
+          ),
+        ),
+      );
+    } on Object {
+      if (mounted && ref.read(unlockedOwnerIdProvider) == owner) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'No se pudo actualizar. Comprueba la conexión e inténtalo de nuevo.',
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _refreshing = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final owner = ref.watch(unlockedOwnerIdProvider);
@@ -57,6 +103,7 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
     if (_owner != owner) {
       _owner = owner;
       _sectorChosen = false;
+      _sectorScope = _SectorScope.all;
       _seasonId = null;
       _type = null;
       _dates = null;
@@ -71,13 +118,23 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
     final sector = _sectorChosen
         ? _sectorId
         : widget.initialSectorId ?? agriculturalContext.sectorId;
-    final key = (owner, sector, _seasonId, _type, _dates, _limit, facade);
+    final key = (
+      owner,
+      sector,
+      _sectorScope,
+      _seasonId,
+      _type,
+      _dates,
+      _limit,
+      facade,
+    );
     if (owner != null && key != _queryKey) {
       _queryKey = key;
       _events = facade.watch(
         HistoryFilter(
           ownerId: owner,
           sectorId: sector,
+          sectorRetired: _sectorRetired,
           seasonId: _seasonId,
           type: _type,
           from: _dates?.start,
@@ -95,6 +152,21 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
     return AgroPage(
       title: 'Historial',
       subtitle: 'Línea temporal agrícola',
+      actions: [
+        IconButton(
+          tooltip: _refreshing ? 'Actualizando datos' : 'Actualizar datos',
+          onPressed: owner == null || _refreshing
+              ? null
+              : () => _refresh(owner, sector),
+          icon: _refreshing
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(LucideIcons.refreshCw),
+        ),
+      ],
       child: owner == null
           ? const AgroEmptyState(
               title: 'Sin historial',
@@ -220,10 +292,16 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
 
   Widget _filters(String? sectorId) => Column(
     children: [
+      const SizedBox(height: AgroSpacing.sm),
       StreamBuilder<List<HistorySector>>(
         stream: _sectors,
         builder: (context, snapshot) {
-          final sectors = snapshot.data ?? const <HistorySector>[];
+          final sectors = (snapshot.data ?? const <HistorySector>[])
+              .where(
+                (sector) =>
+                    _sectorRetired == null || sector.retired == _sectorRetired,
+              )
+              .toList();
           final matches = sectors.where((s) => s.id == sectorId);
           final selected = matches.isEmpty ? null : matches.first;
           final seasons =
@@ -231,6 +309,38 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
               [for (final sector in sectors) ...sector.seasons];
           return Column(
             children: [
+              // master.md / Historial: choose the group before a sector.
+              DropdownButtonFormField<_SectorScope>(
+                initialValue: _sectorScope,
+                decoration: const InputDecoration(
+                  labelText: 'Mostrar sectores',
+                ),
+                isExpanded: true,
+                items: const [
+                  DropdownMenuItem(
+                    value: _SectorScope.all,
+                    child: Text('Todos'),
+                  ),
+                  DropdownMenuItem(
+                    value: _SectorScope.active,
+                    child: Text('Activos'),
+                  ),
+                  DropdownMenuItem(
+                    value: _SectorScope.retired,
+                    child: Text('Retirados'),
+                  ),
+                ],
+                onChanged: (value) {
+                  if (value == null) return;
+                  _change(() {
+                    _sectorScope = value;
+                    _sectorChosen = true;
+                    _sectorId = null;
+                    _seasonId = null;
+                  });
+                },
+              ),
+              const SizedBox(height: AgroSpacing.sm),
               if (snapshot.hasError)
                 TextButton(
                   onPressed: () => _change(() {
@@ -241,23 +351,49 @@ final class _HistoryPageState extends ConsumerState<HistoryPage> {
                   child: const Text('Reintentar carga de sectores'),
                 ),
               DropdownButtonFormField<String>(
-                key: ValueKey(('sector', sectorId, sectors.length)),
+                key: ValueKey((
+                  'sector',
+                  _sectorScope,
+                  sectorId,
+                  sectors.length,
+                )),
                 initialValue: selected?.id ?? '__all__',
                 decoration: const InputDecoration(labelText: 'Sector'),
                 isExpanded: true,
                 items: [
-                  const DropdownMenuItem(
+                  DropdownMenuItem(
                     value: '__all__',
-                    child: Text('Todos los sectores'),
+                    child: Text(switch (_sectorScope) {
+                      _SectorScope.all => 'Todos los sectores',
+                      _SectorScope.active => 'Todos los sectores activos',
+                      _SectorScope.retired => 'Todos los sectores retirados',
+                    }),
                   ),
-                  for (final sector in sectors)
-                    DropdownMenuItem(
-                      value: sector.id,
-                      child: Text(
-                        '${sector.name}${sector.retired ? ' · Retirado' : ''}',
-                        overflow: TextOverflow.ellipsis,
+                  // master.md / Historial: separate current and historical
+                  // identities, even when their names or numbers coincide.
+                  for (final retired in [false, true]) ...[
+                    if (_sectorScope == _SectorScope.all &&
+                        sectors.any((sector) => sector.retired == retired))
+                      DropdownMenuItem(
+                        value: retired
+                            ? '__retired_group__'
+                            : '__active_group__',
+                        enabled: false,
+                        child: Text(
+                          retired ? 'Sectores retirados' : 'Sectores activos',
+                        ),
                       ),
-                    ),
+                    for (final sector in sectors.where(
+                      (sector) => sector.retired == retired,
+                    ))
+                      DropdownMenuItem(
+                        value: sector.id,
+                        child: Text(
+                          '${sector.name}${retired ? ' · Retirado · Ref. ${sector.id.substring(sector.id.length > 8 ? sector.id.length - 8 : 0)}' : ''}',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                  ],
                 ],
                 onChanged: (value) => _change(() {
                   _sectorChosen = true;

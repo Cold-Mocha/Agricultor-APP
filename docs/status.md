@@ -7,6 +7,24 @@ registres una ejecución de verificación.
 **Release global: NO LISTO.** Faltan la verificación en Android API 24+ y las credenciales de
 producción.
 
+## Actualizar datos en Historial (2026-10-16)
+
+Solicitud posterior completada: acción de recarga arriba a la derecha de Historial, según
+`master.md` / Historial / Actualizar datos y FR-004-14. La lectura incremental no podía
+descubrir los QA borrados físicamente junto con sus eventos remotos. Ahora se traen todas las
+páginas y se comprueba directamente la existencia de retirados por propietario/UUID.
+Las copias ausentes verificadas dejan de mostrarse; su contenido local se conserva recuperable.
+Pendientes, conflictos, fotos, borradores, errores de red y ediciones concurrentes se protegen.
+No se ejecutan escrituras remotas desde esta acción ni se requiere otro SQL.
+
+35 pruebas backend y 13 frontend aprobadas, análisis de producción sin incidencias, guard
+Windows y ambos controles del prototipo aprobados. Pixel_8 API 37.1 actualizado sin limpiar
+datos: QA visible antes, desaparece al pulsar el botón y sigue ausente después de reiniciar.
+Mario y sus 10 activos/10 retirados reales permanecen; los 20 registros remotos no cambiaron.
+
+APK real 1.0.3+4 en raíz: `AgroCampo-Actualizar-Datos-2026-10-16.apk`, firma/configuración de
+tres ABI y hash instalado verificados. Emulador dejado en Inicio con Mario.
+
 ## Suelo, tests históricos y firma Android (2026-10-11)
 
 El formulario de suelo valida formato y rangos, conserva los campos ante errores y permite

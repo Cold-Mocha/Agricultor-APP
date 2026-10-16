@@ -41,7 +41,11 @@ final class HistoryRepository {
       .asyncMap((_) async {
         final sectors =
             await (_database.select(_database.sectors)
-                  ..where((row) => row.ownerId.equals(ownerId))
+                  ..where(
+                    (row) =>
+                        row.ownerId.equals(ownerId) &
+                        row.syncState.equals('remote_missing').not(),
+                  )
                   ..orderBy([(row) => OrderingTerm.asc(row.number)]))
                 .get();
         final seasons =
@@ -89,6 +93,10 @@ final class HistoryRepository {
       _database.sectors,
     )..where((row) => row.ownerId.equals(filter.ownerId))).get();
     final sectorById = {for (final row in sectors) row.id: row};
+    final unavailable = sectors
+        .where((row) => row.syncState == 'remote_missing')
+        .map((row) => row.id)
+        .toSet();
     final categories = {
       for (final row in sectors) row.id: ProductiveCategory.fromCode(row.kind),
     };
@@ -280,6 +288,7 @@ final class HistoryRepository {
         ),
       );
     }
+    events.removeWhere((event) => unavailable.contains(event.sectorId));
     events.sort((left, right) {
       final date = right.occurredAt.compareTo(left.occurredAt);
       if (date != 0) return date;

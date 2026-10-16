@@ -709,8 +709,25 @@ La barra inferior contiene exactamente cinco destinos:
 
 ### Historial
 
-- **Objetivo:** revisar actividades por cuadrante, cultivo y temporada.
-- **Jerarquía:** contexto de cuadrante, eventos cronológicos y estado vacío.
+- **Actualizar datos (2026-10-16):** acción con icono de recarga en la esquina superior
+  derecha y etiqueta accesible «Actualizar datos». Mientras espera, muestra progreso y no
+  admite otro toque. Consulta cambios remotos y comprueba los sectores retirados que fueron
+  eliminados físicamente de Supabase; sus copias verificadas dejan de aparecer en Historial.
+  Conserva filtros y cambios sin enviar; si desapareció el sector seleccionado, vuelve al
+  conjunto del grupo actual. Confirma el resultado o muestra un error con opción de reintentar.
+  No muestra un éxito cuando la consulta remota falla y no vacía la base local.
+- **Filtro de estado de sectores (2026-10-16):** antes del selector «Sector», mostrar
+  «Mostrar sectores» con «Todos», «Activos» y «Retirados». Cambiar el grupo selecciona el
+  historial completo de ese grupo y limpia sector y temporada; conserva tipo y fechas.
+  El selector de sector sólo ofrece identidades del grupo elegido, incluida la opción
+  «Todos los sectores activos/retirados». La paginación opera dentro del grupo seleccionado.
+- **Selector de sectores (2026-10-13):** ordenar primero «Sectores activos» y después
+  «Sectores retirados», con encabezados no seleccionables. Los retirados llevan «Retirado» y
+  una referencia corta derivada de su ID para distinguir las distintas identidades que
+  reutilizaron un número. Seleccionar siempre por ID, nunca por nombre o número.
+
+- **Objetivo:** revisar actividades por sector, cultivo y temporada.
+- **Jerarquía:** contexto de sector, eventos cronológicos y estado vacío.
 - **Componentes:** timeline de cards, icono por actividad, etiquetas de temporada/sync cuando aporten valor.
 - **Información:** fecha, tipo, cultivo, notas y estado de sincronización relevante.
 - **Acciones:** abrir detalle si está contemplado; para labores con formulario genérico

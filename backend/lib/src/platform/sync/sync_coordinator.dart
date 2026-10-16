@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:agrocampo_backend/src/platform/database/app_database.dart';
 import 'package:agrocampo_backend/src/platform/sync/protocol/aggregate_sync_registry.dart';
 import 'package:agrocampo_backend/src/platform/sync/protocol/sync_contract.dart';
@@ -17,6 +19,17 @@ final class SyncRunResult {
   final int conflicts;
 }
 
+final class SyncRefreshResult {
+  const SyncRefreshResult({
+    required this.pulled,
+    required this.unavailableSectorIds,
+    required this.localChangesProtected,
+  });
+  final int pulled;
+  final List<String> unavailableSectorIds;
+  final bool localChangesProtected;
+}
+
 final class SyncCoordinator {
   SyncCoordinator(
     this._database,
@@ -31,8 +44,24 @@ final class SyncCoordinator {
   final SyncGateway _gateway;
   final AggregateSyncRegistry _registry;
   final SyncRetryPolicy _retryPolicy;
+  Future<void> _tail = Future.value();
 
-  Future<SyncRunResult> synchronize(String ownerId) async {
+  Future<T> _exclusive<T>(Future<T> Function() action) async {
+    final previous = _tail;
+    final finished = Completer<void>();
+    _tail = finished.future;
+    await previous;
+    try {
+      return await action();
+    } finally {
+      finished.complete();
+    }
+  }
+
+  Future<SyncRunResult> synchronize(String ownerId) =>
+      _exclusive(() => _synchronize(ownerId));
+
+  Future<SyncRunResult> _synchronize(String ownerId) async {
     // Work under a deleted quadrant can never be accepted; drop it first.
     await _database.syncOutboxDao.cancelOrphansOfDeletedSectors(ownerId);
     // Operations stored as failed before missing parents became retryable.
@@ -148,6 +177,138 @@ final class SyncCoordinator {
       pulled: pull.changes.length,
       conflicts: conflictCount,
     );
+  }
+
+  /// Read-only remote refresh. Never pushes or clears local work.
+  Future<SyncRefreshResult> refresh(String ownerId) => _exclusive(() async {
+    final gateway = _gateway;
+    if (gateway is! SectorExistenceGateway) {
+      throw StateError('remote_refresh_unavailable');
+    }
+    var pulled = 0;
+    while (true) {
+      final cursor = await _database.syncCursorDao.read(ownerId, stream);
+      final page = await _gateway
+          .pull(ownerId: ownerId, afterCursor: cursor)
+          .timeout(const Duration(seconds: 30));
+      if (page.changes.isNotEmpty && page.nextCursor <= cursor) {
+        throw const FormatException('refresh_cursor_not_advancing');
+      }
+      await _database.transaction(() async {
+        for (final change in page.changes) {
+          final pending =
+              await (_database.select(_database.syncOutbox)
+                    ..where(
+                      (row) =>
+                          row.ownerId.equals(ownerId) &
+                          row.aggregateType.equals(change.aggregateType) &
+                          row.aggregateId.equals(change.aggregateId) &
+                          row.state.equals('done').not(),
+                    )
+                    ..limit(1))
+                  .getSingleOrNull();
+          if (pending == null) {
+            await _registry
+                .require(change.aggregateType)
+                .applyRemote(_database, ownerId, change);
+          }
+        }
+        await _recordConflicts(ownerId, page.conflicts);
+        await _database.syncCursorDao.write(ownerId, stream, page.nextCursor);
+      });
+      pulled += page.changes.length;
+      if (page.changes.length < 200) break;
+    }
+    final candidates =
+        await (_database.select(_database.sectors)..where(
+              (row) =>
+                  row.ownerId.equals(ownerId) &
+                  row.deletedAt.isNotNull() &
+                  row.syncState.isIn(const ['synced', 'remote_missing']),
+            ))
+            .get();
+    final ids = candidates.map((row) => row.id).toList();
+    final existing = await (gateway as SectorExistenceGateway)
+        .existingSectorIds(ownerId: ownerId, candidateIds: ids);
+    if (!existing.every(ids.contains)) {
+      throw const FormatException('sector_inventory_invalid');
+    }
+    return _database.transaction(() async {
+      final protected = await _hasProtectedWork(ownerId);
+      final unavailable = <String>[];
+      if (!protected) {
+        for (final candidate in candidates) {
+          final current =
+              await (_database.select(_database.sectors)..where(
+                    (row) =>
+                        row.ownerId.equals(ownerId) &
+                        row.id.equals(candidate.id),
+                  ))
+                  .getSingleOrNull();
+          // A save from another connection while checking the network wins.
+          if (current == null ||
+              current.deletedAt == null ||
+              current.version != candidate.version ||
+              current.updatedAt != candidate.updatedAt ||
+              current.syncState != candidate.syncState) {
+            continue;
+          }
+          final missing = !existing.contains(candidate.id);
+          if (missing) unavailable.add(candidate.id);
+          await (_database.update(_database.sectors)..where(
+                (row) =>
+                    row.ownerId.equals(ownerId) & row.id.equals(candidate.id),
+              ))
+              .write(
+                SectorsCompanion(
+                  syncState: Value(missing ? 'remote_missing' : 'synced'),
+                ),
+              );
+        }
+      }
+      return SyncRefreshResult(
+        pulled: pulled,
+        unavailableSectorIds: List.unmodifiable(unavailable),
+        localChangesProtected: protected,
+      );
+    });
+  });
+
+  Future<bool> _hasProtectedWork(String ownerId) async {
+    final pending =
+        await (_database.select(_database.syncOutbox)
+              ..where(
+                (row) =>
+                    row.ownerId.equals(ownerId) &
+                    row.state.equals('done').not(),
+              )
+              ..limit(1))
+            .getSingleOrNull();
+    if (pending != null) return true;
+    final conflict =
+        await (_database.select(_database.syncConflicts)
+              ..where(
+                (row) => row.ownerId.equals(ownerId) & row.resolvedAt.isNull(),
+              )
+              ..limit(1))
+            .getSingleOrNull();
+    if (conflict != null) return true;
+    final photo =
+        await (_database.select(_database.photoAttachments)
+              ..where(
+                (row) =>
+                    row.ownerId.equals(ownerId) &
+                    row.uploadState.equals('done').not(),
+              )
+              ..limit(1))
+            .getSingleOrNull();
+    if (photo != null) return true;
+    final draft =
+        await (_database.select(_database.formDrafts)
+              ..where((row) => row.ownerId.equals(ownerId))
+              ..limit(1))
+            .getSingleOrNull();
+    return draft != null;
   }
 
   Future<void> _applyAcknowledgement(

@@ -3,6 +3,15 @@ import 'package:agrocampo_backend/src/shared/contracts/save_outcome.dart';
 
 enum HistoryEventType { labor, soil, cropAssignment }
 
+final class HistoryRefreshResult {
+  const HistoryRefreshResult({
+    this.unavailableSectorIds = const [],
+    this.localChangesProtected = false,
+  });
+  final List<String> unavailableSectorIds;
+  final bool localChangesProtected;
+}
+
 final class HistoryEvent {
   const HistoryEvent({
     required this.id,
@@ -80,6 +89,7 @@ final class HistoryFilter {
   const HistoryFilter({
     required this.ownerId,
     this.sectorId,
+    this.sectorRetired,
     this.seasonId,
     this.type,
     this.from,
@@ -91,6 +101,9 @@ final class HistoryFilter {
 
   final String ownerId;
   final String? sectorId;
+
+  /// Null includes both active and retired sectors.
+  final bool? sectorRetired;
   final String? seasonId;
   final HistoryEventType? type;
   final DateTime? from;

@@ -4,12 +4,30 @@ import 'package:agrocampo_backend/src/modules/history/infrastructure/persistence
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final historyFacadeProvider = Provider<HistoryFacade>(
-  (ref) => HistoryFacade._(HistoryRepository(ref.watch(appDatabaseProvider))),
+  (ref) => HistoryFacade._(
+    HistoryRepository(ref.watch(appDatabaseProvider)),
+    ref.watch(historyRefreshActionProvider),
+  ),
 );
 
+final historyRefreshActionProvider =
+    Provider<Future<HistoryRefreshResult> Function(String)>((ref) {
+      return (ownerId) async {
+        final coordinator = ref.read(syncCoordinatorProvider);
+        if (coordinator == null) throw StateError('remote_refresh_unavailable');
+        final result = await coordinator.refresh(ownerId);
+        return HistoryRefreshResult(
+          unavailableSectorIds: result.unavailableSectorIds,
+          localChangesProtected: result.localChangesProtected,
+        );
+      };
+    });
+
 final class HistoryFacade {
-  HistoryFacade._(this._repository);
+  HistoryFacade._(this._repository, this._refresh);
   final HistoryRepository _repository;
+  final Future<HistoryRefreshResult> Function(String) _refresh;
+  Future<HistoryRefreshResult> refresh(String ownerId) => _refresh(ownerId);
   Future<List<HistoryEvent>> list(HistoryFilter filter) =>
       _repository.list(filter);
   Stream<List<HistoryEvent>> watch(HistoryFilter filter) =>

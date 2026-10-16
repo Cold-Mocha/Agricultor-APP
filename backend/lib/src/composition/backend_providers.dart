@@ -76,16 +76,19 @@ final weatherRepositoryProvider = Provider<WeatherRepository>((ref) {
         : SupabaseWeatherGateway(client),
   );
 });
-final syncTriggerCoordinatorProvider = Provider<SyncTriggerCoordinator>((ref) {
+final syncCoordinatorProvider = Provider<SyncCoordinator?>((ref) {
   final client = ref.watch(supabaseClientProvider);
+  return client == null
+      ? null
+      : SyncCoordinator(
+          ref.watch(appDatabaseProvider),
+          SupabaseSyncGateway(client),
+          registry: createAgroCampoSyncRegistry(),
+        );
+});
+final syncTriggerCoordinatorProvider = Provider<SyncTriggerCoordinator>((ref) {
   return SyncTriggerCoordinator(
-    client == null
-        ? null
-        : SyncCoordinator(
-            ref.watch(appDatabaseProvider),
-            SupabaseSyncGateway(client),
-            registry: createAgroCampoSyncRegistry(),
-          ),
+    ref.watch(syncCoordinatorProvider),
     ref.watch(syncSchedulerProvider),
     ref.watch(connectivityServiceProvider),
     afterSync: (ownerId) async {

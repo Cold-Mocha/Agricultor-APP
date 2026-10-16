@@ -87,6 +87,16 @@ Los datos existentes no se migran. Al actualizar:
 
 ## Functional Requirements
 
+- **FR-004-13** (revisión solicitada 2026-10-16): Historial permite elegir todos los sectores,
+  sólo activos o sólo retirados. El selector de sectores y el historial completo respetan el
+  grupo elegido antes de paginar; cambiar de grupo limpia el sector y la temporada seleccionados.
+  Se mantiene el filtrado por UUID y la distinción entre identidades con número reutilizado.
+- **FR-004-14** (revisión solicitada 2026-10-16): Historial incluye «Actualizar datos» para
+  traer todas las páginas de cambios remotos y comprobar la existencia de sectores retirados
+  eliminados manualmente del servidor. Las copias ausentes verificadas dejan de mostrarse;
+  se conserva su contenido local recuperable, sin borrar datos ni trabajos pendientes.
+  Una consulta incompleta, fallida o sin sesión válida no autoriza ocultar copias locales.
+  Esta acción explícita constituye una excepción a FR-004-10; continúa la sincronización automática.
 - **FR-004-01**: No existe pantalla, ruta, selector ni texto de UI de parcelas.
 - **FR-004-02**: Un cuadrante se crea, renombra y elimina sin referencia a parcela.
 - **FR-004-03**: El número de cuadrante es único por agricultor e incluye cuadrantes eliminados.
