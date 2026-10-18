@@ -1,0 +1,207 @@
+name: CI
+
+# Gates automatizados del workspace AgroCampo. Reproduce, sin secretos y sobre un
+# stack Supabase local desechable, los comandos documentados en
+# specs/003-agrocampo-functional-refinement/quickstart.md (G0, G10 no-Android, G11
+# no-Android, G12) y docs/architecture/frontend-backend-boundary.md. No sustituye la
+# verificación en dispositivo Android API 24+ pendiente (ver docs/status.md).
+
+on:
+  push:
+    branches: [main, master, "feature/**"]
+  pull_request:
+    branches: [main, master, "feature/**"]
+  workflow_dispatch: {}
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_CHANNEL: stable
+  FLUTTER_VERSION: "3.47.0"
+
+jobs:
+  architecture-guard:
+    name: G0 · Workspace and architecture guard
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - name: Environment and checkout evidence
+        run: |
+          mkdir -p build/ci
+          { git rev-parse HEAD; git status --short; uname -a; flutter --version; dart --version; } > build/ci/environment.log 2>&1
+      - name: flutter pub get (workspace root)
+        run: bash scripts/ci_log.sh build/ci/pub-get.log flutter pub get
+      - name: Workspace members must be exactly frontend + backend
+        run: bash scripts/ci_log.sh build/ci/workspace.log dart pub workspace list
+      - name: Architecture boundary checker
+        run: bash scripts/ci_log.sh build/ci/architecture.log dart run tool/check_architecture.dart
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-${{ github.job }}-${{ github.sha }}
+          path: |
+            build/ci/
+            frontend/test/**/failures/
+          retention-days: 14
+
+  backend:
+    name: Backend · format, analyze, test
+    runs-on: ubuntu-24.04
+    needs: architecture-guard
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - name: Environment and checkout evidence
+        run: |
+          mkdir -p build/ci
+          { git rev-parse HEAD; git status --short; uname -a; flutter --version; dart --version; } > build/ci/environment.log 2>&1
+      - name: flutter pub get (workspace root)
+        run: bash scripts/ci_log.sh build/ci/pub-get.log flutter pub get
+      - name: Drift code generation
+        working-directory: backend
+        run: bash ../scripts/ci_log.sh ../build/ci/backend-generation.log dart run build_runner build --delete-conflicting-outputs
+      - name: dart format
+        working-directory: backend
+        run: bash ../scripts/ci_log.sh ../build/ci/${{ github.job }}-format.log dart format --output=none --set-exit-if-changed .
+      - name: flutter analyze
+        working-directory: backend
+        run: bash ../scripts/ci_log.sh ../build/ci/${{ github.job }}-analyze.log flutter analyze --no-pub
+      - name: flutter test
+        working-directory: backend
+        run: bash ../scripts/ci_log.sh ../build/ci/${{ github.job }}-test.log flutter test --no-pub --reporter expanded
+      - name: Guard — dev build must not require Supabase secrets
+        working-directory: backend
+        run: bash ../scripts/ci_log.sh ../build/ci/runtime-development.log dart run tool/verify_runtime_config_guard.dart
+      - name: Guard — production build without secrets must fail closed
+        working-directory: backend
+        run: |
+          if bash ../scripts/ci_log.sh ../build/ci/runtime-production.log dart run -DAGROCAMPO_ENV=production tool/verify_runtime_config_guard.dart; then
+            echo "::error::RuntimeConfig aceptó un build de producción sin SUPABASE_URL/SUPABASE_PUBLISHABLE_KEY configurados. Revisar backend/lib/src/platform/network/runtime_config.dart: esto es una regresión de seguridad, no un fallo de CI."
+            exit 1
+          fi
+          echo "RuntimeConfig sigue rechazando un build de producción sin Supabase configurado (comportamiento esperado)."
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-${{ github.job }}-${{ github.sha }}
+          path: |
+            build/ci/
+            frontend/test/**/failures/
+          retention-days: 14
+
+  frontend:
+    name: Frontend · format, analyze, test, goldens
+    runs-on: ubuntu-24.04
+    needs: architecture-guard
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - name: Environment and checkout evidence
+        run: |
+          mkdir -p build/ci
+          { git rev-parse HEAD; git status --short; uname -a; flutter --version; dart --version; } > build/ci/environment.log 2>&1
+      - name: flutter pub get (workspace root)
+        run: bash scripts/ci_log.sh build/ci/pub-get.log flutter pub get
+      - name: dart format
+        working-directory: frontend
+        run: bash ../scripts/ci_log.sh ../build/ci/${{ github.job }}-format.log dart format --output=none --set-exit-if-changed .
+      - name: flutter analyze
+        working-directory: frontend
+        run: bash ../scripts/ci_log.sh ../build/ci/${{ github.job }}-analyze.log flutter analyze --no-pub
+      - name: flutter test (unit + widget + golden)
+        working-directory: frontend
+        run: bash ../scripts/ci_log.sh ../build/ci/${{ github.job }}-test.log flutter test --no-pub --reporter expanded
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-${{ github.job }}-${{ github.sha }}
+          path: |
+            build/ci/
+            frontend/test/**/failures/
+          retention-days: 14
+
+  prototype:
+    name: G12 · Static prototype acceptance
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Environment and checkout evidence
+        run: |
+          mkdir -p build/ci
+          { git rev-parse HEAD; git status --short; uname -a; node --version; } > build/ci/environment.log 2>&1
+      - name: Required copy/behavior acceptance
+        run: bash scripts/ci_log.sh build/ci/prototype-acceptance.log node agrocampo-acceptance.test.js
+      - name: Embedded JavaScript syntax check
+        run: |
+          bash scripts/ci_log.sh build/ci/prototype-syntax.log node -e "const fs=require('fs'); const html=fs.readFileSync('agrocampo-highfi.html','utf8'); const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]); for (const script of scripts) new Function(script); console.log('Embedded JavaScript syntax OK:', scripts.length);"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-${{ github.job }}-${{ github.sha }}
+          path: build/ci/
+          retention-days: 14
+
+  supabase-local:
+    name: Supabase local · SQL, HTTP, concurrency, required E2E, Edge Functions
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [fresh, incremental]
+    # Independent of backend unit tests: both gates produce their own evidence.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - uses: supabase/setup-cli@v1
+        with:
+          version: "2.117.0"
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: "v2.5.6"
+      - name: Environment and checkout evidence
+        run: |
+          mkdir -p build/ci
+          { git rev-parse HEAD; git status --short; uname -a; flutter --version; dart --version; supabase --version; deno --version; } > build/ci/environment.log 2>&1
+      - name: Resolve workspace dependencies
+        run: bash scripts/ci_log.sh build/ci/pub-get.log flutter pub get
+      - name: Disposable stack, migrations through current head, pgTAP, HTTP, concurrency and mandatory E2E
+        run: bash scripts/ci_log.sh build/ci/supabase-gate.log python3 scripts/run_local_supabase_gate.py --mode ${{ matrix.mode }}
+      - name: Edge Function tests
+        if: always()
+        run: bash scripts/ci_log.sh build/ci/edge-functions.log deno test --allow-env backend/supabase/functions/weather-proxy/tests backend/supabase/functions/agro-ai/tests
+      - name: Stop only this job's disposable stack
+        if: always()
+        run: bash scripts/ci_log.sh build/ci/supabase-cleanup.log python3 scripts/cleanup_local_supabase_gate.py --output build/supabase-local-gate/${{ matrix.mode }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: supabase-${{ matrix.mode }}-${{ github.sha }}
+          path: |
+            build/ci/
+            build/supabase-local-gate/
+          retention-days: 14

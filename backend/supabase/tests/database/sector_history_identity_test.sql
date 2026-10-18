@@ -1,0 +1,36 @@
+-- Reconstructed regression for PLAN-ACCION-CI-SUPABASE-2026-10-10; fictitious rollback fixtures.
+begin;
+select no_plan();
+\ir persistence_helpers.inc
+set local role authenticated;
+select set_config('request.jwt.claim.sub',pg_temp.fid(1)::text,true);
+select is(pg_temp.push(40004,'sector',pg_temp.sector(104,4))->>'status','applied','create historical 4');
+select is(pg_temp.push(40005,'sector',pg_temp.sector(105,5))->>'status','applied','create historical 5');
+select is(pg_temp.push(40010,'sector',pg_temp.sector(110,10))->>'status','applied','create historical 10');
+select is(pg_temp.push(41004,'sector',pg_temp.sector(104,4),'delete',1)->>'status','applied','retire 4');
+select is(pg_temp.push(41005,'sector',pg_temp.sector(105,5),'delete',1)->>'status','applied','retire 5');
+select is(pg_temp.push(41010,'sector',pg_temp.sector(110,10),'delete',1)->>'status','applied','retire 10');
+select is((select max(number)+1 from sectors where owner_id=pg_temp.fid(1)),11,'next number is historical maximum plus one');
+select is(pg_temp.push(40011,'sector',pg_temp.sector(111,11))->>'status','applied','new 11 applies');
+select is(pg_temp.push(41010,'sector',pg_temp.sector(110,10),'delete',1)->>'status','duplicate','retirement retry uses receipt before retired state');
+select is(pg_temp.push(42001,'sector',pg_temp.sector(111,12),'update',1)->>'status','rejected','renumber rejected');
+select is(pg_temp.push(42002,'sector',pg_temp.sector(110,10),'update',2)->>'status','rejected','reactivation rejected');
+select is(pg_temp.push(42003,'sector',pg_temp.sector(104,4),'archive',2)->>'status','rejected','edit retired rejected');
+select is(pg_temp.push(42004,'sector',pg_temp.sector(115,15),'update',1)->>'status','rejected','update missing rejected');
+select is(pg_temp.push(42005,'sector',pg_temp.sector(111,11))->>'status','rejected','create existing identity rejected');
+select is(pg_temp.push(42006,'sector',pg_temp.sector(120,10))->>'error_code','uniqueness_conflict','legacy duplicate conflicts without renumber or data loss');
+select is((select count(*)::integer from sync_operations where operation_id between pg_temp.fid(42001) and pg_temp.fid(42006)),0,'rejected mutations have no receipt');
+select is((select count(*)::integer from sync_changes),7,'rejected mutations have no extra changes');
+select is((select number from sectors where id=pg_temp.fid(111)),11,'number intact');
+select is((select count(*)::integer from sectors where deleted_at is not null and number in (4,5,10)),3,'all historical tombstones intact');
+select throws_ok($$update sectors set number=12 where id=pg_temp.fid(111)$$,'23514','sector_number_immutable','direct renumber rejected');
+select throws_ok($$update sectors set deleted_at=null where id=pg_temp.fid(110)$$,'23514','sector_retired','direct reactivate rejected');
+select throws_ok($$update sectors set owner_id=pg_temp.fid(2) where id=pg_temp.fid(111)$$,'23514','identity_immutable','direct owner change rejected');
+select throws_ok($$update sectors set id=pg_temp.fid(999) where id=pg_temp.fid(111)$$,'23514','identity_immutable','direct id change rejected');
+select throws_ok($$delete from sectors where id=pg_temp.fid(110)$$,'23514','sector_physical_delete_forbidden','direct delete cannot free number');
+select lives_ok($$update sectors set name='FICTICIO editado' where id=pg_temp.fid(111)$$,'ordinary active direct edit remains valid');
+reset role;
+select set_config('request.jwt.claim.sub','',true);
+select lives_ok($$delete from sectors where id=pg_temp.fid(110)$$,'administrative fixture/account cleanup remains explicit');
+select * from finish();
+rollback;

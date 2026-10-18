@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    
+    {
+      "name": "AgroCampo (local)",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "frontend",
+      "program": "lib/main.dart",
+      "toolArgs": ["--dart-define=AGROCAMPO_ONLINE=false"]
+    }
+  ]
+}

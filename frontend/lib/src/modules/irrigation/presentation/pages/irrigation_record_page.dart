@@ -1,0 +1,209 @@
+import 'package:agrocampo/src/app/layout/agro_page.dart';
+import 'package:agrocampo/src/app/routing/app_routes.dart';
+import 'package:agrocampo/src/app/theme/agro_tokens.dart';
+import 'package:agrocampo/src/modules/agricultural_context/agricultural_context_ui.dart';
+import 'package:agrocampo/src/modules/irrigation/presentation/controllers/irrigation_controller.dart';
+import 'package:agrocampo/src/modules/irrigation/presentation/formatters/irrigation_labels.dart';
+import 'package:agrocampo/src/shared/design_system/components/agro_status_banner.dart';
+import 'package:agrocampo_backend/agrocampo_backend.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+
+final class IrrigationRecordPage extends ConsumerStatefulWidget {
+  const IrrigationRecordPage({this.initialSectorId, super.key});
+  final String? initialSectorId;
+
+  @override
+  ConsumerState<IrrigationRecordPage> createState() =>
+      _IrrigationRecordPageState();
+}
+
+final class _IrrigationRecordPageState
+    extends ConsumerState<IrrigationRecordPage> {
+  IrrigationType _type = IrrigationType.drip;
+  SoilType _soil = SoilType.unknown;
+  final _duration = TextEditingController();
+  final _flow = TextEditingController();
+  final _pressure = TextEditingController();
+  String _calculationMessage =
+      'Regla agronómica no disponible para este cultivo y tipo de suelo.';
+  bool _hasCalculated = false;
+  BoundAgriculturalContext? _bound;
+  IrrigationCalculationUiState? _preview;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _bound ??= BoundAgriculturalContext.from(
+      ref.read(agriculturalContextControllerProvider),
+      sectorId: widget.initialSectorId,
+    );
+  }
+
+  @override
+  void dispose() {
+    _duration.dispose();
+    _flow.dispose();
+    _pressure.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AgroPage(
+    title: 'Riego',
+    subtitle: 'Registro de riego del cuadrante',
+    child: ListView(
+      children: [
+        const Text(
+          'Regla agronómica no disponible para este cultivo y tipo de suelo.',
+        ),
+        const SizedBox(height: AgroSpacing.sm),
+        OutlinedButton.icon(
+          onPressed: () => context.push(
+            AppRoutes.irrigationConfigurationFor(sectorId: _bound?.sectorId),
+          ),
+          icon: const Icon(LucideIcons.settings),
+          label: const Text('Configurar goteo del sector'),
+        ),
+        const SizedBox(height: AgroSpacing.sm),
+        DropdownButtonFormField(
+          key: const ValueKey('irrigation-type'),
+          isExpanded: true,
+          initialValue: _type,
+          decoration: const InputDecoration(labelText: 'Tipo de riego'),
+          items: [
+            for (final value in IrrigationType.values)
+              DropdownMenuItem(value: value, child: Text(value.label)),
+          ],
+          onChanged: (value) => setState(() => _type = value ?? _type),
+        ),
+        const SizedBox(height: AgroSpacing.sm),
+        DropdownButtonFormField(
+          isExpanded: true,
+          initialValue: _soil,
+          decoration: const InputDecoration(labelText: 'Tipo de suelo'),
+          items: [
+            for (final value in SoilType.values)
+              DropdownMenuItem(value: value, child: Text(value.label)),
+          ],
+          onChanged: (value) => setState(() => _soil = value ?? _soil),
+        ),
+        const SizedBox(height: AgroSpacing.sm),
+        TextField(
+          controller: _duration,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(labelText: 'Duración (minutos)'),
+        ),
+        const SizedBox(height: AgroSpacing.sm),
+        TextField(
+          controller: _flow,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: const InputDecoration(
+            labelText: 'Caudal total (litros/hora, opcional)',
+          ),
+        ),
+        const SizedBox(height: AgroSpacing.sm),
+        TextField(
+          controller: _pressure,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(
+            labelText: 'Presión (kPa, opcional)',
+          ),
+        ),
+        const SizedBox(height: AgroSpacing.sm),
+        AgroStatusBanner(
+          message: _hasCalculated
+              ? _calculationMessage
+              : 'Ingresa caudal y duración para estimar el volumen.',
+          status: AgroStatus.warning,
+        ),
+        TextButton(
+          onPressed: _calculate,
+          child: const Text('Calcular de forma determinística'),
+        ),
+        if (_preview?.basicVolumeLiters case final volume?)
+          Text(
+            'Volumen básico estimado: ${volume.toStringAsFixed(2)} L\n'
+            'Fórmula: ${_preview?.basicFormula}',
+          ),
+        const Text(
+          'El clima es auxiliar; si no está disponible, el registro offline sigue funcionando.',
+        ),
+        const SizedBox(height: AgroSpacing.md),
+        FilledButton(onPressed: _save, child: const Text('Guardar riego')),
+      ],
+    ),
+  );
+
+  IrrigationFormInput _input() {
+    return IrrigationFormInput(
+      sectorId: _bound?.sectorId,
+      type: _type,
+      soilType: _soil,
+      duration: _duration.text,
+      flow: _flow.text,
+      pressure: _pressure.text,
+    );
+  }
+
+  Future<void> _calculate() async {
+    final input = _input();
+    try {
+      final calculation = await ref
+          .read(irrigationFormControllerProvider)
+          .calculate(input);
+      if (!mounted) return;
+      if (calculation == null) {
+        _notify('Inicia sesión o desbloquea la app para calcular el riego.');
+        return;
+      }
+      setState(() {
+        _calculationMessage = calculation.message;
+        _hasCalculated = true;
+        if (_type == IrrigationType.drip) _preview = calculation;
+      });
+      if (calculation.isUnavailable) {
+        _notify(calculation.message, needsCrop: calculation.needsCrop);
+      }
+    } on Object catch (error) {
+      if (mounted) _notify('No se pudo calcular el riego: $error');
+    }
+  }
+
+  Future<void> _save() async {
+    final input = _input();
+    try {
+      final failure = await ref
+          .read(irrigationFormControllerProvider)
+          .save(input, calculation: _preview);
+      if (!mounted) return;
+      if (failure == null) {
+        _notify('Riego guardado.');
+      } else {
+        _notify(failure.message, needsCrop: failure.needsCrop);
+      }
+    } on Object catch (error) {
+      if (mounted) _notify('No se pudo guardar el riego: $error');
+    }
+  }
+
+  void _notify(String message, {bool needsCrop = false}) {
+    final sectorId = _bound?.sectorId;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          action: needsCrop && sectorId != null
+              ? SnackBarAction(
+                  label: 'Asignar cultivo',
+                  onPressed: () =>
+                      context.push(AppRoutes.sectorRotation(sectorId)),
+                )
+              : null,
+        ),
+      );
+  }
+}

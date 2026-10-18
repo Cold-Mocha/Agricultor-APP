@@ -1,0 +1,195 @@
+import 'package:agrocampo_backend/src/composition/backend_providers.dart';
+import 'package:agrocampo_backend/src/modules/auth/contracts/biometric_unlock_result.dart';
+import 'package:agrocampo_backend/src/modules/auth/domain/entities/session_state.dart';
+import 'package:agrocampo_backend/src/modules/auth/infrastructure/auth_repository.dart';
+import 'package:agrocampo_backend/src/modules/auth/infrastructure/biometric_unlock_gateway.dart';
+import 'package:agrocampo_backend/src/modules/auth/infrastructure/local_auth_repository.dart';
+import 'package:agrocampo_backend/src/modules/crop_cycles/crop_cycles_api.dart';
+import 'package:agrocampo_backend/src/modules/reminders/reminders_api.dart';
+import 'package:agrocampo_backend/src/platform/database/app_database.dart';
+import 'package:agrocampo_backend/src/platform/database/owner_transfer.dart';
+import 'package:agrocampo_backend/src/platform/network/connectivity_service.dart';
+import 'package:drift/drift.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+final authRepositoryProvider = Provider<AuthRepository>(
+  (ref) => throw StateError('AuthRepository no configurado'),
+);
+
+/// True in local-only builds (`AGROCAMPO_ONLINE=false`): there is no account
+/// to sign out of and remote services are disabled.
+final isLocalModeProvider = Provider<bool>((ref) => false);
+
+final localOwnerStoreProvider = Provider<LocalOwnerStore>(
+  (ref) => const LocalOwnerStore(FlutterSecureStorage()),
+);
+
+final authSessionFacadeProvider = Provider<AuthSessionFacade>((ref) {
+  return AuthSessionFacade._(
+    () => ref.read(authRepositoryProvider),
+    () => ref.read(biometricUnlockGatewayProvider),
+    () => ref.read(appDatabaseProvider),
+    (ownerId) async {
+      final store = ref.read(localOwnerStoreProvider);
+      final localOwnerId = await store.readOwnerId();
+      if (localOwnerId == null || localOwnerId == ownerId) return;
+      await ref.read(syncTriggerCoordinatorProvider).stop(localOwnerId);
+      await ref.read(fieldAlertsFacadeProvider).stop(localOwnerId);
+      await OwnerTransfer(ref.read(appDatabaseProvider))
+          .transfer(from: localOwnerId, to: ownerId);
+      await store.clearOwnerId();
+    },
+    (ownerId) async {
+      // Seasons first: crops activate only inside an active season.
+      await ref.read(cropCyclesFacadeProvider).reconcileSeasonStatuses(ownerId);
+      await ref.read(cropAssignmentReconcilerProvider).reconcile(ownerId);
+    },
+    (ownerId) => ref.read(reminderReconcilerProvider).reconcile(ownerId),
+    (ownerId) => ref.read(fieldAlertsFacadeProvider).checkNow(ownerId),
+    (ownerId) => ref.read(syncTriggerCoordinatorProvider).start(ownerId),
+    (ownerId) async {
+      await ref.read(syncTriggerCoordinatorProvider).stop(ownerId);
+      try {
+        await ref.read(fieldAlertsFacadeProvider).stop(ownerId);
+      } on Object {
+        // No background work to cancel on a host environment.
+      }
+    },
+    () => ref.read(supabaseClientProvider) == null
+        ? const Stream<bool>.empty()
+        : ref
+              .read(connectivityServiceProvider)
+              .watch()
+              .map((signal) => signal == ConnectionSignal.available),
+  );
+});
+
+/// Public authentication application boundary. It performs authentication and
+/// owner-resume work but owns no widget, router or screen state.
+final class AuthSessionFacade {
+  AuthSessionFacade._(
+    this._auth,
+    this._biometrics,
+    this._database,
+    this._adoptLocalOwner,
+    this._reconcileCrops,
+    this._reconcileReminders,
+    this._checkFieldAlerts,
+    this._startSync,
+    this._stopSync,
+    this._connections,
+  );
+
+  // Deshabilitado por orden del stakeholder porque no utiliza esta funcionalidad.
+  // Activar únicamente ante una solicitud explícita del stakeholder; en caso
+  // contrario, mantener deshabilitado. Antes de reactivar, exigir una nueva
+  // activación voluntaria y revisar las preferencias biométricas antiguas.
+  static const _biometricUnlockAvailable = false;
+
+  final AuthRepository Function() _auth;
+  final BiometricUnlockGateway Function() _biometrics;
+  final AppDatabase Function() _database;
+  final Future<void> Function(String ownerId) _adoptLocalOwner;
+  final Future<void> Function(String ownerId) _reconcileCrops;
+  final Future<void> Function(String ownerId) _reconcileReminders;
+  final Future<void> Function(String ownerId) _checkFieldAlerts;
+  final Future<void> Function(String ownerId) _startSync;
+  final Future<void> Function(String ownerId) _stopSync;
+  final Stream<bool> Function() _connections;
+
+  bool get biometricUnlockAvailable => _biometricUnlockAvailable;
+
+  Stream<bool> watchConnection() => _connections();
+
+  Future<SessionState> restore() async {
+    final session = await _auth().restoreSession();
+    if (session == null) return const SessionState.signedOut();
+    if (biometricUnlockAvailable && session.biometricEnabled) {
+      return SessionState.locked(session.ownerId, offline: session.offline);
+    }
+    final restored = session.offline
+        ? SessionState.offline(session.ownerId)
+        : SessionState.signedIn(session.ownerId);
+    await resumeOwner(session.ownerId);
+    await _rememberProfile(session.ownerId, '');
+    return restored;
+  }
+
+  Future<SessionState> signIn({
+    required String email,
+    required String password,
+  }) async {
+    final owner = await _auth().signIn(email: email, password: password);
+    await _rememberProfile(owner.id, owner.email);
+    await resumeOwner(owner.id);
+    return SessionState.signedIn(owner.id);
+  }
+
+  Future<BiometricUnlockResult> authenticateBiometrics() async {
+    if (!biometricUnlockAvailable) return BiometricUnlockResult.unavailable;
+    return _biometrics().authenticate();
+  }
+
+  Future<bool> setBiometricEnabled(bool enabled) async {
+    if (enabled && !biometricUnlockAvailable) return false;
+    if (enabled && !await _biometrics().isAvailable()) return false;
+    await _auth().setBiometricEnabled(enabled);
+    return true;
+  }
+
+  Future<void> signOut(String? ownerId) async {
+    if (ownerId != null) await _stopSync(ownerId);
+    await _auth().signOut();
+  }
+
+  Future<void> resumeOwner(String ownerId) async {
+    try {
+      await _adoptLocalOwner(ownerId);
+    } on Object {
+      // The transfer is transactional; a failure keeps the local owner and
+      // retries on the next resume.
+    }
+    try {
+      await _reconcileCrops(ownerId);
+    } on Object {
+      // Best effort; the next resume/background synchronization retries it.
+    }
+    try {
+      await _reconcileReminders(ownerId);
+    } on Object {
+      // Native notification support may be unavailable on a host environment.
+    }
+    try {
+      await _checkFieldAlerts(ownerId);
+    } on Object {
+      // Same as reminders: alerts are best effort and retried on resume.
+    }
+    await _startSync(ownerId);
+  }
+
+  Future<void> _rememberProfile(String ownerId, String email) async {
+    try {
+      final database = _database();
+      final current = await (database.select(
+        database.localProfiles,
+      )..where((row) => row.id.equals(ownerId))).getSingleOrNull();
+      await database
+          .into(database.localProfiles)
+          .insertOnConflictUpdate(
+            LocalProfilesCompanion.insert(
+              id: ownerId,
+              displayName:
+                  current?.displayName ?? (email.isEmpty ? 'Mi campo' : email),
+              emailDisplay: Value(
+                email.isEmpty ? current?.emailDisplay : email,
+              ),
+              locale: Value(current?.locale ?? 'es_CL'),
+              updatedAt: DateTime.now().toUtc(),
+            ),
+          );
+    } on Object {
+      // A local presentation preference must not invalidate authentication.
+    }
+  }
+}
