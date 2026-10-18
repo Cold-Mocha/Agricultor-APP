@@ -81,6 +81,12 @@ final class AuthSessionFacade {
     this._connections,
   );
 
+  // Deshabilitado por orden del stakeholder porque no utiliza esta funcionalidad.
+  // Activar únicamente ante una solicitud explícita del stakeholder; en caso
+  // contrario, mantener deshabilitado. Antes de reactivar, exigir una nueva
+  // activación voluntaria y revisar las preferencias biométricas antiguas.
+  static const _biometricUnlockAvailable = false;
+
   final AuthRepository Function() _auth;
   final BiometricUnlockGateway Function() _biometrics;
   final AppDatabase Function() _database;
@@ -92,12 +98,14 @@ final class AuthSessionFacade {
   final Future<void> Function(String ownerId) _stopSync;
   final Stream<bool> Function() _connections;
 
+  bool get biometricUnlockAvailable => _biometricUnlockAvailable;
+
   Stream<bool> watchConnection() => _connections();
 
   Future<SessionState> restore() async {
     final session = await _auth().restoreSession();
     if (session == null) return const SessionState.signedOut();
-    if (session.biometricEnabled) {
+    if (biometricUnlockAvailable && session.biometricEnabled) {
       return SessionState.locked(session.ownerId, offline: session.offline);
     }
     final restored = session.offline
@@ -118,10 +126,13 @@ final class AuthSessionFacade {
     return SessionState.signedIn(owner.id);
   }
 
-  Future<BiometricUnlockResult> authenticateBiometrics() =>
-      _biometrics().authenticate();
+  Future<BiometricUnlockResult> authenticateBiometrics() async {
+    if (!biometricUnlockAvailable) return BiometricUnlockResult.unavailable;
+    return _biometrics().authenticate();
+  }
 
   Future<bool> setBiometricEnabled(bool enabled) async {
+    if (enabled && !biometricUnlockAvailable) return false;
     if (enabled && !await _biometrics().isAvailable()) return false;
     await _auth().setBiometricEnabled(enabled);
     return true;

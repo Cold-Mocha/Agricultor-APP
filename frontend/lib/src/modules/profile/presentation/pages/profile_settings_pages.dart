@@ -46,6 +46,7 @@ final class ProfileNotificationsPage extends ConsumerWidget {
   }
 }
 
+/// master.md: Perfil y configuración; Modo local (sin cuenta).
 final class ProfileSecurityPage extends ConsumerWidget {
   const ProfileSecurityPage({super.key});
 
@@ -53,37 +54,39 @@ final class ProfileSecurityPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final session = ref.watch(sessionControllerProvider);
     final localMode = ref.watch(isLocalModeProvider);
+    final biometricUnlockAvailable = ref
+        .watch(authSessionFacadeProvider)
+        .biometricUnlockAvailable;
     return AgroPage(
       title: 'Seguridad',
-      subtitle: 'Acceso y desbloqueo del dispositivo',
+      subtitle: 'Protección de los datos de este dispositivo',
       child: ListView(
         children: [
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            secondary: const Icon(LucideIcons.fingerprint),
-            title: const Text('Desbloqueo biométrico'),
-            subtitle: Text(
-              localMode
-                  ? 'Usa la biometría configurada en este dispositivo al abrir AgroCampo.'
-                  : 'Usa la biometría configurada en este dispositivo al abrir AgroCampo.',
-            ),
-            value: session.biometricEnabled,
-            onChanged: session.ownerId == null
-                ? null
-                : (enabled) async {
-                    final accepted = await ref
-                        .read(sessionControllerProvider.notifier)
-                        .setBiometricEnabled(enabled);
-                    if (!context.mounted || accepted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'La biometría no está disponible o no está configurada en el dispositivo.',
+          if (biometricUnlockAvailable)
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              secondary: const Icon(LucideIcons.fingerprint),
+              title: const Text('Desbloqueo biométrico'),
+              subtitle: const Text(
+                'Usa la biometría configurada en este dispositivo al abrir AgroCampo.',
+              ),
+              value: session.biometricEnabled,
+              onChanged: session.ownerId == null
+                  ? null
+                  : (enabled) async {
+                      final accepted = await ref
+                          .read(sessionControllerProvider.notifier)
+                          .setBiometricEnabled(enabled);
+                      if (!context.mounted || accepted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'La biometría no está disponible o no está configurada en el dispositivo.',
+                          ),
                         ),
-                      ),
-                    );
-                  },
-          ),
+                      );
+                    },
+            ),
           _InformationCard(
             icon: LucideIcons.lock,
             title: 'Datos protegidos',
@@ -257,7 +260,7 @@ final class GeneralSettingsPage extends StatelessWidget {
           _InformationCard(
             icon: LucideIcons.slidersHorizontal,
             title: 'Preferencias personales',
-            message: 'Notificaciones, biometría, idioma, tema y privacidad están reunidos en Perfil.',
+            message: 'Notificaciones, idioma, tema y privacidad están reunidos en Perfil.',
           ),
         ],
       ),

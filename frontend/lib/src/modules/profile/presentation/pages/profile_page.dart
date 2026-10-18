@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+/// master.md: Perfil y configuración (biometría oculta por orden del stakeholder).
 final class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
 
@@ -42,7 +43,7 @@ final class ProfilePage extends ConsumerWidget {
                         AgroSettingsTile(
                           icon: LucideIcons.shield,
                           title: 'Seguridad',
-                          subtitle: 'Biometría y protección de datos',
+                          subtitle: 'Protección de los datos del dispositivo',
                           onTap: () => context.push(AppRoutes.profileSecurity),
                         ),
                         AgroSettingsTile(
